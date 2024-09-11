@@ -1,0 +1,108 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Source Files\fs">
+      <UniqueIdentifier>{ae185989-4c97-49ce-bfe5-6648f7cdc907}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\linter">
+      <UniqueIdentifier>{838619d7-dacf-4f0e-bf11-8869072f34e5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\linter\expressions">
+      <UniqueIdentifier>{d3a66823-3d53-47d5-9cbd-543a244c3f5e}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Varjus.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="fs\fs_globals.cpp">
+      <Filter>Source Files\fs</Filter>
+    </ClCompile>
+    <ClCompile Include="fs\fs_io.cpp">
+      <Filter>Source Files\fs</Filter>
+    </ClCompile>
+    <ClCompile Include="linter\tokenizer.cpp">
+      <Filter>Source Files\linter</Filter>
+    </ClCompile>
+    <ClCompile Include="linter\token.cpp">
+      <Filter>Source Files\linter</Filter>
+    </ClCompile>
+    <ClCompile Include="linter\expressions\unary.cpp">
+      <Filter>Source Files\linter\expressions</Filter>
+    </ClCompile>
+    <ClCompile Include="linter\expressions\expression.cpp">
+      <Filter>Source Files\linter\expressions</Filter>
+    </ClCompile>
+    <ClCompile Include="linter\expressions\postfix.cpp">
+      <Filter>Source Files\linter\expressions</Filter>
+    </ClCompile>
+    <ClCompile Include="linter\expressions\identifier.cpp">
+      <Filter>Source Files\linter\expressions</Filter>
+    </ClCompile>
+    <ClCompile Include="linter\expressions\operator.cpp">
+      <Filter>Source Files\linter\expressions</Filter>
+    </ClCompile>
+    <ClCompile Include="linter\expressions\operand.cpp">
+      <Filter>Source Files\linter\expressions</Filter>
+    </ClCompile>
+    <ClCompile Include="linter\error.cpp">
+      <Filter>Source Files\linter</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="fs\fs_io.hpp">
+      <Filter>Source Files\fs</Filter>
+    </ClInclude>
+    <ClInclude Include="fs\fs_globals.hpp">
+      <Filter>Source Files\fs</Filter>
+    </ClInclude>
+    <ClInclude Include="linter\tokenizer.hpp">
+      <Filter>Source Files\linter</Filter>
+    </ClInclude>
+    <ClInclude Include="globalEnums.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="linter\token.hpp">
+      <Filter>Source Files\linter</Filter>
+    </ClInclude>
+    <ClInclude Include="linter\punctuation.hpp">
+      <Filter>Source Files\linter</Filter>
+    </ClInclude>
+    <ClInclude Include="linter\expressions\postfix.hpp">
+      <Filter>Source Files\linter\expressions</Filter>
+    </ClInclude>
+    <ClInclude Include="linter\expressions\unary.hpp">
+      <Filter>Source Files\linter\expressions</Filter>
+    </ClInclude>
+    <ClInclude Include="linter\expressions\expression.hpp">
+      <Filter>Source Files\linter\expressions</Filter>
+    </ClInclude>
+    <ClInclude Include="linter\expressions\definitions.hpp">
+      <Filter>Source Files\linter\expressions</Filter>
+    </ClInclude>
+    <ClInclude Include="linter\error.hpp">
+      <Filter>Source Files\linter</Filter>
+    </ClInclude>
+    <ClInclude Include="linter\expressions\identifier.hpp">
+      <Filter>Source Files\linter\expressions</Filter>
+    </ClInclude>
+    <ClInclude Include="linter\expressions\operator.hpp">
+      <Filter>Source Files\linter\expressions</Filter>
+    </ClInclude>
+    <ClInclude Include="linter\expressions\operand.hpp">
+      <Filter>Source Files\linter\expressions</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
