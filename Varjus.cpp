@@ -17,7 +17,7 @@ int Failure(const std::string_view& msg)
 
 int main()
 {
-    
+
     const auto reader = VarjusIOReader("\\scripts\\script.var");
 
     const auto fileBuf = reader.IO_Read();
@@ -46,13 +46,12 @@ int main()
 
     }
 	catch (std::exception& e) {
-		std::cerr << 
+		std::cerr << "\033[31m" <<
             "\n-----------LINTING ERROR-----------\n\n" 
             << e.what() << "\n" <<
-            "-----------------------------------";
+            "-----------------------------------" << "\033[0m\n";
 	}
 
-
+	std::cout << "Press ENTER to exit\n";
     std::cin.get();
-
 }

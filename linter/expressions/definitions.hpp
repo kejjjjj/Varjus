@@ -4,6 +4,10 @@
 #include <string>
 #include <memory>
 
+#define NONCOPYABLE(className) \
+        className(const className&) = delete; \
+        className& operator=(const className&) = delete;
+
 enum Success : signed char;
 class CPunctuationToken;
 class CToken;

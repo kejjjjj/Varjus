@@ -5,12 +5,15 @@
 class CLinterOperand;
 class CLinterOperatorLinkage;
 class CLinterOperatorParser;
+class CLinterSubExpression;
 
 struct CLinterOperator;
 
 
 class CLinterExpression
 {
+	NONCOPYABLE(CLinterExpression);
+
 public:
 
 	CLinterExpression() = delete;
@@ -20,19 +23,11 @@ public:
 	[[nodiscard]] Success ParseExpression();
 
 private:
+	[[nodiscard]] bool EndOfExpression() const noexcept;
 
-	UniquePointerVector<CLinterOperand> m_oOperands;
-	UniquePointerVector<CLinterOperatorParser> m_oOperators;
 
-	std::vector<CLinterOperator> m_oOperatorLinks;
+	UniquePointerVector<CLinterSubExpression> m_oSubExpressions;
 
 	LinterIterator& m_iterPos;
 	LinterIterator& m_iterEnd;
-};
-
-struct CLinterOperator
-{
-	const CLinterOperatorParser* m_pOperator = 0;
-	const CLinterOperand* m_oLhsOperand = 0;
-	const CLinterOperand* m_oRhsOperand = 0;
 };

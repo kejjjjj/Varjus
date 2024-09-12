@@ -159,6 +159,7 @@
     <ClCompile Include="linter\expressions\identifier.cpp" />
     <ClCompile Include="linter\expressions\operator.cpp" />
     <ClCompile Include="linter\expressions\postfix.cpp" />
+    <ClCompile Include="linter\expressions\sub_expression.cpp" />
     <ClCompile Include="linter\expressions\unary.cpp" />
     <ClCompile Include="linter\token.cpp" />
     <ClCompile Include="linter\tokenizer.cpp" />
@@ -168,6 +169,9 @@
     <ClInclude Include="fs\fs_globals.hpp" />
     <ClInclude Include="fs\fs_io.hpp" />
     <ClInclude Include="globalEnums.hpp" />
+    <ClInclude Include="instructions\instructions.hpp" />
+    <ClInclude Include="instructions\operand.hpp" />
+    <ClInclude Include="instructions\register.hpp" />
     <ClInclude Include="linter\error.hpp" />
     <ClInclude Include="linter\expressions\operand.hpp" />
     <ClInclude Include="linter\expressions\definitions.hpp" />
@@ -175,6 +179,7 @@
     <ClInclude Include="linter\expressions\identifier.hpp" />
     <ClInclude Include="linter\expressions\operator.hpp" />
     <ClInclude Include="linter\expressions\postfix.hpp" />
+    <ClInclude Include="linter\expressions\sub_expression.hpp" />
     <ClInclude Include="linter\expressions\unary.hpp" />
     <ClInclude Include="linter\punctuation.hpp" />
     <ClInclude Include="linter\token.hpp" />

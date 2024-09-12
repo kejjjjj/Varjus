@@ -28,7 +28,7 @@ CIdentifierLinter::~CIdentifierLinter() = default;
 		return failure;
 	}
 
-	m_oTokens.push_back(&**m_iterPos);
+	m_oTokens.push_back(&*iterPos);
 
 	std::advance(m_iterPos, 1);
 	return success;

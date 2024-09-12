@@ -1,4 +1,5 @@
 #include "expression.hpp"
+#include "sub_expression.hpp"
 #include "operand.hpp"
 #include "operator.hpp"
 
@@ -7,6 +8,8 @@
 
 #include "linter/token.hpp"
 #include "linter/error.hpp"
+#include "linter/punctuation.hpp"
+
 #include "globalEnums.hpp"
 
 #include <cassert>
@@ -20,33 +23,27 @@ CLinterExpression::~CLinterExpression() = default;
 
 Success CLinterExpression::ParseExpression()
 {
-	//TODO: check for end-of-expression
+	Success status = failure;
 
-	CLinterOperand lhsExpression(m_iterPos, m_iterEnd);
-	if (!lhsExpression.ParseOperand())
-		return failure;
+	do {
 
-	m_oOperands.emplace_back(std::make_unique<CLinterOperand>(lhsExpression));
+		//the previous token was an operator, so we need an operand
+		if (EndOfExpression() && !m_oSubExpressions.empty()) {
+			CLinterErrors::PushError("Expected an operand, but found " + (*m_iterPos)->Source(), (*m_iterPos)->m_oSourcePosition);
+			return failure;
+		}
 
-	//TODO: check for end-of-expression
+		auto subExpression = std::make_unique<CLinterSubExpression>(m_iterPos, m_iterEnd);
+		status = subExpression->ParseSubExpression();
+		m_oSubExpressions.emplace_back(std::move(subExpression));
 
-	CLinterOperatorParser cOperator(m_iterPos, m_iterEnd);
-	if (!cOperator.ParseOperator())
-		return failure;
+	} while (status == success);
 
-	m_oOperators.emplace_back(std::make_unique<CLinterOperatorParser>(cOperator));
-
-	CLinterOperand rhsExpression(m_iterPos, m_iterEnd);
-	if (!rhsExpression.ParseOperand())
-		return failure;
-
-	m_oOperands.emplace_back(std::make_unique<CLinterOperand>(rhsExpression));
-
-	m_oOperatorLinks.push_back( CLinterOperator{ 
-		.m_pOperator		= &*m_oOperators.back(), 
-		.m_oLhsOperand	= &*m_oOperands.at(m_oOperands.size() - 2u),
-		.m_oRhsOperand	= &*m_oOperands.at(m_oOperands.size() - 1u),
-		});
-
+	assert(m_oSubExpressions.size() > 0u);
 	return success;
+}
+bool CLinterExpression::EndOfExpression() const noexcept
+{
+	assert(m_iterPos != m_iterEnd);
+	return (*m_iterPos)->IsOperator(p_semicolon);
 }

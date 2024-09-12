@@ -22,6 +22,9 @@
     <Filter Include="Source Files\linter\expressions">
       <UniqueIdentifier>{d3a66823-3d53-47d5-9cbd-543a244c3f5e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\instructions">
+      <UniqueIdentifier>{d1226f5d-a6b5-4e38-86e2-52391939faba}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Varjus.cpp">
@@ -59,6 +62,9 @@
     </ClCompile>
     <ClCompile Include="linter\error.cpp">
       <Filter>Source Files\linter</Filter>
+    </ClCompile>
+    <ClCompile Include="linter\expressions\sub_expression.cpp">
+      <Filter>Source Files\linter\expressions</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -103,6 +109,18 @@
     </ClInclude>
     <ClInclude Include="linter\expressions\operand.hpp">
       <Filter>Source Files\linter\expressions</Filter>
+    </ClInclude>
+    <ClInclude Include="linter\expressions\sub_expression.hpp">
+      <Filter>Source Files\linter\expressions</Filter>
+    </ClInclude>
+    <ClInclude Include="instructions\instructions.hpp">
+      <Filter>Source Files\instructions</Filter>
+    </ClInclude>
+    <ClInclude Include="instructions\register.hpp">
+      <Filter>Source Files\instructions</Filter>
+    </ClInclude>
+    <ClInclude Include="instructions\operand.hpp">
+      <Filter>Source Files\instructions</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
