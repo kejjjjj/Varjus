@@ -2,6 +2,8 @@
 
 #include "identifier.hpp"
 
+enum OperatorPriority : char;
+
 class CLinterOperatorParser : public CLinter<CPunctuationToken>
 {
 public:
@@ -11,6 +13,11 @@ public:
 
 	[[maybe_unused]] Success ParseOperator();
 	[[nodiscard]] auto& GetResult() const { return m_oTokens; }
+
+	[[nodiscard]] OperatorPriority GetPriority() const noexcept;
+
+
+	[[nodiscard]] std::string ToString() const noexcept;
 
 private:
 	[[nodiscard]] bool CheckOperator() const;

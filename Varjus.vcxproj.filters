@@ -25,6 +25,9 @@
     <Filter Include="Source Files\instructions">
       <UniqueIdentifier>{d1226f5d-a6b5-4e38-86e2-52391939faba}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\scripts">
+      <UniqueIdentifier>{6dcf0874-a30a-4c73-a78d-f3bfdbf31bdd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Varjus.cpp">
@@ -122,5 +125,10 @@
     <ClInclude Include="instructions\operand.hpp">
       <Filter>Source Files\instructions</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="x64\Debug\scripts\script.var">
+      <Filter>Source Files\scripts</Filter>
+    </None>
   </ItemGroup>
 </Project>

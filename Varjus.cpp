@@ -40,9 +40,7 @@ int main()
 
 		CLinterExpression expr(begin, end);
 		if (expr.ParseExpression())
-			std::cout << "Success\n";
-		else
-			std::cout << "Failure\n";
+			std::cout << expr.SortedToString() << "\n";
 
     }
 	catch (std::exception& e) {

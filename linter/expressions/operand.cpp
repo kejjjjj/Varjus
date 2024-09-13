@@ -36,3 +36,14 @@ Success CLinterOperand::ParseOperand()
 
 	return success;
 }
+std::string CLinterOperand::ToString() const noexcept
+{
+	std::string result;
+	for (const auto& unary : m_oUnaryTokens) {
+		result += unary->Source();
+	}
+	for (const auto& identifier : m_oIdentifierTokens) {
+		result += identifier->Source();
+	}
+	return result;
+}

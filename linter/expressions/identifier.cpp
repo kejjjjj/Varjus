@@ -14,7 +14,7 @@ CIdentifierLinter::CIdentifierLinter(LinterIterator& pos, LinterIterator& end) :
 }
 CIdentifierLinter::~CIdentifierLinter() = default;
 
-[[nodiscard]] Success CIdentifierLinter::ParseIdentifier()
+Success CIdentifierLinter::ParseIdentifier()
 {
 	if (m_iterPos == m_iterEnd) {
 		CLinterErrors::PushError("Expected identifier, but reached end of file", (*std::prev(m_iterPos))->m_oSourcePosition);
@@ -23,7 +23,7 @@ CIdentifierLinter::~CIdentifierLinter() = default;
 
 	auto& iterPos = *m_iterPos;
 
-	if (iterPos->Type() != TokenType::t_name) {
+	if (!CheckIdentifier(iterPos)) {
 		CLinterErrors::PushError("Expected identifier, but found " + iterPos->Source(), iterPos->m_oSourcePosition);
 		return failure;
 	}
@@ -32,4 +32,10 @@ CIdentifierLinter::~CIdentifierLinter() = default;
 
 	std::advance(m_iterPos, 1);
 	return success;
+}
+bool CIdentifierLinter::CheckIdentifier(const CToken* token) const noexcept
+{
+	assert(token != nullptr);
+	const auto type = token->Type();
+	return type >= TokenType::t_int && type <= TokenType::t_name;
 }

@@ -22,6 +22,8 @@ CBufferTokenizer::CBufferTokenizer(const std::string_view& buffer) : m_sSource(b
 	m_oLastScriptPos = m_sSource.end();
 	m_oScriptEnd = m_sSource.end();
 
+	m_oParserPosition = std::make_tuple(size_t(1), size_t(1));
+
 	assert(m_oScriptPos != m_oScriptEnd);
 
 }
@@ -32,8 +34,8 @@ Success CBufferTokenizer::Tokenize()
 	while (auto&& token = ReadToken())
 		m_oTokens.emplace_back(std::forward<std::unique_ptr<CToken>&&>(token));
 
-	for (const auto& t : m_oTokens)
-		std::cout << t->m_sSource << '\n';
+	//for (const auto& t : m_oTokens)
+	//	std::cout << t->m_sSource << '\n';
 
 	return m_oTokens.size() > 0u ? success : failure;
 }

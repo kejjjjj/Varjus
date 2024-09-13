@@ -51,7 +51,22 @@ bool CLinterOperatorParser::CheckOperator() const
 	return true;
 }
 
-[[nodiscard]] bool CLinterOperatorParser::IsOperator(const CPunctuationToken& token) const noexcept
+bool CLinterOperatorParser::IsOperator(const CPunctuationToken& token) const noexcept
 {
 	return token.m_ePriority >= op_assignment && token.m_ePriority <= op_multiplicative;
+}
+
+OperatorPriority CLinterOperatorParser::GetPriority() const noexcept
+{
+	assert(!m_oTokens.empty());
+	return m_oTokens.front()->m_ePriority;
+}
+
+std::string CLinterOperatorParser::ToString() const noexcept
+{
+	std::string result;
+	for (const auto& token : m_oTokens) {
+		result += token->Source();
+	}
+	return result;
 }

@@ -55,3 +55,10 @@ bool CLinterSubExpression::EndOfExpression() const noexcept
 	assert(m_iterPos != m_iterEnd);
 	return (*m_iterPos)->IsOperator(p_semicolon);
 }
+OperatorPriority CLinterSubExpression::GetPriority() const noexcept
+{
+	assert(m_oOperator != nullptr);
+	const auto& result = m_oOperator->GetResult();
+	assert(result.size() == 1u);
+	return result.front()->m_ePriority;
+}

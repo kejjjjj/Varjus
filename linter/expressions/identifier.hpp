@@ -15,4 +15,5 @@ public:
 	[[nodiscard]] auto& GetResult() const { return m_oTokens; }
 
 private:
+	[[nodiscard]] bool CheckIdentifier(const CToken* token) const noexcept;
 };

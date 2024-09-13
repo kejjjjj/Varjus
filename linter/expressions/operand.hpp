@@ -11,6 +11,7 @@ public:
 	~CLinterOperand();
 
 	[[nodiscard]] Success ParseOperand();
+	[[nodiscard]] std::string ToString() const noexcept;
 
 
 private:
