@@ -4,8 +4,8 @@
 
 enum OperandType : std::uint8_t
 {
-	REGISTER,
-	IMMEDIATE,
+	o_register,
+	o_immediate,
 };
 
 class COperand
@@ -30,7 +30,7 @@ public:
 	constexpr CIntOperand(std::int64_t v) : m_iValue(v) { m_uSize = static_cast<std::byte>(sizeof(m_iValue)); }
 	~CIntOperand() = default;
 
-	[[nodiscard]] constexpr OperandType Type() const noexcept override { return IMMEDIATE; }
+	[[nodiscard]] constexpr OperandType Type() const noexcept override { return o_immediate; }
 
 	[[nodiscard]] std::string ToString() const noexcept override { return std::to_string(m_iValue); }
 private:

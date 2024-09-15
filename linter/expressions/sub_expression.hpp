@@ -4,6 +4,7 @@
 
 class CLinterOperand;
 class CLinterOperatorParser;
+class CMemoryData;
 
 enum OperatorPriority : char;
 
@@ -18,7 +19,7 @@ class CLinterSubExpression
 public:
 
 	CLinterSubExpression() = delete;
-	explicit CLinterSubExpression(LinterIterator& pos, LinterIterator& end);
+	explicit CLinterSubExpression(LinterIterator& pos, LinterIterator& end, CMemoryData* const stack);
 	~CLinterSubExpression();
 
 	/*
@@ -38,12 +39,13 @@ private:
 
 	LinterIterator& m_iterPos;
 	LinterIterator& m_iterEnd;
+	CMemoryData* const m_pOwner;
 };
 
-struct CSortableSubExpression
+struct CSortedSubExpression
 {
 	const CLinterOperand* m_oLhsOperand;
 	const CLinterOperatorParser* m_oOperator;
-	//const CLinterOperand* m_oRhsOperand;
+	const CLinterOperand* m_oRhsOperand;
 
 };

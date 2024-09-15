@@ -1,8 +1,8 @@
 #pragma once
-#include <vector>
-#include <string>
 
 #include "operand.hpp"
+
+using UniqueOperand = std::unique_ptr<COperand>;
 
 enum Instruction : std::uint8_t
 {
@@ -14,12 +14,13 @@ enum Instruction : std::uint8_t
 class COperation
 {
 public:
-	constexpr COperation(Instruction insn, const std::vector<COperand>& operands) : m_eInstruction(insn) {}
+	COperation(Instruction insn) :
+		m_eInstruction(insn) {}
 	~COperation() = default;
 
 	[[nodiscard]] constexpr Instruction GetInstruction() const noexcept { return m_eInstruction; }
 
 protected:
 	Instruction m_eInstruction{ NOP };
-	std::vector<COperand> m_oOperands;
+	std::vector<UniqueOperand> m_oOperands;
 };

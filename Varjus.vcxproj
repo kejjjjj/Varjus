@@ -157,7 +157,11 @@
   <ItemGroup>
     <ClCompile Include="fs\fs_globals.cpp" />
     <ClCompile Include="fs\fs_io.cpp" />
+    <ClCompile Include="linter\declarations\stack.cpp" />
+    <ClCompile Include="linter\declarations\variable_declarations.cpp" />
     <ClCompile Include="linter\error.cpp" />
+    <ClCompile Include="linter\expressions\ast.cpp" />
+    <ClCompile Include="linter\expressions\ast2instruction.cpp" />
     <ClCompile Include="linter\expressions\operand.cpp" />
     <ClCompile Include="linter\expressions\expression.cpp" />
     <ClCompile Include="linter\expressions\identifier.cpp" />
@@ -165,18 +169,24 @@
     <ClCompile Include="linter\expressions\postfix.cpp" />
     <ClCompile Include="linter\expressions\sub_expression.cpp" />
     <ClCompile Include="linter\expressions\unary.cpp" />
+    <ClCompile Include="linter\linter.cpp" />
     <ClCompile Include="linter\token.cpp" />
     <ClCompile Include="linter\tokenizer.cpp" />
-    <ClCompile Include="Varjus.cpp" />
+    <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="fs\fs_globals.hpp" />
     <ClInclude Include="fs\fs_io.hpp" />
+    <ClInclude Include="globalDefinitions.hpp" />
     <ClInclude Include="globalEnums.hpp" />
     <ClInclude Include="instructions\instructions.hpp" />
     <ClInclude Include="instructions\operand.hpp" />
     <ClInclude Include="instructions\register.hpp" />
+    <ClInclude Include="linter\declarations\stack.hpp" />
+    <ClInclude Include="linter\declarations\variable_declarations.hpp" />
     <ClInclude Include="linter\error.hpp" />
+    <ClInclude Include="linter\expressions\ast.hpp" />
+    <ClInclude Include="linter\expressions\ast2instruction.hpp" />
     <ClInclude Include="linter\expressions\operand.hpp" />
     <ClInclude Include="linter\expressions\definitions.hpp" />
     <ClInclude Include="linter\expressions\expression.hpp" />
@@ -185,6 +195,7 @@
     <ClInclude Include="linter\expressions\postfix.hpp" />
     <ClInclude Include="linter\expressions\sub_expression.hpp" />
     <ClInclude Include="linter\expressions\unary.hpp" />
+    <ClInclude Include="linter\linter.hpp" />
     <ClInclude Include="linter\punctuation.hpp" />
     <ClInclude Include="linter\token.hpp" />
     <ClInclude Include="linter\tokenizer.hpp" />

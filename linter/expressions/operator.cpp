@@ -7,7 +7,7 @@
 
 #include <cassert>
 
-CLinterOperatorParser::CLinterOperatorParser(LinterIterator& pos, LinterIterator& end) : CLinter(pos, end)
+CLinterOperatorParser::CLinterOperatorParser(LinterIterator& pos, LinterIterator& end) : CLinterSingle(pos, end)
 {
 	assert(m_iterPos != m_iterEnd);
 }
@@ -33,7 +33,7 @@ Success CLinterOperatorParser::ParseOperator()
 		return failure;
 	}
 
-	m_oTokens.emplace_back(&asPunctuation);
+	m_pToken = &asPunctuation;
 	std::advance(m_iterPos, 1);
 
 	return success;
@@ -58,15 +58,12 @@ bool CLinterOperatorParser::IsOperator(const CPunctuationToken& token) const noe
 
 OperatorPriority CLinterOperatorParser::GetPriority() const noexcept
 {
-	assert(!m_oTokens.empty());
-	return m_oTokens.front()->m_ePriority;
+	assert(m_pToken != nullptr);
+	return m_pToken->m_ePriority;
 }
 
 std::string CLinterOperatorParser::ToString() const noexcept
 {
-	std::string result;
-	for (const auto& token : m_oTokens) {
-		result += token->Source();
-	}
-	return result;
+	return m_pToken ? m_pToken->Source() : "";
+
 }

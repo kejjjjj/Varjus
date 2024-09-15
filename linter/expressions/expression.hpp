@@ -8,9 +8,11 @@ class CLinterOperatorParser;
 class CLinterSubExpression;
 
 struct CLinterOperator;
-struct CSortableSubExpression;
+struct CSortedSubExpression;
 
-using OperatorIterator = std::vector<CLinterOperatorParser*>::iterator;
+class AbstractSyntaxTree;
+
+class CMemoryData;
 
 class CLinterExpression
 {
@@ -19,10 +21,10 @@ class CLinterExpression
 public:
 
 	CLinterExpression() = delete;
-	explicit CLinterExpression(LinterIterator& pos, LinterIterator& end);
+	explicit CLinterExpression(LinterIterator& pos, LinterIterator& end, CMemoryData* const stack);
 	~CLinterExpression();
 
-	[[nodiscard]] Success ParseExpression();
+	[[maybe_unused]] Success ParseExpression();
 	[[nodiscard]] std::string ToString() const noexcept;
 	[[nodiscard]] std::string SortedToString() const noexcept;
 
@@ -30,16 +32,13 @@ private:
 	[[nodiscard]] bool EndOfExpression() const noexcept;
 
 	void Sort();
-	[[nodiscard]] std::vector<CSortableSubExpression> 
-		SortIteratively(std::vector<CLinterOperand*>& operands, std::vector<CLinterOperatorParser*>& operators);
-
-	[[nodiscard]] OperatorIterator FindHighestPriorityOperator(std::vector<CLinterOperatorParser*>& operators);
 
 	UniquePointerVector<CLinterSubExpression> m_oSubExpressions;
-	std::vector<CSortableSubExpression> m_oSortedSubExpressions;
+	std::unique_ptr<AbstractSyntaxTree> m_pAST;
 
 	LinterIterator& m_iterPos;
 	LinterIterator& m_iterEnd;
+	CMemoryData* const m_pOwner;
 };
 
 

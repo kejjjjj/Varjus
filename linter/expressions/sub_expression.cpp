@@ -8,11 +8,13 @@
 #include "linter/token.hpp"
 #include "linter/error.hpp"
 #include "linter/punctuation.hpp"
+#include "linter/declarations/stack.hpp"
 #include "globalEnums.hpp"
 
 #include <cassert>
 
-CLinterSubExpression::CLinterSubExpression(LinterIterator& pos, LinterIterator& end) : m_iterPos(pos), m_iterEnd(end) {
+CLinterSubExpression::CLinterSubExpression(LinterIterator& pos, LinterIterator& end, CMemoryData* const stack) 
+	: m_iterPos(pos), m_iterEnd(end), m_pOwner(stack)  {
 
 	assert(m_iterPos != m_iterEnd);
 
@@ -25,7 +27,7 @@ Success CLinterSubExpression::ParseSubExpression()
 	if (EndOfExpression())
 		return failure;
 
-	CLinterOperand lhsExpression(m_iterPos, m_iterEnd);
+	CLinterOperand lhsExpression(m_iterPos, m_iterEnd, m_pOwner);
 	if (!lhsExpression.ParseOperand())
 		return failure;
 
@@ -41,12 +43,6 @@ Success CLinterSubExpression::ParseSubExpression()
 
 	m_oOperator = std::make_unique<CLinterOperatorParser>(cOperator);
 
-	//CLinterOperand rhsExpression(m_iterPos, m_iterEnd);
-	//if (!rhsExpression.ParseOperand())
-	//	return failure;
-
-	//m_oRhsOperand = std::make_unique<CLinterOperand>(rhsExpression);
-
 	return success;
 }
 
@@ -59,6 +55,6 @@ OperatorPriority CLinterSubExpression::GetPriority() const noexcept
 {
 	assert(m_oOperator != nullptr);
 	const auto& result = m_oOperator->GetResult();
-	assert(result.size() == 1u);
-	return result.front()->m_ePriority;
+	assert(result != nullptr);
+	return result->m_ePriority;
 }

@@ -4,7 +4,7 @@
 
 enum OperatorPriority : char;
 
-class CLinterOperatorParser : public CLinter<CPunctuationToken>
+class CLinterOperatorParser : public CLinterSingle<CPunctuationToken>
 {
 public:
 	CLinterOperatorParser() = delete;
@@ -12,7 +12,7 @@ public:
 	~CLinterOperatorParser();
 
 	[[maybe_unused]] Success ParseOperator();
-	[[nodiscard]] auto& GetResult() const { return m_oTokens; }
+	[[nodiscard]] auto GetResult() const { return m_pToken; }
 
 	[[nodiscard]] OperatorPriority GetPriority() const noexcept;
 

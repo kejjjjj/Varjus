@@ -5,7 +5,7 @@
 #include "globalEnums.hpp"
 
 #include <cassert>
-CUnaryLinter::CUnaryLinter(LinterIterator& pos, LinterIterator& end) : CLinter(pos, end)
+CUnaryLinter::CUnaryLinter(LinterIterator& pos, LinterIterator& end) : CVectorLinter(pos, end)
 {
 	assert(m_iterPos != m_iterEnd);
 }

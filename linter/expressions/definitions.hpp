@@ -11,11 +11,19 @@
 enum Success : signed char;
 class CPunctuationToken;
 class CToken;
+class CLinterOperatorParser;
 
-using LinterIterator = std::vector<CToken*>::iterator;
 
 template<typename T>
-using UniquePointerVector = std::vector<std::unique_ptr<T>>;
+using VectorOf = std::vector<T>;
+
+template<typename T>
+using UniquePointerVector = VectorOf<std::unique_ptr<T>>;
+
+using LinterIterator = VectorOf<CToken*>::iterator;
+
+using OperatorIterator = VectorOf<CLinterOperatorParser*>::iterator;
+using COperatorIterator = VectorOf<CLinterOperatorParser*>::const_iterator;
 
 template<class ContainerType>
 class CLinter
@@ -28,9 +36,34 @@ public:
 	explicit CLinter(LinterIterator& pos, LinterIterator& end) : m_iterPos(pos), m_iterEnd(end){}
 	virtual ~CLinter() = default;
 
+	[[nodiscard]] bool IsEndOfBuffer() const noexcept { return m_iterPos == m_iterEnd; }
+
 protected:
 	LinterIterator& m_iterPos;
 	LinterIterator& m_iterEnd;
+};
 
-	std::vector<const ContainerType*> m_oTokens;
+template<class Type>
+class CLinterSingle : public CLinter<CToken>
+{
+public:
+	CLinterSingle() = delete;
+	explicit CLinterSingle(LinterIterator& pos, LinterIterator& end) : CLinter(pos, end) {}
+
+	CLinterSingle operator=(const CLinterSingle&) = delete;
+
+protected:
+	const Type* m_pToken{};
+};
+
+template<class ContainerType>
+class CVectorLinter : public CLinter<CToken>
+{
+public:
+	CVectorLinter() = delete;
+	explicit CVectorLinter(LinterIterator& pos, LinterIterator& end) : CLinter(pos, end) {}
+
+	CVectorLinter operator=(const CVectorLinter&) = delete;
+protected:
+	VectorOf<const ContainerType*> m_oTokens;
 };

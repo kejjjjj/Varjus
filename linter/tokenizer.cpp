@@ -5,6 +5,7 @@
 
 #include <cassert>
 #include <iostream>
+#include <unordered_map>
 
 constexpr bool IsDigit(char c) noexcept
 {
@@ -191,6 +192,11 @@ constexpr Success CBufferTokenizer::ReadInteger(CToken& token) noexcept
 
 	return success;
 }
+
+const std::unordered_map<std::string_view, TokenType> reservedKeywords = {
+	{"let", TokenType::t_declaration}
+};
+
 constexpr Success CBufferTokenizer::ReadName(CToken& token) noexcept
 {
 	auto& [_, column] = m_oParserPosition;
@@ -208,6 +214,10 @@ constexpr Success CBufferTokenizer::ReadName(CToken& token) noexcept
 		if (EndOfBuffer())
 			break;
 
+	}
+
+	if (reservedKeywords.contains(token.m_sSource)) {
+		token.m_eTokenType = reservedKeywords.at(token.m_sSource);
 	}
 
 	column += token.m_sSource.length();

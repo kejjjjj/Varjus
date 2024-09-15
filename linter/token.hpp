@@ -10,7 +10,8 @@ enum TokenType : signed char
 	t_double,
 	t_string,
 	t_name,
-	t_operator
+	t_operator,
+	t_declaration
 };
 
 enum Punctuation : char;

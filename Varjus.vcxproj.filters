@@ -28,9 +28,12 @@
     <Filter Include="Source Files\scripts">
       <UniqueIdentifier>{6dcf0874-a30a-4c73-a78d-f3bfdbf31bdd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\linter\declarations">
+      <UniqueIdentifier>{4fcd4054-a33c-4c8a-98a2-ed0335f926b6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Varjus.cpp">
+    <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="fs\fs_globals.cpp">
@@ -68,6 +71,21 @@
     </ClCompile>
     <ClCompile Include="linter\expressions\sub_expression.cpp">
       <Filter>Source Files\linter\expressions</Filter>
+    </ClCompile>
+    <ClCompile Include="linter\expressions\ast.cpp">
+      <Filter>Source Files\linter\expressions</Filter>
+    </ClCompile>
+    <ClCompile Include="linter\expressions\ast2instruction.cpp">
+      <Filter>Source Files\linter\expressions</Filter>
+    </ClCompile>
+    <ClCompile Include="linter\declarations\variable_declarations.cpp">
+      <Filter>Source Files\linter\declarations</Filter>
+    </ClCompile>
+    <ClCompile Include="linter\declarations\stack.cpp">
+      <Filter>Source Files\linter\declarations</Filter>
+    </ClCompile>
+    <ClCompile Include="linter\linter.cpp">
+      <Filter>Source Files\linter</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -124,6 +142,24 @@
     </ClInclude>
     <ClInclude Include="instructions\operand.hpp">
       <Filter>Source Files\instructions</Filter>
+    </ClInclude>
+    <ClInclude Include="linter\expressions\ast.hpp">
+      <Filter>Source Files\linter\expressions</Filter>
+    </ClInclude>
+    <ClInclude Include="linter\expressions\ast2instruction.hpp">
+      <Filter>Source Files\linter\expressions</Filter>
+    </ClInclude>
+    <ClInclude Include="linter\declarations\variable_declarations.hpp">
+      <Filter>Source Files\linter\declarations</Filter>
+    </ClInclude>
+    <ClInclude Include="linter\declarations\stack.hpp">
+      <Filter>Source Files\linter\declarations</Filter>
+    </ClInclude>
+    <ClInclude Include="globalDefinitions.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="linter\linter.hpp">
+      <Filter>Source Files\linter</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

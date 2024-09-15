@@ -4,11 +4,13 @@
 
 #include "linter/token.hpp"
 #include "linter/error.hpp"
+#include "linter/declarations/stack.hpp"
 #include "globalEnums.hpp"
 
 #include <cassert>
 
-CLinterOperand::CLinterOperand(LinterIterator& pos, LinterIterator& end) : m_iterPos(pos), m_iterEnd(end) {
+CLinterOperand::CLinterOperand(LinterIterator& pos, LinterIterator& end, CMemoryData* const stack) 
+	: m_iterPos(pos), m_iterEnd(end), m_pOwner(stack) {
 
 	assert(m_iterPos != m_iterEnd);
 
@@ -22,17 +24,19 @@ Success CLinterOperand::ParseOperand()
 	unaryLinter.ParseUnary();
 
 	// Parse identifier
-	CIdentifierLinter identifierLinter(m_iterPos, m_iterEnd);
+	CIdentifierLinter identifierLinter(m_iterPos, m_iterEnd, m_pOwner);
 	if (!identifierLinter.ParseIdentifier()) {
 		return failure;
 	}
+
+
 
 	//TODO: Parse postfix
 
 
 	// Save results
 	m_oUnaryTokens = unaryLinter.GetResult();
-	m_oIdentifierTokens = identifierLinter.GetResult();
+	m_oIdentifierToken = identifierLinter.GetResult();
 
 	return success;
 }
@@ -42,8 +46,6 @@ std::string CLinterOperand::ToString() const noexcept
 	for (const auto& unary : m_oUnaryTokens) {
 		result += unary->Source();
 	}
-	for (const auto& identifier : m_oIdentifierTokens) {
-		result += identifier->Source();
-	}
+	result += m_oIdentifierToken->Source();
 	return result;
 }

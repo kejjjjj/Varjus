@@ -34,7 +34,7 @@ class CRegisterOperand : public COperand
 public:
 	constexpr CRegisterOperand(GeneralRegister reg) : m_oRegister(&registers[reg]) {}
 
-	[[nodiscard]] constexpr OperandType Type() const noexcept override { return REGISTER; }
+	[[nodiscard]] constexpr OperandType Type() const noexcept override { return o_register; }
 	[[nodiscard]] std::string ToString() const noexcept override { return m_oRegister->m_sName.data(); }
 
 private:

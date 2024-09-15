@@ -2,13 +2,15 @@
 
 #include "linter/error.hpp"
 #include "linter/token.hpp"
+#include "linter/declarations/stack.hpp"
 
 #include "globalEnums.hpp"
 
 #include <cassert>
 
 
-CIdentifierLinter::CIdentifierLinter(LinterIterator& pos, LinterIterator& end) : CLinter(pos, end)
+CIdentifierLinter::CIdentifierLinter(LinterIterator& pos, LinterIterator& end, CMemoryData* const stack) 
+	: CLinterSingle(pos, end), m_pOwner(stack)
 {
 	assert(m_iterPos != m_iterEnd);
 }
@@ -28,7 +30,13 @@ Success CIdentifierLinter::ParseIdentifier()
 		return failure;
 	}
 
-	m_oTokens.push_back(&*iterPos);
+	m_pToken = &*iterPos;
+
+	if (m_pToken->Type() == TokenType::t_name && !m_pOwner->ContainsVariable(m_pToken->Source()))
+	{
+		CLinterErrors::PushError("Use of an undefined variable: " + m_pToken->Source(), m_pToken->m_oSourcePosition);
+		return failure;
+	}
 
 	std::advance(m_iterPos, 1);
 	return success;

@@ -5,7 +5,7 @@
 
 #include "linter/tokenizer.hpp"
 #include "linter/error.hpp"
-
+#include "linter/linter.hpp"
 #include "linter/expressions/expression.hpp"
 
 int Failure(const std::string_view& msg)
@@ -38,9 +38,10 @@ int main()
 		auto begin = tokens.begin();
         auto end = tokens.end();
 
-		CLinterExpression expr(begin, end);
-		if (expr.ParseExpression())
-			std::cout << expr.SortedToString() << "\n";
+		CFileLinter linter(begin, end);
+
+		if (linter.ParseFile())
+			std::cout << "gg!" << "\n";
 
     }
 	catch (std::exception& e) {
@@ -53,3 +54,5 @@ int main()
 	std::cout << "Press ENTER to exit\n";
     std::cin.get();
 }
+
+
