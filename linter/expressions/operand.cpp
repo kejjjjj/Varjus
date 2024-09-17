@@ -36,16 +36,19 @@ Success CLinterOperand::ParseOperand()
 
 	// Save results
 	m_oUnaryTokens = unaryLinter.GetResult();
-	m_oIdentifierToken = identifierLinter.GetResult();
+	m_oIdentifierToken = std::make_unique<CIdentifierLinter>(identifierLinter);
 
 	return success;
 }
 std::string CLinterOperand::ToString() const noexcept
 {
+	assert(m_oIdentifierToken != nullptr);
+
 	std::string result;
 	for (const auto& unary : m_oUnaryTokens) {
 		result += unary->Source();
 	}
-	result += m_oIdentifierToken->Source();
+
+	result += m_oIdentifierToken->GetResult()->Source();
 	return result;
 }

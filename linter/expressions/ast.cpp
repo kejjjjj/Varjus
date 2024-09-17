@@ -7,7 +7,7 @@
 #include <cassert>
 #include <sstream>
 
-AbstractSyntaxTree AbstractSyntaxTree::CreateAST(VectorOf<CLinterOperand*>& operands, VectorOf<CLinterOperatorParser*>& operators)
+AbstractSyntaxTree AbstractSyntaxTree::CreateAST(VectorOf<CLinterOperand*>& operands, VectorOf<CLinterOperator*>& operators)
 {
 	assert(!operands.empty());
 	AbstractSyntaxTree root{};
@@ -16,15 +16,17 @@ AbstractSyntaxTree AbstractSyntaxTree::CreateAST(VectorOf<CLinterOperand*>& oper
 
 	return root;
 }
-void AbstractSyntaxTree::CreateLeaf(VectorOf<CLinterOperand*>& operands, VectorOf<CLinterOperatorParser*>& operators)
+void AbstractSyntaxTree::CreateLeaf(VectorOf<CLinterOperand*>& operands, VectorOf<CLinterOperator*>& operators)
 {
 	assert(operands.size() == 1u && operators.empty());
 	type = NodeType::Operand;
 	m_pOperand = operands.front();
 	operands.clear();
+
+
 }
 
-void AbstractSyntaxTree::CreateRecursively(VectorOf<CLinterOperand*>& operands, VectorOf<CLinterOperatorParser*>& operators)
+void AbstractSyntaxTree::CreateRecursively(VectorOf<CLinterOperand*>& operands, VectorOf<CLinterOperator*>& operators)
 {
 	if (operands.empty()) {
 		assert(operators.empty());
@@ -50,8 +52,8 @@ void AbstractSyntaxTree::CreateRecursively(VectorOf<CLinterOperand*>& operands, 
 	auto lhsOperands = VectorOf<CLinterOperand*>(operands.begin(), operandLhs);
 	auto rhsOperands = VectorOf<CLinterOperand*>(operandRhs, operands.end());
 
-	auto lhsOperators = VectorOf<CLinterOperatorParser*>(operators.begin(), opLhs);
-	auto rhsOperators = VectorOf<CLinterOperatorParser*>(opRhs, operators.end());
+	auto lhsOperators = VectorOf<CLinterOperator*>(operators.begin(), opLhs);
+	auto rhsOperators = VectorOf<CLinterOperator*>(opRhs, operators.end());
 
 	//I am an operator
 	type = NodeType::Operator;
@@ -69,7 +71,7 @@ void AbstractSyntaxTree::CreateRecursively(VectorOf<CLinterOperand*>& operands, 
 
 }
 
-OperatorIterator AbstractSyntaxTree::FindLowestPriorityOperator(VectorOf<CLinterOperatorParser*>& operators)
+OperatorIterator AbstractSyntaxTree::FindLowestPriorityOperator(VectorOf<CLinterOperator*>& operators)
 {
 	assert(!operators.empty());
 

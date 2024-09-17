@@ -7,7 +7,6 @@ class CLinterOperatorLinkage;
 class CLinterOperatorParser;
 class CLinterSubExpression;
 
-struct CLinterOperator;
 struct CSortedSubExpression;
 
 class AbstractSyntaxTree;

@@ -16,7 +16,7 @@ CVariableDeclaration::CVariableDeclaration(LinterIterator& pos, LinterIterator& 
 Success CVariableDeclaration::ParseDeclaration()
 {
 	if (IsEndOfBuffer()) {
-		CLinterErrors::PushError("Expected variable declaration, but reached end of file", (*std::prev(m_iterPos))->m_oSourcePosition);
+		CLinterErrors::PushError("expected \"let\", but reached end of file", (*std::prev(m_iterPos))->m_oSourcePosition);
 		return failure;
 	}
 
@@ -28,17 +28,17 @@ Success CVariableDeclaration::ParseDeclaration()
 	std::advance(m_iterPos, 1);
 
 	if (IsEndOfBuffer()) {
-		CLinterErrors::PushError("Expected variable name, but reached end of file", (*std::prev(m_iterPos))->m_oSourcePosition);
+		CLinterErrors::PushError("expected variable name, but reached end of file", (*std::prev(m_iterPos))->m_oSourcePosition);
 		return failure;
 	}
 
 	if (!IsIdentifier(*m_iterPos)) {
-		CLinterErrors::PushError("Expected variable name, but found " + (*m_iterPos)->Source(), (*m_iterPos)->m_oSourcePosition);
+		CLinterErrors::PushError("expected variable name, but found " + (*m_iterPos)->Source(), (*m_iterPos)->m_oSourcePosition);
 		return failure;
 	}
 
 	if (m_pOwner->ContainsVariable((*m_iterPos)->Source())) {
-		CLinterErrors::PushError("Variable " + (*m_iterPos)->Source() + " already declared", (*m_iterPos)->m_oSourcePosition);
+		CLinterErrors::PushError("variable " + (*m_iterPos)->Source() + " already declared", (*m_iterPos)->m_oSourcePosition);
 		return failure;
 	}
 

@@ -7,6 +7,12 @@
 
 #include <cassert>
 
+std::string CLinterOperator::ToString() const noexcept
+{
+	assert(m_pToken != nullptr && m_ePriority != op_failure);
+	return m_pToken->Source();
+}
+
 CLinterOperatorParser::CLinterOperatorParser(LinterIterator& pos, LinterIterator& end) : CLinterSingle(pos, end)
 {
 	assert(m_iterPos != m_iterEnd);

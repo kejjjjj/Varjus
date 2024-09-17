@@ -3,7 +3,7 @@
 #include "definitions.hpp"
 
 class CLinterOperand;
-class CLinterOperatorParser;
+class CLinterOperator;
 class CMemoryData;
 
 enum OperatorPriority : char;
@@ -34,7 +34,7 @@ private:
 	[[nodiscard]] OperatorPriority GetPriority() const noexcept;
 
 	std::unique_ptr<CLinterOperand> m_oLhsOperand;
-	std::unique_ptr<CLinterOperatorParser> m_oOperator;
+	std::unique_ptr<CLinterOperator> m_oOperator;
 	//std::unique_ptr<CLinterOperand> m_oRhsOperand;
 
 	LinterIterator& m_iterPos;
@@ -42,10 +42,3 @@ private:
 	CMemoryData* const m_pOwner;
 };
 
-struct CSortedSubExpression
-{
-	const CLinterOperand* m_oLhsOperand;
-	const CLinterOperatorParser* m_oOperator;
-	const CLinterOperand* m_oRhsOperand;
-
-};

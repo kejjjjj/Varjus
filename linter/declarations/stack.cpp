@@ -1,16 +1,24 @@
 #include "stack.hpp"
 #include "variable_declarations.hpp"
+#include <cassert>
 
 CMemoryData::CMemoryData() = default;
 CMemoryData::~CMemoryData() = default;
 
-void CMemoryData::DeclareVariable(const std::string& var)
+CLinterVariable* CMemoryData::DeclareVariable(const std::string& var)
 {
-	m_oVariables.push_back(var);
+	assert(var.size() > 0);
+	m_oVariables[var] = CLinterVariable(var, m_oVariables.size());
+	return &m_oVariables[var];
 }
-bool CMemoryData::ContainsVariable(const std::string_view& name) const
+
+CLinterVariable* CMemoryData::GetVariable(const std::string& var)
 {
-	return std::find(m_oVariables.begin(), m_oVariables.end(), name) != m_oVariables.end();
+	return ContainsVariable(var) ? &m_oVariables[var] : nullptr;
+}
+bool CMemoryData::ContainsVariable(const std::string& name) const
+{
+	return m_oVariables.contains(name);
 }
 
 CStack::CStack() = default;

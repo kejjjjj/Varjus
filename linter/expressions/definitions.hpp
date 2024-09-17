@@ -11,7 +11,7 @@
 enum Success : signed char;
 class CPunctuationToken;
 class CToken;
-class CLinterOperatorParser;
+class CLinterOperator;
 
 
 template<typename T>
@@ -22,8 +22,8 @@ using UniquePointerVector = VectorOf<std::unique_ptr<T>>;
 
 using LinterIterator = VectorOf<CToken*>::iterator;
 
-using OperatorIterator = VectorOf<CLinterOperatorParser*>::iterator;
-using COperatorIterator = VectorOf<CLinterOperatorParser*>::const_iterator;
+using OperatorIterator = VectorOf<CLinterOperator*>::iterator;
+using COperatorIterator = VectorOf<CLinterOperator*>::const_iterator;
 
 template<class ContainerType>
 class CLinter

@@ -4,6 +4,24 @@
 
 enum OperatorPriority : char;
 
+class CLinterOperator
+{
+public:
+
+	CLinterOperator() = delete;
+	explicit CLinterOperator(OperatorPriority priority, const CPunctuationToken* token) :
+		m_ePriority(priority), m_pToken(token) {}
+
+	[[nodiscard]] inline OperatorPriority GetPriority() const noexcept { return m_ePriority; }
+	[[nodiscard]] inline const CPunctuationToken* GetToken() const noexcept { return m_pToken; }
+
+	[[nodiscard]] std::string ToString() const noexcept;
+
+private:
+	OperatorPriority m_ePriority{};
+	const CPunctuationToken* m_pToken;
+};
+
 class CLinterOperatorParser : public CLinterSingle<CPunctuationToken>
 {
 public:

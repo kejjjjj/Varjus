@@ -27,11 +27,11 @@ Success CLinterSubExpression::ParseSubExpression()
 	if (EndOfExpression())
 		return failure;
 
-	CLinterOperand lhsExpression(m_iterPos, m_iterEnd, m_pOwner);
-	if (!lhsExpression.ParseOperand())
+	m_oLhsOperand = std::make_unique<CLinterOperand>(m_iterPos, m_iterEnd, m_pOwner);
+	if (!m_oLhsOperand->ParseOperand()) {
+		m_oLhsOperand.reset();
 		return failure;
-
-	m_oLhsOperand = std::make_unique<CLinterOperand>(lhsExpression);
+	}
 
 	//only one operand
 	if (EndOfExpression())
@@ -41,8 +41,7 @@ Success CLinterSubExpression::ParseSubExpression()
 	if (!cOperator.ParseOperator())
 		return failure;
 
-	m_oOperator = std::make_unique<CLinterOperatorParser>(cOperator);
-
+	m_oOperator = std::make_unique<CLinterOperator>(cOperator.GetPriority(), cOperator.GetResult());
 	return success;
 }
 
@@ -54,7 +53,5 @@ bool CLinterSubExpression::EndOfExpression() const noexcept
 OperatorPriority CLinterSubExpression::GetPriority() const noexcept
 {
 	assert(m_oOperator != nullptr);
-	const auto& result = m_oOperator->GetResult();
-	assert(result != nullptr);
-	return result->m_ePriority;
+	return m_oOperator->GetPriority();
 }

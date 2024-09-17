@@ -57,10 +57,8 @@ bool CLinterExpression::EndOfExpression() const noexcept
 
 void CLinterExpression::Sort()
 {
-	//sort the subexpressions by priority
-
 	std::vector<CLinterOperand*> operands;
-	std::vector<CLinterOperatorParser*> operators;
+	std::vector<CLinterOperator*> operators;
 
 	for (auto& subExpression : m_oSubExpressions) {
 		operands.emplace_back(&*subExpression->m_oLhsOperand);
@@ -69,7 +67,6 @@ void CLinterExpression::Sort()
 	}	
 
 	assert(operands.size() == operators.size() + 1u);
-	
 	m_pAST = std::make_unique<AbstractSyntaxTree>(AbstractSyntaxTree::CreateAST(operands, operators));
 
 }

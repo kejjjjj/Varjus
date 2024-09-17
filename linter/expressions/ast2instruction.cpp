@@ -19,19 +19,25 @@ Success AstToInstructionConverter::Convert()
 	return failure;
 };
 
-Success AstToInstructionConverter::ConvertRecursively(const AbstractSyntaxTree* tree)
+const AbstractSyntaxTree* AstToInstructionConverter::ConvertRecursively(const AbstractSyntaxTree* tree)
 {
 	if (!tree)
-		return failure;
+		return nullptr;
 
+	if (tree->IsLeaf()) {
+		assert(tree->m_pOperand);
+		return tree;
+	}
 
 	const auto leftOperand = ConvertRecursively(tree->left.get());
 	const auto rightOperand = ConvertRecursively(tree->right.get());
 	const auto op = tree;
 
+
+
 	assert(op && op->m_pOperator);
 	assert(leftOperand && rightOperand);
 
-	return failure;
+	return ;
 
 }

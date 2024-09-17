@@ -17,7 +17,7 @@ public:
 	Success Convert();
 
 private:
-	Success ConvertRecursively(const AbstractSyntaxTree* tree);
+	const AbstractSyntaxTree* ConvertRecursively(const AbstractSyntaxTree* tree);
 
 
 	const AbstractSyntaxTree& m_oAST;

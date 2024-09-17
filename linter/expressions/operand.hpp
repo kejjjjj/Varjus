@@ -3,9 +3,11 @@
 #include "definitions.hpp"
 
 class CMemoryData;
+class CIdentifierLinter;
 
 class CLinterOperand
 {
+	NONCOPYABLE(CLinterOperand);
 public:
 
 	CLinterOperand() = delete;
@@ -20,7 +22,7 @@ public:
 
 private:
 	std::vector<const CPunctuationToken*> m_oUnaryTokens;
-	const CToken* m_oIdentifierToken{};
+	std::unique_ptr<CIdentifierLinter> m_oIdentifierToken;
 	std::vector<const CPunctuationToken*> m_oPostfixTokens;
 
 	LinterIterator& m_iterPos;
