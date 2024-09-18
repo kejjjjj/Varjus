@@ -52,3 +52,10 @@ bool CIdentifierLinter::CheckIdentifier(const CToken* token) const noexcept
 	const auto type = token->Type();
 	return type >= TokenType::t_int && type <= TokenType::t_name;
 }
+
+
+std::int64_t CIdentifierLinter::ToInt() const noexcept
+{
+	assert(m_pToken->Type() == TokenType::t_int);
+	return std::stoll(m_pToken->Source());
+}

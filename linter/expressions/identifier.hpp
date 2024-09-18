@@ -17,6 +17,8 @@ public:
 
 	[[nodiscard]] auto GetResult() const { return m_pToken; }
 
+	[[nodiscard]] std::int64_t ToInt() const noexcept;
+
 private:
 	[[nodiscard]] bool CheckIdentifier(const CToken* token) const noexcept;
 

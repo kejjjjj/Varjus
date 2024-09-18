@@ -8,7 +8,7 @@ CMemoryData::~CMemoryData() = default;
 CLinterVariable* CMemoryData::DeclareVariable(const std::string& var)
 {
 	assert(var.size() > 0);
-	m_oVariables[var] = CLinterVariable(var, m_oVariables.size());
+	m_oVariables[var] = CLinterVariable(this, var, m_oVariables.size());
 	return &m_oVariables[var];
 }
 

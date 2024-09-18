@@ -55,3 +55,9 @@ bool CVariableDeclaration::IsIdentifier(const CToken* token) const noexcept
 {
 	return token && token->Type() == t_name;
 }
+
+bool CVariableDeclaration::IsGlobalVariable() const noexcept
+{
+	assert(m_pOwner);
+	return !m_pOwner->IsStack();
+}

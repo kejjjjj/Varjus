@@ -5,7 +5,7 @@
 #include <string>
 #include <array>
 
-enum GeneralRegister : std::uint8_t
+enum Register : std::uint8_t
 {
 	EAX,
 	EBX,
@@ -13,12 +13,10 @@ enum GeneralRegister : std::uint8_t
 	EDX,
 };
 
-#pragma pack(push, 1)
 struct CRegister {
-	GeneralRegister m_eRegister{};
+	Register m_eRegister{};
 	std::string_view m_sName{};
 };
-#pragma pack(pop)
 
 std::array<CRegister, 4u> registers = {
 	{ 
@@ -32,7 +30,7 @@ std::array<CRegister, 4u> registers = {
 class CRegisterOperand : public COperand
 {
 public:
-	constexpr CRegisterOperand(GeneralRegister reg) : m_oRegister(&registers[reg]) {}
+	constexpr CRegisterOperand(Register reg) : m_oRegister(&registers[reg]) {}
 
 	[[nodiscard]] constexpr OperandType Type() const noexcept override { return o_register; }
 	[[nodiscard]] std::string ToString() const noexcept override { return m_oRegister->m_sName.data(); }

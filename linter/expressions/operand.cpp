@@ -40,6 +40,16 @@ Success CLinterOperand::ParseOperand()
 
 	return success;
 }
+bool CLinterOperand::IsVariable() const noexcept
+{
+	assert(m_oIdentifierToken != nullptr);
+	return m_oIdentifierToken->m_pVariable != nullptr;
+}
+const CLinterVariable* CLinterOperand::GetVariable() const noexcept
+{
+	assert(m_oIdentifierToken != nullptr);
+	return m_oIdentifierToken->m_pVariable;
+}
 std::string CLinterOperand::ToString() const noexcept
 {
 	assert(m_oIdentifierToken != nullptr);

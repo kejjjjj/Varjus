@@ -2,10 +2,14 @@
 #include <vector>
 #include <string>
 
+
+struct CLinterVariable;
+
 enum OperandType : std::uint8_t
 {
 	o_register,
 	o_immediate,
+	o_variable,
 };
 
 class COperand
@@ -27,7 +31,7 @@ class CIntOperand : public COperand
 {
 public:
 	CIntOperand() = delete;
-	constexpr CIntOperand(std::int64_t v) : m_iValue(v) { m_uSize = static_cast<std::byte>(sizeof(m_iValue)); }
+	constexpr CIntOperand(std::int64_t v) : m_iValue(v){}
 	~CIntOperand() = default;
 
 	[[nodiscard]] constexpr OperandType Type() const noexcept override { return o_immediate; }
@@ -35,4 +39,20 @@ public:
 	[[nodiscard]] std::string ToString() const noexcept override { return std::to_string(m_iValue); }
 private:
 	std::int64_t m_iValue{};
+};
+
+class CVariableOperand : public COperand
+{
+public:
+	CVariableOperand() = delete;
+	constexpr CVariableOperand(std::size_t vId, const CLinterVariable* var) : m_iVariableIndex(vId), m_pVariable(var){}
+	~CVariableOperand() = default;
+
+	[[nodiscard]] constexpr OperandType Type() const noexcept override { return o_variable; }
+	[[nodiscard]] std::string ToString() const noexcept override { return "[EBP + " + std::to_string(m_iVariableIndex) + "]"; }
+
+
+private:
+	std::size_t m_iVariableIndex{};
+	const CLinterVariable* m_pVariable{};
 };

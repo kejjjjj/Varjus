@@ -5,17 +5,16 @@
 #include <string>
 
 class CVariableDeclaration;
+class CMemoryData;
 
 struct CLinterVariable
 {
 	CLinterVariable() = default;
-	CLinterVariable(const std::string& name, std::size_t index) : m_sName(name), m_uIndex(index) {}
+	CLinterVariable(const CMemoryData* owner, const std::string& name, std::size_t index) : m_pOwner(owner), m_sName(name), m_uIndex(index) {}
 
-	//CLinterVariable operator=(const CLinterVariable&) = delete;
-
+	const CMemoryData* m_pOwner{};
 	std::string m_sName;
 	std::size_t m_uIndex{};
-
 };
 
 class CMemoryData

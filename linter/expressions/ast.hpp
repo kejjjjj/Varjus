@@ -24,7 +24,7 @@ public:
 	ASTNode right;
 	NodeType type = Operator;
 
-	CLinterOperand* m_pOperand= nullptr;
+	CLinterOperand* m_pOperand = nullptr;
 	CLinterOperator* m_pOperator = nullptr;
 
 public:

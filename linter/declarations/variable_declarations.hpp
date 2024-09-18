@@ -16,7 +16,9 @@ public:
 	CVariableDeclaration(LinterIterator& pos, LinterIterator& end, CMemoryData* const stack);
 	CVariableDeclaration operator=(const CVariableDeclaration&) = delete;
 
-	Success ParseDeclaration();
+	[[nodiscard]] Success ParseDeclaration();
+
+	[[nodiscard]] bool IsGlobalVariable() const noexcept;
 
 private:
 	[[nodiscard]] bool IsDeclaration(const CToken* token) const noexcept;

@@ -20,6 +20,8 @@ public:
 
 	[[nodiscard]] constexpr Instruction GetInstruction() const noexcept { return m_eInstruction; }
 
+	inline void AddOperand(UniqueOperand&& op) { m_oOperands.emplace_back(std::forward<UniqueOperand&&>(op)); }
+
 protected:
 	Instruction m_eInstruction{ NOP };
 	std::vector<UniqueOperand> m_oOperands;
