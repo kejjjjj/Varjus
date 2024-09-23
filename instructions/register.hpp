@@ -1,9 +1,10 @@
 
 #pragma once
-#include "operand.hpp"
 
 #include <string>
 #include <array>
+
+#include "operand.hpp"
 
 enum Register : std::uint8_t
 {
@@ -11,6 +12,7 @@ enum Register : std::uint8_t
 	EBX,
 	ECX,
 	EDX,
+	ANY_REGISTER
 };
 
 struct CRegister {
@@ -18,19 +20,21 @@ struct CRegister {
 	std::string_view m_sName{};
 };
 
-std::array<CRegister, 4u> registers = {
-	{ 
-		{ EAX, "eax" },
-		{ EBX, "ebx" },
-		{ ECX, "ecx" },
-		{ EDX, "edx" } 
-	}
-};
+namespace globals {
+	inline static std::array<CRegister, 4u> registers = {
+		{
+			{ EAX, "eax" },
+			{ EBX, "ebx" },
+			{ ECX, "ecx" },
+			{ EDX, "edx" }
+		}
+	};
+}
 
 class CRegisterOperand : public COperand
 {
 public:
-	constexpr CRegisterOperand(Register reg) : m_oRegister(&registers[reg]) {}
+	constexpr CRegisterOperand(Register reg) : m_oRegister(&globals::registers[reg]) {}
 
 	[[nodiscard]] constexpr OperandType Type() const noexcept override { return o_register; }
 	[[nodiscard]] std::string ToString() const noexcept override { return m_oRegister->m_sName.data(); }

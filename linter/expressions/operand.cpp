@@ -45,6 +45,12 @@ bool CLinterOperand::IsVariable() const noexcept
 	assert(m_oIdentifierToken != nullptr);
 	return m_oIdentifierToken->m_pVariable != nullptr;
 }
+bool CLinterOperand::IsImmediate() const noexcept
+{
+	assert(m_oIdentifierToken != nullptr);
+	const auto type = m_oIdentifierToken->GetResult()->Type();
+	return type == t_int;
+}
 const CLinterVariable* CLinterOperand::GetVariable() const noexcept
 {
 	assert(m_oIdentifierToken != nullptr);

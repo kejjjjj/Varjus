@@ -21,6 +21,8 @@ public:
 	[[nodiscard]] std::string ToString() const noexcept;
 
 	[[nodiscard]] bool IsVariable() const noexcept;
+	[[nodiscard]] bool IsImmediate() const noexcept;
+
 	[[nodiscard]] const CLinterVariable* GetVariable() const noexcept;
 
 	[[nodiscard]] const CIdentifierLinter* GetOperand() const noexcept { return m_oIdentifierToken.get(); }

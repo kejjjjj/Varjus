@@ -87,6 +87,9 @@
     <ClCompile Include="linter\linter.cpp">
       <Filter>Source Files\linter</Filter>
     </ClCompile>
+    <ClCompile Include="linter\expressions\ast_registers.cpp">
+      <Filter>Source Files\linter\expressions</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="fs\fs_io.hpp">
@@ -160,6 +163,9 @@
     </ClInclude>
     <ClInclude Include="linter\linter.hpp">
       <Filter>Source Files\linter</Filter>
+    </ClInclude>
+    <ClInclude Include="linter\expressions\ast_registers.hpp">
+      <Filter>Source Files\linter\expressions</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

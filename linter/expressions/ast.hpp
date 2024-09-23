@@ -15,6 +15,7 @@ class AbstractSyntaxTree final
 	friend class AstToInstructionConverter;
 	enum NodeType { Operator, Operand };
 public:
+
 	AbstractSyntaxTree() = default;
 	AbstractSyntaxTree(NodeType n) : type(n) {}
 	~AbstractSyntaxTree() = default;
