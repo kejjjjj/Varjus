@@ -30,34 +30,60 @@ Success AstToInstructionConverter::Convert()
 	return failure;
 };
 
-const AbstractSyntaxTree* AstToInstructionConverter::ConvertRecursively(const AbstractSyntaxTree* tree)
+Register AstToInstructionConverter::ConvertRecursively(const AbstractSyntaxTree* tree)
 {
-	if (!tree)
-		return nullptr;
-
-	if (tree->IsLeaf()) {
-		assert(tree->m_pOperand);
-		return tree;
+	if (!tree) {
+		assert(false);
+		return ANY_REGISTER;
 	}
 
-	const auto leftBranch = ConvertRecursively(tree->left.get());
-	const auto rightBranch= ConvertRecursively(tree->right.get());
-	const auto op = tree;
+	//Register reg = ANY_REGISTER;
 
-	assert(op && op->m_pOperator);
-	assert(leftBranch && rightBranch);
+	//if (tree->IsLeaf()) {
 
-	const auto leftOperand = leftBranch->m_pOperand;
-	//const auto rightOperand = rightBranch->m_pOperand;
-	
-	if (!m_oRefRegisters.OperandIsLoaded(leftOperand)) {
-		[[maybe_unused]] const auto operation = LoadOperandToRegister(leftOperand);
-	}
+	//	const auto operand = tree->m_pOperand;
+	//	assert(operand);
+	//	
+	//	if (operand->IsVariable()) {
+
+	//		if (!m_oRefRegisters.OperandIsLoaded(operand)) {
+	//			reg = m_oRefRegisters.AllocateRegister(EDX); //target edx when possible
+	//		} else {
+	//			reg = m_oRefRegisters.GetOperandRegister(operand);
+	//		}
+
+	//	} else if (operand->IsImmediate()) {
+	//		reg = m_oRefRegisters.AllocateRegister(EAX); //target eax when possible
+	//	}
+	//}
+	//else {
 
 
 
-	return nullptr;
+	//	const auto leftBranch = ConvertRecursively(tree->left.get());
+	//	const auto rightBranch = ConvertRecursively(tree->right.get());
+	//	const auto op = tree;
 
+	//	assert(op && op->m_pOperator);
+	//	assert(leftBranch && rightBranch);
+
+	//	const auto leftOperand = leftBranch->m_pOperand;
+	//	const auto rightOperand = rightBranch->m_pOperand;
+
+	//	//if the operand isn't an immediate value, move it to a register
+	//	if (!leftOperand->IsImmediate()) {
+	//		//if this operand* isn't in any register, move it there
+	//		if (!m_oRefRegisters.OperandIsLoaded(leftOperand)) {
+	//			m_oOpCodes.emplace_back(LoadOperandToRegister(leftOperand));
+	//		}
+	//	}
+
+
+
+	//	return nullptr;
+
+	//}
+	return ANY_REGISTER;
 }
 Instruction AstToInstructionConverter::LoadInstruction(const CLinterOperator* op)
 {

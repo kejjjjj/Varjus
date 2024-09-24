@@ -7,23 +7,38 @@
 #include <cassert>
 #include <sstream>
 
-AbstractSyntaxTree AbstractSyntaxTree::CreateAST(VectorOf<CLinterOperand*>& operands, VectorOf<CLinterOperator*>& operators)
+std::unique_ptr<AbstractSyntaxTree> AbstractSyntaxTree::CreateAST(VectorOf<CLinterOperand*>& operands, VectorOf<CLinterOperator*>& operators)
 {
 	assert(!operands.empty());
-	AbstractSyntaxTree root{};
 
-	root.CreateRecursively(operands, operators);
+	auto root = GetPolymorphic(operands, operators);
+
+	if (!root)
+		root = std::make_unique<OperatorASTNode>(*FindLowestPriorityOperator(operators));
+
+	root->CreateRecursively(operands, operators);
 
 	return root;
 }
-void AbstractSyntaxTree::CreateLeaf(VectorOf<CLinterOperand*>& operands, VectorOf<CLinterOperator*>& operators)
+
+std::unique_ptr<AbstractSyntaxTree> AbstractSyntaxTree::GetPolymorphic(VectorOf<CLinterOperand*>& operands, VectorOf<CLinterOperator*>& operators)
 {
-	assert(operands.size() == 1u && operators.empty());
-	type = NodeType::Operand;
-	m_pOperand = operands.front();
-	operands.clear();
 
+	std::unique_ptr<AbstractSyntaxTree> node;
 
+	if (operands.size() == 1) {
+		assert(operators.empty());
+		const auto operand = operands.front();
+		if (operand->IsImmediate()) {
+			node = std::make_unique<ConstantASTNode>(operand);
+		} else if (operand->IsVariable()) {
+			node = std::make_unique<VariableASTNode>(operand);
+		}
+
+		operands.clear();
+	}
+	
+	return node;
 }
 
 void AbstractSyntaxTree::CreateRecursively(VectorOf<CLinterOperand*>& operands, VectorOf<CLinterOperator*>& operators)
@@ -31,11 +46,6 @@ void AbstractSyntaxTree::CreateRecursively(VectorOf<CLinterOperand*>& operands, 
 	if (operands.empty()) {
 		assert(operators.empty());
 		return;
-	}
-
-	if (operands.size() == 1) {
-		assert(operators.empty());
-		return CreateLeaf(operands, operators);
 	}
 
 	assert(!operands.empty() && !operators.empty());
@@ -55,18 +65,20 @@ void AbstractSyntaxTree::CreateRecursively(VectorOf<CLinterOperand*>& operands, 
 	auto lhsOperators = VectorOf<CLinterOperator*>(operators.begin(), opLhs);
 	auto rhsOperators = VectorOf<CLinterOperator*>(opRhs, operators.end());
 
-	//I am an operator
-	type = NodeType::Operator;
-	m_pOperator = *itr1;
+	assert(IsOperator());
 
 	//check size to avoid unnecessary allocations
 	if (lhsOperands.size()) {
-		left = std::make_shared<AbstractSyntaxTree>();
-		left->CreateRecursively(lhsOperands, lhsOperators);
+		if (left = GetPolymorphic(lhsOperands, lhsOperators), !left) {
+			left = std::make_shared<OperatorASTNode>(*itr1);
+			left->CreateRecursively(lhsOperands, lhsOperators);
+		}
 	}
 	if (rhsOperands.size()) {
-		right = std::make_shared<AbstractSyntaxTree>();
-		right->CreateRecursively(rhsOperands, rhsOperators);
+		if (right = GetPolymorphic(rhsOperands, rhsOperators), !right) {
+			right = std::make_shared<OperatorASTNode>(*itr1);
+			right->CreateRecursively(rhsOperands, rhsOperators);
+		}
 	}
 
 }
@@ -119,7 +131,7 @@ void AbstractSyntaxTree::ToStringInternal(std::size_t depth, std::ptrdiff_t horz
 	if (!this)
 		return;
 
-	const auto v = IsLeaf() ? m_pOperand->ToString() : m_pOperator->ToString();
+	const auto v = ToStringPolymorpic();
 
 	if (levels.size() <= depth)
 		levels.resize(depth+1u);
@@ -153,4 +165,27 @@ std::size_t AbstractSyntaxTree::GetLeftBranchDepth() const noexcept
 	}
 
 	return depth;
+}
+
+
+/***********************************************************************
+ > 
+***********************************************************************/
+std::string VariableASTNode::ToStringPolymorpic() const noexcept
+{
+	assert(m_pOperand);
+	return m_pOperand->ToString();
+
+}
+std::string ConstantASTNode::ToStringPolymorpic() const noexcept
+{
+	assert(m_pOperand);
+	return m_pOperand->ToString();
+
+}
+
+std::string OperatorASTNode::ToStringPolymorpic() const noexcept
+{
+	assert(m_pOperator);
+	return m_pOperator->ToString();
 }

@@ -67,7 +67,7 @@ void CLinterExpression::Sort()
 	}	
 
 	assert(operands.size() == operators.size() + 1u);
-	m_pAST = std::make_unique<AbstractSyntaxTree>(AbstractSyntaxTree::CreateAST(operands, operators));
+	m_pAST = AbstractSyntaxTree::CreateAST(operands, operators);
 
 }
 std::string CLinterExpression::ToString() const noexcept

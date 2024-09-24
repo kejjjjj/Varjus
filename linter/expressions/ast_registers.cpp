@@ -2,8 +2,10 @@
 #include "operand.hpp"
 #include "identifier.hpp"
 #include "linter/token.hpp"
-#include <cassert>
 #include "instructions/register.hpp"
+#include "linter/declarations/stack.hpp"
+
+#include <cassert>
 
 CRegisters::CRegisters(std::array<CContextRegister, 4u>& _registers) : m_oRefRegisters(_registers){}
 CRegisters::~CRegisters() = default;
@@ -35,8 +37,12 @@ void CRegisters::FreeRegister(Register reg) noexcept
 
 bool CRegisters::OperandIsLoaded(const CLinterOperand* target) const noexcept
 {
+	assert(target->IsVariable());
+
+	const auto var = target->GetVariable();
+
 	for (const auto& preg : m_oRefRegisters) {
-		if (preg.m_pValue == target)
+		if (preg.m_pValue->IsVariable() && preg.m_pValue->GetVariable()->m_uIndex == var->m_uIndex)
 			return true;
 	}
 

@@ -26,13 +26,13 @@ public:
 	Success Convert();
 
 private:
-	const AbstractSyntaxTree* ConvertRecursively(const AbstractSyntaxTree* tree);
+	Register ConvertRecursively(const AbstractSyntaxTree* tree);
 
 	Instruction LoadInstruction(const CLinterOperator* op);
 	std::unique_ptr<COperation> LoadOperandToRegister(const CLinterOperand* operand);
 
 	const AbstractSyntaxTree& m_oAST;
-	VectorOf<COperation> m_oOpCodes;
+	VectorOf<std::unique_ptr<COperation>> m_oOpCodes;
 
 	const CRegisters& m_oRefRegisters;
 };

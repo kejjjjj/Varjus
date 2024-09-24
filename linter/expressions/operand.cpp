@@ -49,7 +49,7 @@ bool CLinterOperand::IsImmediate() const noexcept
 {
 	assert(m_oIdentifierToken != nullptr);
 	const auto type = m_oIdentifierToken->GetResult()->Type();
-	return type == t_int;
+	return type == t_int || type == t_double;
 }
 const CLinterVariable* CLinterOperand::GetVariable() const noexcept
 {
