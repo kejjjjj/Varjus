@@ -6,33 +6,33 @@
 
 #include <cassert>
 #include <sstream>
+#include <iostream>
 
-std::unique_ptr<AbstractSyntaxTree> AbstractSyntaxTree::CreateAST(VectorOf<CLinterOperand*>& operands, VectorOf<CLinterOperator*>& operators)
+std::shared_ptr<AbstractSyntaxTree> AbstractSyntaxTree::CreateAST(VectorOf<CLinterOperand*>& operands, VectorOf<CLinterOperator*>& operators)
 {
 	assert(!operands.empty());
 
 	auto root = GetPolymorphic(operands, operators);
 
 	if (!root)
-		root = std::make_unique<OperatorASTNode>(*FindLowestPriorityOperator(operators));
+		root = std::make_shared<OperatorASTNode>(*FindLowestPriorityOperator(operators));
 
-	root->CreateRecursively(operands, operators);
-
+	CreateRecursively(root, operands, operators);
 	return root;
 }
 
-std::unique_ptr<AbstractSyntaxTree> AbstractSyntaxTree::GetPolymorphic(VectorOf<CLinterOperand*>& operands, VectorOf<CLinterOperator*>& operators)
+std::shared_ptr<AbstractSyntaxTree> AbstractSyntaxTree::GetPolymorphic(VectorOf<CLinterOperand*>& operands, VectorOf<CLinterOperator*>& operators)
 {
 
-	std::unique_ptr<AbstractSyntaxTree> node;
+	std::shared_ptr<AbstractSyntaxTree> node;
 
 	if (operands.size() == 1) {
 		assert(operators.empty());
 		const auto operand = operands.front();
 		if (operand->IsImmediate()) {
-			node = std::make_unique<ConstantASTNode>(operand);
+			node = std::make_shared<ConstantASTNode>(operand);
 		} else if (operand->IsVariable()) {
-			node = std::make_unique<VariableASTNode>(operand);
+			node = std::make_shared<VariableASTNode>(operand);
 		}
 
 		operands.clear();
@@ -41,10 +41,15 @@ std::unique_ptr<AbstractSyntaxTree> AbstractSyntaxTree::GetPolymorphic(VectorOf<
 	return node;
 }
 
-void AbstractSyntaxTree::CreateRecursively(VectorOf<CLinterOperand*>& operands, VectorOf<CLinterOperator*>& operators)
+void AbstractSyntaxTree::CreateRecursively(ASTNode& node, VectorOf<CLinterOperand*>& operands, VectorOf<CLinterOperator*>& operators)
 {
 	if (operands.empty()) {
 		assert(operators.empty());
+		return;
+	}
+
+	if (const auto isLeaf = GetPolymorphic(operands, operators)) {
+		node = isLeaf;
 		return;
 	}
 
@@ -65,21 +70,33 @@ void AbstractSyntaxTree::CreateRecursively(VectorOf<CLinterOperand*>& operands, 
 	auto lhsOperators = VectorOf<CLinterOperator*>(operators.begin(), opLhs);
 	auto rhsOperators = VectorOf<CLinterOperator*>(opRhs, operators.end());
 
-	assert(IsOperator());
+
+	node = std::make_shared<OperatorASTNode>(*itr1);
+	assert(node->IsOperator());
+
+	node->left = std::make_shared<OperatorASTNode>();
+	node->right = std::make_shared<OperatorASTNode>();
+
+	if(lhsOperands.size())
+		CreateRecursively(node->left, lhsOperands, lhsOperators);
+
+	if(rhsOperands.size())
+		CreateRecursively(node->right, rhsOperands, rhsOperators);
+
 
 	//check size to avoid unnecessary allocations
-	if (lhsOperands.size()) {
-		if (left = GetPolymorphic(lhsOperands, lhsOperators), !left) {
-			left = std::make_shared<OperatorASTNode>(*itr1);
-			left->CreateRecursively(lhsOperands, lhsOperators);
-		}
-	}
-	if (rhsOperands.size()) {
-		if (right = GetPolymorphic(rhsOperands, rhsOperators), !right) {
-			right = std::make_shared<OperatorASTNode>(*itr1);
-			right->CreateRecursively(rhsOperands, rhsOperators);
-		}
-	}
+	//if (lhsOperands.size()) {
+	//	if (left = GetPolymorphic(lhsOperands, lhsOperators), !left) {
+	//		left = std::make_shared<OperatorASTNode>(opLhs);
+	//		left->CreateRecursively(lhsOperands, lhsOperators);
+	//	}
+	//}
+	//if (rhsOperands.size()) {
+	//	if (right = GetPolymorphic(rhsOperands, rhsOperators), !right) {
+	//		right = std::make_shared<OperatorASTNode>(*opRhs);
+	//		right->CreateRecursively(rhsOperands, rhsOperators);
+	//	}
+	//}
 
 }
 
@@ -88,7 +105,7 @@ OperatorIterator AbstractSyntaxTree::FindLowestPriorityOperator(VectorOf<CLinter
 	assert(!operators.empty());
 
 	auto itr1 = operators.begin();
-	OperatorPriority lowestPriorityOperator{ op_failure };
+	OperatorPriority lowestPriorityOperator{ op_postfix };
 	OperatorIterator lowestPriorityOperatorItr{ itr1 };
 
 	for (; itr1 != operators.end(); ++itr1) {
@@ -131,7 +148,7 @@ void AbstractSyntaxTree::ToStringInternal(std::size_t depth, std::ptrdiff_t horz
 	if (!this)
 		return;
 
-	const auto v = ToStringPolymorpic();
+	const auto v = ToStringPolymorphic();
 
 	if (levels.size() <= depth)
 		levels.resize(depth+1u);
@@ -171,20 +188,20 @@ std::size_t AbstractSyntaxTree::GetLeftBranchDepth() const noexcept
 /***********************************************************************
  > 
 ***********************************************************************/
-std::string VariableASTNode::ToStringPolymorpic() const noexcept
+std::string VariableASTNode::ToStringPolymorphic() const noexcept
 {
 	assert(m_pOperand);
 	return m_pOperand->ToString();
 
 }
-std::string ConstantASTNode::ToStringPolymorpic() const noexcept
+std::string ConstantASTNode::ToStringPolymorphic() const noexcept
 {
 	assert(m_pOperand);
 	return m_pOperand->ToString();
 
 }
 
-std::string OperatorASTNode::ToStringPolymorpic() const noexcept
+std::string OperatorASTNode::ToStringPolymorphic() const noexcept
 {
 	assert(m_pOperator);
 	return m_pOperator->ToString();

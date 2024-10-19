@@ -8,8 +8,8 @@ class CLinterOperator
 {
 public:
 
-	CLinterOperator() = delete;
-	explicit CLinterOperator(OperatorPriority priority, const CPunctuationToken* token) :
+	CLinterOperator() = default;
+	CLinterOperator(OperatorPriority priority, const CPunctuationToken* token) :
 		m_ePriority(priority), m_pToken(token) {}
 
 	[[nodiscard]] inline OperatorPriority GetPriority() const noexcept { return m_ePriority; }

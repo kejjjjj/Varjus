@@ -31,6 +31,9 @@
     <Filter Include="Source Files\linter\declarations">
       <UniqueIdentifier>{4fcd4054-a33c-4c8a-98a2-ed0335f926b6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\runtime">
+      <UniqueIdentifier>{80e81dd4-0f03-40c5-84a3-f3ca3754c5fb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -89,6 +92,9 @@
     </ClCompile>
     <ClCompile Include="linter\expressions\ast_registers.cpp">
       <Filter>Source Files\linter\expressions</Filter>
+    </ClCompile>
+    <ClCompile Include="runtime\structure.cpp">
+      <Filter>Source Files\runtime</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -166,6 +172,9 @@
     </ClInclude>
     <ClInclude Include="linter\expressions\ast_registers.hpp">
       <Filter>Source Files\linter\expressions</Filter>
+    </ClInclude>
+    <ClInclude Include="runtime\structure.hpp">
+      <Filter>Source Files\runtime</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

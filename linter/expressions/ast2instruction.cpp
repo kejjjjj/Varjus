@@ -37,52 +37,38 @@ Register AstToInstructionConverter::ConvertRecursively(const AbstractSyntaxTree*
 		return ANY_REGISTER;
 	}
 
-	//Register reg = ANY_REGISTER;
+	Register reg = ANY_REGISTER;
 
-	//if (tree->IsLeaf()) {
+	if (tree->IsLeaf()) {
 
-	//	const auto operand = tree->m_pOperand;
-	//	assert(operand);
-	//	
-	//	if (operand->IsVariable()) {
+		if (tree->IsVariable()) {
+			const auto var = tree->As<const VariableASTNode*>();
+			assert(var && var->m_pOperand);
+			const auto operand = var->m_pOperand;
 
-	//		if (!m_oRefRegisters.OperandIsLoaded(operand)) {
-	//			reg = m_oRefRegisters.AllocateRegister(EDX); //target edx when possible
-	//		} else {
-	//			reg = m_oRefRegisters.GetOperandRegister(operand);
-	//		}
+			if (!m_oRefRegisters.OperandIsLoaded(operand)) {
+				reg = m_oRefRegisters.AllocateRegister(EDX); //target edx when possible
+			} else {
+				reg = m_oRefRegisters.GetOperandRegister(operand);
+			}
 
-	//	} else if (operand->IsImmediate()) {
-	//		reg = m_oRefRegisters.AllocateRegister(EAX); //target eax when possible
-	//	}
-	//}
-	//else {
+		} else if (tree->IsConstant()) {
+			reg = m_oRefRegisters.AllocateRegister(EAX); //target eax when possible
+		}
+	} else {
+		const auto lhs = ConvertRecursively(tree->left.get());
+		const auto rhs = ConvertRecursively(tree->right.get());
+		const auto op = tree;
 
+		assert(op && op->IsOperator());
+		assert(lhs != ANY_REGISTER && rhs != ANY_REGISTER);
 
+		const auto oper = tree->As<const OperatorASTNode*>();
+		assert(oper && oper->m_pOperator);
 
-	//	const auto leftBranch = ConvertRecursively(tree->left.get());
-	//	const auto rightBranch = ConvertRecursively(tree->right.get());
-	//	const auto op = tree;
+		[[maybe_unused]]const auto insn = LoadInstruction(oper->m_pOperator);
 
-	//	assert(op && op->m_pOperator);
-	//	assert(leftBranch && rightBranch);
-
-	//	const auto leftOperand = leftBranch->m_pOperand;
-	//	const auto rightOperand = rightBranch->m_pOperand;
-
-	//	//if the operand isn't an immediate value, move it to a register
-	//	if (!leftOperand->IsImmediate()) {
-	//		//if this operand* isn't in any register, move it there
-	//		if (!m_oRefRegisters.OperandIsLoaded(leftOperand)) {
-	//			m_oOpCodes.emplace_back(LoadOperandToRegister(leftOperand));
-	//		}
-	//	}
-
-
-
-	//	return nullptr;
-
-	//}
+	}
 	return ANY_REGISTER;
 }
 Instruction AstToInstructionConverter::LoadInstruction(const CLinterOperator* op)

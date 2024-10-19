@@ -16,8 +16,10 @@ CFileLinter::CFileLinter(LinterIterator& start, LinterIterator& end) : CLinter(s
 void LintExpression(LinterIterator& start, LinterIterator& end, CMemoryData* const stack)
 {
 	CLinterExpression linter(start, end, stack);
-	if (linter.ParseExpression())
+	if (linter.ParseExpression()) {
 		std::cout << linter.SortedToString() << '\n';
+		linter.QuickEvalAST();
+	}
 
 }
 

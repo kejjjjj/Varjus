@@ -13,6 +13,8 @@ class AbstractSyntaxTree;
 
 class CMemoryData;
 
+class CCodeStructure;
+
 class CLinterExpression
 {
 	NONCOPYABLE(CLinterExpression);
@@ -27,13 +29,20 @@ public:
 	[[nodiscard]] std::string ToString() const noexcept;
 	[[nodiscard]] std::string SortedToString() const noexcept;
 
+	void QuickEvalAST();
+
+	std::shared_ptr<AbstractSyntaxTree> ToAST() const;
+
 private:
 	[[nodiscard]] bool EndOfExpression() const noexcept;
 
-	void Sort();
+	int QuickEvalASTInternal(const AbstractSyntaxTree* node);
+
+
+	/*void Sort();*/
 
 	UniquePointerVector<CLinterSubExpression> m_oSubExpressions;
-	std::unique_ptr<AbstractSyntaxTree> m_pAST;
+	//std::unique_ptr<AbstractSyntaxTree> m_pAST;
 
 	LinterIterator& m_iterPos;
 	LinterIterator& m_iterEnd;
