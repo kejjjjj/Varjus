@@ -96,6 +96,9 @@
     <ClCompile Include="runtime\structure.cpp">
       <Filter>Source Files\runtime</Filter>
     </ClCompile>
+    <ClCompile Include="linter\expressions\expression_context.cpp">
+      <Filter>Source Files\linter\expressions</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="fs\fs_io.hpp">
@@ -175,6 +178,9 @@
     </ClInclude>
     <ClInclude Include="runtime\structure.hpp">
       <Filter>Source Files\runtime</Filter>
+    </ClInclude>
+    <ClInclude Include="linter\expressions\expression_context.hpp">
+      <Filter>Source Files\linter\expressions</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

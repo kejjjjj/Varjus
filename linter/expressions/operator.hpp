@@ -3,6 +3,7 @@
 #include "identifier.hpp"
 
 enum OperatorPriority : char;
+enum Punctuation : char;
 
 class CLinterOperator
 {
@@ -13,6 +14,8 @@ public:
 		m_ePriority(priority), m_pToken(token) {}
 
 	[[nodiscard]] inline OperatorPriority GetPriority() const noexcept { return m_ePriority; }
+	[[nodiscard]] Punctuation GetPunctuation() const noexcept;
+
 	[[nodiscard]] inline const CPunctuationToken* GetToken() const noexcept { return m_pToken; }
 
 	[[nodiscard]] std::string ToString() const noexcept;

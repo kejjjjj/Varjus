@@ -7,6 +7,8 @@
 
 #include <cassert>
 
+Punctuation CLinterOperator::GetPunctuation() const noexcept { return m_pToken->m_ePunctuation; }
+
 std::string CLinterOperator::ToString() const noexcept
 {
 	assert(m_pToken != nullptr && m_ePriority != op_failure);

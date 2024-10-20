@@ -17,7 +17,7 @@ void LintExpression(LinterIterator& start, LinterIterator& end, CMemoryData* con
 {
 	CLinterExpression linter(start, end, stack);
 	if (linter.ParseExpression()) {
-		std::cout << linter.SortedToString() << '\n';
+		//std::cout << linter.SortedToString() << '\n';
 		linter.QuickEvalAST();
 	}
 

@@ -4,35 +4,39 @@
 #include "linter/expressions/operator.hpp"
 #include "linter/expressions/operand.hpp"
 
+#include "linter/token.hpp"
+
 #include <cassert>
 #include <sstream>
 #include <iostream>
 
-std::shared_ptr<AbstractSyntaxTree> AbstractSyntaxTree::CreateAST(VectorOf<CLinterOperand*>& operands, VectorOf<CLinterOperator*>& operators)
+std::unique_ptr<AbstractSyntaxTree> AbstractSyntaxTree::CreateAST(VectorOf<CLinterOperand*>& operands, VectorOf<CLinterOperator*>& operators)
 {
 	assert(!operands.empty());
 
 	auto root = GetPolymorphic(operands, operators);
 
 	if (!root)
-		root = std::make_shared<OperatorASTNode>(*FindLowestPriorityOperator(operators));
+		root = std::make_unique<OperatorASTNode>((*FindLowestPriorityOperator(operators))->GetPunctuation());
 
-	CreateRecursively(root, operands, operators);
+	root->CreateRecursively(operands, operators);
 	return root;
 }
 
-std::shared_ptr<AbstractSyntaxTree> AbstractSyntaxTree::GetPolymorphic(VectorOf<CLinterOperand*>& operands, VectorOf<CLinterOperator*>& operators)
+std::unique_ptr<AbstractSyntaxTree> AbstractSyntaxTree::GetPolymorphic(VectorOf<CLinterOperand*>& operands, VectorOf<CLinterOperator*>& operators)
 {
 
-	std::shared_ptr<AbstractSyntaxTree> node;
+	std::unique_ptr<AbstractSyntaxTree> node;
 
 	if (operands.size() == 1) {
 		assert(operators.empty());
 		const auto operand = operands.front();
 		if (operand->IsImmediate()) {
-			node = std::make_shared<ConstantASTNode>(operand);
+			node = std::make_unique<ConstantASTNode>(std::move(operand->GetOperandRaw()));
 		} else if (operand->IsVariable()) {
-			node = std::make_shared<VariableASTNode>(operand);
+			node = std::make_unique<VariableASTNode>(std::move(operand->GetOperandRaw()));
+		} else if (operand->IsExpression()) {
+			node = operand->ExpressionToAST();
 		}
 
 		operands.clear();
@@ -41,15 +45,10 @@ std::shared_ptr<AbstractSyntaxTree> AbstractSyntaxTree::GetPolymorphic(VectorOf<
 	return node;
 }
 
-void AbstractSyntaxTree::CreateRecursively(ASTNode& node, VectorOf<CLinterOperand*>& operands, VectorOf<CLinterOperator*>& operators)
+void AbstractSyntaxTree::CreateRecursively(VectorOf<CLinterOperand*>& operands, VectorOf<CLinterOperator*>& operators)
 {
 	if (operands.empty()) {
 		assert(operators.empty());
-		return;
-	}
-
-	if (const auto isLeaf = GetPolymorphic(operands, operators)) {
-		node = isLeaf;
 		return;
 	}
 
@@ -70,33 +69,24 @@ void AbstractSyntaxTree::CreateRecursively(ASTNode& node, VectorOf<CLinterOperan
 	auto lhsOperators = VectorOf<CLinterOperator*>(operators.begin(), opLhs);
 	auto rhsOperators = VectorOf<CLinterOperator*>(opRhs, operators.end());
 
-
-	node = std::make_shared<OperatorASTNode>(*itr1);
-	assert(node->IsOperator());
-
-	node->left = std::make_shared<OperatorASTNode>();
-	node->right = std::make_shared<OperatorASTNode>();
-
-	if(lhsOperands.size())
-		CreateRecursively(node->left, lhsOperands, lhsOperators);
-
-	if(rhsOperands.size())
-		CreateRecursively(node->right, rhsOperands, rhsOperators);
-
+	assert(IsOperator());
 
 	//check size to avoid unnecessary allocations
-	//if (lhsOperands.size()) {
-	//	if (left = GetPolymorphic(lhsOperands, lhsOperators), !left) {
-	//		left = std::make_shared<OperatorASTNode>(opLhs);
-	//		left->CreateRecursively(lhsOperands, lhsOperators);
-	//	}
-	//}
-	//if (rhsOperands.size()) {
-	//	if (right = GetPolymorphic(rhsOperands, rhsOperators), !right) {
-	//		right = std::make_shared<OperatorASTNode>(*opRhs);
-	//		right->CreateRecursively(rhsOperands, rhsOperators);
-	//	}
-	//}
+	if (lhsOperands.size()) {
+		if (left = GetPolymorphic(lhsOperands, lhsOperators), !left) {
+			const OperatorIterator l = FindLowestPriorityOperator(lhsOperators);
+			left = std::make_shared<OperatorASTNode>((*l)->GetPunctuation());
+			left->CreateRecursively(lhsOperands, lhsOperators);
+		}
+	}
+	if (rhsOperands.size()) {
+		if (right = GetPolymorphic(rhsOperands, rhsOperators), !right) {
+
+			const OperatorIterator l = FindLowestPriorityOperator(rhsOperators);
+			right = std::make_shared<OperatorASTNode>((*l)->GetPunctuation());
+			right->CreateRecursively(rhsOperands, rhsOperators);
+		}
+	}
 
 }
 
@@ -114,10 +104,7 @@ OperatorIterator AbstractSyntaxTree::FindLowestPriorityOperator(VectorOf<CLinter
 			lowestPriorityOperator = (*itr1)->GetPriority();
 			lowestPriorityOperatorItr = itr1;
 		}
-
-
 	};
-
 
 	return lowestPriorityOperatorItr;
 }
@@ -188,21 +175,27 @@ std::size_t AbstractSyntaxTree::GetLeftBranchDepth() const noexcept
 /***********************************************************************
  > 
 ***********************************************************************/
+VariableASTNode::~VariableASTNode() = default;
+
 std::string VariableASTNode::ToStringPolymorphic() const noexcept
 {
 	assert(m_pOperand);
-	return m_pOperand->ToString();
+	assert(m_pOperand->Type() == identifier);
+
+	return m_pOperand->GetIdentifier()->GetResult()->Source();
 
 }
+
+ConstantASTNode::~ConstantASTNode() = default;
 std::string ConstantASTNode::ToStringPolymorphic() const noexcept
 {
 	assert(m_pOperand);
-	return m_pOperand->ToString();
+	assert(m_pOperand->Type() == identifier);
+	return m_pOperand->GetIdentifier()->GetResult()->Source();
 
 }
 
 std::string OperatorASTNode::ToStringPolymorphic() const noexcept
 {
-	assert(m_pOperator);
-	return m_pOperator->ToString();
+	return std::string(punctuations[m_ePunctuation].m_sIdentifier);
 }

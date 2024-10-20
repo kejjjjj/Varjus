@@ -1,6 +1,9 @@
 #pragma once
 
+#include <optional>
+
 #include "definitions.hpp"
+#include "expression_context.hpp"
 
 class CLinterOperand;
 class CLinterOperator;
@@ -19,7 +22,7 @@ class CLinterSubExpression
 public:
 
 	CLinterSubExpression() = delete;
-	explicit CLinterSubExpression(LinterIterator& pos, LinterIterator& end, CMemoryData* const stack);
+	explicit CLinterSubExpression(LinterIterator& pos, LinterIterator& end, CMemoryData* const stack, std::optional<PairMatcher>& eoe);
 	~CLinterSubExpression();
 
 	/*
@@ -33,6 +36,7 @@ private:
 	[[nodiscard]] bool EndOfExpression() const noexcept;
 	[[nodiscard]] OperatorPriority GetPriority() const noexcept;
 
+
 	std::unique_ptr<CLinterOperand> m_oLhsOperand;
 	std::unique_ptr<CLinterOperator> m_oOperator;
 	//std::unique_ptr<CLinterOperand> m_oRhsOperand;
@@ -40,5 +44,6 @@ private:
 	LinterIterator& m_iterPos;
 	LinterIterator& m_iterEnd;
 	CMemoryData* const m_pOwner;
-};
 
+	std::optional<PairMatcher>& m_oEndOfExpression;
+};

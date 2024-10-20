@@ -1,4 +1,5 @@
 #include "sub_expression.hpp"
+#include "expression.hpp"
 #include "operand.hpp"
 #include "operator.hpp"
 
@@ -13,8 +14,8 @@
 
 #include <cassert>
 
-CLinterSubExpression::CLinterSubExpression(LinterIterator& pos, LinterIterator& end, CMemoryData* const stack) 
-	: m_iterPos(pos), m_iterEnd(end), m_pOwner(stack)  {
+CLinterSubExpression::CLinterSubExpression(LinterIterator& pos, LinterIterator& end, CMemoryData* const stack, std::optional<PairMatcher>& eoe)
+	: m_iterPos(pos), m_iterEnd(end), m_pOwner(stack), m_oEndOfExpression(eoe)  {
 
 	assert(m_iterPos != m_iterEnd);
 
@@ -47,8 +48,15 @@ Success CLinterSubExpression::ParseSubExpression()
 
 bool CLinterSubExpression::EndOfExpression() const noexcept
 {
-	assert(m_iterPos != m_iterEnd);
-	return (*m_iterPos)->IsOperator(p_semicolon);
+	if (!m_oEndOfExpression) {
+		assert(m_iterPos != m_iterEnd);
+		return (*m_iterPos)->IsOperator(p_semicolon);
+	}
+
+	if (!(*m_iterPos)->IsOperator())
+		return false;
+
+	return m_oEndOfExpression->IsClosing(dynamic_cast<const CPunctuationToken*>(*m_iterPos)->m_ePunctuation);
 }
 OperatorPriority CLinterSubExpression::GetPriority() const noexcept
 {

@@ -1,4 +1,5 @@
 #include "expression.hpp"
+#include "expression_context.hpp"
 #include "sub_expression.hpp"
 #include "operand.hpp"
 #include "operator.hpp"
@@ -27,19 +28,25 @@ CLinterExpression::CLinterExpression(LinterIterator& pos, LinterIterator& end, C
 }
 CLinterExpression::~CLinterExpression() = default;
 
-Success CLinterExpression::ParseExpression()
+Success CLinterExpression::ParseExpression(std::optional<PairMatcher> m_oEndOfExpression)
 {
 	Success status = failure;
+
+	//within parentheses?
+	//if ((*m_iterPos)->IsOperator(p_par_open)) {
+	//	m_oEndOfExpression = std::make_optional<PairMatcher>(dynamic_cast<const CPunctuationToken*>(*m_iterPos)->m_ePunctuation);
+	//	std::advance(m_iterPos, 1);
+	//}
 
 	do {
 
 		//the previous token was an operator, so we need an operand
-		if (EndOfExpression() && !m_oSubExpressions.empty()) {
+		if (EndOfExpression(m_oEndOfExpression) && !m_oSubExpressions.empty()) {
 			CLinterErrors::PushError("Expected an operand, but found " + (*m_iterPos)->Source(), (*m_iterPos)->m_oSourcePosition);
 			return failure;
 		}
 
-		auto subExpression = std::make_unique<CLinterSubExpression>(m_iterPos, m_iterEnd, m_pOwner);
+		auto subExpression = std::make_unique<CLinterSubExpression>(m_iterPos, m_iterEnd, m_pOwner, m_oEndOfExpression);
 		status = subExpression->ParseSubExpression();
 		m_oSubExpressions.emplace_back(std::move(subExpression));
 
@@ -48,15 +55,28 @@ Success CLinterExpression::ParseExpression()
 
 	//Sort();
 
+	if (m_oEndOfExpression && EndOfExpression(m_oEndOfExpression)) {
+		std::advance(m_iterPos, 1);
+	}
+
+	std::cout << "hello!\n";
+
 	return success;
 }
-bool CLinterExpression::EndOfExpression() const noexcept
+bool CLinterExpression::EndOfExpression(const std::optional<PairMatcher>& eoe) const noexcept
 {
-	assert(m_iterPos != m_iterEnd);
-	return (*m_iterPos)->IsOperator(p_semicolon);
+	if (!eoe) {
+		assert(m_iterPos != m_iterEnd);
+		return (*m_iterPos)->IsOperator(p_semicolon);
+	}
+
+	if (!(*m_iterPos)->IsOperator())
+		return false;
+
+	return eoe->IsClosing(dynamic_cast<const CPunctuationToken*>(*m_iterPos)->m_ePunctuation);
 }
 
-std::shared_ptr<AbstractSyntaxTree> CLinterExpression::ToAST() const
+std::unique_ptr<AbstractSyntaxTree> CLinterExpression::ToAST() const
 {
 	std::vector<CLinterOperand*> operands;
 	std::vector<CLinterOperator*> operators;
@@ -75,7 +95,6 @@ void CLinterExpression::QuickEvalAST()
 {
 
 	const auto ast = ToAST();
-
 	const auto result = QuickEvalASTInternal(&*ast);
 
 	std::cout << "QuickEval(): " << result << '\n';
@@ -109,14 +128,18 @@ int CLinterExpression::QuickEvalASTInternal(const AbstractSyntaxTree* node)
 
 #pragma pack(push)
 #pragma warning(disable : 4062)
-	switch (oper->m_pOperator->GetToken()->m_ePunctuation) {
+	switch (oper->m_ePunctuation) {
 	case p_add:
+		std::cout << std::format("{} + {} = {}\n", lhs, rhs, lhs + rhs);
 		return lhs + rhs;
 	case p_sub:
+		std::cout << std::format("{} - {} = {}\n", lhs, rhs, lhs - rhs);
 		return lhs - rhs;
 	case p_multiplication:
+		std::cout << std::format("{} * {} = {}\n", lhs, rhs, lhs * rhs);
 		return lhs * rhs;
 	case p_division:
+		std::cout << std::format("{} / {} = {}\n", lhs, rhs, lhs / rhs);
 		return lhs / rhs;
 	}
 

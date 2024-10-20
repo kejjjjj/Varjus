@@ -1,14 +1,17 @@
 #pragma once
 
 #include <memory>
-
+#include <iostream>
 #include "definitions.hpp"
+
+#include "linter/punctuation.hpp"
 
 class AbstractSyntaxTree;
 using ASTNode = std::shared_ptr<AbstractSyntaxTree>;
 
 class CLinterOperand;
 class CLinterOperator;
+struct COperandBase;
 
 class AbstractSyntaxTree
 {
@@ -39,19 +42,19 @@ public:
 	ASTNode right;
 
 public:
-	[[nodiscard]] static std::shared_ptr<AbstractSyntaxTree> CreateAST(VectorOf<CLinterOperand*>& operands, VectorOf<CLinterOperator*>& operators);
+	[[nodiscard]] static std::unique_ptr<AbstractSyntaxTree> CreateAST(VectorOf<CLinterOperand*>& operands, VectorOf<CLinterOperator*>& operators);
 	[[nodiscard]] std::string ToString() const noexcept;
 
 private:
 	[[nodiscard]] virtual std::string ToStringPolymorphic() const noexcept { return ""; };
 
-	static std::shared_ptr<AbstractSyntaxTree> GetPolymorphic(VectorOf<CLinterOperand*>& operands, VectorOf<CLinterOperator*>& operators);
+	static std::unique_ptr<AbstractSyntaxTree> GetPolymorphic(VectorOf<CLinterOperand*>& operands, VectorOf<CLinterOperator*>& operators);
 
 
 protected:
 	[[nodiscard]] static OperatorIterator FindLowestPriorityOperator(VectorOf<CLinterOperator*>& operators);
 
-	static void CreateRecursively(ASTNode& node, VectorOf<CLinterOperand*>& operands, VectorOf<CLinterOperator*>& operators);
+	void CreateRecursively(VectorOf<CLinterOperand*>& operands, VectorOf<CLinterOperator*>& operators);
 
 	void ToStringInternal(std::size_t depth, std::ptrdiff_t horzAlign, std::size_t totalWidth, VectorOf<VectorOf<std::string>>& levels) const noexcept;
 
@@ -63,8 +66,10 @@ protected:
 class VariableASTNode final : public AbstractSyntaxTree
 {
 	friend class AstToInstructionConverter;
+	NONCOPYABLE(VariableASTNode);
 public:
-	VariableASTNode(CLinterOperand* owner) : m_pOperand(owner){}
+	VariableASTNode(std::unique_ptr<COperandBase>&& owner) : m_pOperand(std::move(owner)){}
+	~VariableASTNode();
 
 	[[nodiscard]] constexpr bool IsVariable() const noexcept override { return true; }
 
@@ -73,22 +78,24 @@ public:
 
 private:
 
-	CLinterOperand* m_pOperand = nullptr;
+	std::unique_ptr<COperandBase> m_pOperand = nullptr;
 };
 
 class ConstantASTNode final : public AbstractSyntaxTree
 {
-public:
-	ConstantASTNode(CLinterOperand* owner) : m_pOperand(owner) {}
+	NONCOPYABLE(ConstantASTNode);
 
+public:
+
+	ConstantASTNode(std::unique_ptr<COperandBase>&& owner) : m_pOperand(std::move(owner)) {}
+	~ConstantASTNode();
 	[[nodiscard]] constexpr bool IsLeaf() const noexcept override { return true; }
 	[[nodiscard]] constexpr bool IsConstant() const noexcept override { return true; }
 
 	[[nodiscard]] std::string ToStringPolymorphic() const noexcept override;
 
 private:
-
-	CLinterOperand* m_pOperand = nullptr;
+	std::unique_ptr<COperandBase> m_pOperand = nullptr;
 };
 
 class OperatorASTNode final : public AbstractSyntaxTree
@@ -97,12 +104,11 @@ class OperatorASTNode final : public AbstractSyntaxTree
 
 public:
 	OperatorASTNode() = default;
-	OperatorASTNode(CLinterOperator* owner) : m_pOperator(owner) {}
+	OperatorASTNode(Punctuation punc) : m_ePunctuation(punc) {}
 	[[nodiscard]] constexpr bool IsOperator() const noexcept override { return true; }
 
 	[[nodiscard]] std::string ToStringPolymorphic() const noexcept override;
 
 //private:
-
-	CLinterOperator* m_pOperator = nullptr;
+	Punctuation m_ePunctuation;
 };

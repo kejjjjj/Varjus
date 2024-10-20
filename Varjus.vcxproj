@@ -163,6 +163,7 @@
     <ClCompile Include="linter\expressions\ast.cpp" />
     <ClCompile Include="linter\expressions\ast2instruction.cpp" />
     <ClCompile Include="linter\expressions\ast_registers.cpp" />
+    <ClCompile Include="linter\expressions\expression_context.cpp" />
     <ClCompile Include="linter\expressions\operand.cpp" />
     <ClCompile Include="linter\expressions\expression.cpp" />
     <ClCompile Include="linter\expressions\identifier.cpp" />
@@ -190,6 +191,7 @@
     <ClInclude Include="linter\expressions\ast.hpp" />
     <ClInclude Include="linter\expressions\ast2instruction.hpp" />
     <ClInclude Include="linter\expressions\ast_registers.hpp" />
+    <ClInclude Include="linter\expressions\expression_context.hpp" />
     <ClInclude Include="linter\expressions\operand.hpp" />
     <ClInclude Include="linter\expressions\definitions.hpp" />
     <ClInclude Include="linter\expressions\expression.hpp" />
