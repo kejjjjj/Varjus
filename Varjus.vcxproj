@@ -171,6 +171,7 @@
     <ClCompile Include="linter\expressions\postfix.cpp" />
     <ClCompile Include="linter\expressions\sub_expression.cpp" />
     <ClCompile Include="linter\expressions\unary.cpp" />
+    <ClCompile Include="linter\functions\function.cpp" />
     <ClCompile Include="linter\linter.cpp" />
     <ClCompile Include="linter\token.cpp" />
     <ClCompile Include="linter\tokenizer.cpp" />
@@ -200,6 +201,7 @@
     <ClInclude Include="linter\expressions\postfix.hpp" />
     <ClInclude Include="linter\expressions\sub_expression.hpp" />
     <ClInclude Include="linter\expressions\unary.hpp" />
+    <ClInclude Include="linter\functions\function.hpp" />
     <ClInclude Include="linter\linter.hpp" />
     <ClInclude Include="linter\punctuation.hpp" />
     <ClInclude Include="linter\token.hpp" />

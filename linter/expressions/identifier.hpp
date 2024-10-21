@@ -14,7 +14,6 @@ public:
 	~CIdentifierLinter();
 
 	[[nodiscard]] Success ParseIdentifier();
-
 	[[nodiscard]] auto GetResult() const { return m_pToken; }
 
 	[[nodiscard]] std::int64_t ToInt() const noexcept;
@@ -24,5 +23,4 @@ private:
 
 	CMemoryData* const m_pOwner;
 	CLinterVariable* m_pVariable{};
-
 };

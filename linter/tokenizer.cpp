@@ -194,7 +194,8 @@ constexpr Success CBufferTokenizer::ReadInteger(CToken& token) noexcept
 }
 
 const std::unordered_map<std::string_view, TokenType> reservedKeywords = {
-	{"let", TokenType::t_declaration}
+	{"let", TokenType::t_declaration},
+	{"fn", TokenType::t_fn},
 };
 
 constexpr Success CBufferTokenizer::ReadName(CToken& token) noexcept

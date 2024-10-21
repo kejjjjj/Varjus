@@ -32,12 +32,6 @@ Success CLinterExpression::ParseExpression(std::optional<PairMatcher> m_oEndOfEx
 {
 	Success status = failure;
 
-	//within parentheses?
-	//if ((*m_iterPos)->IsOperator(p_par_open)) {
-	//	m_oEndOfExpression = std::make_optional<PairMatcher>(dynamic_cast<const CPunctuationToken*>(*m_iterPos)->m_ePunctuation);
-	//	std::advance(m_iterPos, 1);
-	//}
-
 	do {
 
 		//the previous token was an operator, so we need an operand
@@ -53,13 +47,9 @@ Success CLinterExpression::ParseExpression(std::optional<PairMatcher> m_oEndOfEx
 	} while (status == success);
 	assert(m_oSubExpressions.size() > 0u);
 
-	//Sort();
-
 	if (m_oEndOfExpression && EndOfExpression(m_oEndOfExpression)) {
 		std::advance(m_iterPos, 1);
 	}
-
-	std::cout << "hello!\n";
 
 	return success;
 }

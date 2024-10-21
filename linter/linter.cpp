@@ -6,6 +6,7 @@
 #include "expressions/expression.hpp"
 #include "declarations/variable_declarations.hpp"
 #include "declarations/stack.hpp"
+#include "functions/function.hpp"
 
 #include <iostream>
 
@@ -31,6 +32,14 @@ void LintDeclaration(LinterIterator& start, LinterIterator& end, CMemoryData* co
 
 }
 
+void LintFunction(LinterIterator& start, LinterIterator& end, CMemoryData* const stack)
+{
+	CFunctionLinter linter(start, end, stack);
+	if (linter.ParseFunctionDeclaration())
+		std::cout << "variable declared\n";
+
+}
+
 Success CFileLinter::ParseFile()
 {
 
@@ -49,7 +58,9 @@ Success CFileLinter::ParseFile()
 		case t_operator:
 			LintExpression(m_iterPos, m_iterEnd, &stack);
 			break;
-
+		case t_fn:
+			LintFunction(m_iterPos, m_iterEnd, &stack);
+			break;
 		case t_error:
 		default:
 			CLinterErrors::PushError("Unexpected token", (*m_iterPos)->m_oSourcePosition);
