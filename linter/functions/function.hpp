@@ -3,18 +3,18 @@
 #include "linter/expressions/definitions.hpp"
 #include "linter/declarations/stack.hpp"
 
-class CFunctionLinter
+class CFunctionLinter final
 {
 	NONCOPYABLE(CFunctionLinter);
 public:
-	explicit CFunctionLinter(LinterIterator& pos, LinterIterator& end, CMemoryData* const owner);
+	explicit CFunctionLinter(LinterIterator& pos, LinterIterator& end, CMemory* const owner);
 
-	Success ParseFunctionDeclaration();
-	Success ParseFunctionParameters();
+	[[nodiscard]] Success ParseFunctionDeclaration();
+	[[nodiscard]] Success ParseFunctionParameters();
 
 private:
 
-	Success ParseFunctionParametersRecursively();
+	[[nodiscard]] Success ParseFunctionParametersRecursively();
 
 	[[nodiscard]] bool IsEndOfBuffer() const noexcept { return m_iterPos == m_iterEnd; }
 	[[nodiscard]] bool IsFn(const CToken* token) const noexcept;
@@ -22,13 +22,13 @@ private:
 
 	LinterIterator& m_iterPos;
 	LinterIterator& m_iterEnd;
-	CMemoryData* const m_pOwner;
+	CMemory* const m_pOwner;
 
 	std::string m_oFunctionName;
 	VectorOf<std::string> m_oParameters;
 };
 
-class CRuntimeFunction
+class CRuntimeFunction final
 {
 
 };

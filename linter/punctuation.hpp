@@ -58,7 +58,7 @@ enum Punctuation : char
 	p_semicolon,
 };
 
-struct CPunctuation
+struct CPunctuation final
 {
 	std::string_view m_sIdentifier;
 	Punctuation m_ePunctuation{};

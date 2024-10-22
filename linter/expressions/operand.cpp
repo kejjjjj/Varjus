@@ -19,7 +19,7 @@ CIdentifierLinter* COperandBase::GetIdentifier()const  noexcept {
 }
 
 
-CLinterOperand::CLinterOperand(LinterIterator& pos, LinterIterator& end, CMemoryData* const stack) 
+CLinterOperand::CLinterOperand(LinterIterator& pos, LinterIterator& end, CMemory* const stack) 
 	: m_iterPos(pos), m_iterEnd(end), m_pOwner(stack) {
 
 	assert(m_iterPos != m_iterEnd);

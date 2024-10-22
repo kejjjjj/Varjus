@@ -16,7 +16,7 @@ class CLinterOperand;
 class CRegisters;
 
 //converts an AST to a list of instructions
-class AstToInstructionConverter
+class AstToInstructionConverter final
 {
 public:
 	AstToInstructionConverter() = delete;

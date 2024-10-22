@@ -14,7 +14,7 @@
 
 #include <cassert>
 
-CLinterSubExpression::CLinterSubExpression(LinterIterator& pos, LinterIterator& end, CMemoryData* const stack, std::optional<PairMatcher>& eoe)
+CLinterSubExpression::CLinterSubExpression(LinterIterator& pos, LinterIterator& end, CMemory* const stack, std::optional<PairMatcher>& eoe)
 	: m_iterPos(pos), m_iterEnd(end), m_pOwner(stack), m_oEndOfExpression(eoe)  {
 
 	assert(m_iterPos != m_iterEnd);

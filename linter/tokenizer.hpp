@@ -9,7 +9,7 @@ class CToken;
 
 
 //throws on failure
-class CBufferTokenizer
+class CBufferTokenizer final
 {
 public:
 	CBufferTokenizer(const std::string_view& buffer);

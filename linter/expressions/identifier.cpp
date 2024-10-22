@@ -10,7 +10,7 @@
 #include <cassert>
 
 
-CIdentifierLinter::CIdentifierLinter(LinterIterator& pos, LinterIterator& end, CMemoryData* const stack) 
+CIdentifierLinter::CIdentifierLinter(LinterIterator& pos, LinterIterator& end, CMemory* const stack) 
 	: CLinterSingle(pos, end), m_pOwner(stack)
 {
 	assert(m_iterPos != m_iterEnd);

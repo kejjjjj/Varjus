@@ -10,19 +10,19 @@ class CLinterOperatorLinkage;
 class CLinterOperatorParser;
 class CLinterSubExpression;
 class AbstractSyntaxTree;
-class CMemoryData;
+class CMemory;
 struct CSortedSubExpression;
 
 
 
-class CLinterExpression
+class CLinterExpression final
 {
 	NONCOPYABLE(CLinterExpression);
 
 public:
 
 	CLinterExpression() = delete;
-	explicit CLinterExpression(LinterIterator& pos, LinterIterator& end, CMemoryData* const stack);
+	explicit CLinterExpression(LinterIterator& pos, LinterIterator& end, CMemory* const stack);
 	~CLinterExpression();
 
 	[[maybe_unused]] Success ParseExpression(std::optional<PairMatcher> m_oEndOfExpression=std::nullopt);
@@ -42,7 +42,7 @@ private:
 
 	LinterIterator& m_iterPos;
 	LinterIterator& m_iterEnd;
-	CMemoryData* const m_pOwner;
+	CMemory* const m_pOwner;
 };
 
 

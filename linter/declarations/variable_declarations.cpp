@@ -6,7 +6,7 @@
 #include <cassert>
 
 
-CVariableDeclaration::CVariableDeclaration(LinterIterator& pos, LinterIterator& end, CMemoryData* const stack) :
+CVariableDeclaration::CVariableDeclaration(LinterIterator& pos, LinterIterator& end, CMemory* const stack) :
 	CLinterSingle(pos, end), m_pOwner(stack)
 {
 	assert(m_pOwner != nullptr);

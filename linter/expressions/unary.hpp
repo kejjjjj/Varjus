@@ -2,7 +2,7 @@
 
 #include "definitions.hpp"
 
-class CUnaryLinter : public CVectorLinter<CPunctuationToken>
+class CUnaryLinter final : public CVectorLinter<CPunctuationToken>
 {
 public:
 	CUnaryLinter() = delete;

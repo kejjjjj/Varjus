@@ -5,23 +5,23 @@
 #include <string>
 
 class CVariableDeclaration;
-class CMemoryData;
+class CMemory;
 
-struct CLinterVariable
+struct CLinterVariable final
 {
 	CLinterVariable() = default;
-	CLinterVariable(const CMemoryData* owner, const std::string& name, std::size_t index) : m_pOwner(owner), m_sName(name), m_uIndex(index) {}
+	CLinterVariable(const CMemory* owner, const std::string& name, std::size_t index) : m_pOwner(owner), m_sName(name), m_uIndex(index) {}
 
-	const CMemoryData* m_pOwner{};
+	const CMemory* m_pOwner{};
 	std::string m_sName;
 	std::size_t m_uIndex{};
 };
 
-class CMemoryData
+class CMemory
 {
 public:
-	CMemoryData();
-	virtual ~CMemoryData();
+	CMemory();
+	virtual ~CMemory();
 
 	CLinterVariable* DeclareVariable(const std::string& var);
 	CLinterVariable* GetVariable(const std::string& var);
@@ -34,7 +34,7 @@ protected:
 	std::unordered_map<std::string, CLinterVariable> m_oVariables;
 };
 
-class CStack : public CMemoryData
+class CStack final : public CMemory
 {
 public:
 	CStack();

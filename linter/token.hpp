@@ -44,7 +44,7 @@ protected:
 	std::string m_sSource;
 };
 
-class CPunctuationToken : public CToken
+class CPunctuationToken final : public CToken
 {
 public:
 	CPunctuationToken(const CPunctuation& p);

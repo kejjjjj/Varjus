@@ -8,7 +8,7 @@
 #include "globalEnums.hpp"
 #include <iostream>
 
-CFunctionLinter::CFunctionLinter(LinterIterator& pos, LinterIterator& end, CMemoryData* const stack)
+CFunctionLinter::CFunctionLinter(LinterIterator& pos, LinterIterator& end, CMemory* const stack)
 	: m_iterPos(pos), m_iterEnd(end), m_pOwner(stack) {
 
 	assert(m_iterPos != m_iterEnd);
@@ -33,13 +33,23 @@ Success CFunctionLinter::ParseFunctionDeclaration()
 
 	std::advance(m_iterPos, 1); //skip identifier
 	std::cout << m_oFunctionName << '\n';
-	return ParseFunctionParameters();
+	if (!ParseFunctionParameters())
+		return failure;
+
+	if (IsEndOfBuffer() || !(*m_iterPos)->IsOperator(p_curlybracket_open)) {
+		CLinterErrors::PushError("expected a \"{\"", IsEndOfBuffer() ? (*std::prev(m_iterPos))->m_oSourcePosition : (*m_iterPos)->m_oSourcePosition);
+		return failure;
+	}
+
+	std::advance(m_iterPos, -1); //ok the { exists, now go backwards in the queue so that it can be processed as its own scope
+	return success;
 }
 Success CFunctionLinter::ParseFunctionParameters()
 {
-	if(IsEndOfBuffer() || !(*m_iterPos)->IsOperator(p_par_open))
-		CLinterErrors::PushError("expected a \"(\"", IsEndOfBuffer() ? (*std::prev(m_iterPos))->m_oSourcePosition :  (*m_iterPos)->m_oSourcePosition);
-
+	if (IsEndOfBuffer() || !(*m_iterPos)->IsOperator(p_par_open)) {
+		CLinterErrors::PushError("expected a \"(\"", IsEndOfBuffer() ? (*std::prev(m_iterPos))->m_oSourcePosition : (*m_iterPos)->m_oSourcePosition);
+		return failure;
+	}
 	std::advance(m_iterPos, 1); //skip (
 
 	//no parameters?

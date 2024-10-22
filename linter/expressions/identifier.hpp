@@ -2,15 +2,15 @@
 
 #include "definitions.hpp"
 
-class CMemoryData;
+class CMemory;
 struct CLinterVariable;
 
-class CIdentifierLinter : public CLinterSingle<CToken>
+class CIdentifierLinter final : public CLinterSingle<CToken>
 {
 	friend class CLinterOperand;
 public:
 	CIdentifierLinter() = delete;
-	explicit CIdentifierLinter(LinterIterator& pos, LinterIterator& end, CMemoryData* const stack);
+	explicit CIdentifierLinter(LinterIterator& pos, LinterIterator& end, CMemory* const stack);
 	~CIdentifierLinter();
 
 	[[nodiscard]] Success ParseIdentifier();
@@ -21,6 +21,6 @@ public:
 private:
 	[[nodiscard]] bool CheckIdentifier(const CToken* token) const noexcept;
 
-	CMemoryData* const m_pOwner;
+	CMemory* const m_pOwner;
 	CLinterVariable* m_pVariable{};
 };

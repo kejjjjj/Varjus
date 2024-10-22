@@ -37,6 +37,9 @@
     <Filter Include="Source Files\linter\functions">
       <UniqueIdentifier>{cf34ab4d-733c-4b26-87fb-17e5d48c557e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\linter\scopes">
+      <UniqueIdentifier>{3be75782-68e9-4c70-9b39-80d015a0f50e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -104,6 +107,9 @@
     </ClCompile>
     <ClCompile Include="linter\functions\function.cpp">
       <Filter>Source Files\linter\functions</Filter>
+    </ClCompile>
+    <ClCompile Include="linter\scopes\scope.cpp">
+      <Filter>Source Files\linter\scopes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -190,6 +196,9 @@
     </ClInclude>
     <ClInclude Include="linter\functions\function.hpp">
       <Filter>Source Files\linter\functions</Filter>
+    </ClInclude>
+    <ClInclude Include="linter\scopes\scope.hpp">
+      <Filter>Source Files\linter\scopes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

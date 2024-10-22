@@ -7,7 +7,7 @@
 
 class CLinterOperand;
 class CLinterOperator;
-class CMemoryData;
+class CMemory;
 
 enum OperatorPriority : char;
 
@@ -15,14 +15,14 @@ enum OperatorPriority : char;
  > stores the operand on the lhs and optionally the operator (if exists)
  > throws on failure
 ***********************************************************************/
-class CLinterSubExpression
+class CLinterSubExpression final
 {
 	NONCOPYABLE(CLinterSubExpression);
 	friend class CLinterExpression;
 public:
 
 	CLinterSubExpression() = delete;
-	explicit CLinterSubExpression(LinterIterator& pos, LinterIterator& end, CMemoryData* const stack, std::optional<PairMatcher>& eoe);
+	explicit CLinterSubExpression(LinterIterator& pos, LinterIterator& end, CMemory* const stack, std::optional<PairMatcher>& eoe);
 	~CLinterSubExpression();
 
 	/*
@@ -43,7 +43,7 @@ private:
 
 	LinterIterator& m_iterPos;
 	LinterIterator& m_iterEnd;
-	CMemoryData* const m_pOwner;
+	CMemory* const m_pOwner;
 
 	std::optional<PairMatcher>& m_oEndOfExpression;
 };

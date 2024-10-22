@@ -4,7 +4,7 @@
 
 #include <iostream>
 
-class CMemoryData;
+class CMemory;
 class CIdentifierLinter;
 
 struct CLinterVariable;
@@ -34,7 +34,7 @@ struct COperandBase
 struct CIdentifierOperand final : public COperandBase
 {
 	NONCOPYABLE(CIdentifierOperand);
-	CIdentifierOperand(LinterIterator& pos, LinterIterator& end, CMemoryData* const stack) :
+	CIdentifierOperand(LinterIterator& pos, LinterIterator& end, CMemory* const stack) :
 		m_oIdentifierToken(std::make_unique<CIdentifierLinter>(pos, end, stack)){
 	}
 	~CIdentifierOperand() = default;
@@ -65,7 +65,7 @@ class CLinterOperand
 public:
 
 	CLinterOperand() = delete;
-	explicit CLinterOperand(LinterIterator& pos, LinterIterator& end, CMemoryData* const stack);
+	explicit CLinterOperand(LinterIterator& pos, LinterIterator& end, CMemory* const stack);
 	~CLinterOperand();
 
 	[[nodiscard]] Success ParseOperand();
@@ -93,6 +93,6 @@ private:
 	LinterIterator& m_iterPos;
 	LinterIterator& m_iterEnd;
 
-	CMemoryData* const m_pOwner;
+	CMemory* const m_pOwner;
 
 };

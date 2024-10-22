@@ -3,7 +3,7 @@
 #include "linter/punctuation.hpp"
 
 
-class PairMatcher
+class PairMatcher final
 {
 public:
 	PairMatcher(Punctuation p);

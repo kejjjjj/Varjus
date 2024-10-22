@@ -5,7 +5,7 @@
 enum OperatorPriority : char;
 enum Punctuation : char;
 
-class CLinterOperator
+class CLinterOperator final
 {
 public:
 
@@ -25,7 +25,7 @@ private:
 	const CPunctuationToken* m_pToken;
 };
 
-class CLinterOperatorParser : public CLinterSingle<CPunctuationToken>
+class CLinterOperatorParser final : public CLinterSingle<CPunctuationToken>
 {
 public:
 	CLinterOperatorParser() = delete;

@@ -14,7 +14,7 @@ CFileLinter::CFileLinter(LinterIterator& start, LinterIterator& end) : CLinter(s
 {
 }
 
-void LintExpression(LinterIterator& start, LinterIterator& end, CMemoryData* const stack)
+void CFileLinter::LintExpression(LinterIterator& start, LinterIterator& end, CMemory* const stack)
 {
 	CLinterExpression linter(start, end, stack);
 	if (linter.ParseExpression()) {
@@ -24,7 +24,7 @@ void LintExpression(LinterIterator& start, LinterIterator& end, CMemoryData* con
 
 }
 
-void LintDeclaration(LinterIterator& start, LinterIterator& end, CMemoryData* const stack)
+void CFileLinter::LintDeclaration(LinterIterator& start, LinterIterator& end, CMemory* const stack)
 {
 	CVariableDeclaration linter(start, end, stack);
 	if (linter.ParseDeclaration())
@@ -32,14 +32,40 @@ void LintDeclaration(LinterIterator& start, LinterIterator& end, CMemoryData* co
 
 }
 
-void LintFunction(LinterIterator& start, LinterIterator& end, CMemoryData* const stack)
+void CFileLinter::LintFunction(LinterIterator& start, LinterIterator& end, CMemory* const stack)
 {
 	CFunctionLinter linter(start, end, stack);
 	if (linter.ParseFunctionDeclaration())
 		std::cout << "variable declared\n";
 
 }
+Success  CFileLinter::LintToken(LinterIterator& m_iterPos, LinterIterator& m_iterEnd, CMemory* const stack)
+{
+	if (m_iterPos == m_iterEnd)
+		return failure;
 
+	switch ((*m_iterPos)->Type()) {
+	case t_declaration:
+		LintDeclaration(m_iterPos, m_iterEnd, stack);
+		[[fallthrough]]; //fallthrough because we want to get the initializer
+	case t_int:
+	case t_double:
+	case t_string:
+	case t_name:
+	case t_operator:
+		LintExpression(m_iterPos, m_iterEnd, stack);
+		break;
+	case t_fn:
+		LintFunction(m_iterPos, m_iterEnd, stack);
+		break;
+	case t_error:
+	default:
+		CLinterErrors::PushError("Unexpected token", (*m_iterPos)->m_oSourcePosition);
+		return failure;
+	}
+
+	return success;
+}
 Success CFileLinter::ParseFile()
 {
 
@@ -47,29 +73,24 @@ Success CFileLinter::ParseFile()
 
 	while (!IsEndOfBuffer()) {
 
-		switch ((*m_iterPos)->Type()) {
-		case t_declaration:
-			LintDeclaration(m_iterPos, m_iterEnd, &stack);
-			[[fallthrough]]; //fall through because we want to get the initializer
-		case t_int:
-		case t_double:
-		case t_string:
-		case t_name:
-		case t_operator:
-			LintExpression(m_iterPos, m_iterEnd, &stack);
+		if (!LintToken(m_iterPos, m_iterEnd, &stack))
 			break;
-		case t_fn:
-			LintFunction(m_iterPos, m_iterEnd, &stack);
-			break;
-		case t_error:
-		default:
-			CLinterErrors::PushError("Unexpected token", (*m_iterPos)->m_oSourcePosition);
-			return failure;
-		}
 
 		std::advance(m_iterPos, 1);
 	}
 
 	return success;
-
 }
+
+
+/***********************************************************************
+ > 
+***********************************************************************/
+std::weak_ptr<CScope> CFileLinter::GetCurrentScope() {
+	return m_pCurrentScope;
+}
+std::weak_ptr<CScope> CFileLinter::m_pCurrentScope{};
+
+
+
+

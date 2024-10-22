@@ -5,15 +5,15 @@
 
 #include "linter/expressions/definitions.hpp"
 
-class CMemoryData;
+class CMemory;
 
-class CVariableDeclaration : public CLinterSingle<CToken>
+class CVariableDeclaration final : public CLinterSingle<CToken>
 {
-	friend class CMemoryData;
+	friend class CMemory;
 
 public:
 	CVariableDeclaration() = delete;
-	CVariableDeclaration(LinterIterator& pos, LinterIterator& end, CMemoryData* const stack);
+	CVariableDeclaration(LinterIterator& pos, LinterIterator& end, CMemory* const stack);
 	CVariableDeclaration operator=(const CVariableDeclaration&) = delete;
 
 	[[nodiscard]] Success ParseDeclaration();
@@ -24,5 +24,5 @@ private:
 	[[nodiscard]] bool IsDeclaration(const CToken* token) const noexcept;
 	[[nodiscard]] bool IsIdentifier(const CToken* token) const noexcept;
 
-	CMemoryData* const m_pOwner = 0;
+	CMemory* const m_pOwner = 0;
 };

@@ -173,6 +173,7 @@
     <ClCompile Include="linter\expressions\unary.cpp" />
     <ClCompile Include="linter\functions\function.cpp" />
     <ClCompile Include="linter\linter.cpp" />
+    <ClCompile Include="linter\scopes\scope.cpp" />
     <ClCompile Include="linter\token.cpp" />
     <ClCompile Include="linter\tokenizer.cpp" />
     <ClCompile Include="main.cpp" />
@@ -204,6 +205,7 @@
     <ClInclude Include="linter\functions\function.hpp" />
     <ClInclude Include="linter\linter.hpp" />
     <ClInclude Include="linter\punctuation.hpp" />
+    <ClInclude Include="linter\scopes\scope.hpp" />
     <ClInclude Include="linter\token.hpp" />
     <ClInclude Include="linter\tokenizer.hpp" />
     <ClInclude Include="runtime\structure.hpp" />

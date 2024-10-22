@@ -6,7 +6,7 @@
 
 using CodePosition = std::tuple<size_t, size_t>;
 
-class CLinterError : public std::exception
+class CLinterError final : public std::exception
 {
 public:
 	CLinterError(const std::string& error, const CodePosition& position) 
@@ -29,7 +29,7 @@ private:
 	CodePosition m_oSourcePosition;
 };
 
-class CLinterErrors {
+class CLinterErrors final {
 
 public:
     static void PushError(const CLinterError& error);

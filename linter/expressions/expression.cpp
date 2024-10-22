@@ -20,7 +20,7 @@
 #include <algorithm>
 #include <iostream>
 
-CLinterExpression::CLinterExpression(LinterIterator& pos, LinterIterator& end, CMemoryData* const stack) 
+CLinterExpression::CLinterExpression(LinterIterator& pos, LinterIterator& end, CMemory* const stack) 
 	: m_iterPos(pos), m_iterEnd(end), m_pOwner(stack) {
 
 	assert(m_iterPos != m_iterEnd);
