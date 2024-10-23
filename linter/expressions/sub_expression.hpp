@@ -8,6 +8,7 @@
 class CLinterOperand;
 class CLinterOperator;
 class CMemory;
+class CScope;
 
 enum OperatorPriority : char;
 
@@ -22,7 +23,8 @@ class CLinterSubExpression final
 public:
 
 	CLinterSubExpression() = delete;
-	explicit CLinterSubExpression(LinterIterator& pos, LinterIterator& end, CMemory* const stack, std::optional<PairMatcher>& eoe);
+	explicit CLinterSubExpression(LinterIterator& pos, LinterIterator& end, const WeakScope& scope,
+		CMemory* const stack, std::optional<PairMatcher>& eoe);
 	~CLinterSubExpression();
 
 	/*
@@ -43,6 +45,7 @@ private:
 
 	LinterIterator& m_iterPos;
 	LinterIterator& m_iterEnd;
+	std::weak_ptr<CScope> m_pScope;
 	CMemory* const m_pOwner;
 
 	std::optional<PairMatcher>& m_oEndOfExpression;

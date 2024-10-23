@@ -2,12 +2,16 @@
 #include "stack.hpp"
 #include "linter/token.hpp"
 #include "linter/error.hpp"
+#include "linter/linter.hpp"
+#include "linter/scopes/scope.hpp"
+#include "linter/punctuation.hpp"
+#include "linter/expressions/expression.hpp"
 
 #include <cassert>
 
 
-CVariableDeclaration::CVariableDeclaration(LinterIterator& pos, LinterIterator& end, CMemory* const stack) :
-	CLinterSingle(pos, end), m_pOwner(stack)
+CVariableDeclaration::CVariableDeclaration(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack) :
+	CLinterSingle(pos, end), m_pScope(scope), m_pOwner(stack)
 {
 	assert(m_pOwner != nullptr);
 }
@@ -37,12 +41,39 @@ Success CVariableDeclaration::ParseDeclaration()
 		return failure;
 	}
 
-	if (m_pOwner->ContainsVariable((*m_iterPos)->Source())) {
-		CLinterErrors::PushError("variable " + (*m_iterPos)->Source() + " already declared", (*m_iterPos)->m_oSourcePosition);
+	if (const auto scope = m_pScope.lock()) {
+
+		if (!scope->DeclareVariable((*m_iterPos)->Source())) {
+			CLinterErrors::PushError("variable " + (*m_iterPos)->Source() + " already declared", (*m_iterPos)->m_oSourcePosition);
+			return failure;
+		}
+
+		m_pOwner->DeclareVariable((*m_iterPos)->Source());
+	} else {
+		CLinterErrors::PushError("!(const auto scope = currentScope.lock())", (*m_iterPos)->m_oSourcePosition);
 		return failure;
 	}
 
-	m_pOwner->DeclareVariable((*m_iterPos)->Source());
+	std::advance(m_iterPos, 1);
+
+	if (IsEndOfBuffer()) {
+		CLinterErrors::PushError("expected \";\"", (*std::prev(m_iterPos))->m_oSourcePosition);
+		return failure;
+	}
+
+	//let var;
+	if ((*m_iterPos)->IsOperator(p_semicolon))
+		return success;
+
+	//let var = expression;
+	if (!(*m_iterPos)->IsOperator(p_assign)) {
+		CLinterErrors::PushError("expected \";\" or \"=\"", (*m_iterPos)->m_oSourcePosition);
+		return failure;
+	}
+
+	//parse initializer
+	std::advance(m_iterPos, -1);
+	CFileLinter::LintExpression(m_iterPos, m_iterEnd, m_pScope, m_pOwner);
 	return success;
 }
 

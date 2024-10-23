@@ -7,12 +7,14 @@ class CFunctionLinter final
 {
 	NONCOPYABLE(CFunctionLinter);
 public:
-	explicit CFunctionLinter(LinterIterator& pos, LinterIterator& end, CMemory* const owner);
+	explicit CFunctionLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const owner);
 
-	[[nodiscard]] Success ParseFunctionDeclaration();
+	[[nodiscard]] Success ParseFunction();
 	[[nodiscard]] Success ParseFunctionParameters();
 
 private:
+	[[nodiscard]] Success ParseFunctionDeclaration();
+	[[nodiscard]] Success ParseFunctionScope();
 
 	[[nodiscard]] Success ParseFunctionParametersRecursively();
 
@@ -22,6 +24,7 @@ private:
 
 	LinterIterator& m_iterPos;
 	LinterIterator& m_iterEnd;
+	WeakScope m_pScope;
 	CMemory* const m_pOwner;
 
 	std::string m_oFunctionName;

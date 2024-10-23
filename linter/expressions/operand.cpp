@@ -19,8 +19,8 @@ CIdentifierLinter* COperandBase::GetIdentifier()const  noexcept {
 }
 
 
-CLinterOperand::CLinterOperand(LinterIterator& pos, LinterIterator& end, CMemory* const stack) 
-	: m_iterPos(pos), m_iterEnd(end), m_pOwner(stack) {
+CLinterOperand::CLinterOperand(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack)
+	: m_iterPos(pos), m_iterEnd(end), m_pScope(scope), m_pOwner(stack) {
 
 	assert(m_iterPos != m_iterEnd);
 
@@ -38,13 +38,13 @@ Success CLinterOperand::ParseOperand()
 	if (token->IsOperator(p_par_open)) {
 		std::advance(m_iterPos, 1);
 
-		CLinterExpression expr(m_iterPos, m_iterEnd, m_pOwner);		
+		CLinterExpression expr(m_iterPos, m_iterEnd, m_pScope, m_pOwner);		
 		if (expr.ParseExpression(PairMatcher(p_par_open))) {
 			m_pOperand = std::make_unique<CASTOperand>(expr.ToAST());
 		}
 
 	} else {
-		auto operand = std::make_unique<CIdentifierOperand>(m_iterPos, m_iterEnd, m_pOwner);
+		auto operand = std::make_unique<CIdentifierOperand>(m_iterPos, m_iterEnd, m_pScope, m_pOwner);
 		if (!operand->m_oIdentifierToken->ParseIdentifier()) {
 			return failure;
 		}
@@ -56,7 +56,6 @@ Success CLinterOperand::ParseOperand()
 
 	// Save results
 	m_oUnaryTokens = unaryLinter.GetResult();
-
 	return success;
 }
 bool CLinterOperand::IsExpression() const noexcept

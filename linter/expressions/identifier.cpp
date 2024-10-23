@@ -3,15 +3,15 @@
 #include "linter/error.hpp"
 #include "linter/token.hpp"
 #include "linter/declarations/stack.hpp"
-
+#include "linter/scopes/scope.hpp"
 
 #include "globalEnums.hpp"
 
 #include <cassert>
 
 
-CIdentifierLinter::CIdentifierLinter(LinterIterator& pos, LinterIterator& end, CMemory* const stack) 
-	: CLinterSingle(pos, end), m_pOwner(stack)
+CIdentifierLinter::CIdentifierLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack)
+	: CLinterSingle(pos, end), m_pScope(scope), m_pOwner(stack)
 {
 	assert(m_iterPos != m_iterEnd);
 }
@@ -33,14 +33,16 @@ Success CIdentifierLinter::ParseIdentifier()
 
 	m_pToken = &*iterPos;
 
-	if (m_pToken->Type() == TokenType::t_name)
-	{
-		if (!m_pOwner->ContainsVariable(m_pToken->Source())) {
-			CLinterErrors::PushError("Use of an undefined variable: " + m_pToken->Source(), m_pToken->m_oSourcePosition);
-			return failure;
+	if (m_pToken->Type() == TokenType::t_name){
+		if (const auto scope = m_pScope.lock()) {
+			if (!scope->VariableExists(m_pToken->Source())) {
+				CLinterErrors::PushError("Use of an undefined variable: " + m_pToken->Source(), m_pToken->m_oSourcePosition);
+				return failure;
+			}
 		}
 
 		m_pVariable = m_pOwner->GetVariable(m_pToken->Source());
+		assert(m_pVariable != nullptr);
 	}
 
 	std::advance(m_iterPos, 1);

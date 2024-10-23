@@ -5,13 +5,29 @@
 #include "linter/error.hpp"
 #include "linter/token.hpp"
 #include "linter/punctuation.hpp"
+#include "linter/scopes/scope.hpp"
+#include "linter/linter.hpp"
 #include "globalEnums.hpp"
 #include <iostream>
 
-CFunctionLinter::CFunctionLinter(LinterIterator& pos, LinterIterator& end, CMemory* const stack)
-	: m_iterPos(pos), m_iterEnd(end), m_pOwner(stack) {
+CFunctionLinter::CFunctionLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack)
+	: m_iterPos(pos), m_iterEnd(end), m_pScope(scope), m_pOwner(stack) {
 
 	assert(m_iterPos != m_iterEnd);
+}
+
+Success CFunctionLinter::ParseFunction()
+{
+
+	if (!ParseFunctionDeclaration())
+		return failure;
+
+	if (!ParseFunctionScope())
+		return failure;
+
+
+
+	return success;
 }
 
 Success CFunctionLinter::ParseFunctionDeclaration()
@@ -33,15 +49,24 @@ Success CFunctionLinter::ParseFunctionDeclaration()
 
 	std::advance(m_iterPos, 1); //skip identifier
 	std::cout << m_oFunctionName << '\n';
+
 	if (!ParseFunctionParameters())
 		return failure;
 
+	return success;
+}
+Success CFunctionLinter::ParseFunctionScope()
+{
 	if (IsEndOfBuffer() || !(*m_iterPos)->IsOperator(p_curlybracket_open)) {
 		CLinterErrors::PushError("expected a \"{\"", IsEndOfBuffer() ? (*std::prev(m_iterPos))->m_oSourcePosition : (*m_iterPos)->m_oSourcePosition);
 		return failure;
 	}
 
-	std::advance(m_iterPos, -1); //ok the { exists, now go backwards in the queue so that it can be processed as its own scope
+	auto scope = CScopeLinter(m_iterPos, m_iterEnd, m_pScope, m_pOwner);
+	if (!scope.ParseScope()) {
+		return failure;
+	}
+
 	return success;
 }
 Success CFunctionLinter::ParseFunctionParameters()

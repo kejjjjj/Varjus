@@ -14,11 +14,11 @@
 
 #include <cassert>
 
-CLinterSubExpression::CLinterSubExpression(LinterIterator& pos, LinterIterator& end, CMemory* const stack, std::optional<PairMatcher>& eoe)
-	: m_iterPos(pos), m_iterEnd(end), m_pOwner(stack), m_oEndOfExpression(eoe)  {
+CLinterSubExpression::CLinterSubExpression(LinterIterator& pos, LinterIterator& end, const WeakScope& scope,
+	CMemory* const stack, std::optional<PairMatcher>& eoe)
+	: m_iterPos(pos), m_iterEnd(end), m_pScope(scope), m_pOwner(stack), m_oEndOfExpression(eoe) {
 
 	assert(m_iterPos != m_iterEnd);
-
 }
 CLinterSubExpression::~CLinterSubExpression() = default;
 
@@ -28,7 +28,7 @@ Success CLinterSubExpression::ParseSubExpression()
 	if (EndOfExpression())
 		return failure;
 
-	m_oLhsOperand = std::make_unique<CLinterOperand>(m_iterPos, m_iterEnd, m_pOwner);
+	m_oLhsOperand = std::make_unique<CLinterOperand>(m_iterPos, m_iterEnd, m_pScope, m_pOwner);
 	if (!m_oLhsOperand->ParseOperand()) {
 		m_oLhsOperand.reset();
 		return failure;

@@ -23,8 +23,8 @@ public:
 	CMemory();
 	virtual ~CMemory();
 
-	CLinterVariable* DeclareVariable(const std::string& var);
-	CLinterVariable* GetVariable(const std::string& var);
+	[[maybe_unused]] CLinterVariable* DeclareVariable(const std::string& var);
+	[[nodiscard]] CLinterVariable* GetVariable(const std::string& var);
 
 	[[nodiscard]] bool ContainsVariable(const std::string& name) const;
 

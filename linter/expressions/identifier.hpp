@@ -3,6 +3,7 @@
 #include "definitions.hpp"
 
 class CMemory;
+class CScope;
 struct CLinterVariable;
 
 class CIdentifierLinter final : public CLinterSingle<CToken>
@@ -10,7 +11,7 @@ class CIdentifierLinter final : public CLinterSingle<CToken>
 	friend class CLinterOperand;
 public:
 	CIdentifierLinter() = delete;
-	explicit CIdentifierLinter(LinterIterator& pos, LinterIterator& end, CMemory* const stack);
+	explicit CIdentifierLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack);
 	~CIdentifierLinter();
 
 	[[nodiscard]] Success ParseIdentifier();
@@ -21,6 +22,7 @@ public:
 private:
 	[[nodiscard]] bool CheckIdentifier(const CToken* token) const noexcept;
 
+	WeakScope m_pScope;
 	CMemory* const m_pOwner;
 	CLinterVariable* m_pVariable{};
 };

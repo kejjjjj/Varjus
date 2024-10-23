@@ -20,8 +20,8 @@
 #include <algorithm>
 #include <iostream>
 
-CLinterExpression::CLinterExpression(LinterIterator& pos, LinterIterator& end, CMemory* const stack) 
-	: m_iterPos(pos), m_iterEnd(end), m_pOwner(stack) {
+CLinterExpression::CLinterExpression(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack)
+	: m_iterPos(pos), m_iterEnd(end), m_pScope(scope), m_pOwner(stack) {
 
 	assert(m_iterPos != m_iterEnd);
 
@@ -40,11 +40,12 @@ Success CLinterExpression::ParseExpression(std::optional<PairMatcher> m_oEndOfEx
 			return failure;
 		}
 
-		auto subExpression = std::make_unique<CLinterSubExpression>(m_iterPos, m_iterEnd, m_pOwner, m_oEndOfExpression);
+		auto subExpression = std::make_unique<CLinterSubExpression>(m_iterPos, m_iterEnd, m_pScope, m_pOwner, m_oEndOfExpression);
 		status = subExpression->ParseSubExpression();
 		m_oSubExpressions.emplace_back(std::move(subExpression));
 
 	} while (status == success);
+
 	assert(m_oSubExpressions.size() > 0u);
 
 	if (m_oEndOfExpression && EndOfExpression(m_oEndOfExpression)) {
@@ -137,22 +138,6 @@ int CLinterExpression::QuickEvalASTInternal(const AbstractSyntaxTree* node)
 #pragma pack(pop)
 
 }
-
-//void CLinterExpression::Sort()
-//{
-//	std::vector<CLinterOperand*> operands;
-//	std::vector<CLinterOperator*> operators;
-//
-//	for (auto& subExpression : m_oSubExpressions) {
-//		operands.emplace_back(&*subExpression->m_oLhsOperand);
-//		if(subExpression->m_oOperator)
-//			operators.emplace_back(&*subExpression->m_oOperator);
-//	}	
-//
-//	assert(operands.size() == operators.size() + 1u);
-//	//m_pAST = AbstractSyntaxTree::CreateAST(operands, operators);
-//
-//}
 std::string CLinterExpression::ToString() const noexcept
 {
 	assert(!m_oSubExpressions.empty());

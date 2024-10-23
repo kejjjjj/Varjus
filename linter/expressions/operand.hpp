@@ -6,6 +6,7 @@
 
 class CMemory;
 class CIdentifierLinter;
+class CScope;
 
 struct CLinterVariable;
 class AbstractSyntaxTree;
@@ -34,8 +35,8 @@ struct COperandBase
 struct CIdentifierOperand final : public COperandBase
 {
 	NONCOPYABLE(CIdentifierOperand);
-	CIdentifierOperand(LinterIterator& pos, LinterIterator& end, CMemory* const stack) :
-		m_oIdentifierToken(std::make_unique<CIdentifierLinter>(pos, end, stack)){
+	CIdentifierOperand(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack) :
+		m_oIdentifierToken(std::make_unique<CIdentifierLinter>(pos, end, scope, stack)){
 	}
 	~CIdentifierOperand() = default;
 
@@ -59,13 +60,13 @@ struct CASTOperand final : public COperandBase
 	std::unique_ptr<AbstractSyntaxTree> m_pAST;
 };
 
-class CLinterOperand
+class CLinterOperand final
 {
 	NONCOPYABLE(CLinterOperand);
 public:
 
 	CLinterOperand() = delete;
-	explicit CLinterOperand(LinterIterator& pos, LinterIterator& end, CMemory* const stack);
+	explicit CLinterOperand(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack);
 	~CLinterOperand();
 
 	[[nodiscard]] Success ParseOperand();
@@ -92,7 +93,7 @@ private:
 
 	LinterIterator& m_iterPos;
 	LinterIterator& m_iterEnd;
-
+	std::weak_ptr<CScope> m_pScope;
 	CMemory* const m_pOwner;
 
 };

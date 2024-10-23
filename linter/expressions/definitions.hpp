@@ -13,6 +13,8 @@ class CPunctuationToken;
 class CToken;
 class CLinterOperator;
 
+class CScope;
+using WeakScope = std::weak_ptr<CScope>;
 
 template<typename T>
 using VectorOf = std::vector<T>;

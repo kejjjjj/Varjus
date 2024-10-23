@@ -11,6 +11,7 @@ class CLinterOperatorParser;
 class CLinterSubExpression;
 class AbstractSyntaxTree;
 class CMemory;
+class CScope;
 struct CSortedSubExpression;
 
 
@@ -22,7 +23,7 @@ class CLinterExpression final
 public:
 
 	CLinterExpression() = delete;
-	explicit CLinterExpression(LinterIterator& pos, LinterIterator& end, CMemory* const stack);
+	explicit CLinterExpression(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack);
 	~CLinterExpression();
 
 	[[maybe_unused]] Success ParseExpression(std::optional<PairMatcher> m_oEndOfExpression=std::nullopt);
@@ -35,13 +36,14 @@ public:
 
 private:
 	[[nodiscard]] bool EndOfExpression(const std::optional<PairMatcher>& eoe) const noexcept;
-	int QuickEvalASTInternal(const AbstractSyntaxTree* node);
+	[[nodiscard]] int QuickEvalASTInternal(const AbstractSyntaxTree* node);
 
 	//std::optional<PairMatcher> m_oEndOfExpression;
 	UniquePointerVector<CLinterSubExpression> m_oSubExpressions;
 
 	LinterIterator& m_iterPos;
 	LinterIterator& m_iterEnd;
+	WeakScope m_pScope;
 	CMemory* const m_pOwner;
 };
 
