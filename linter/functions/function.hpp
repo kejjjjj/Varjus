@@ -3,6 +3,9 @@
 #include "linter/expressions/definitions.hpp"
 #include "linter/declarations/stack.hpp"
 
+class CCodeStructure;
+struct CFunctionBlock;
+
 class CFunctionLinter final
 {
 	NONCOPYABLE(CFunctionLinter);
@@ -11,6 +14,8 @@ public:
 
 	[[nodiscard]] Success ParseFunction();
 	[[nodiscard]] Success ParseFunctionParameters();
+
+	[[nodiscard]] std::unique_ptr<CFunctionBlock> ToFunction() const;
 
 private:
 	[[nodiscard]] Success ParseFunctionDeclaration();
@@ -31,7 +36,11 @@ private:
 	VectorOf<std::string> m_oParameters;
 };
 
-class CRuntimeFunction final
+struct CFunctionBlock final
 {
-
+	std::string m_sName; // function name
+	VectorOf<std::string> m_oParameters; // function paramters
+	VectorOf<CLinterVariable*> m_oStack; // the stack
+	VectorOf<std::unique_ptr<CCodeStructure>> m_oInstructions; // sorted list of all function instructions
+	std::size_t m_uNesting{}; //current nesting offset from root scope
 };

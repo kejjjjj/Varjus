@@ -4,6 +4,7 @@
 
 #include "definitions.hpp"
 #include "expression_context.hpp"
+#include "runtime/structure.hpp"
 
 class CLinterOperand;
 class CLinterOperatorLinkage;
@@ -16,7 +17,7 @@ struct CSortedSubExpression;
 
 
 
-class CLinterExpression final
+class CLinterExpression final : protected IRuntimeBlock 
 {
 	NONCOPYABLE(CLinterExpression);
 
@@ -33,6 +34,8 @@ public:
 	void QuickEvalAST();
 
 	std::unique_ptr<AbstractSyntaxTree> ToAST() const;
+
+	RuntimeBlock ToRuntimeObject() const override;
 
 private:
 	[[nodiscard]] bool EndOfExpression(const std::optional<PairMatcher>& eoe) const noexcept;

@@ -158,3 +158,8 @@ std::string CLinterExpression::SortedToString() const noexcept
 	assert(ast != nullptr);
 	return ast->ToString();
 }
+
+RuntimeBlock CLinterExpression::ToRuntimeObject() const
+{
+	return std::make_unique<CCodeExpression>(ToAST());
+}

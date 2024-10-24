@@ -10,6 +10,9 @@
 #include <sstream>
 #include <iostream>
 
+AbstractSyntaxTree::AbstractSyntaxTree() = default;
+AbstractSyntaxTree::~AbstractSyntaxTree() = default;
+
 std::unique_ptr<AbstractSyntaxTree> AbstractSyntaxTree::CreateAST(VectorOf<CLinterOperand*>& operands, VectorOf<CLinterOperator*>& operators)
 {
 	assert(!operands.empty());
@@ -175,6 +178,8 @@ std::size_t AbstractSyntaxTree::GetLeftBranchDepth() const noexcept
 /***********************************************************************
  > 
 ***********************************************************************/
+VariableASTNode::VariableASTNode(std::unique_ptr<COperandBase>&& owner) 
+	: m_pOperand(std::move(owner)) {}
 VariableASTNode::~VariableASTNode() = default;
 
 std::string VariableASTNode::ToStringPolymorphic() const noexcept
@@ -186,6 +191,8 @@ std::string VariableASTNode::ToStringPolymorphic() const noexcept
 
 }
 
+ConstantASTNode::ConstantASTNode(std::unique_ptr<COperandBase>&& owner) 
+	: m_pOperand(std::move(owner)) {}
 ConstantASTNode::~ConstantASTNode() = default;
 std::string ConstantASTNode::ToStringPolymorphic() const noexcept
 {

@@ -19,8 +19,9 @@ class AbstractSyntaxTree
 public:
 
 
-	AbstractSyntaxTree() = default;
-	virtual ~AbstractSyntaxTree() = default;
+	AbstractSyntaxTree();
+	virtual ~AbstractSyntaxTree();
+
 	[[nodiscard]] virtual constexpr bool IsLeaf() const noexcept	 { return false; }
 	[[nodiscard]] virtual constexpr bool IsOperator() const noexcept { return false; }
 	[[nodiscard]] virtual constexpr bool IsVariable() const noexcept { return false; }
@@ -68,7 +69,7 @@ class VariableASTNode final : public AbstractSyntaxTree
 	friend class AstToInstructionConverter;
 	NONCOPYABLE(VariableASTNode);
 public:
-	VariableASTNode(std::unique_ptr<COperandBase>&& owner) : m_pOperand(std::move(owner)){}
+	VariableASTNode(std::unique_ptr<COperandBase>&& owner);
 	~VariableASTNode();
 
 	[[nodiscard]] constexpr bool IsVariable() const noexcept override { return true; }
@@ -78,7 +79,7 @@ public:
 
 private:
 
-	std::unique_ptr<COperandBase> m_pOperand = nullptr;
+	std::unique_ptr<COperandBase> m_pOperand;
 };
 
 class ConstantASTNode final : public AbstractSyntaxTree
@@ -87,15 +88,16 @@ class ConstantASTNode final : public AbstractSyntaxTree
 
 public:
 
-	ConstantASTNode(std::unique_ptr<COperandBase>&& owner) : m_pOperand(std::move(owner)) {}
+	ConstantASTNode(std::unique_ptr<COperandBase>&& owner);
 	~ConstantASTNode();
+
 	[[nodiscard]] constexpr bool IsLeaf() const noexcept override { return true; }
 	[[nodiscard]] constexpr bool IsConstant() const noexcept override { return true; }
 
 	[[nodiscard]] std::string ToStringPolymorphic() const noexcept override;
 
 private:
-	std::unique_ptr<COperandBase> m_pOperand = nullptr;
+	std::unique_ptr<COperandBase> m_pOperand;
 };
 
 class OperatorASTNode final : public AbstractSyntaxTree

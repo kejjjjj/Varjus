@@ -15,79 +15,81 @@ CFileLinter::CFileLinter(LinterIterator& start, LinterIterator& end) : CLinter(s
 {
 }
 
-void CFileLinter::LintOperator(LinterIterator& start, LinterIterator& end, const WeakScope& scope, CMemory* const stack)
+Success CFileLinter::LintOperator(LinterIterator& start, LinterIterator& end, const WeakScope& scope, CMemory* const memory)
 {
+	// a new scope
 	if ((*start)->IsOperator(p_curlybracket_open)) {
-		CScopeLinter scopeLinter(start, end, scope, stack);
+		CScopeLinter scopeLinter(start, end, scope, memory);
 		scopeLinter.ParseScope();
-		return;
+		return success;
 	}
 
-	return LintExpression(start, end, scope, stack);
+	// otherwise a normal expression
+	return LintExpression(start, end, scope, memory);
 }
-void CFileLinter::LintExpression(LinterIterator& start, LinterIterator& end, const WeakScope& scope, CMemory* const stack)
+Success CFileLinter::LintExpression(LinterIterator& start, LinterIterator& end, const WeakScope& scope, CMemory* const memory)
 {
-	CLinterExpression linter(start, end, scope, stack);
-	if (linter.ParseExpression()) {
-		//linter.QuickEvalAST();
-	}
+	CLinterExpression linter(start, end, scope, memory);
+	if (!linter.ParseExpression()) 
+		return failure;
 
+	[[maybe_unused]] const auto rtObject = linter.ToRuntimeObject();
+	return success;
 }
 
-void CFileLinter::LintDeclaration(LinterIterator& start, LinterIterator& end, const WeakScope& scope, CMemory* const stack)
+Success CFileLinter::LintDeclaration(LinterIterator& start, LinterIterator& end, const WeakScope& scope, CMemory* const memory)
 {
-	CVariableDeclaration linter(start, end, scope, stack);
-	if (linter.ParseDeclaration())
-		std::cout << "variable declared\n";
+	CVariableDeclaration linter(start, end, scope, memory);
+	if (!linter.ParseDeclaration())
+		return failure;
 
+	[[maybe_unused]] const auto rtObject = linter.ToRuntimeObject();
+	return success;
 }
 
-void CFileLinter::LintFunction(LinterIterator& start, LinterIterator& end, const WeakScope& scope, CMemory* const stack)
+Success CFileLinter::LintFunction(LinterIterator& start, LinterIterator& end, const WeakScope& scope, CMemory* const memory)
 {
-	CFunctionLinter linter(start, end, scope, stack);
-	if (linter.ParseFunctionDeclaration())
-		std::cout << "function declared\n";
+	CFunctionLinter linter(start, end, scope, memory);
+	if (!linter.ParseFunction())
+		return failure;
+
+	return success;
 
 }
-Success CFileLinter::LintToken(LinterIterator& m_iterPos, LinterIterator& m_iterEnd, const WeakScope& scope, CMemory* const stack)
+Success CFileLinter::LintToken(LinterIterator& m_iterPos, LinterIterator& m_iterEnd, const WeakScope& scope, CMemory* const memory)
 {
 	if (m_iterPos == m_iterEnd)
 		return failure;
 
 	switch ((*m_iterPos)->Type()) {
 	case t_declaration:
-		LintDeclaration(m_iterPos, m_iterEnd, scope, stack);
-		[[fallthrough]];
+		return LintDeclaration(m_iterPos, m_iterEnd, scope, memory);
 	case t_int:
 	case t_double:
 	case t_string:
 	case t_name:
-		LintExpression(m_iterPos, m_iterEnd, scope, stack);
-		break;
+		return LintExpression(m_iterPos, m_iterEnd, scope, memory);
 	case t_operator:
-		LintOperator(m_iterPos, m_iterEnd, scope, stack);
-		break;
+		return LintOperator(m_iterPos, m_iterEnd, scope, memory);
 	case t_fn:
-		LintFunction(m_iterPos, m_iterEnd, scope, stack);
-		break;
+		return LintFunction(m_iterPos, m_iterEnd, scope, memory);
 	case t_error:
 	default:
 		CLinterErrors::PushError("Unexpected token", (*m_iterPos)->m_oSourcePosition);
 		return failure;
 	}
 
-	return m_iterPos != m_iterEnd ? success : failure;
 }
 Success CFileLinter::ParseFile()
 {
 
-	CStack stack;
+	CMemory globalMemory;
 
-	auto scope = std::make_shared<CScope>(&stack);
+	auto scope = std::make_shared<CScope>(&globalMemory);
 
 	while (!IsEndOfBuffer()) {
 
-		if (!LintToken(m_iterPos, m_iterEnd, scope, &stack))
+		if (!LintToken(m_iterPos, m_iterEnd, scope, &globalMemory))
 			break;
 
 		std::advance(m_iterPos, 1);

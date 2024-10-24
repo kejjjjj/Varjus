@@ -2,10 +2,10 @@
 #include "stack.hpp"
 #include "linter/token.hpp"
 #include "linter/error.hpp"
-#include "linter/linter.hpp"
 #include "linter/scopes/scope.hpp"
 #include "linter/punctuation.hpp"
 #include "linter/expressions/expression.hpp"
+#include "linter/expressions/ast.hpp"
 
 #include <cassert>
 
@@ -15,7 +15,7 @@ CVariableDeclaration::CVariableDeclaration(LinterIterator& pos, LinterIterator& 
 {
 	assert(m_pOwner != nullptr);
 }
-
+CVariableDeclaration::~CVariableDeclaration() = default;
 
 Success CVariableDeclaration::ParseDeclaration()
 {
@@ -73,7 +73,12 @@ Success CVariableDeclaration::ParseDeclaration()
 
 	//parse initializer
 	std::advance(m_iterPos, -1);
-	CFileLinter::LintExpression(m_iterPos, m_iterEnd, m_pScope, m_pOwner);
+
+	CLinterExpression linter(m_iterPos, m_iterEnd, m_pScope, m_pOwner);
+	if (!linter.ParseExpression())
+		return failure;
+
+	m_pAST = linter.ToAST();
 	return success;
 }
 
@@ -91,4 +96,11 @@ bool CVariableDeclaration::IsGlobalVariable() const noexcept
 {
 	assert(m_pOwner);
 	return !m_pOwner->IsStack();
+}
+
+RuntimeBlock CVariableDeclaration::ToRuntimeObject() const
+{
+	// yes this is very not at all undefined behavior :pagman:
+	decltype(auto) tempAST = const_cast<std::unique_ptr<AbstractSyntaxTree>&&>(std::move(m_pAST));
+	return tempAST ? std::make_unique<CCodeExpression>(std::move(tempAST)) : nullptr;
 }

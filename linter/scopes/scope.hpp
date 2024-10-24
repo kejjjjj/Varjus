@@ -6,6 +6,7 @@
 
 struct CLinterVariable;
 class CScope;
+class CCodeStructure;
 
 class CScopeLinter final
 {
@@ -22,6 +23,8 @@ private:
 	LinterIterator& m_iterEnd;
 	WeakScope m_pScope;
 	CMemory* const m_pOwner;
+
+	VectorOf<std::unique_ptr<CCodeStructure>> m_oInstructions; // sorted list of all function instructions
 };
 
 class CScope final

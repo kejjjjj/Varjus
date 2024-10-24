@@ -3,9 +3,13 @@
 #include <vector>
 #include <unordered_map>
 #include <string>
+#include <memory>
+
+#include "globalDefinitions.hpp"
 
 class CVariableDeclaration;
 class CMemory;
+struct CFunctionBlock;
 
 struct CLinterVariable final
 {
@@ -36,11 +40,13 @@ protected:
 
 class CStack final : public CMemory
 {
+	NONCOPYABLE(CStack);
 public:
-	CStack();
+	CStack(std::unique_ptr<CFunctionBlock>&& func);
 	~CStack();
 
 private:
 
 	[[nodiscard]] bool IsStack() const noexcept override { return true; }
+	std::unique_ptr<CFunctionBlock> m_pFunction;
 };

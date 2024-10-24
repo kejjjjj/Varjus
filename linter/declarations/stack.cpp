@@ -1,5 +1,7 @@
 #include "stack.hpp"
 #include "variable_declarations.hpp"
+#include "linter/functions/function.hpp"
+
 #include <cassert>
 
 CMemory::CMemory() = default;
@@ -21,5 +23,6 @@ bool CMemory::ContainsVariable(const std::string& name) const
 	return m_oVariables.contains(name);
 }
 
-CStack::CStack() = default;
+CStack::CStack(std::unique_ptr<CFunctionBlock>&& func) 
+	: m_pFunction(std::move(func)){}
 CStack::~CStack() = default;

@@ -5,6 +5,8 @@
 #include "linter/linter.hpp"
 #include "linter/error.hpp"
 
+#include "runtime/structure.hpp"
+
 #include "globalEnums.hpp"
 
 #include <cassert>
