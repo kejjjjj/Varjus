@@ -10,6 +10,7 @@
 #include "scopes/scope.hpp"
 
 #include <iostream>
+#include <cassert>
 
 CFileLinter::CFileLinter(LinterIterator& start, LinterIterator& end) : CLinter(start, end)
 {
@@ -17,6 +18,8 @@ CFileLinter::CFileLinter(LinterIterator& start, LinterIterator& end) : CLinter(s
 
 Success CFileLinter::LintOperator(LinterIterator& start, LinterIterator& end, const WeakScope& scope, CMemory* const memory)
 {
+	assert(memory && memory->IsStack());
+
 	// a new scope
 	if ((*start)->IsOperator(p_curlybracket_open)) {
 		CScopeLinter scopeLinter(start, end, scope, memory);
@@ -29,26 +32,36 @@ Success CFileLinter::LintOperator(LinterIterator& start, LinterIterator& end, co
 }
 Success CFileLinter::LintExpression(LinterIterator& start, LinterIterator& end, const WeakScope& scope, CMemory* const memory)
 {
+	assert(memory && memory->IsStack());
+
 	CLinterExpression linter(start, end, scope, memory);
 	if (!linter.ParseExpression()) 
 		return failure;
 
-	[[maybe_unused]] const auto rtObject = linter.ToRuntimeObject();
+	memory->ToStack()->AddFunctionInstruction(linter.ToRuntimeObject());
 	return success;
 }
 
 Success CFileLinter::LintDeclaration(LinterIterator& start, LinterIterator& end, const WeakScope& scope, CMemory* const memory)
 {
-	CVariableDeclaration linter(start, end, scope, memory);
+	assert(memory && memory->IsStack());
+
+	CVariableDeclarationLinter linter(start, end, scope, memory);
 	if (!linter.ParseDeclaration())
 		return failure;
 
-	[[maybe_unused]] const auto rtObject = linter.ToRuntimeObject();
+	auto&& possibleInstruction = linter.ToRuntimeObject();
+
+	if(possibleInstruction) //nullptr when no initializer
+		memory->ToStack()->AddFunctionInstruction(std::move(possibleInstruction));
+
 	return success;
 }
 
 Success CFileLinter::LintFunction(LinterIterator& start, LinterIterator& end, const WeakScope& scope, CMemory* const memory)
 {
+	assert(memory && !memory->IsStack());
+
 	CFunctionLinter linter(start, end, scope, memory);
 	if (!linter.ParseFunction())
 		return failure;
@@ -83,7 +96,8 @@ Success CFileLinter::LintToken(LinterIterator& m_iterPos, LinterIterator& m_iter
 Success CFileLinter::ParseFile()
 {
 
-	CMemory globalMemory;
+	auto thisFile = std::make_unique<CFileRuntimeData>();
+	CMemory globalMemory(&*thisFile);
 
 	auto scope = std::make_shared<CScope>(&globalMemory);
 

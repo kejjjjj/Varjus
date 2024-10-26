@@ -177,7 +177,9 @@
     <ClCompile Include="linter\token.cpp" />
     <ClCompile Include="linter\tokenizer.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="runtime\runtime.cpp" />
     <ClCompile Include="runtime\structure.cpp" />
+    <ClCompile Include="runtime\variables.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="fs\fs_globals.hpp" />
@@ -208,7 +210,9 @@
     <ClInclude Include="linter\scopes\scope.hpp" />
     <ClInclude Include="linter\token.hpp" />
     <ClInclude Include="linter\tokenizer.hpp" />
+    <ClInclude Include="runtime\runtime.hpp" />
     <ClInclude Include="runtime\structure.hpp" />
+    <ClInclude Include="runtime\variables.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="x64\Debug\scripts\script.var" />

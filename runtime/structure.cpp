@@ -1,9 +1,22 @@
+#include <algorithm>
+#include <ranges>
+
 #include "runtime/structure.hpp"
 #include "linter/expressions/ast.hpp"
+#include "linter/functions/function.hpp"
 
-CCodeStructure::CCodeStructure() = default;
-CCodeStructure::~CCodeStructure() = default;
+CRuntimeStructure::CRuntimeStructure() = default;
+CRuntimeStructure::~CRuntimeStructure() = default;
 
-CCodeExpression::CCodeExpression(std::unique_ptr<AbstractSyntaxTree>&& ast) :
+CRuntimeFunction::CRuntimeFunction(CFunctionBlock& linterFunction) :
+	m_sName(linterFunction.m_sName),
+	uNumParameters(linterFunction.m_uNumParameters),
+	m_oInstructions(std::move(linterFunction.m_oInstructions))
+{
+
+}
+CRuntimeFunction::~CRuntimeFunction() = default;
+
+CRuntimeExpression::CRuntimeExpression(std::unique_ptr<AbstractSyntaxTree>&& ast) :
 	m_pAST(std::move(ast)){}
-CCodeExpression::~CCodeExpression() = default;
+CRuntimeExpression::~CRuntimeExpression() = default;

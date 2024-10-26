@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 #include <memory>
-
+#include <string>
 #include "globalDefinitions.hpp"
 
 /***********************************************************************
@@ -11,45 +11,58 @@ class AbstractSyntaxTree;
 
 enum EStructureType
 {
+	st_function,
 	st_expression
 };
 
-class CCodeFunction;
+class CRuntimeFunction;
+struct CFunctionBlock;
 
-class CCodeStructure
+class CRuntimeStructure
 {
-	NONCOPYABLE(CCodeStructure);
+	NONCOPYABLE(CRuntimeStructure);
 public:
-	CCodeStructure();
-	virtual ~CCodeStructure();
+	CRuntimeStructure();
+	virtual ~CRuntimeStructure();
 	[[nodiscard]] virtual constexpr EStructureType Type() const noexcept = 0;
 
-private:
-	CCodeFunction* m_pOwner{nullptr};
-};
-
-class CCodeFunction final : public CCodeStructure
-{
-	NONCOPYABLE(CCodeFunction);
-public:
 protected:
-	[[nodiscard]] constexpr EStructureType Type() const noexcept { return st_expression; };
-
-	std::vector<std::unique_ptr<CCodeStructure>> m_oInstructions;
+	CRuntimeFunction* m_pOwner{nullptr};
 };
-class CCodeExpression final : public CCodeStructure
+
+class CRuntimeFunction final : public CRuntimeStructure
 {
-	NONCOPYABLE(CCodeExpression);
+	NONCOPYABLE(CRuntimeFunction);
+
 public:
-	CCodeExpression(std::unique_ptr<AbstractSyntaxTree>&& ast);
-	~CCodeExpression();
+	CRuntimeFunction(CFunctionBlock& linterFunction);
+	~CRuntimeFunction();
+
+	auto& GetName() const noexcept { return m_sName; }
+
+protected:
+	[[nodiscard]] constexpr EStructureType Type() const noexcept { return st_function; };
+
+	std::string m_sName;
+	std::size_t uNumParameters{ 0u };
+	std::vector<std::unique_ptr<CRuntimeStructure>> m_oInstructions;
+};
+
+
+class CRuntimeExpression final : public CRuntimeStructure
+{
+	NONCOPYABLE(CRuntimeExpression);
+public:
+	CRuntimeExpression(std::unique_ptr<AbstractSyntaxTree>&& ast);
+	~CRuntimeExpression();
 
 	std::unique_ptr<AbstractSyntaxTree> m_pAST;
 protected:
 	[[nodiscard]] constexpr EStructureType Type() const noexcept { return st_expression;};
 };
 
-using RuntimeBlock = std::unique_ptr<CCodeStructure>;
+using RuntimeBlock = std::unique_ptr<CRuntimeStructure>;
+using RuntimeFunction = std::unique_ptr<CRuntimeFunction>;
 
 class IRuntimeBlock
 {
@@ -58,4 +71,16 @@ public:
 
 protected:
 	virtual RuntimeBlock ToRuntimeObject() const = 0;
+};
+
+class CFileRuntimeData final
+{
+	friend class CProgramRuntime;
+	NONCOPYABLE(CFileRuntimeData)
+public:
+	CFileRuntimeData() = default;
+	constexpr void AddFunction(RuntimeFunction&& func) { m_oFunctions.emplace_back(std::move(func)); }
+
+private:
+	std::vector<RuntimeFunction> m_oFunctions;
 };

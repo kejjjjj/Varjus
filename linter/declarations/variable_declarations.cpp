@@ -10,14 +10,14 @@
 #include <cassert>
 
 
-CVariableDeclaration::CVariableDeclaration(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack) :
+CVariableDeclarationLinter::CVariableDeclarationLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack) :
 	CLinterSingle(pos, end), m_pScope(scope), m_pOwner(stack)
 {
 	assert(m_pOwner != nullptr);
 }
-CVariableDeclaration::~CVariableDeclaration() = default;
+CVariableDeclarationLinter::~CVariableDeclarationLinter() = default;
 
-Success CVariableDeclaration::ParseDeclaration()
+Success CVariableDeclarationLinter::ParseDeclaration()
 {
 	if (IsEndOfBuffer()) {
 		CLinterErrors::PushError("expected \"let\", but reached end of file", (*std::prev(m_iterPos))->m_oSourcePosition);
@@ -78,29 +78,29 @@ Success CVariableDeclaration::ParseDeclaration()
 	if (!linter.ParseExpression())
 		return failure;
 
-	m_pAST = linter.ToAST();
+	m_pInitializerAST = linter.ToAST();
 	return success;
 }
 
 
-bool CVariableDeclaration::IsDeclaration(const CToken* token) const noexcept
+bool CVariableDeclarationLinter::IsDeclaration(const CToken* token) const noexcept
 {
 	return token && token->Type() == t_declaration;
 }
-bool CVariableDeclaration::IsIdentifier(const CToken* token) const noexcept
+bool CVariableDeclarationLinter::IsIdentifier(const CToken* token) const noexcept
 {
 	return token && token->Type() == t_name;
 }
 
-bool CVariableDeclaration::IsGlobalVariable() const noexcept
+bool CVariableDeclarationLinter::IsGlobalVariable() const noexcept
 {
 	assert(m_pOwner);
 	return !m_pOwner->IsStack();
 }
 
-RuntimeBlock CVariableDeclaration::ToRuntimeObject() const
+RuntimeBlock CVariableDeclarationLinter::ToRuntimeObject() const
 {
 	// yes this is very not at all undefined behavior :pagman:
-	decltype(auto) tempAST = const_cast<std::unique_ptr<AbstractSyntaxTree>&&>(std::move(m_pAST));
-	return tempAST ? std::make_unique<CCodeExpression>(std::move(tempAST)) : nullptr;
+	decltype(auto) tempAST = const_cast<std::unique_ptr<AbstractSyntaxTree>&&>(std::move(m_pInitializerAST));
+	return tempAST ? std::make_unique<CRuntimeExpression>(std::move(tempAST)) : nullptr;
 }

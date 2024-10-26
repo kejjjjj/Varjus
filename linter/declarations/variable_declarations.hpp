@@ -7,15 +7,15 @@
 
 class CMemory;
 
-class CVariableDeclaration final : public CLinterSingle<CToken>, protected IRuntimeBlock
+class CVariableDeclarationLinter final : public CLinterSingle<CToken>, protected IRuntimeBlock
 {
 	friend class CMemory;
-	NONCOPYABLE(CVariableDeclaration);
+	NONCOPYABLE(CVariableDeclarationLinter);
 
 public:
-	CVariableDeclaration() = delete;
-	CVariableDeclaration(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack);
-	~CVariableDeclaration();
+	CVariableDeclarationLinter() = delete;
+	CVariableDeclarationLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack);
+	~CVariableDeclarationLinter();
 
 	[[nodiscard]] Success ParseDeclaration();
 
@@ -31,5 +31,5 @@ private:
 	WeakScope m_pScope;
 	CMemory* const m_pOwner = 0;
 
-	std::unique_ptr<AbstractSyntaxTree> m_pAST;
+	std::unique_ptr<AbstractSyntaxTree> m_pInitializerAST;
 };

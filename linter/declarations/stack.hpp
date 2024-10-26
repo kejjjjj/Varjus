@@ -7,8 +7,12 @@
 
 #include "globalDefinitions.hpp"
 
-class CVariableDeclaration;
+class CVariableDeclarationLinter;
 class CMemory;
+class CStack;
+class CRuntimeStructure;
+class CFileRuntimeData;
+
 struct CFunctionBlock;
 
 struct CLinterVariable final
@@ -23,8 +27,9 @@ struct CLinterVariable final
 
 class CMemory
 {
+	friend class CFunctionLinter;
 public:
-	CMemory();
+	CMemory(CFileRuntimeData* const file);
 	virtual ~CMemory();
 
 	[[maybe_unused]] CLinterVariable* DeclareVariable(const std::string& var);
@@ -33,19 +38,24 @@ public:
 	[[nodiscard]] bool ContainsVariable(const std::string& name) const;
 
 	[[nodiscard]] virtual bool IsStack() const noexcept { return false; }
+	[[nodiscard]] CStack* ToStack();
+	[[nodiscard]] auto ToStack() const;
 
 protected:
 	std::unordered_map<std::string, CLinterVariable> m_oVariables;
+	CFileRuntimeData* const m_pFile{};
 };
+
+using RuntimeBlock = std::unique_ptr<CRuntimeStructure>;
 
 class CStack final : public CMemory
 {
 	NONCOPYABLE(CStack);
 public:
-	CStack(std::unique_ptr<CFunctionBlock>&& func);
+	CStack(std::unique_ptr<CFunctionBlock>&& func, CFileRuntimeData* const file);
 	~CStack();
 
-private:
+	void AddFunctionInstruction(RuntimeBlock&& block) const;
 
 	[[nodiscard]] bool IsStack() const noexcept override { return true; }
 	std::unique_ptr<CFunctionBlock> m_pFunction;

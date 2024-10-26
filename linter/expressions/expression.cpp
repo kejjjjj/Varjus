@@ -161,5 +161,5 @@ std::string CLinterExpression::SortedToString() const noexcept
 
 RuntimeBlock CLinterExpression::ToRuntimeObject() const
 {
-	return std::make_unique<CCodeExpression>(ToAST());
+	return std::make_unique<CRuntimeExpression>(ToAST());
 }

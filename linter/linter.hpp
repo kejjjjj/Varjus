@@ -4,9 +4,10 @@
 #include "expressions/definitions.hpp"
 
 class CMemory;
-class CCodeStructure;
+class CRuntimeStructure;
+class CFileRuntimeData;
 
-using RuntimeBlock = std::unique_ptr<CCodeStructure>;
+using RuntimeBlock = std::unique_ptr<CRuntimeStructure>;
 
 class CFileLinter final : public CLinter<CToken>
 {
@@ -23,9 +24,9 @@ public:
 	static Success LintFunction(LinterIterator& start, LinterIterator& end, const WeakScope& scope, CMemory* const stack);
 
 	[[nodiscard]] Success ParseFile();
+
 private:
-
-
+	std::unique_ptr<CFileRuntimeData> m_pFile;
 };
 
 

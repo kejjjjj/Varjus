@@ -4,7 +4,7 @@
 
 #include <cassert>
 
-CMemory::CMemory() = default;
+CMemory::CMemory(CFileRuntimeData* const file) : m_pFile(file){}
 CMemory::~CMemory() = default;
 
 CLinterVariable* CMemory::DeclareVariable(const std::string& var)
@@ -23,6 +23,14 @@ bool CMemory::ContainsVariable(const std::string& name) const
 	return m_oVariables.contains(name);
 }
 
-CStack::CStack(std::unique_ptr<CFunctionBlock>&& func) 
-	: m_pFunction(std::move(func)){}
+CStack* CMemory::ToStack() { return dynamic_cast<CStack*>(this); }
+auto CMemory::ToStack() const { return dynamic_cast<const CStack*>(this); }
+
+CStack::CStack(std::unique_ptr<CFunctionBlock>&& func, CFileRuntimeData* const file)
+	: CMemory(file), m_pFunction(std::move(func)){}
 CStack::~CStack() = default;
+
+void CStack::AddFunctionInstruction(RuntimeBlock&& block) const
+{
+	m_pFunction->m_oInstructions.emplace_back(std::move(block));
+}

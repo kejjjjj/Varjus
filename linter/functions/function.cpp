@@ -7,6 +7,7 @@
 #include "linter/punctuation.hpp"
 #include "linter/scopes/scope.hpp"
 #include "linter/linter.hpp"
+#include "linter/declarations/stack.hpp"
 #include "globalEnums.hpp"
 
 #include "runtime/structure.hpp"
@@ -26,8 +27,12 @@ Success CFunctionLinter::ParseFunction()
 	if (!ParseFunctionScope())
 		return failure;
 
+	assert(m_pOwner && m_pOwner->m_pFile);
 
-
+	auto asGeneric = ToRuntimeObject();
+	
+	//base -> derived conversion 
+	m_pOwner->m_pFile->AddFunction(std::unique_ptr<CRuntimeFunction>(static_cast<CRuntimeFunction*>(asGeneric.release())));
 	return success;
 }
 
@@ -72,9 +77,8 @@ Success CFunctionLinter::ParseFunctionScope()
 		return failure;
 	}
 
-	auto stack = CStack(ToFunction());
-
-	auto scope = CScopeLinter(m_iterPos, m_iterEnd, m_pScope, &stack);
+	m_pThisStack = std::make_unique<CStack>(ToFunction(), m_pOwner->m_pFile);
+	auto scope = CScopeLinter(m_iterPos, m_iterEnd, m_pScope, &*m_pThisStack);
 	if (!scope.ParseScope()) {
 		return failure;
 	}
@@ -138,8 +142,20 @@ bool CFunctionLinter::IsIdentifier(const CToken* token) const noexcept
 
 std::unique_ptr<CFunctionBlock> CFunctionLinter::ToFunction() const
 {
+	assert(m_pOwner && m_pOwner->IsStack());
+
 	return std::make_unique<CFunctionBlock>(CFunctionBlock{
 		.m_sName=m_oFunctionName,
-		.m_oParameters=m_oParameters,
+		.m_uNumParameters =m_oParameters.size(),
+		.m_pStack=m_pOwner->ToStack()
 	});
+}
+RuntimeBlock CFunctionLinter::ToRuntimeObject() const
+{
+	assert(m_pThisStack != nullptr && m_pThisStack->IsStack());
+	
+	const auto stack = m_pThisStack->ToStack();
+	assert(stack->m_pFunction != nullptr);
+
+	return std::make_unique<CRuntimeFunction>(*stack->m_pFunction);
 }

@@ -39,8 +39,9 @@ public:
 
 	constexpr auto& Source() const noexcept { return m_sSource; }
 
-protected:
+private:
 	TokenType m_eTokenType{ t_error };
+protected:
 	std::string m_sSource;
 };
 

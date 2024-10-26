@@ -73,12 +73,12 @@ public:
 	~VariableASTNode();
 
 	[[nodiscard]] constexpr bool IsVariable() const noexcept override { return true; }
-
 	[[nodiscard]] std::string ToStringPolymorphic() const noexcept override;
 
 
-private:
 
+private:
+	
 	std::unique_ptr<COperandBase> m_pOperand;
 };
 
