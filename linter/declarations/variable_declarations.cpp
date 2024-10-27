@@ -85,11 +85,11 @@ Success CVariableDeclarationLinter::ParseDeclaration()
 
 bool CVariableDeclarationLinter::IsDeclaration(const CToken* token) const noexcept
 {
-	return token && token->Type() == t_declaration;
+	return token && token->Type() == tt_declaration;
 }
 bool CVariableDeclarationLinter::IsIdentifier(const CToken* token) const noexcept
 {
-	return token && token->Type() == t_name;
+	return token && token->Type() == tt_name;
 }
 
 bool CVariableDeclarationLinter::IsGlobalVariable() const noexcept

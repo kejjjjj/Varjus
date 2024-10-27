@@ -29,9 +29,6 @@ public:
 
 	[[maybe_unused]] Success ParseExpression(std::optional<PairMatcher> m_oEndOfExpression=std::nullopt);
 	[[nodiscard]] std::string ToString() const noexcept;
-	[[nodiscard]] std::string SortedToString() const noexcept;
-
-	void QuickEvalAST();
 
 	std::unique_ptr<AbstractSyntaxTree> ToAST() const;
 
@@ -39,7 +36,6 @@ public:
 
 private:
 	[[nodiscard]] bool EndOfExpression(const std::optional<PairMatcher>& eoe) const noexcept;
-	[[nodiscard]] int QuickEvalASTInternal(const AbstractSyntaxTree* node);
 
 	//std::optional<PairMatcher> m_oEndOfExpression;
 	UniquePointerVector<CLinterSubExpression> m_oSubExpressions;

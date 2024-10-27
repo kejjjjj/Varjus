@@ -33,7 +33,7 @@ int main()
 
     try {
 
-		auto tokens = tokenizer.GetResult();
+		auto tokens = tokenizer.GetTokens();
 
 		auto begin = tokens.begin();
         auto end = tokens.end();

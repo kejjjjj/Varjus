@@ -16,21 +16,25 @@ enum EStructureType
 };
 
 class CRuntimeFunction;
+class CFunction;
+class IValue;
+
 struct CFunctionBlock;
 
-class CRuntimeStructure
+class IRuntimeStructure
 {
-	NONCOPYABLE(CRuntimeStructure);
+	NONCOPYABLE(IRuntimeStructure);
 public:
-	CRuntimeStructure();
-	virtual ~CRuntimeStructure();
+	IRuntimeStructure();
+	virtual ~IRuntimeStructure();
+
 	[[nodiscard]] virtual constexpr EStructureType Type() const noexcept = 0;
+	[[nodiscard]] virtual bool Execute([[maybe_unused]]CFunction* const thisFunction) { return false; };
 
 protected:
-	CRuntimeFunction* m_pOwner{nullptr};
 };
 
-class CRuntimeFunction final : public CRuntimeStructure
+class CRuntimeFunction final : public IRuntimeStructure
 {
 	NONCOPYABLE(CRuntimeFunction);
 
@@ -38,30 +42,39 @@ public:
 	CRuntimeFunction(CFunctionBlock& linterFunction);
 	~CRuntimeFunction();
 
-	auto& GetName() const noexcept { return m_sName; }
-
+	constexpr auto& GetName() const noexcept { return m_sName; }
+	[[maybe_unused]] bool Execute(CFunction* const thisFunction) override;
 protected:
+
 	[[nodiscard]] constexpr EStructureType Type() const noexcept { return st_function; };
 
 	std::string m_sName;
-	std::size_t uNumParameters{ 0u };
-	std::vector<std::unique_ptr<CRuntimeStructure>> m_oInstructions;
+	std::size_t m_uNumParameters{ 0u };
+	std::size_t m_uNumVariables{ 0u };
+	std::vector<std::unique_ptr<IRuntimeStructure>> m_oInstructions;
 };
 
 
-class CRuntimeExpression final : public CRuntimeStructure
+class CRuntimeExpression final : public IRuntimeStructure
 {
 	NONCOPYABLE(CRuntimeExpression);
 public:
 	CRuntimeExpression(std::unique_ptr<AbstractSyntaxTree>&& ast);
 	~CRuntimeExpression();
 
-	std::unique_ptr<AbstractSyntaxTree> m_pAST;
+	[[maybe_unused]] bool Execute(CFunction* const thisFunction) override;
+
 protected:
 	[[nodiscard]] constexpr EStructureType Type() const noexcept { return st_expression;};
+
+private:
+	IValue* EvaluateLeaf(CFunction* const thisFunction, AbstractSyntaxTree* node);
+	IValue* Evaluate(CFunction* const thisFunction, AbstractSyntaxTree* node);
+	std::unique_ptr<AbstractSyntaxTree> m_pAST;
+
 };
 
-using RuntimeBlock = std::unique_ptr<CRuntimeStructure>;
+using RuntimeBlock = std::unique_ptr<IRuntimeStructure>;
 using RuntimeFunction = std::unique_ptr<CRuntimeFunction>;
 
 class IRuntimeBlock

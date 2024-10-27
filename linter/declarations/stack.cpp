@@ -22,7 +22,10 @@ bool CMemory::ContainsVariable(const std::string& name) const
 {
 	return m_oVariables.contains(name);
 }
-
+std::size_t CMemory::GetVariableCount() const noexcept
+{
+	return m_oVariables.size();
+}
 CStack* CMemory::ToStack() { return dynamic_cast<CStack*>(this); }
 auto CMemory::ToStack() const { return dynamic_cast<const CStack*>(this); }
 

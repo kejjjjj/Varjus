@@ -3,6 +3,7 @@
 #include "linter/punctuation.hpp"
 #include "linter/expressions/operator.hpp"
 #include "linter/expressions/operand.hpp"
+#include "linter/declarations/stack.hpp"
 
 #include "linter/token.hpp"
 
@@ -35,9 +36,10 @@ std::unique_ptr<AbstractSyntaxTree> AbstractSyntaxTree::GetPolymorphic(VectorOf<
 		assert(operators.empty());
 		const auto operand = operands.front();
 		if (operand->IsImmediate()) {
-			node = std::make_unique<ConstantASTNode>(std::move(operand->GetOperandRaw()));
+			const auto identifier = operand->GetOperand()->GetIdentifier();
+			node = std::make_unique<ConstantASTNode>(identifier->ToData(), identifier->GetImmediateType());
 		} else if (operand->IsVariable()) {
-			node = std::make_unique<VariableASTNode>(std::move(operand->GetOperandRaw()));
+			node = std::make_unique<VariableASTNode>(operand->GetVariable()->m_uIndex);
 		} else if (operand->IsExpression()) {
 			node = operand->ExpressionToAST();
 		}
@@ -111,44 +113,6 @@ OperatorIterator AbstractSyntaxTree::FindLowestPriorityOperator(VectorOf<CLinter
 
 	return lowestPriorityOperatorItr;
 }
-
-
-std::string AbstractSyntaxTree::ToString() const noexcept
-{
-	if (!this)
-		return "";
-
-	std::stringstream result;
-
-	auto levels = VectorOf<VectorOf<std::string>>{};
-	ToStringInternal(0u, 0, GetLeftBranchDepth(), levels);
-
-	for (const auto& values : levels) {
-		for (const auto& value : values) {
-			result << value << " ";
-		}
-		result << "\n";
-	}
-
-	return result.str();
-}
-
-void AbstractSyntaxTree::ToStringInternal(std::size_t depth, std::ptrdiff_t horzAlign, std::size_t totalWidth, VectorOf<VectorOf<std::string>>& levels) const noexcept
-{
-	if (!this)
-		return;
-
-	const auto v = ToStringPolymorphic();
-
-	if (levels.size() <= depth)
-		levels.resize(depth+1u);
-
-	levels[depth].push_back(std::string(totalWidth - horzAlign, ' ') + v);
-
-	left->ToStringInternal(depth + 1, horzAlign - 1, totalWidth, levels);
-	right->ToStringInternal(depth + 1, horzAlign + 1, totalWidth, levels);
-}
-
 std::size_t AbstractSyntaxTree::GetLeftBranchDepth() const noexcept
 {
 	if (!left && !right)
@@ -178,31 +142,11 @@ std::size_t AbstractSyntaxTree::GetLeftBranchDepth() const noexcept
 /***********************************************************************
  > 
 ***********************************************************************/
-VariableASTNode::VariableASTNode(std::unique_ptr<COperandBase>&& owner) 
-	: m_pOperand(std::move(owner)) {}
+VariableASTNode::VariableASTNode(std::size_t variableIndex)
+	: m_uIndex(variableIndex) {}
 VariableASTNode::~VariableASTNode() = default;
 
-std::string VariableASTNode::ToStringPolymorphic() const noexcept
-{
-	assert(m_pOperand);
-	assert(m_pOperand->Type() == identifier);
 
-	return m_pOperand->GetIdentifier()->GetResult()->Source();
-
-}
-
-ConstantASTNode::ConstantASTNode(std::unique_ptr<COperandBase>&& owner) 
-	: m_pOperand(std::move(owner)) {}
+ConstantASTNode::ConstantASTNode(const std::string& data, EValueType datatype)
+	: m_pConstant(data), m_eDataType(datatype) {}
 ConstantASTNode::~ConstantASTNode() = default;
-std::string ConstantASTNode::ToStringPolymorphic() const noexcept
-{
-	assert(m_pOperand);
-	assert(m_pOperand->Type() == identifier);
-	return m_pOperand->GetIdentifier()->GetResult()->Source();
-
-}
-
-std::string OperatorASTNode::ToStringPolymorphic() const noexcept
-{
-	return std::string(punctuations[m_ePunctuation].m_sIdentifier);
-}

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "definitions.hpp"
+#include "globalDefinitions.hpp"
 
 class CMemory;
 class CScope;
@@ -15,9 +16,12 @@ public:
 	~CIdentifierLinter();
 
 	[[nodiscard]] Success ParseIdentifier();
-	[[nodiscard]] auto GetResult() const { return m_pToken; }
+	[[nodiscard]] auto GetToken() const { return m_pToken; }
 
-	[[nodiscard]] std::int64_t ToInt() const noexcept;
+	[[nodiscard]] bool IsImmediate() const noexcept;
+	[[nodiscard]] EValueType GetImmediateType() const noexcept;
+	[[nodiscard]] std::size_t GetImmediateSize() const noexcept;
+	[[nodiscard]] std::string ToData() const noexcept;
 
 private:
 	[[nodiscard]] bool CheckIdentifier(const CToken* token) const noexcept;

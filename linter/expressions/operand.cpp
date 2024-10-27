@@ -55,7 +55,7 @@ Success CLinterOperand::ParseOperand()
 	//TODO: Parse postfix
 
 	// Save results
-	m_oUnaryTokens = unaryLinter.GetResult();
+	m_oUnaryTokens = unaryLinter.GetTokens();
 	return success;
 }
 bool CLinterOperand::IsExpression() const noexcept
@@ -87,8 +87,8 @@ bool CLinterOperand::IsImmediate() const noexcept
 	if (IsExpression())
 		return false;
 
-	const auto type = m_pOperand->GetIdentifier()->GetResult()->Type();
-	return type == t_int || type == t_double;
+	const auto type = m_pOperand->GetIdentifier()->GetToken()->Type();
+	return type == tt_int || type == tt_double;
 }
 const CLinterVariable* CLinterOperand::GetVariable() const noexcept
 {
@@ -107,7 +107,7 @@ std::string CLinterOperand::ToString() const noexcept
 		result += unary->Source();
 	}
 
-	result += m_pOperand->GetIdentifier()->GetResult()->Source();
+	result += m_pOperand->GetIdentifier()->GetToken()->Source();
 	return result;
 }
 

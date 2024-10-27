@@ -1,9 +1,9 @@
 #pragma once
 
 #include <memory>
-#include <iostream>
-#include "definitions.hpp"
 
+#include "globalDefinitions.hpp"
+#include "definitions.hpp"
 #include "linter/punctuation.hpp"
 
 class AbstractSyntaxTree;
@@ -44,20 +44,15 @@ public:
 
 public:
 	[[nodiscard]] static std::unique_ptr<AbstractSyntaxTree> CreateAST(VectorOf<CLinterOperand*>& operands, VectorOf<CLinterOperator*>& operators);
-	[[nodiscard]] std::string ToString() const noexcept;
 
 private:
-	[[nodiscard]] virtual std::string ToStringPolymorphic() const noexcept { return ""; };
 
-	static std::unique_ptr<AbstractSyntaxTree> GetPolymorphic(VectorOf<CLinterOperand*>& operands, VectorOf<CLinterOperator*>& operators);
-
-
-protected:
+	[[nodiscard]] static std::unique_ptr<AbstractSyntaxTree> GetPolymorphic(VectorOf<CLinterOperand*>& operands, VectorOf<CLinterOperator*>& operators);
 	[[nodiscard]] static OperatorIterator FindLowestPriorityOperator(VectorOf<CLinterOperator*>& operators);
-
+	
 	void CreateRecursively(VectorOf<CLinterOperand*>& operands, VectorOf<CLinterOperator*>& operators);
 
-	void ToStringInternal(std::size_t depth, std::ptrdiff_t horzAlign, std::size_t totalWidth, VectorOf<VectorOf<std::string>>& levels) const noexcept;
+protected:
 
 	[[nodiscard]] std::size_t GetLeftBranchDepth() const noexcept;
 
@@ -69,17 +64,14 @@ class VariableASTNode final : public AbstractSyntaxTree
 	friend class AstToInstructionConverter;
 	NONCOPYABLE(VariableASTNode);
 public:
-	VariableASTNode(std::unique_ptr<COperandBase>&& owner);
+	VariableASTNode(std::size_t variableIndex);
 	~VariableASTNode();
 
 	[[nodiscard]] constexpr bool IsVariable() const noexcept override { return true; }
-	[[nodiscard]] std::string ToStringPolymorphic() const noexcept override;
-
-
+	std::size_t m_uIndex{};
 
 private:
-	
-	std::unique_ptr<COperandBase> m_pOperand;
+
 };
 
 class ConstantASTNode final : public AbstractSyntaxTree
@@ -88,16 +80,15 @@ class ConstantASTNode final : public AbstractSyntaxTree
 
 public:
 
-	ConstantASTNode(std::unique_ptr<COperandBase>&& owner);
+	ConstantASTNode(const std::string& data, EValueType datatype);
 	~ConstantASTNode();
 
 	[[nodiscard]] constexpr bool IsLeaf() const noexcept override { return true; }
 	[[nodiscard]] constexpr bool IsConstant() const noexcept override { return true; }
 
-	[[nodiscard]] std::string ToStringPolymorphic() const noexcept override;
-
-private:
-	std::unique_ptr<COperandBase> m_pOperand;
+	// contains the raw data for the constant
+	std::string m_pConstant;
+	EValueType m_eDataType{};
 };
 
 class OperatorASTNode final : public AbstractSyntaxTree
@@ -108,8 +99,6 @@ public:
 	OperatorASTNode() = default;
 	OperatorASTNode(Punctuation punc) : m_ePunctuation(punc) {}
 	[[nodiscard]] constexpr bool IsOperator() const noexcept override { return true; }
-
-	[[nodiscard]] std::string ToStringPolymorphic() const noexcept override;
 
 //private:
 	Punctuation m_ePunctuation;

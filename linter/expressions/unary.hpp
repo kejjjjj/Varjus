@@ -10,7 +10,7 @@ public:
 	~CUnaryLinter();
 
 	[[maybe_unused]] Success ParseUnary();
-	[[nodiscard]] auto& GetResult() const { return m_oTokens; }
+	[[nodiscard]] auto& GetTokens() const { return m_oTokens; }
 
 private:
 

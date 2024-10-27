@@ -33,7 +33,7 @@ public:
 	~CLinterOperatorParser();
 
 	[[maybe_unused]] Success ParseOperator();
-	[[nodiscard]] auto GetResult() const { return m_pToken; }
+	[[nodiscard]] auto GetToken() const { return m_pToken; }
 
 	[[nodiscard]] OperatorPriority GetPriority() const noexcept;
 

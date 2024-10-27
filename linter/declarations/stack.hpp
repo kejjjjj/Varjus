@@ -10,7 +10,7 @@
 class CVariableDeclarationLinter;
 class CMemory;
 class CStack;
-class CRuntimeStructure;
+class IRuntimeStructure;
 class CFileRuntimeData;
 
 struct CFunctionBlock;
@@ -32,21 +32,21 @@ public:
 	CMemory(CFileRuntimeData* const file);
 	virtual ~CMemory();
 
+	[[nodiscard]] virtual bool IsStack() const noexcept { return false; }
+
 	[[maybe_unused]] CLinterVariable* DeclareVariable(const std::string& var);
 	[[nodiscard]] CLinterVariable* GetVariable(const std::string& var);
-
 	[[nodiscard]] bool ContainsVariable(const std::string& name) const;
+	[[nodiscard]] std::size_t GetVariableCount() const noexcept;
 
-	[[nodiscard]] virtual bool IsStack() const noexcept { return false; }
 	[[nodiscard]] CStack* ToStack();
 	[[nodiscard]] auto ToStack() const;
-
 protected:
 	std::unordered_map<std::string, CLinterVariable> m_oVariables;
 	CFileRuntimeData* const m_pFile{};
 };
 
-using RuntimeBlock = std::unique_ptr<CRuntimeStructure>;
+using RuntimeBlock = std::unique_ptr<IRuntimeStructure>;
 
 class CStack final : public CMemory
 {

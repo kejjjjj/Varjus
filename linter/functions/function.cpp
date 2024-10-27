@@ -111,6 +111,18 @@ Success CFunctionLinter::ParseFunctionParametersRecursively()
 		return failure;
 	}
 	
+	if (const auto scope = m_pScope.lock()) {
+		if (!scope->DeclareVariable((*m_iterPos)->Source())) {
+			CLinterErrors::PushError("variable " + (*m_iterPos)->Source() + " already declared", (*m_iterPos)->m_oSourcePosition);
+			return failure;
+		}
+
+		m_pOwner->DeclareVariable((*m_iterPos)->Source());
+	} else {
+		CLinterErrors::PushError("!(const auto scope = currentScope.lock())", (*m_iterPos)->m_oSourcePosition);
+		return failure;
+	}
+
 	m_oParameters.push_back((*m_iterPos)->Source());
 
 	std::advance(m_iterPos, 1); //skip identifier
@@ -132,11 +144,11 @@ Success CFunctionLinter::ParseFunctionParametersRecursively()
 }
 bool CFunctionLinter::IsFn(const CToken* token) const noexcept
 {
-	return token && token->Type() == t_fn;
+	return token && token->Type() == tt_fn;
 }
 bool CFunctionLinter::IsIdentifier(const CToken* token) const noexcept
 {
-	return token && token->Type() == t_name;
+	return token && token->Type() == tt_name;
 }
 
 

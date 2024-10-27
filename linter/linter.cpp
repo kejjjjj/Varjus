@@ -75,18 +75,18 @@ Success CFileLinter::LintToken(LinterIterator& m_iterPos, LinterIterator& m_iter
 		return failure;
 
 	switch ((*m_iterPos)->Type()) {
-	case t_declaration:
+	case tt_declaration:
 		return LintDeclaration(m_iterPos, m_iterEnd, scope, memory);
-	case t_int:
-	case t_double:
-	case t_string:
-	case t_name:
+	case tt_int:
+	case tt_double:
+	case tt_string:
+	case tt_name:
 		return LintExpression(m_iterPos, m_iterEnd, scope, memory);
-	case t_operator:
+	case tt_operator:
 		return LintOperator(m_iterPos, m_iterEnd, scope, memory);
-	case t_fn:
+	case tt_fn:
 		return LintFunction(m_iterPos, m_iterEnd, scope, memory);
-	case t_error:
+	case tt_error:
 	default:
 		CLinterErrors::PushError("Unexpected token", (*m_iterPos)->m_oSourcePosition);
 		return failure;
@@ -97,13 +97,11 @@ Success CFileLinter::ParseFile()
 {
 
 	auto thisFile = std::make_unique<CFileRuntimeData>();
-	CMemory globalMemory(&*thisFile);
-
-	auto scope = std::make_shared<CScope>(&globalMemory);
+	CMemory globalMemory(thisFile.get());
+	auto globalScope = std::make_shared<CScope>(&globalMemory);
 
 	while (!IsEndOfBuffer()) {
-
-		if (!LintToken(m_iterPos, m_iterEnd, scope, &globalMemory))
+		if (!LintToken(m_iterPos, m_iterEnd, globalScope, &globalMemory))
 			break;
 
 		std::advance(m_iterPos, 1);

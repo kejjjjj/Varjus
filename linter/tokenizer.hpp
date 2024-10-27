@@ -16,7 +16,7 @@ public:
 	~CBufferTokenizer();
 	[[nodiscard]] Success Tokenize();
 
-	[[nodiscard]] std::vector<CToken*> GetResult();
+	[[nodiscard]] std::vector<CToken*> GetTokens();
 
 private:
 

@@ -33,7 +33,7 @@ Success CIdentifierLinter::ParseIdentifier()
 
 	m_pToken = &*iterPos;
 
-	if (m_pToken->Type() == TokenType::t_name){
+	if (m_pToken->Type() == TokenType::tt_name){
 		if (const auto scope = m_pScope.lock()) {
 			if (!scope->VariableExists(m_pToken->Source())) {
 				CLinterErrors::PushError("Use of an undefined variable: " + m_pToken->Source(), m_pToken->m_oSourcePosition);
@@ -48,16 +48,67 @@ Success CIdentifierLinter::ParseIdentifier()
 	std::advance(m_iterPos, 1);
 	return success;
 }
+bool CIdentifierLinter::IsImmediate() const noexcept
+{
+	auto type = m_pToken->Type();
+	return type == tt_int || type == tt_double;
+}
+#pragma pack(push)
+#pragma warning(disable : 4061)
+#pragma warning(disable : 4062)
+EValueType CIdentifierLinter::GetImmediateType() const noexcept
+{
+	assert(IsImmediate());
+
+	switch (m_pToken->Type()) {
+	case TokenType::tt_int:
+		return EValueType::t_int;
+	case TokenType::tt_double:
+		return EValueType::t_double;
+	default:
+		assert(false);
+		return t_undefined;
+	}
+}
+std::size_t CIdentifierLinter::GetImmediateSize() const noexcept
+{
+	assert(IsImmediate());
+
+	switch (m_pToken->Type()) {
+	case TokenType::tt_int:
+		return sizeof(std::int64_t);
+	case TokenType::tt_double:
+		return sizeof(double);
+	default:
+		assert(false);
+		return 0u;
+	}
+}
+
+std::string CIdentifierLinter::ToData() const noexcept
+{
+	std::string result;
+	auto& string = m_pToken->Source();
+	
+	switch (GetImmediateType()) {
+
+	case t_int:
+		result = std::string(sizeof(std::int64_t), 0);
+		std::from_chars(string.c_str(), string.c_str() + string.size(), reinterpret_cast<std::int64_t&>(*result.data()));
+		break;
+	case t_double:
+		result = std::string(sizeof(double), 0);
+		std::from_chars(string.c_str(), string.c_str() + string.size(), reinterpret_cast<double&>(*result.data()));
+		break;
+	}
+
+	return result;
+}
+
+#pragma pack(pop)
 bool CIdentifierLinter::CheckIdentifier(const CToken* token) const noexcept
 {
 	assert(token != nullptr);
 	const auto type = token->Type();
-	return type >= TokenType::t_int && type <= TokenType::t_name;
-}
-
-
-std::int64_t CIdentifierLinter::ToInt() const noexcept
-{
-	assert(m_pToken->Type() == TokenType::t_int);
-	return std::stoll(m_pToken->Source());
+	return type >= TokenType::tt_int && type <= TokenType::tt_string;
 }

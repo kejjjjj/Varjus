@@ -40,6 +40,21 @@
     <Filter Include="Source Files\linter\scopes">
       <UniqueIdentifier>{3be75782-68e9-4c70-9b39-80d015a0f50e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\runtime\functions">
+      <UniqueIdentifier>{f33e1285-68bd-41d7-8f6f-72bb6a9bfe06}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\runtime\values">
+      <UniqueIdentifier>{ac7287ce-11d4-4968-b433-1f5f3fce104c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\runtime\pools">
+      <UniqueIdentifier>{a5f58aec-f5d0-4bc1-8cc4-ff5225ef5c76}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\runtime\expressions">
+      <UniqueIdentifier>{4f814a44-89e8-4cb3-b73c-8b17d200328a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\linter\global">
+      <UniqueIdentifier>{3256f2e6-8cce-4b9b-9b2a-0a449cc4cfa4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -50,12 +65,6 @@
     </ClCompile>
     <ClCompile Include="fs\fs_io.cpp">
       <Filter>Source Files\fs</Filter>
-    </ClCompile>
-    <ClCompile Include="linter\tokenizer.cpp">
-      <Filter>Source Files\linter</Filter>
-    </ClCompile>
-    <ClCompile Include="linter\token.cpp">
-      <Filter>Source Files\linter</Filter>
     </ClCompile>
     <ClCompile Include="linter\expressions\unary.cpp">
       <Filter>Source Files\linter\expressions</Filter>
@@ -75,9 +84,6 @@
     <ClCompile Include="linter\expressions\operand.cpp">
       <Filter>Source Files\linter\expressions</Filter>
     </ClCompile>
-    <ClCompile Include="linter\error.cpp">
-      <Filter>Source Files\linter</Filter>
-    </ClCompile>
     <ClCompile Include="linter\expressions\sub_expression.cpp">
       <Filter>Source Files\linter\expressions</Filter>
     </ClCompile>
@@ -92,9 +98,6 @@
     </ClCompile>
     <ClCompile Include="linter\declarations\stack.cpp">
       <Filter>Source Files\linter\declarations</Filter>
-    </ClCompile>
-    <ClCompile Include="linter\linter.cpp">
-      <Filter>Source Files\linter</Filter>
     </ClCompile>
     <ClCompile Include="linter\expressions\ast_registers.cpp">
       <Filter>Source Files\linter\expressions</Filter>
@@ -117,6 +120,36 @@
     <ClCompile Include="runtime\runtime.cpp">
       <Filter>Source Files\runtime</Filter>
     </ClCompile>
+    <ClCompile Include="runtime\functions\rtfunction.cpp">
+      <Filter>Source Files\runtime\functions</Filter>
+    </ClCompile>
+    <ClCompile Include="runtime\values\simple.cpp">
+      <Filter>Source Files\runtime\values</Filter>
+    </ClCompile>
+    <ClCompile Include="runtime\expressions\rtexpression.cpp">
+      <Filter>Source Files\runtime\expressions</Filter>
+    </ClCompile>
+    <ClCompile Include="linter\error.cpp">
+      <Filter>Source Files\linter\global</Filter>
+    </ClCompile>
+    <ClCompile Include="linter\linter.cpp">
+      <Filter>Source Files\linter\global</Filter>
+    </ClCompile>
+    <ClCompile Include="linter\token.cpp">
+      <Filter>Source Files\linter\global</Filter>
+    </ClCompile>
+    <ClCompile Include="linter\tokenizer.cpp">
+      <Filter>Source Files\linter\global</Filter>
+    </ClCompile>
+    <ClCompile Include="runtime\values\simple_operators.cpp">
+      <Filter>Source Files\runtime\values</Filter>
+    </ClCompile>
+    <ClCompile Include="runtime\values\integer.cpp">
+      <Filter>Source Files\runtime\values</Filter>
+    </ClCompile>
+    <ClCompile Include="runtime\values\double.cpp">
+      <Filter>Source Files\runtime\values</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="fs\fs_io.hpp">
@@ -125,17 +158,8 @@
     <ClInclude Include="fs\fs_globals.hpp">
       <Filter>Source Files\fs</Filter>
     </ClInclude>
-    <ClInclude Include="linter\tokenizer.hpp">
-      <Filter>Source Files\linter</Filter>
-    </ClInclude>
     <ClInclude Include="globalEnums.hpp">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="linter\token.hpp">
-      <Filter>Source Files\linter</Filter>
-    </ClInclude>
-    <ClInclude Include="linter\punctuation.hpp">
-      <Filter>Source Files\linter</Filter>
     </ClInclude>
     <ClInclude Include="linter\expressions\postfix.hpp">
       <Filter>Source Files\linter\expressions</Filter>
@@ -148,9 +172,6 @@
     </ClInclude>
     <ClInclude Include="linter\expressions\definitions.hpp">
       <Filter>Source Files\linter\expressions</Filter>
-    </ClInclude>
-    <ClInclude Include="linter\error.hpp">
-      <Filter>Source Files\linter</Filter>
     </ClInclude>
     <ClInclude Include="linter\expressions\identifier.hpp">
       <Filter>Source Files\linter\expressions</Filter>
@@ -188,9 +209,6 @@
     <ClInclude Include="globalDefinitions.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="linter\linter.hpp">
-      <Filter>Source Files\linter</Filter>
-    </ClInclude>
     <ClInclude Include="linter\expressions\ast_registers.hpp">
       <Filter>Source Files\linter\expressions</Filter>
     </ClInclude>
@@ -211,6 +229,45 @@
     </ClInclude>
     <ClInclude Include="runtime\runtime.hpp">
       <Filter>Source Files\runtime</Filter>
+    </ClInclude>
+    <ClInclude Include="runtime\functions\rtfunction.hpp">
+      <Filter>Source Files\runtime\functions</Filter>
+    </ClInclude>
+    <ClInclude Include="runtime\values\simple.hpp">
+      <Filter>Source Files\runtime\values</Filter>
+    </ClInclude>
+    <ClInclude Include="runtime\pools\object_pool_non_owning.hpp">
+      <Filter>Source Files\runtime\pools</Filter>
+    </ClInclude>
+    <ClInclude Include="runtime\expressions\rtexpression.hpp">
+      <Filter>Source Files\runtime\expressions</Filter>
+    </ClInclude>
+    <ClInclude Include="linter\error.hpp">
+      <Filter>Source Files\linter\global</Filter>
+    </ClInclude>
+    <ClInclude Include="linter\linter.hpp">
+      <Filter>Source Files\linter\global</Filter>
+    </ClInclude>
+    <ClInclude Include="linter\punctuation.hpp">
+      <Filter>Source Files\linter\global</Filter>
+    </ClInclude>
+    <ClInclude Include="linter\token.hpp">
+      <Filter>Source Files\linter\global</Filter>
+    </ClInclude>
+    <ClInclude Include="linter\tokenizer.hpp">
+      <Filter>Source Files\linter\global</Filter>
+    </ClInclude>
+    <ClInclude Include="runtime\pools\object_pool_owning.hpp">
+      <Filter>Source Files\runtime\pools</Filter>
+    </ClInclude>
+    <ClInclude Include="runtime\values\simple_operators.hpp">
+      <Filter>Source Files\runtime\values</Filter>
+    </ClInclude>
+    <ClInclude Include="runtime\values\integer.hpp">
+      <Filter>Source Files\runtime\values</Filter>
+    </ClInclude>
+    <ClInclude Include="runtime\values\double.hpp">
+      <Filter>Source Files\runtime\values</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

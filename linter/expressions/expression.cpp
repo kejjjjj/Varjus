@@ -56,10 +56,10 @@ Success CLinterExpression::ParseExpression(std::optional<PairMatcher> m_oEndOfEx
 }
 bool CLinterExpression::EndOfExpression(const std::optional<PairMatcher>& eoe) const noexcept
 {
-	if (!eoe) {
-		assert(m_iterPos != m_iterEnd);
+	assert(m_iterPos != m_iterEnd);
+
+	if (!eoe) 
 		return (*m_iterPos)->IsOperator(p_semicolon);
-	}
 
 	if (!(*m_iterPos)->IsOperator())
 		return false;
@@ -82,62 +82,6 @@ std::unique_ptr<AbstractSyntaxTree> CLinterExpression::ToAST() const
 	return AbstractSyntaxTree::CreateAST(operands, operators);
 }
 
-void CLinterExpression::QuickEvalAST()
-{
-
-	const auto ast = ToAST();
-	const auto result = QuickEvalASTInternal(&*ast);
-
-	std::cout << "QuickEval(): " << result << '\n';
-}
-
-int CLinterExpression::QuickEvalASTInternal(const AbstractSyntaxTree* node)
-{
-
-	if (!node) {
-		assert(false);
-		return 0;
-	}
-
-	if (node->IsLeaf()) {
-
-		if (node->IsVariable()) {
-			const auto var = node->As<const VariableASTNode*>();
-			return std::stoi(var->ToStringPolymorphic());
-		}
-
-		const auto var = node->As<const ConstantASTNode*>();
-		return std::stoi(var->ToStringPolymorphic());
-	}
-
-	const auto lhs = QuickEvalASTInternal(&*node->left);
-	const auto rhs = QuickEvalASTInternal(&*node->right);
-
-	assert(node->IsOperator());
-
-	const auto oper = node->As<const OperatorASTNode*>();
-
-#pragma pack(push)
-#pragma warning(disable : 4062)
-	switch (oper->m_ePunctuation) {
-	case p_add:
-		std::cout << std::format("{} + {} = {}\n", lhs, rhs, lhs + rhs);
-		return lhs + rhs;
-	case p_sub:
-		std::cout << std::format("{} - {} = {}\n", lhs, rhs, lhs - rhs);
-		return lhs - rhs;
-	case p_multiplication:
-		std::cout << std::format("{} * {} = {}\n", lhs, rhs, lhs * rhs);
-		return lhs * rhs;
-	case p_division:
-		std::cout << std::format("{} / {} = {}\n", lhs, rhs, lhs / rhs);
-		return lhs / rhs;
-	}
-
-	return lhs;
-#pragma pack(pop)
-
-}
 std::string CLinterExpression::ToString() const noexcept
 {
 	assert(!m_oSubExpressions.empty());
@@ -151,14 +95,6 @@ std::string CLinterExpression::ToString() const noexcept
 	}
 	return result;
 }
-
-std::string CLinterExpression::SortedToString() const noexcept
-{
-	const auto ast = ToAST();
-	assert(ast != nullptr);
-	return ast->ToString();
-}
-
 RuntimeBlock CLinterExpression::ToRuntimeObject() const
 {
 	return std::make_unique<CRuntimeExpression>(ToAST());

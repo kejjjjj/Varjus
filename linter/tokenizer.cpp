@@ -40,7 +40,7 @@ Success CBufferTokenizer::Tokenize()
 
 	return m_oTokens.size() > 0u ? success : failure;
 }
-std::vector<CToken*> CBufferTokenizer::GetResult()
+std::vector<CToken*> CBufferTokenizer::GetTokens()
 {
 	assert(!m_oTokens.empty());
 
@@ -130,7 +130,7 @@ constexpr Success CBufferTokenizer::ReadNumber(CToken& token) noexcept
 		}
 
 		token.m_sSource.push_back(*m_oScriptPos++);
-		token.m_eTokenType = TokenType::t_double;
+		token.m_eTokenType = TokenType::tt_double;
 
 		//parse the integer literal after the .
 		if (!ReadInteger(token))
@@ -139,7 +139,7 @@ constexpr Success CBufferTokenizer::ReadNumber(CToken& token) noexcept
 	}
 
 	else if (IsDigit(*m_oScriptPos)) {
-		token.m_eTokenType = TokenType::t_int;
+		token.m_eTokenType = TokenType::tt_int;
 
 		if (!ReadInteger(token))
 			return failure;
@@ -150,7 +150,7 @@ constexpr Success CBufferTokenizer::ReadNumber(CToken& token) noexcept
 		//floating point decimal
 		if (*m_oScriptPos == '.') {
 			token.m_sSource.push_back(*m_oScriptPos++);
-			token.m_eTokenType = TokenType::t_double;
+			token.m_eTokenType = TokenType::tt_double;
 
 			//parse the integer literal after the .
 			if (!ReadInteger(token))
@@ -194,8 +194,8 @@ constexpr Success CBufferTokenizer::ReadInteger(CToken& token) noexcept
 }
 
 const std::unordered_map<std::string_view, TokenType> reservedKeywords = {
-	{"let", TokenType::t_declaration},
-	{"fn", TokenType::t_fn},
+	{"let", TokenType::tt_declaration},
+	{"fn", TokenType::tt_fn},
 };
 
 constexpr Success CBufferTokenizer::ReadName(CToken& token) noexcept
@@ -203,7 +203,7 @@ constexpr Success CBufferTokenizer::ReadName(CToken& token) noexcept
 	auto& [_, column] = m_oParserPosition;
 
 	token.m_sSource.push_back(*m_oScriptPos++);
-	token.m_eTokenType = TokenType::t_name;
+	token.m_eTokenType = TokenType::tt_name;
 
 	if (EndOfBuffer())
 		return success;

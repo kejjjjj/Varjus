@@ -5,14 +5,14 @@
 
 enum TokenType : signed char
 {
-	t_error,
-	t_int,
-	t_double,
-	t_string,
-	t_name,
-	t_operator,
-	t_declaration,
-	t_fn
+	tt_error,
+	tt_int,
+	tt_double,
+	tt_string,
+	tt_name,
+	tt_operator,
+	tt_declaration,
+	tt_fn
 };
 
 enum Punctuation : char;
@@ -40,7 +40,7 @@ public:
 	constexpr auto& Source() const noexcept { return m_sSource; }
 
 private:
-	TokenType m_eTokenType{ t_error };
+	TokenType m_eTokenType{ tt_error };
 protected:
 	std::string m_sSource;
 };

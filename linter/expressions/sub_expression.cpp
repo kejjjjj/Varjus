@@ -42,14 +42,14 @@ Success CLinterSubExpression::ParseSubExpression()
 	if (!cOperator.ParseOperator())
 		return failure;
 
-	m_oOperator = std::make_unique<CLinterOperator>(cOperator.GetPriority(), cOperator.GetResult());
+	m_oOperator = std::make_unique<CLinterOperator>(cOperator.GetPriority(), cOperator.GetToken());
 	return success;
 }
 
 bool CLinterSubExpression::EndOfExpression() const noexcept
 {
+	assert(m_iterPos != m_iterEnd);
 	if (!m_oEndOfExpression) {
-		assert(m_iterPos != m_iterEnd);
 		return (*m_iterPos)->IsOperator(p_semicolon);
 	}
 

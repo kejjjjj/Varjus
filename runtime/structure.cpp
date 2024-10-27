@@ -5,12 +5,13 @@
 #include "linter/expressions/ast.hpp"
 #include "linter/functions/function.hpp"
 
-CRuntimeStructure::CRuntimeStructure() = default;
-CRuntimeStructure::~CRuntimeStructure() = default;
+IRuntimeStructure::IRuntimeStructure() = default;
+IRuntimeStructure::~IRuntimeStructure() = default;
 
 CRuntimeFunction::CRuntimeFunction(CFunctionBlock& linterFunction) :
 	m_sName(linterFunction.m_sName),
-	uNumParameters(linterFunction.m_uNumParameters),
+	m_uNumParameters(linterFunction.m_uNumParameters),
+	m_uNumVariables(linterFunction.m_pStack->GetVariableCount()),
 	m_oInstructions(std::move(linterFunction.m_oInstructions))
 {
 

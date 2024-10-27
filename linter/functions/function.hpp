@@ -4,7 +4,7 @@
 #include "linter/declarations/stack.hpp"
 #include "runtime/structure.hpp"
 
-class CRuntimeStructure;
+class IRuntimeStructure;
 struct CFunctionBlock;
 
 class CFunctionLinter final : protected IRuntimeBlock

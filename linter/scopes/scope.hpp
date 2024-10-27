@@ -6,7 +6,7 @@
 
 struct CLinterVariable;
 class CScope;
-class CRuntimeStructure;
+class IRuntimeStructure;
 
 class CScopeLinter final
 {
@@ -24,7 +24,7 @@ private:
 	WeakScope m_pScope;
 	CMemory* const m_pOwner;
 
-	VectorOf<std::unique_ptr<CRuntimeStructure>> m_oInstructions; // sorted list of all function instructions
+	VectorOf<std::unique_ptr<IRuntimeStructure>> m_oInstructions; // sorted list of all function instructions
 };
 
 class CScope final
