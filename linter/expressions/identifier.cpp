@@ -51,7 +51,7 @@ Success CIdentifierLinter::ParseIdentifier()
 bool CIdentifierLinter::IsImmediate() const noexcept
 {
 	auto type = m_pToken->Type();
-	return type == tt_int || type == tt_double;
+	return type >= TokenType::tt_false && type <= TokenType::tt_string;
 }
 #pragma pack(push)
 #pragma warning(disable : 4061)
@@ -61,6 +61,9 @@ EValueType CIdentifierLinter::GetImmediateType() const noexcept
 	assert(IsImmediate());
 
 	switch (m_pToken->Type()) {
+	case TokenType::tt_false:
+	case TokenType::tt_true:
+		return EValueType::t_boolean;
 	case TokenType::tt_int:
 		return EValueType::t_int;
 	case TokenType::tt_double:
@@ -74,10 +77,14 @@ std::size_t CIdentifierLinter::GetImmediateSize() const noexcept
 {
 	assert(IsImmediate());
 
-	switch (m_pToken->Type()) {
-	case TokenType::tt_int:
+	auto type = GetImmediateType();
+
+	switch (type) {
+	case t_boolean:
+		return sizeof(bool);
+	case t_int:
 		return sizeof(std::int64_t);
-	case TokenType::tt_double:
+	case t_double:
 		return sizeof(double);
 	default:
 		assert(false);
@@ -91,7 +98,8 @@ std::string CIdentifierLinter::ToData() const noexcept
 	auto& string = m_pToken->Source();
 	
 	switch (GetImmediateType()) {
-
+	case t_boolean:
+		return std::string(1, m_pToken->Type() == TokenType::tt_true ? '\x01' : '\x00');
 	case t_int:
 		result = std::string(sizeof(std::int64_t), 0);
 		std::from_chars(string.c_str(), string.c_str() + string.size(), reinterpret_cast<std::int64_t&>(*result.data()));
@@ -110,5 +118,5 @@ bool CIdentifierLinter::CheckIdentifier(const CToken* token) const noexcept
 {
 	assert(token != nullptr);
 	const auto type = token->Type();
-	return type >= TokenType::tt_int && type <= TokenType::tt_name;
+	return type >= TokenType::tt_false && type <= TokenType::tt_name;
 }

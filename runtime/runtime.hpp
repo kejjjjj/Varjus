@@ -5,6 +5,7 @@
 #include "pools/object_pool_owning.hpp"
 
 class IValue;
+class CBooleanValue;
 class CIntValue;
 class CDoubleValue;
 
@@ -30,16 +31,20 @@ public:
 	void Execute();
 
 	static IValue* AcquireNewValue();
+	static CBooleanValue* AcquireNewBooleanValue();
 	static CIntValue* AcquireNewIntValue();
 	static CDoubleValue* AcquireNewDoubleValue();
 
 	static void FreeUndefinedValue(IValue* value);
+	static void FreeBooleanValue(CBooleanValue* value);
+
 	static void FreeIntValue(CIntValue* value);
 	static void FreeDoubleValue(CDoubleValue* value);
 
 private:
 	std::vector<RuntimeFunction> m_oFunctions;
 	static COwningObjectPool<IValue> m_oUndefinedValuePool;
+	static COwningObjectPool<CBooleanValue> m_oBooleanValuePool;
 	static COwningObjectPool<CIntValue> m_oIntValuePool;
 	static COwningObjectPool<CDoubleValue> m_oDoubleValuePool;
 

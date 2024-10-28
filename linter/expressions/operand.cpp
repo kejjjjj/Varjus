@@ -88,7 +88,7 @@ bool CLinterOperand::IsImmediate() const noexcept
 		return false;
 
 	const auto type = m_pOperand->GetIdentifier()->GetToken()->Type();
-	return type == tt_int || type == tt_double;
+	return type >= tt_false && type <= tt_string;
 }
 const CLinterVariable* CLinterOperand::GetVariable() const noexcept
 {

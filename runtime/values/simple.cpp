@@ -1,6 +1,7 @@
 #include "simple.hpp"
 #include "integer.hpp"
 #include "double.hpp"
+#include "boolean.hpp"
 
 #include "runtime/runtime.hpp"
 
@@ -12,11 +13,16 @@ void IValue::Release()
 	switch (Type()) {
 	case t_undefined:
 		return CProgramRuntime::FreeUndefinedValue(this);
+	case t_boolean:
+		return CProgramRuntime::FreeIntValue(dynamic_cast<CIntValue*>(this));
 	case t_int:
 		return CProgramRuntime::FreeIntValue(dynamic_cast<CIntValue*>(this));
 	case t_double:
 		return CProgramRuntime::FreeDoubleValue(dynamic_cast<CDoubleValue*>(this));
 	}
+}
+bool IValue::AsBoolean() const{
+	return dynamic_cast<const CBooleanValue*>(this)->m_bValue;
 }
 std::int64_t IValue::AsInt() const{
 	return dynamic_cast<const CIntValue*>(this)->m_iValue;

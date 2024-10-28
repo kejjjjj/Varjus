@@ -150,6 +150,9 @@
     <ClCompile Include="runtime\values\double.cpp">
       <Filter>Source Files\runtime\values</Filter>
     </ClCompile>
+    <ClCompile Include="runtime\values\boolean.cpp">
+      <Filter>Source Files\runtime\values</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="fs\fs_io.hpp">
@@ -267,6 +270,9 @@
       <Filter>Source Files\runtime\values</Filter>
     </ClInclude>
     <ClInclude Include="runtime\values\double.hpp">
+      <Filter>Source Files\runtime\values</Filter>
+    </ClInclude>
+    <ClInclude Include="runtime\values\boolean.hpp">
       <Filter>Source Files\runtime\values</Filter>
     </ClInclude>
   </ItemGroup>

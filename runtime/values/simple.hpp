@@ -28,8 +28,9 @@ public:
 	virtual std::string TypeAsString() const { return "undefined"s; }
 	virtual std::string ValueAsString() const { return "undefined"s; }
 
-	std::int64_t AsInt() const;
-	double AsDouble() const;
+	[[nodiscard]] bool AsBoolean() const;
+	[[nodiscard]] std::int64_t AsInt() const;
+	[[nodiscard]] double AsDouble() const;
 
 protected:
 

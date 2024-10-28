@@ -3,16 +3,18 @@
 #include "values/simple.hpp"
 #include "values/integer.hpp"
 #include "values/double.hpp"
+#include "values/boolean.hpp"
 
 #include "variables.hpp"
 
 #include <ranges>
 
-CNonOwningObjectPool<CVariable> CProgramRuntime::m_oVariablePool(100);
+CNonOwningObjectPool<CVariable>  CProgramRuntime::m_oVariablePool(100);
 
-COwningObjectPool<IValue>		CProgramRuntime::m_oUndefinedValuePool(100);
-COwningObjectPool<CIntValue>	CProgramRuntime::m_oIntValuePool(100);
-COwningObjectPool<CDoubleValue> CProgramRuntime::m_oDoubleValuePool(100);
+COwningObjectPool<IValue>		 CProgramRuntime::m_oUndefinedValuePool(100);
+COwningObjectPool<CBooleanValue> CProgramRuntime::m_oBooleanValuePool(100);
+COwningObjectPool<CIntValue>	 CProgramRuntime::m_oIntValuePool(100);
+COwningObjectPool<CDoubleValue>  CProgramRuntime::m_oDoubleValuePool(100);
 
 CProgramRuntime::CProgramRuntime(CFileRuntimeData* const file) :
 	m_oFunctions(std::move(file->m_oFunctions))
@@ -40,6 +42,10 @@ void CProgramRuntime::Execute()
 IValue* CProgramRuntime::AcquireNewValue(){
 	return m_oUndefinedValuePool.acquire();
 }
+CBooleanValue* CProgramRuntime::AcquireNewBooleanValue()
+{
+	return m_oBooleanValuePool.acquire();
+}
 CIntValue* CProgramRuntime::AcquireNewIntValue(){
 	return m_oIntValuePool.acquire();
 }
@@ -49,6 +55,9 @@ CDoubleValue* CProgramRuntime::AcquireNewDoubleValue(){
 
 void CProgramRuntime::FreeUndefinedValue(IValue* value) {
 	return m_oUndefinedValuePool.release(value);
+}
+void CProgramRuntime::FreeBooleanValue(CBooleanValue* value){
+	return m_oBooleanValuePool.release(value);
 }
 void CProgramRuntime::FreeIntValue(CIntValue* value) {
 	return m_oIntValuePool.release(value);

@@ -77,6 +77,8 @@ Success CFileLinter::LintToken(LinterIterator& m_iterPos, LinterIterator& m_iter
 	switch ((*m_iterPos)->Type()) {
 	case tt_declaration:
 		return LintDeclaration(m_iterPos, m_iterEnd, scope, memory);
+	case tt_false:
+	case tt_true:
 	case tt_int:
 	case tt_double:
 	case tt_string:

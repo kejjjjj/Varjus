@@ -4,6 +4,7 @@
 #include "runtime/values/simple_operators.hpp"
 #include "runtime/values/integer.hpp"
 #include "runtime/values/double.hpp"
+#include "runtime/values/boolean.hpp"
 
 #include "runtime/variables.hpp"
 #include "runtime/runtime.hpp"
@@ -41,10 +42,6 @@ IValue* CRuntimeExpression::Evaluate(CFunction* const thisFunction, AbstractSynt
 
 	IValue* result{ nullptr };
 
-	/*
-	TODO: Possibility to call AcquireNewValue with a value parameter for a quick initialization
-	*/
-
 	switch (node->As<const OperatorASTNode*>()->m_ePunctuation) {
 	case p_assign:
 		result = OP_ASSIGNMENT(lhs->GetOwner(), rhs);
@@ -76,6 +73,7 @@ IValue* CRuntimeExpression::EvaluateLeaf(CFunction* const thisFunction, Abstract
 
 		union {
 			IValue* undefinedValue;
+			CBooleanValue* booleanValue;
 			CIntValue* intValue;
 			CDoubleValue* doubleValue;
 		}v{};
@@ -84,7 +82,10 @@ IValue* CRuntimeExpression::EvaluateLeaf(CFunction* const thisFunction, Abstract
 			case t_undefined:
 				v.undefinedValue = CProgramRuntime::AcquireNewValue();
 				return v.undefinedValue;
-
+			case t_boolean:
+				v.booleanValue = CProgramRuntime::AcquireNewBooleanValue();
+				*v.booleanValue = CBooleanValue(static_cast<bool>(constant->m_pConstant[0])); //the byte is either 1 or 0
+				return v.booleanValue;
 			case t_int:
 				v.intValue = CProgramRuntime::AcquireNewIntValue();
 				*v.intValue = CIntValue(*reinterpret_cast<std::int64_t*>((char*)constant->m_pConstant.data()));

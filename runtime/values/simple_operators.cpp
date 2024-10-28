@@ -2,6 +2,7 @@
 #include "simple.hpp"
 #include "integer.hpp"
 #include "double.hpp"
+#include "boolean.hpp"
 
 #include "runtime/variables.hpp"
 #include "runtime/runtime.hpp"
@@ -13,6 +14,7 @@ IValue* OP_ASSIGNMENT(CVariable* lhs, IValue* rhs)
 
 	union {
 		IValue* undefinedValue;
+		CBooleanValue* booleanValue;
 		CIntValue* intValue;
 		CDoubleValue* doubleValue;
 	}v{};
@@ -22,7 +24,11 @@ IValue* OP_ASSIGNMENT(CVariable* lhs, IValue* rhs)
 			v.undefinedValue = CProgramRuntime::AcquireNewValue();
 			lhs->SetValue(v.undefinedValue);
 			break;
-
+		case t_boolean:
+			v.booleanValue = CProgramRuntime::AcquireNewBooleanValue();
+			*v.booleanValue = CBooleanValue(rhs->AsBoolean());
+			lhs->SetValue(v.booleanValue);
+			break;
 		case t_int:
 			v.intValue = CProgramRuntime::AcquireNewIntValue();
 			*v.intValue = CIntValue(rhs->AsInt());
@@ -41,12 +47,13 @@ IValue* OP_ASSIGNMENT(CVariable* lhs, IValue* rhs)
 
 IValue* OP_ADDITION(IValue* lhs, IValue* rhs)
 {
-	if (lhs->Type() != t_int || rhs->Type() != lhs->Type()) {
+	if (lhs->Type() == t_undefined || lhs->Type() != lhs->Type()) {
 		throw std::exception("incompatible operands");
 	}
 
 	union {
 		IValue* undefinedValue;
+		CBooleanValue* booleanValue;
 		CIntValue* intValue;
 		CDoubleValue* doubleValue;
 	}v{};
@@ -54,6 +61,11 @@ IValue* OP_ADDITION(IValue* lhs, IValue* rhs)
 	switch (lhs->Type()) {
 	case t_undefined:
 		return nullptr;
+
+	case t_boolean:
+		v.booleanValue = CProgramRuntime::AcquireNewBooleanValue();
+		*v.booleanValue = CBooleanValue(static_cast<bool>(lhs->AsBoolean() + rhs->AsBoolean()));
+		return v.intValue;
 
 	case t_int:
 		v.intValue = CProgramRuntime::AcquireNewIntValue();
