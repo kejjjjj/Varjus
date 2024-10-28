@@ -38,6 +38,7 @@ private:
 	VectorOf<std::string> m_oParameters;
 
 	std::unique_ptr<CStack> m_pThisStack;
+	std::shared_ptr<CScope> m_pThisScope;
 };
 
 #pragma pack(push)

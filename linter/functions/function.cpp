@@ -20,9 +20,20 @@ CFunctionLinter::CFunctionLinter(LinterIterator& pos, LinterIterator& end, const
 
 Success CFunctionLinter::ParseFunction()
 {
+	m_pThisStack = std::make_unique<CStack>(m_pOwner->m_pFile);
+	
+	if (const auto scope = m_pScope.lock()) {
+		m_pThisScope = scope->CreateScope();
+	} else {
+		CLinterErrors::PushError("!(const auto scope = m_pScope.lock())", (*m_iterPos)->m_oSourcePosition);
+		return failure;
+	}
+
 
 	if (!ParseFunctionDeclaration())
 		return failure;
+
+	m_pThisStack->m_pFunction = ToFunction();
 
 	if (!ParseFunctionScope())
 		return failure;
@@ -70,21 +81,6 @@ Success CFunctionLinter::ParseFunctionDeclaration()
 
 	return success;
 }
-Success CFunctionLinter::ParseFunctionScope()
-{
-	if (IsEndOfBuffer() || !(*m_iterPos)->IsOperator(p_curlybracket_open)) {
-		CLinterErrors::PushError("expected a \"{\"", IsEndOfBuffer() ? (*std::prev(m_iterPos))->m_oSourcePosition : (*m_iterPos)->m_oSourcePosition);
-		return failure;
-	}
-
-	m_pThisStack = std::make_unique<CStack>(ToFunction(), m_pOwner->m_pFile);
-	auto scope = CScopeLinter(m_iterPos, m_iterEnd, m_pScope, &*m_pThisStack);
-	if (!scope.ParseScope()) {
-		return failure;
-	}
-
-	return success;
-}
 Success CFunctionLinter::ParseFunctionParameters()
 {
 	if (IsEndOfBuffer() || !(*m_iterPos)->IsOperator(p_par_open)) {
@@ -94,8 +90,10 @@ Success CFunctionLinter::ParseFunctionParameters()
 	std::advance(m_iterPos, 1); //skip (
 
 	//no parameters?
-	if (!IsEndOfBuffer() && (*m_iterPos)->IsOperator(p_par_close))
+	if (!IsEndOfBuffer() && (*m_iterPos)->IsOperator(p_par_close)) {
+		std::advance(m_iterPos, 1);
 		return success;
+	}
 
 	if (!ParseFunctionParametersRecursively())
 		return failure;
@@ -111,18 +109,12 @@ Success CFunctionLinter::ParseFunctionParametersRecursively()
 		return failure;
 	}
 	
-	if (const auto scope = m_pScope.lock()) {
-		if (!scope->DeclareVariable((*m_iterPos)->Source())) {
-			CLinterErrors::PushError("variable " + (*m_iterPos)->Source() + " already declared", (*m_iterPos)->m_oSourcePosition);
-			return failure;
-		}
-
-		m_pOwner->DeclareVariable((*m_iterPos)->Source());
-	} else {
-		CLinterErrors::PushError("!(const auto scope = currentScope.lock())", (*m_iterPos)->m_oSourcePosition);
+	if (!m_pThisScope->DeclareVariable((*m_iterPos)->Source())) {
+		CLinterErrors::PushError("variable " + (*m_iterPos)->Source() + " already declared", (*m_iterPos)->m_oSourcePosition);
 		return failure;
 	}
 
+	m_pThisStack->DeclareVariable((*m_iterPos)->Source());
 	m_oParameters.push_back((*m_iterPos)->Source());
 
 	std::advance(m_iterPos, 1); //skip identifier
@@ -142,6 +134,22 @@ Success CFunctionLinter::ParseFunctionParametersRecursively()
 	CLinterErrors::PushError("expected \",\" or \")\"", IsEndOfBuffer() ? (*std::prev(m_iterPos))->m_oSourcePosition : (*m_iterPos)->m_oSourcePosition);
 	return failure;
 }
+
+Success CFunctionLinter::ParseFunctionScope()
+{
+	if (IsEndOfBuffer() || !(*m_iterPos)->IsOperator(p_curlybracket_open)) {
+		CLinterErrors::PushError("expected a \"{\"", IsEndOfBuffer() ? (*std::prev(m_iterPos))->m_oSourcePosition : (*m_iterPos)->m_oSourcePosition);
+		return failure;
+	}
+
+	auto scope = CScopeLinter(m_iterPos, m_iterEnd, m_pThisScope, &*m_pThisStack);
+	if (!scope.ParseScope()) {
+		return failure;
+	}
+
+	return success;
+}
+
 bool CFunctionLinter::IsFn(const CToken* token) const noexcept
 {
 	return token && token->Type() == tt_fn;
@@ -154,12 +162,12 @@ bool CFunctionLinter::IsIdentifier(const CToken* token) const noexcept
 
 std::unique_ptr<CFunctionBlock> CFunctionLinter::ToFunction() const
 {
-	assert(m_pOwner && m_pOwner->IsStack());
+	assert(m_pThisStack);
 
 	return std::make_unique<CFunctionBlock>(CFunctionBlock{
 		.m_sName=m_oFunctionName,
 		.m_uNumParameters =m_oParameters.size(),
-		.m_pStack=m_pOwner->ToStack()
+		.m_pStack=m_pThisStack.get()
 	});
 }
 RuntimeBlock CFunctionLinter::ToRuntimeObject() const

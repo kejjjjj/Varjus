@@ -20,26 +20,17 @@ CScopeLinter::CScopeLinter(LinterIterator& pos, LinterIterator& end, const WeakS
 Success CScopeLinter::ParseScope()
 {
 	assert(!IsEndOfBuffer() && (*m_iterPos)->IsOperator(p_curlybracket_open));
+	std::advance(m_iterPos, 1);
 
+	do {
+		if (!CFileLinter::LintToken(m_iterPos, m_iterEnd, m_pScope, m_pOwner))
+			break;
 
-	if (auto parentScope = m_pScope.lock()) {
-		auto newScope = parentScope->CreateScope();
-		
 		std::advance(m_iterPos, 1);
 
-		do {
+	} while (!IsEndOfBuffer() && !(*m_iterPos)->IsOperator(p_curlybracket_close));
 
-			if (!CFileLinter::LintToken(m_iterPos, m_iterEnd, newScope, m_pOwner))
-				break;
-
-			std::advance(m_iterPos, 1);
-
-		} while (!IsEndOfBuffer() && !(*m_iterPos)->IsOperator(p_curlybracket_close));
-
-	} else {
-		CLinterErrors::PushError("!auto parentScope = m_pScope.lock()", IsEndOfBuffer() ? (*std::prev(m_iterPos))->m_oSourcePosition : (*m_iterPos)->m_oSourcePosition);
-		return failure;
-	}
+	
 
 	if(IsEndOfBuffer() || !(*m_iterPos)->IsOperator(p_curlybracket_close))
 		CLinterErrors::PushError("expected a \"}\"", IsEndOfBuffer() ? (*std::prev(m_iterPos))->m_oSourcePosition : (*m_iterPos)->m_oSourcePosition);

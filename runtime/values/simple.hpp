@@ -3,6 +3,9 @@
 #include "globalDefinitions.hpp"
 #include <cstdint>
 #include <memory>
+#include <string>
+
+using namespace std::string_literals;
 
 class CVariable;
 
@@ -20,6 +23,13 @@ public:
 	constexpr auto HasOwner() const noexcept { return !!m_pOwner; }
 
 	void Release();
+	void Print() const;
+
+	virtual std::string TypeAsString() const { return "undefined"s; }
+	virtual std::string ValueAsString() const { return "undefined"s; }
+
+	std::int64_t AsInt() const;
+	double AsDouble() const;
 
 protected:
 

@@ -16,7 +16,7 @@ bool CRuntimeExpression::Execute([[maybe_unused]]CFunction* const thisFunction)
 {
 
 	[[maybe_unused]] const auto result = Evaluate(thisFunction, m_pAST.get());
-
+	
 	//TODO: make sure that all objects from the pool get released
 
 	return true;
@@ -27,24 +27,39 @@ bool CRuntimeExpression::Execute([[maybe_unused]]CFunction* const thisFunction)
 #pragma warning(disable : 4062)
 IValue* CRuntimeExpression::Evaluate(CFunction* const thisFunction, AbstractSyntaxTree* node)
 {
+
 	assert(node != nullptr);
 
 	if (node->IsLeaf()) {
 		return EvaluateLeaf(thisFunction, node);
 	}
 
-	auto plhs = Evaluate(thisFunction, node->left.get());
-	auto prhs = Evaluate(thisFunction, node->right.get());
+	auto lhs = Evaluate(thisFunction, node->left.get());
+	auto rhs = Evaluate(thisFunction, node->right.get());
 
 	assert(node->IsOperator());
 
+	IValue* result{ nullptr };
+
+	/*
+	TODO: Possibility to call AcquireNewValue with a value parameter for a quick initialization
+	*/
+
 	switch (node->As<const OperatorASTNode*>()->m_ePunctuation) {
 	case p_assign:
-		return OP_ASSIGNMENT(plhs->GetOwner(), prhs);
+		result = OP_ASSIGNMENT(lhs->GetOwner(), rhs);
+		break;
+	case p_add:
+		result = OP_ADDITION(lhs, rhs);
+		break;
 	default:
 		throw std::exception("bad operator");
 	}
 
+	if (!lhs->HasOwner()) lhs->Release();
+	if (!rhs->HasOwner()) rhs->Release();
+
+	return result;
 }
 #pragma pack(pop)
 

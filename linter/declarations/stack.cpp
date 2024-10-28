@@ -29,6 +29,7 @@ std::size_t CMemory::GetVariableCount() const noexcept
 CStack* CMemory::ToStack() { return dynamic_cast<CStack*>(this); }
 auto CMemory::ToStack() const { return dynamic_cast<const CStack*>(this); }
 
+CStack::CStack(CFileRuntimeData* const file) : CMemory(file) {};
 CStack::CStack(std::unique_ptr<CFunctionBlock>&& func, CFileRuntimeData* const file)
 	: CMemory(file), m_pFunction(std::move(func)){}
 CStack::~CStack() = default;

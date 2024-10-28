@@ -67,7 +67,9 @@ public:
 	VariableASTNode(std::size_t variableIndex);
 	~VariableASTNode();
 
+	[[nodiscard]] constexpr bool IsLeaf() const noexcept override { return true; }
 	[[nodiscard]] constexpr bool IsVariable() const noexcept override { return true; }
+
 	std::size_t m_uIndex{};
 
 private:

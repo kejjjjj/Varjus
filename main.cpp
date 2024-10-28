@@ -8,6 +8,8 @@
 #include "linter/linter.hpp"
 #include "linter/expressions/expression.hpp"
 
+#include "runtime/runtime.hpp"
+
 int Failure(const std::string_view& msg)
 {
     std::cerr << msg << "\n";
@@ -34,19 +36,22 @@ int main()
     try {
 
 		auto tokens = tokenizer.GetTokens();
-
 		auto begin = tokens.begin();
         auto end = tokens.end();
 
 		CFileLinter linter(begin, end);
 
-		if (linter.ParseFile())
-			std::cout << "gg!" << "\n";
+        if (linter.ParseFile()) {
+            
+            CProgramRuntime runtime(linter.GetRuntimeInformation());
+            runtime.Execute();
+
+        }
 
     }
 	catch (std::exception& e) {
 		std::cerr << "\033[31m" <<
-            "\n-----------LINTING ERROR-----------\n\n" 
+            "\n--------------ERROR--------------\n\n" 
             << e.what() << "\n" <<
             "-----------------------------------" << "\033[0m\n";
 	}

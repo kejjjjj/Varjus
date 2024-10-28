@@ -52,6 +52,7 @@ class CStack final : public CMemory
 {
 	NONCOPYABLE(CStack);
 public:
+	CStack(CFileRuntimeData* const file);
 	CStack(std::unique_ptr<CFunctionBlock>&& func, CFileRuntimeData* const file);
 	~CStack();
 

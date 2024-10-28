@@ -4,6 +4,8 @@
 
 #include "runtime/runtime.hpp"
 
+#include <format>
+#include <iostream>
 
 void IValue::Release()
 {
@@ -15,4 +17,14 @@ void IValue::Release()
 	case t_double:
 		return CProgramRuntime::FreeDoubleValue(dynamic_cast<CDoubleValue*>(this));
 	}
+}
+std::int64_t IValue::AsInt() const{
+	return dynamic_cast<const CIntValue*>(this)->m_iValue;
+}
+double IValue::AsDouble() const {
+	return dynamic_cast<const CDoubleValue*>(this)->m_dValue;
+}
+void IValue::Print() const
+{
+	std::cout << std::format("{}: {}", ValueAsString(), TypeAsString()) << '\n';
 }

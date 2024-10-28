@@ -110,5 +110,5 @@ bool CIdentifierLinter::CheckIdentifier(const CToken* token) const noexcept
 {
 	assert(token != nullptr);
 	const auto type = token->Type();
-	return type >= TokenType::tt_int && type <= TokenType::tt_string;
+	return type >= TokenType::tt_int && type <= TokenType::tt_name;
 }

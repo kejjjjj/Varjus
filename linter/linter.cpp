@@ -96,12 +96,15 @@ Success CFileLinter::LintToken(LinterIterator& m_iterPos, LinterIterator& m_iter
 Success CFileLinter::ParseFile()
 {
 
-	auto thisFile = std::make_unique<CFileRuntimeData>();
-	CMemory globalMemory(thisFile.get());
+	m_pFile = std::make_unique<CFileRuntimeData>();
+	CMemory globalMemory(m_pFile.get());
 	auto globalScope = std::make_shared<CScope>(&globalMemory);
 
 	while (!IsEndOfBuffer()) {
 		if (!LintToken(m_iterPos, m_iterEnd, globalScope, &globalMemory))
+			break;
+
+		if (m_iterPos == m_iterEnd)
 			break;
 
 		std::advance(m_iterPos, 1);
@@ -110,5 +113,9 @@ Success CFileLinter::ParseFile()
 	return success;
 }
 
+CFileRuntimeData* CFileLinter::GetRuntimeInformation() const noexcept
+{
+	return m_pFile.get();
+}
 
 

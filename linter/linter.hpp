@@ -23,6 +23,8 @@ public:
 
 	[[nodiscard]] Success ParseFile();
 
+	CFileRuntimeData* GetRuntimeInformation() const noexcept;
+
 private:
 	std::unique_ptr<CFileRuntimeData> m_pFile;
 };
