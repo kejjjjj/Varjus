@@ -31,9 +31,9 @@ public:
 	void Execute();
 
 	static IValue* AcquireNewValue();
-	static CBooleanValue* AcquireNewBooleanValue();
-	static CIntValue* AcquireNewIntValue();
-	static CDoubleValue* AcquireNewDoubleValue();
+	static CBooleanValue* AcquireNewBooleanValue(bool value);
+	static CIntValue* AcquireNewIntValue(std::int64_t value);
+	static CDoubleValue* AcquireNewDoubleValue(double value);
 
 	static void FreeUndefinedValue(IValue* value);
 	static void FreeBooleanValue(CBooleanValue* value);

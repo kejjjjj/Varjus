@@ -15,7 +15,7 @@ public:
         }
     }
 
-    std::unique_ptr<T> acquire() {
+    std::unique_ptr<T> Acquire() {
         if (pool.empty()) {
             return std::make_unique<T>();
         }
@@ -25,17 +25,17 @@ public:
         return obj;
     }
 
-    VectorOf<std::unique_ptr<T>> acquire(std::size_t count) {
+    VectorOf<std::unique_ptr<T>> Acquire(std::size_t count) {
 
         VectorOf<std::unique_ptr<T>> result;
 
         for ([[maybe_unused]] const auto i : std::views::iota(size_t(0), count))
-            result.emplace_back(acquire());
+            result.emplace_back(Acquire());
 
         return result;
     }
 
-    void release(std::unique_ptr<T>&& obj) {
+    void Release(std::unique_ptr<T>&& obj) {
         pool.push_back(std::move(obj));
     }
 

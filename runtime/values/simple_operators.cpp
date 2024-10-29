@@ -1,82 +1,96 @@
+#include "coercion.hpp"
 #include "simple_operators.hpp"
-#include "simple.hpp"
-#include "integer.hpp"
-#include "double.hpp"
-#include "boolean.hpp"
 
+#include "types/types.hpp"
 #include "runtime/variables.hpp"
 #include "runtime/runtime.hpp"
 
-IValue* OP_ASSIGNMENT(CVariable* lhs, IValue* rhs)
+void OP_ASSIGNMENT(IValue* lhs, IValue* rhs)
 {
-	if (!lhs)
+	auto variable = lhs->GetOwner();
+	if (!variable)
 		throw std::exception("Left-handside must have a memory address");
 
-	union {
-		IValue* undefinedValue;
-		CBooleanValue* booleanValue;
-		CIntValue* intValue;
-		CDoubleValue* doubleValue;
-	}v{};
+	IVALUE_UNION v{};
 
 	switch (rhs->Type()) {
 		case t_undefined:
-			v.undefinedValue = CProgramRuntime::AcquireNewValue();
-			lhs->SetValue(v.undefinedValue);
+			variable->SetValue(CProgramRuntime::AcquireNewValue());
 			break;
 		case t_boolean:
-			v.booleanValue = CProgramRuntime::AcquireNewBooleanValue();
-			*v.booleanValue = CBooleanValue(rhs->AsBoolean());
-			lhs->SetValue(v.booleanValue);
+			variable->SetValue(CProgramRuntime::AcquireNewBooleanValue(rhs->AsBoolean()));
 			break;
 		case t_int:
-			v.intValue = CProgramRuntime::AcquireNewIntValue();
-			*v.intValue = CIntValue(rhs->AsInt());
-			lhs->SetValue(v.intValue);
+			variable->SetValue(CProgramRuntime::AcquireNewIntValue(rhs->AsInt()));
 			break;
-
 		case t_double:
-			v.doubleValue = CProgramRuntime::AcquireNewDoubleValue();
-			*v.doubleValue = CDoubleValue(rhs->AsDouble());
-			lhs->SetValue(v.doubleValue);
+			variable->SetValue(CProgramRuntime::AcquireNewDoubleValue(rhs->AsDouble()));
 			break;
 	}
 
-	return lhs->GetValue();
+	lhs->SetOwner(variable);
 }
 
-IValue* OP_ADDITION(IValue* lhs, IValue* rhs)
+IValue* OP_ADDITION(IValue* _lhs, IValue* _rhs)
 {
-	if (lhs->Type() == t_undefined || lhs->Type() != lhs->Type()) {
+	if (_lhs->Type() == t_undefined || _rhs->Type() == t_undefined) {
 		throw std::exception("incompatible operands");
 	}
 
-	union {
-		IValue* undefinedValue;
-		CBooleanValue* booleanValue;
-		CIntValue* intValue;
-		CDoubleValue* doubleValue;
-	}v{};
+	//lhs contains the weaker value that possibly needs to be freed
+	auto [lhs, rhs, alloc] = Coerce(_lhs, _rhs);
+
+	IValue* result{ nullptr };
 
 	switch (lhs->Type()) {
 	case t_undefined:
-		return nullptr;
-
+		break;
 	case t_boolean:
-		v.booleanValue = CProgramRuntime::AcquireNewBooleanValue();
-		*v.booleanValue = CBooleanValue(static_cast<bool>(lhs->AsBoolean() + rhs->AsBoolean()));
-		return v.intValue;
-
+		result = CProgramRuntime::AcquireNewBooleanValue(static_cast<bool>(lhs->AsBoolean() + rhs->AsBoolean()));
+		break;
 	case t_int:
-		v.intValue = CProgramRuntime::AcquireNewIntValue();
-		*v.intValue = CIntValue(lhs->AsInt() + rhs->AsInt());
-		return v.intValue;
-
+		result = CProgramRuntime::AcquireNewIntValue(lhs->AsInt() + rhs->AsInt());
+		break;
 	case t_double:
-		v.doubleValue = CProgramRuntime::AcquireNewDoubleValue();
-		*v.doubleValue = CDoubleValue(lhs->AsDouble() + rhs->AsDouble());
-		return v.doubleValue;
+		result = CProgramRuntime::AcquireNewDoubleValue(lhs->AsDouble() + rhs->AsDouble());
+		break;
 	}
 
-	return nullptr;
+	//was this allocated just now?
+	if (alloc)
+		alloc->Release();
+
+	return result;
+}
+IValue* OP_LESS_THAN(IValue* _lhs, IValue* _rhs)
+{
+	if (_lhs->Type() == t_undefined || _rhs->Type() == t_undefined) {
+		throw std::exception("incompatible operands");
+	}
+
+	//lhs contains the weaker value that possibly needs to be freed
+	auto [lhs, rhs, alloc] = Coerce(_lhs, _rhs);
+
+
+	IValue* result{ nullptr };
+
+	switch (lhs->Type()) {
+	case t_undefined:
+		break;
+	case t_boolean:
+		result = CProgramRuntime::AcquireNewBooleanValue(lhs->AsBoolean() < rhs->AsBoolean());
+		break;
+	case t_int:
+		result = CProgramRuntime::AcquireNewBooleanValue(lhs->AsInt() < rhs->AsInt());
+		break;
+	case t_double:
+		result = CProgramRuntime::AcquireNewBooleanValue(lhs->AsDouble() < rhs->AsDouble());
+		break;
+	}
+
+	//was this allocated just now?
+	if (alloc)
+		alloc->Release();
+
+	return result;
 }

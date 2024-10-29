@@ -2,16 +2,20 @@
 #include "runtime/runtime.hpp"
 #include "runtime/structure.hpp"
 #include "runtime/variables.hpp"
-
-#include "runtime/values/simple.hpp"
+#include "runtime/values/types/types.hpp"
 
 #include <ranges>
 #include <algorithm>
 
+#include <chrono>
+
+
 bool CRuntimeFunction::Execute([[maybe_unused]] CFunction* const thisFunction)
 {
+	std::chrono::time_point<std::chrono::steady_clock> old = std::chrono::steady_clock::now();
+
 	auto& variablePool = CProgramRuntime::m_oVariablePool;
-	auto func = CFunction(variablePool.acquire(m_uNumVariables));
+	auto func = CFunction(variablePool.Acquire(m_uNumVariables));
 
 	bool returnVal = false;
 
@@ -21,9 +25,15 @@ bool CRuntimeFunction::Execute([[maybe_unused]] CFunction* const thisFunction)
 		}
 	}
 
+	std::chrono::time_point<std::chrono::steady_clock> now = std::chrono::steady_clock::now();
+	std::chrono::duration<float> difference = now - old;
+
 	std::ranges::for_each(func.m_oStack, [&variablePool](std::unique_ptr<CVariable>& v) {
 		v->GetValue()->Print();
-		variablePool.release(std::move(v)); });
+		v->GetValue()->Release();
+		variablePool.Release(std::move(v)); });
+
+	printf("\ntime taken: %.6f\n", difference.count());
 
 	return returnVal;
 }

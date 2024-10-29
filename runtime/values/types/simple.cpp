@@ -1,8 +1,4 @@
-#include "simple.hpp"
-#include "integer.hpp"
-#include "double.hpp"
-#include "boolean.hpp"
-
+#include "types.hpp"
 #include "runtime/runtime.hpp"
 
 #include <format>
@@ -14,12 +10,16 @@ void IValue::Release()
 	case t_undefined:
 		return CProgramRuntime::FreeUndefinedValue(this);
 	case t_boolean:
-		return CProgramRuntime::FreeIntValue(dynamic_cast<CIntValue*>(this));
+		return CProgramRuntime::FreeBooleanValue(dynamic_cast<CBooleanValue*>(this));
 	case t_int:
 		return CProgramRuntime::FreeIntValue(dynamic_cast<CIntValue*>(this));
 	case t_double:
 		return CProgramRuntime::FreeDoubleValue(dynamic_cast<CDoubleValue*>(this));
 	}
+}
+IValue* IValue::Copy() const
+{
+	return CProgramRuntime::AcquireNewValue();
 }
 bool IValue::AsBoolean() const{
 	return dynamic_cast<const CBooleanValue*>(this)->m_bValue;

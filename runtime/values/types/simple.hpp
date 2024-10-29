@@ -19,18 +19,24 @@ public:
 	[[nodiscard]] virtual EValueType Type() const noexcept { return t_undefined; };
 
 	constexpr auto SetOwner(CVariable* o) noexcept { m_pOwner = o; }
-	constexpr auto GetOwner() const noexcept { return m_pOwner; }
-	constexpr auto HasOwner() const noexcept { return !!m_pOwner; }
+	[[nodiscard]] constexpr auto GetOwner() const noexcept { return m_pOwner; }
+	[[nodiscard]] constexpr auto HasOwner() const noexcept { return !!m_pOwner; }
 
 	void Release();
 	void Print() const;
 
-	virtual std::string TypeAsString() const { return "undefined"s; }
-	virtual std::string ValueAsString() const { return "undefined"s; }
+	[[nodiscard]] virtual std::string TypeAsString() const { return "undefined"s; }
+	[[nodiscard]] virtual std::string ValueAsString() const { return "undefined"s; }
+	
+	[[nodiscard]] virtual IValue* Copy() const;
 
 	[[nodiscard]] bool AsBoolean() const;
 	[[nodiscard]] std::int64_t AsInt() const;
 	[[nodiscard]] double AsDouble() const;
+
+	[[nodiscard]] virtual bool ToBoolean() const { return false; }
+	[[nodiscard]] virtual std::int64_t ToInt() const { return 0; }
+	[[nodiscard]] virtual double ToDouble() const { return 0.0; }
 
 protected:
 

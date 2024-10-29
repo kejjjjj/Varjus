@@ -27,7 +27,7 @@ std::unique_ptr<AbstractSyntaxTree> AbstractSyntaxTree::CreateAST(VectorOf<CLint
 	return root;
 }
 
-std::unique_ptr<AbstractSyntaxTree> AbstractSyntaxTree::GetPolymorphic(VectorOf<CLinterOperand*>& operands, VectorOf<CLinterOperator*>& operators)
+std::unique_ptr<AbstractSyntaxTree> AbstractSyntaxTree::GetPolymorphic(VectorOf<CLinterOperand*>& operands, [[maybe_unused]] VectorOf<CLinterOperator*>& operators)
 {
 
 	std::unique_ptr<AbstractSyntaxTree> node;

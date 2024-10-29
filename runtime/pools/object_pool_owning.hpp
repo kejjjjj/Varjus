@@ -2,6 +2,7 @@
 #include <memory>
 #include <stack>
 #include <ranges>
+#include <cassert>
 
 template <typename T>
 class COwningObjectPool {
@@ -14,7 +15,7 @@ public:
         }
     }
 
-    T* acquire() {
+    T* Acquire() {
         if (available.empty()) {
             pool.emplace_back(std::make_unique<T>());
             available.push(pool.back().get());
@@ -24,8 +25,14 @@ public:
         return obj;
     }
 
-    void release(T* obj) {
+    void Release(T* obj) {
         available.push(obj);
+        assert(pool.size() >= available.size());
+    }
+
+    auto GetInUseCount() const {
+        assert(pool.size() >= available.size());
+        return pool.size() - available.size();
     }
 
 private:

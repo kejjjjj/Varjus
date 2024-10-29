@@ -1,10 +1,7 @@
 #include "runtime/structure.hpp"
 #include "runtime/functions/rtfunction.hpp"
-#include "runtime/values/simple.hpp"
+#include "runtime/values/types/types.hpp"
 #include "runtime/values/simple_operators.hpp"
-#include "runtime/values/integer.hpp"
-#include "runtime/values/double.hpp"
-#include "runtime/values/boolean.hpp"
 
 #include "runtime/variables.hpp"
 #include "runtime/runtime.hpp"
@@ -44,10 +41,14 @@ IValue* CRuntimeExpression::Evaluate(CFunction* const thisFunction, AbstractSynt
 
 	switch (node->As<const OperatorASTNode*>()->m_ePunctuation) {
 	case p_assign:
-		result = OP_ASSIGNMENT(lhs->GetOwner(), rhs);
+		result = lhs;
+		OP_ASSIGNMENT(lhs, rhs);
 		break;
 	case p_add:
 		result = OP_ADDITION(lhs, rhs);
+		break;
+	case p_less_than:
+		result = OP_LESS_THAN(lhs, rhs);
 		break;
 	default:
 		throw std::exception("bad operator");
@@ -68,33 +69,16 @@ IValue* CRuntimeExpression::EvaluateLeaf(CFunction* const thisFunction, Abstract
 	}
 
 	if (node->IsConstant()) {
-
 		const auto constant = node->As<const ConstantASTNode*>();
-
-		union {
-			IValue* undefinedValue;
-			CBooleanValue* booleanValue;
-			CIntValue* intValue;
-			CDoubleValue* doubleValue;
-		}v{};
-
 		switch (constant->m_eDataType) {
 			case t_undefined:
-				v.undefinedValue = CProgramRuntime::AcquireNewValue();
-				return v.undefinedValue;
+				return CProgramRuntime::AcquireNewValue();
 			case t_boolean:
-				v.booleanValue = CProgramRuntime::AcquireNewBooleanValue();
-				*v.booleanValue = CBooleanValue(static_cast<bool>(constant->m_pConstant[0])); //the byte is either 1 or 0
-				return v.booleanValue;
+				return CProgramRuntime::AcquireNewBooleanValue(static_cast<bool>(constant->m_pConstant[0]));
 			case t_int:
-				v.intValue = CProgramRuntime::AcquireNewIntValue();
-				*v.intValue = CIntValue(*reinterpret_cast<std::int64_t*>((char*)constant->m_pConstant.data()));
-				return v.intValue;
-
+				return CProgramRuntime::AcquireNewIntValue(*reinterpret_cast<std::int64_t*>((char*)constant->m_pConstant.data()));
 			case t_double:
-				v.doubleValue = CProgramRuntime::AcquireNewDoubleValue();
-				*v.doubleValue = CDoubleValue(*reinterpret_cast<double*>((char*)constant->m_pConstant.data()));
-				return v.doubleValue;
+				return CProgramRuntime::AcquireNewDoubleValue(*reinterpret_cast<double*>((char*)constant->m_pConstant.data()));;
 		}
 	}
 

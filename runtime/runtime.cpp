@@ -1,13 +1,10 @@
 #include "runtime.hpp"
 #include "structure.hpp"
-#include "values/simple.hpp"
-#include "values/integer.hpp"
-#include "values/double.hpp"
-#include "values/boolean.hpp"
-
+#include "values/types/types.hpp"
 #include "variables.hpp"
 
 #include <ranges>
+#include <iostream>
 
 CNonOwningObjectPool<CVariable>  CProgramRuntime::m_oVariablePool(100);
 
@@ -33,35 +30,46 @@ void CProgramRuntime::Execute()
 		return;
 	}
 
-	if ((*iMainFunction)->Execute(nullptr))
-		return;
+	if ((*iMainFunction)->Execute(nullptr)) {
+		std::cout << "\n\n--------------LEAKS--------------\n\n";
+		std::cout << std::format("undefined: {}\n", m_oUndefinedValuePool.GetInUseCount());
+		std::cout << std::format("boolean:   {}\n", m_oBooleanValuePool.GetInUseCount());
+		std::cout << std::format("int:       {}\n", m_oIntValuePool.GetInUseCount());
+		std::cout << std::format("double:    {}\n\n", m_oDoubleValuePool.GetInUseCount());
+	}
 
 	return;
 
 }
 IValue* CProgramRuntime::AcquireNewValue(){
-	return m_oUndefinedValuePool.acquire();
+	return m_oUndefinedValuePool.Acquire();
 }
-CBooleanValue* CProgramRuntime::AcquireNewBooleanValue()
+CBooleanValue* CProgramRuntime::AcquireNewBooleanValue(bool value)
 {
-	return m_oBooleanValuePool.acquire();
+	auto v = m_oBooleanValuePool.Acquire();
+	v->m_bValue = value;
+	return v;
 }
-CIntValue* CProgramRuntime::AcquireNewIntValue(){
-	return m_oIntValuePool.acquire();
+CIntValue* CProgramRuntime::AcquireNewIntValue(std::int64_t value){
+	auto v = m_oIntValuePool.Acquire();
+	v->m_iValue = value;
+	return v;
 }
-CDoubleValue* CProgramRuntime::AcquireNewDoubleValue(){
-	return m_oDoubleValuePool.acquire();
+CDoubleValue* CProgramRuntime::AcquireNewDoubleValue(double value){
+	auto v = m_oDoubleValuePool.Acquire();
+	v->m_dValue = value;
+	return v;
 }
 
 void CProgramRuntime::FreeUndefinedValue(IValue* value) {
-	return m_oUndefinedValuePool.release(value);
+	return m_oUndefinedValuePool.Release(value);
 }
 void CProgramRuntime::FreeBooleanValue(CBooleanValue* value){
-	return m_oBooleanValuePool.release(value);
+	return m_oBooleanValuePool.Release(value);
 }
 void CProgramRuntime::FreeIntValue(CIntValue* value) {
-	return m_oIntValuePool.release(value);
+	return m_oIntValuePool.Release(value);
 }
 void CProgramRuntime::FreeDoubleValue(CDoubleValue* value){
-	return m_oDoubleValuePool.release(value);
+	return m_oDoubleValuePool.Release(value);
 }

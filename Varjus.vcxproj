@@ -181,11 +181,12 @@
     <ClCompile Include="runtime\functions\rtfunction.cpp" />
     <ClCompile Include="runtime\runtime.cpp" />
     <ClCompile Include="runtime\structure.cpp" />
-    <ClCompile Include="runtime\values\boolean.cpp" />
-    <ClCompile Include="runtime\values\double.cpp" />
-    <ClCompile Include="runtime\values\integer.cpp" />
-    <ClCompile Include="runtime\values\simple.cpp" />
+    <ClCompile Include="runtime\values\coercion.cpp" />
     <ClCompile Include="runtime\values\simple_operators.cpp" />
+    <ClCompile Include="runtime\values\types\boolean.cpp" />
+    <ClCompile Include="runtime\values\types\double.cpp" />
+    <ClCompile Include="runtime\values\types\integer.cpp" />
+    <ClCompile Include="runtime\values\types\simple.cpp" />
     <ClCompile Include="runtime\variables.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -223,11 +224,13 @@
     <ClInclude Include="runtime\pools\object_pool_owning.hpp" />
     <ClInclude Include="runtime\runtime.hpp" />
     <ClInclude Include="runtime\structure.hpp" />
-    <ClInclude Include="runtime\values\boolean.hpp" />
-    <ClInclude Include="runtime\values\double.hpp" />
-    <ClInclude Include="runtime\values\integer.hpp" />
-    <ClInclude Include="runtime\values\simple.hpp" />
+    <ClInclude Include="runtime\values\coercion.hpp" />
     <ClInclude Include="runtime\values\simple_operators.hpp" />
+    <ClInclude Include="runtime\values\types\boolean.hpp" />
+    <ClInclude Include="runtime\values\types\double.hpp" />
+    <ClInclude Include="runtime\values\types\integer.hpp" />
+    <ClInclude Include="runtime\values\types\simple.hpp" />
+    <ClInclude Include="runtime\values\types\types.hpp" />
     <ClInclude Include="runtime\variables.hpp" />
   </ItemGroup>
   <ItemGroup>
