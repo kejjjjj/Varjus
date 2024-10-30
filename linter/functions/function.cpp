@@ -13,7 +13,7 @@
 #include "runtime/structure.hpp"
 
 CFunctionLinter::CFunctionLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack)
-	: m_iterPos(pos), m_iterEnd(end), m_pScope(scope), m_pOwner(stack) {
+	: CLinterSingle(pos, end), m_pScope(scope), m_pOwner(stack) {
 
 	assert(m_iterPos != m_iterEnd);
 }
@@ -177,5 +177,6 @@ RuntimeBlock CFunctionLinter::ToRuntimeObject() const
 	const auto stack = m_pThisStack->ToStack();
 	assert(stack->m_pFunction != nullptr);
 
+	stack->m_pFunction->m_oInstructions = std::move(m_pThisScope->MoveInstructions());
 	return std::make_unique<CRuntimeFunction>(*stack->m_pFunction);
 }

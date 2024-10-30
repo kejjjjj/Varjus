@@ -30,9 +30,9 @@ public:
 	
 	[[nodiscard]] virtual IValue* Copy() const;
 
-	[[nodiscard]] bool AsBoolean() const;
-	[[nodiscard]] std::int64_t AsInt() const;
-	[[nodiscard]] double AsDouble() const;
+	[[nodiscard]] bool& AsBoolean();
+	[[nodiscard]] std::int64_t& AsInt();
+	[[nodiscard]] double &AsDouble();
 
 	[[nodiscard]] virtual bool ToBoolean() const { return false; }
 	[[nodiscard]] virtual std::int64_t ToInt() const { return 0; }

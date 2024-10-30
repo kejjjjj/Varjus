@@ -6,10 +6,11 @@
 CVariable::CVariable() {}
 CVariable::~CVariable() = default;
 
+
 void CVariable::SetValue(IValue* v)
 {
 	// give the value back to the pool
-	if (m_pValue) {
+	if (m_pValue && m_pValue->HasOwner()) {
 		m_pValue->SetOwner(nullptr);
 		m_pValue->Release();
 	}

@@ -8,7 +8,7 @@ struct CLinterVariable;
 class CScope;
 class IRuntimeStructure;
 
-class CScopeLinter final
+class CScopeLinter final : public CLinterSingle<CToken>
 {
 	NONCOPYABLE(CScopeLinter);
 public:
@@ -17,10 +17,7 @@ public:
 	[[maybe_unused]] Success ParseScope();
 
 private:
-	[[nodiscard]] constexpr bool IsEndOfBuffer() const noexcept { return m_iterPos == m_iterEnd; }
 
-	LinterIterator& m_iterPos;
-	LinterIterator& m_iterEnd;
 	WeakScope m_pScope;
 	CMemory* const m_pOwner;
 
@@ -41,8 +38,14 @@ public:
 	[[nodiscard]] static CScope* DeleteScope(CScope* scope);
 
 	[[nodiscard]] Success DeclareVariable(const std::string& var);
+
+	void AddInstruction(RuntimeBlock&& block);
+	VectorOf<RuntimeBlock>&& MoveInstructions();
+
 private:
 	[[nodiscard]] bool VariableExists(const std::string& var) const;
+
+	VectorOf<RuntimeBlock> m_oInstructions;
 
 	CMemory* const m_pOwner;
 	CScope* m_pLowerScope{};

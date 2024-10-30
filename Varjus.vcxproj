@@ -174,12 +174,15 @@
     <ClCompile Include="linter\functions\function.cpp" />
     <ClCompile Include="linter\linter.cpp" />
     <ClCompile Include="linter\scopes\scope.cpp" />
+    <ClCompile Include="linter\statements\statement.cpp" />
+    <ClCompile Include="linter\statements\while\while.cpp" />
     <ClCompile Include="linter\token.cpp" />
     <ClCompile Include="linter\tokenizer.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="runtime\expressions\rtexpression.cpp" />
     <ClCompile Include="runtime\functions\rtfunction.cpp" />
     <ClCompile Include="runtime\runtime.cpp" />
+    <ClCompile Include="runtime\statements\while\rtwhile.cpp" />
     <ClCompile Include="runtime\structure.cpp" />
     <ClCompile Include="runtime\values\coercion.cpp" />
     <ClCompile Include="runtime\values\simple_operators.cpp" />
@@ -216,6 +219,8 @@
     <ClInclude Include="linter\linter.hpp" />
     <ClInclude Include="linter\punctuation.hpp" />
     <ClInclude Include="linter\scopes\scope.hpp" />
+    <ClInclude Include="linter\statements\statement.hpp" />
+    <ClInclude Include="linter\statements\while\while.hpp" />
     <ClInclude Include="linter\token.hpp" />
     <ClInclude Include="linter\tokenizer.hpp" />
     <ClInclude Include="runtime\expressions\rtexpression.hpp" />
@@ -223,6 +228,7 @@
     <ClInclude Include="runtime\pools\object_pool_non_owning.hpp" />
     <ClInclude Include="runtime\pools\object_pool_owning.hpp" />
     <ClInclude Include="runtime\runtime.hpp" />
+    <ClInclude Include="runtime\statements\while\rtwhile.hpp" />
     <ClInclude Include="runtime\structure.hpp" />
     <ClInclude Include="runtime\values\coercion.hpp" />
     <ClInclude Include="runtime\values\simple_operators.hpp" />

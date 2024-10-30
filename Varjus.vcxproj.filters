@@ -58,6 +58,18 @@
     <Filter Include="Source Files\runtime\values\types">
       <UniqueIdentifier>{99ecbf56-df27-4306-afb4-b4a8908f46b0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\linter\statements">
+      <UniqueIdentifier>{fff71a46-03d7-4b12-8573-c5b2dbe8ca21}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\linter\statements\while">
+      <UniqueIdentifier>{f20b1bc6-c7b2-4d57-b022-db367c5316c2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\runtime\statements">
+      <UniqueIdentifier>{eff92f1e-978f-4871-9363-6c3b6370416d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\runtime\statements\while">
+      <UniqueIdentifier>{f17a6950-7ca4-49f3-a196-8a6996323662}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -158,6 +170,15 @@
     </ClCompile>
     <ClCompile Include="runtime\values\coercion.cpp">
       <Filter>Source Files\runtime\values</Filter>
+    </ClCompile>
+    <ClCompile Include="linter\statements\while\while.cpp">
+      <Filter>Source Files\linter\statements\while</Filter>
+    </ClCompile>
+    <ClCompile Include="linter\statements\statement.cpp">
+      <Filter>Source Files\linter\statements</Filter>
+    </ClCompile>
+    <ClCompile Include="runtime\statements\while\rtwhile.cpp">
+      <Filter>Source Files\runtime\statements\while</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -286,6 +307,15 @@
     </ClInclude>
     <ClInclude Include="runtime\values\coercion.hpp">
       <Filter>Source Files\runtime\values</Filter>
+    </ClInclude>
+    <ClInclude Include="linter\statements\while\while.hpp">
+      <Filter>Source Files\linter\statements\while</Filter>
+    </ClInclude>
+    <ClInclude Include="linter\statements\statement.hpp">
+      <Filter>Source Files\linter\statements</Filter>
+    </ClInclude>
+    <ClInclude Include="runtime\statements\while\rtwhile.hpp">
+      <Filter>Source Files\runtime\statements\while</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

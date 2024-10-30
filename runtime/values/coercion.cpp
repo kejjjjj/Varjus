@@ -11,11 +11,11 @@ std::tuple<IValue*, IValue*, IValue*> Coerce(IValue* lhs, IValue* rhs)
 		return { lhs, rhs, nullptr };
 
 	if (lhs->Type() < rhs->Type()) {
-		auto data = CoerceInternal(lhs->HasOwner() ? lhs->Copy() : lhs, rhs, true);
+		auto data = CoerceInternal(lhs, rhs, true);
 		return { data.GetLHS(), data.GetRHS(), data.allocated };
 	} 
 
-	auto data = CoerceInternal(rhs->HasOwner() ? rhs->Copy() : rhs, lhs, false);
+	auto data = CoerceInternal(rhs, lhs, false);
 	return { data.GetLHS(), data.GetRHS(), data.allocated };
 }
 CCoercionOperands CoerceInternal(IValue* weaker, IValue* stronger, bool lhsIsWeak)
@@ -37,5 +37,6 @@ CCoercionOperands CoerceInternal(IValue* weaker, IValue* stronger, bool lhsIsWea
 		return { lhs, rhs, CProgramRuntime::AcquireNewDoubleValue(weaker->ToDouble()), lhsIsWeak };
 	}
 
+	assert(false);
 	return { lhs, rhs, nullptr, lhsIsWeak };
 }

@@ -14,7 +14,8 @@ enum TokenType : signed char
 	tt_name,
 	tt_operator,
 	tt_declaration,
-	tt_fn
+	tt_fn,
+	tt_while
 };
 
 enum Punctuation : char;

@@ -21,14 +21,14 @@ IValue* IValue::Copy() const
 {
 	return CProgramRuntime::AcquireNewValue();
 }
-bool IValue::AsBoolean() const{
-	return dynamic_cast<const CBooleanValue*>(this)->m_bValue;
+bool& IValue::AsBoolean(){
+	return dynamic_cast<CBooleanValue*>(this)->m_bValue;
 }
-std::int64_t IValue::AsInt() const{
-	return dynamic_cast<const CIntValue*>(this)->m_iValue;
+std::int64_t& IValue::AsInt() {
+	return dynamic_cast<CIntValue*>(this)->m_iValue;
 }
-double IValue::AsDouble() const {
-	return dynamic_cast<const CDoubleValue*>(this)->m_dValue;
+double& IValue::AsDouble() {
+	return dynamic_cast<CDoubleValue*>(this)->m_dValue;
 }
 void IValue::Print() const
 {

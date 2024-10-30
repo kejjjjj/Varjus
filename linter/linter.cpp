@@ -8,12 +8,29 @@
 #include "declarations/stack.hpp"
 #include "functions/function.hpp"
 #include "scopes/scope.hpp"
+#include "statements/while/while.hpp"
 
 #include <iostream>
 #include <cassert>
 
 CFileLinter::CFileLinter(LinterIterator& start, LinterIterator& end) : CLinter(start, end)
 {
+}
+
+static Success AddInstruction(LinterIterator& pos, RuntimeBlock&& block, const WeakScope& scope)
+{
+	if (block) { //nullptr when no initializer
+
+		if (auto s = scope.lock()) {
+			s->AddInstruction(std::move(block));
+		}
+		else {
+			CLinterErrors::PushError("!(auto s = scope.lock())", (*pos)->m_oSourcePosition);
+			return failure;
+		}
+	}
+
+	return success;
 }
 
 Success CFileLinter::LintOperator(LinterIterator& start, LinterIterator& end, const WeakScope& scope, CMemory* const memory)
@@ -38,8 +55,7 @@ Success CFileLinter::LintExpression(LinterIterator& start, LinterIterator& end, 
 	if (!linter.ParseExpression()) 
 		return failure;
 
-	memory->ToStack()->AddFunctionInstruction(linter.ToRuntimeObject());
-	return success;
+	return AddInstruction(start, linter.ToRuntimeObject(), scope);
 }
 
 Success CFileLinter::LintDeclaration(LinterIterator& start, LinterIterator& end, const WeakScope& scope, CMemory* const memory)
@@ -50,14 +66,18 @@ Success CFileLinter::LintDeclaration(LinterIterator& start, LinterIterator& end,
 	if (!linter.ParseDeclaration())
 		return failure;
 
-	auto&& possibleInstruction = linter.ToRuntimeObject();
-
-	if(possibleInstruction) //nullptr when no initializer
-		memory->ToStack()->AddFunctionInstruction(std::move(possibleInstruction));
-
-	return success;
+	return AddInstruction(start, linter.ToRuntimeObject(), scope);
 }
+Success CFileLinter::LintWhileStatement(LinterIterator& start, LinterIterator& end, const WeakScope& scope, CMemory* const memory)
+{
+	assert(memory && memory->IsStack());
 
+	CWhileStatementLinter linter(start, end, scope, memory);
+	if (!linter.ParseStatement())
+		return failure;
+
+	return AddInstruction(start, linter.ToRuntimeObject(), scope);
+}
 Success CFileLinter::LintFunction(LinterIterator& start, LinterIterator& end, const WeakScope& scope, CMemory* const memory)
 {
 	assert(memory && !memory->IsStack());
@@ -88,6 +108,8 @@ Success CFileLinter::LintToken(LinterIterator& m_iterPos, LinterIterator& m_iter
 		return LintOperator(m_iterPos, m_iterEnd, scope, memory);
 	case tt_fn:
 		return LintFunction(m_iterPos, m_iterEnd, scope, memory);
+	case tt_while:
+		return LintWhileStatement(m_iterPos, m_iterEnd, scope, memory);
 	case tt_error:
 	default:
 		CLinterErrors::PushError("Unexpected token", (*m_iterPos)->m_oSourcePosition);

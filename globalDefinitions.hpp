@@ -1,13 +1,7 @@
 #pragma once
 
+#include "globalEnums.hpp"
+
 #define NONCOPYABLE(className) \
         className(const className&) = delete; \
         className& operator=(const className&) = delete;
-
-enum EValueType : unsigned char
-{
-	t_undefined,
-	t_boolean,
-	t_int,
-	t_double
-};

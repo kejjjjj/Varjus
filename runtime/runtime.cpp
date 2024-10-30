@@ -31,12 +31,13 @@ void CProgramRuntime::Execute()
 	}
 
 	if ((*iMainFunction)->Execute(nullptr)) {
-		std::cout << "\n\n--------------LEAKS--------------\n\n";
-		std::cout << std::format("undefined: {}\n", m_oUndefinedValuePool.GetInUseCount());
-		std::cout << std::format("boolean:   {}\n", m_oBooleanValuePool.GetInUseCount());
-		std::cout << std::format("int:       {}\n", m_oIntValuePool.GetInUseCount());
-		std::cout << std::format("double:    {}\n\n", m_oDoubleValuePool.GetInUseCount());
 	}
+
+	std::cout << "\n\n--------------LEAKS--------------\n\n";
+	std::cout << std::format("undefined: {}\n", m_oUndefinedValuePool.GetInUseCount());
+	std::cout << std::format("boolean:   {}\n", m_oBooleanValuePool.GetInUseCount());
+	std::cout << std::format("int:       {}\n", m_oIntValuePool.GetInUseCount());
+	std::cout << std::format("double:    {}\n\n", m_oDoubleValuePool.GetInUseCount());
 
 	return;
 

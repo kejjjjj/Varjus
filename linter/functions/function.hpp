@@ -7,7 +7,7 @@
 class IRuntimeStructure;
 struct CFunctionBlock;
 
-class CFunctionLinter final : protected IRuntimeBlock
+class CFunctionLinter final : public CLinterSingle<CToken>, protected IRuntimeBlock
 {
 	NONCOPYABLE(CFunctionLinter);
 public:
@@ -25,12 +25,9 @@ private:
 
 	[[nodiscard]] Success ParseFunctionParametersRecursively();
 
-	[[nodiscard]] bool IsEndOfBuffer() const noexcept { return m_iterPos == m_iterEnd; }
 	[[nodiscard]] bool IsFn(const CToken* token) const noexcept;
 	[[nodiscard]] bool IsIdentifier(const CToken* token) const noexcept;
 
-	LinterIterator& m_iterPos;
-	LinterIterator& m_iterEnd;
 	WeakScope m_pScope;
 	CMemory* const m_pOwner;
 

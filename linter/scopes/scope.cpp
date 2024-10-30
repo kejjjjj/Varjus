@@ -12,7 +12,7 @@
 #include <cassert>
 
 CScopeLinter::CScopeLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const owner)
-	: m_iterPos(pos), m_iterEnd(end), m_pScope(scope), m_pOwner(owner) {
+	: CLinterSingle(pos, end), m_pScope(scope), m_pOwner(owner) {
 
 	assert(!IsEndOfBuffer() && (*m_iterPos)->IsOperator(p_curlybracket_open));
 }
@@ -30,12 +30,13 @@ Success CScopeLinter::ParseScope()
 
 	} while (!IsEndOfBuffer() && !(*m_iterPos)->IsOperator(p_curlybracket_close));
 
-	
+	if (IsEndOfBuffer())
+		return success;
 
-	if(IsEndOfBuffer() || !(*m_iterPos)->IsOperator(p_curlybracket_close))
-		CLinterErrors::PushError("expected a \"}\"", IsEndOfBuffer() ? (*std::prev(m_iterPos))->m_oSourcePosition : (*m_iterPos)->m_oSourcePosition);
+	//if(!(*m_iterPos)->IsOperator(p_curlybracket_close))
+	//	CLinterErrors::PushError("expected a \"}\"", (*m_iterPos)->m_oSourcePosition);
 
-	std::advance(m_iterPos, 1);
+	//std::advance(m_iterPos, 1);
 	return success;
 }
 CScope::CScope(CMemory* const owner) : m_pOwner(owner){}
@@ -73,8 +74,17 @@ bool CScope::VariableExists(const std::string& var) const
 	if (found)
 		return true;
 
-	if (!IsGlobalScope())
+	if (IsGlobalScope())
 		return false;
 
 	return m_pLowerScope->VariableExists(var);
+}
+
+void CScope::AddInstruction(RuntimeBlock&& block)
+{
+	m_oInstructions.emplace_back(std::move(block));
+}
+VectorOf<RuntimeBlock>&& CScope::MoveInstructions()
+{
+	return std::move(m_oInstructions);
 }

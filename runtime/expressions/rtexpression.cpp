@@ -13,11 +13,18 @@
 bool CRuntimeExpression::Execute([[maybe_unused]]CFunction* const thisFunction)
 {
 
-	[[maybe_unused]] const auto result = Evaluate(thisFunction, m_pAST.get());
+	[[maybe_unused]] const auto result = Evaluate(thisFunction);
 	
+	if (!result->HasOwner())
+		result->Release();
+
 	//TODO: make sure that all objects from the pool get released
 
-	return true;
+	return false;
+}
+IValue* CRuntimeExpression::Evaluate(CFunction* const thisFunction)
+{
+	return Evaluate(thisFunction, m_pAST.get());
 }
 
 #pragma pack(push)

@@ -11,7 +11,12 @@ void OP_ASSIGNMENT(IValue* lhs, IValue* rhs)
 	if (!variable)
 		throw std::exception("Left-handside must have a memory address");
 
-	IVALUE_UNION v{};
+	
+	if (auto value = variable->GetValue()) {
+		value->SetOwner(nullptr);
+		value->Release();
+	}
+
 
 	switch (rhs->Type()) {
 		case t_undefined:
@@ -38,7 +43,7 @@ IValue* OP_ADDITION(IValue* _lhs, IValue* _rhs)
 	}
 
 	//lhs contains the weaker value that possibly needs to be freed
-	auto [lhs, rhs, alloc] = Coerce(_lhs, _rhs);
+	auto&& [lhs, rhs, alloc] = Coerce(_lhs, _rhs);
 
 	IValue* result{ nullptr };
 
@@ -46,13 +51,13 @@ IValue* OP_ADDITION(IValue* _lhs, IValue* _rhs)
 	case t_undefined:
 		break;
 	case t_boolean:
-		result = CProgramRuntime::AcquireNewBooleanValue(static_cast<bool>(lhs->AsBoolean() + rhs->AsBoolean()));
+		result = CProgramRuntime::AcquireNewBooleanValue(static_cast<bool>(lhs->ToBoolean() + rhs->ToBoolean()));
 		break;
 	case t_int:
-		result = CProgramRuntime::AcquireNewIntValue(lhs->AsInt() + rhs->AsInt());
+		result = CProgramRuntime::AcquireNewIntValue(lhs->ToInt() + rhs->ToInt());
 		break;
 	case t_double:
-		result = CProgramRuntime::AcquireNewDoubleValue(lhs->AsDouble() + rhs->AsDouble());
+		result = CProgramRuntime::AcquireNewDoubleValue(lhs->ToDouble() + rhs->ToDouble());
 		break;
 	}
 
