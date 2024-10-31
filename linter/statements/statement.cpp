@@ -1,5 +1,6 @@
 
 #include "statement.hpp"
+#include "linter/linter.hpp"
 #include "linter/token.hpp"
 #include "linter/error.hpp"
 #include "linter/expressions/expression.hpp"
@@ -9,7 +10,7 @@
 #include <cassert>
 
 
-CStatementParser::CStatementParser(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack)
+CStatementLinter::CStatementLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack)
 	: CLinterSingle(pos, end), m_pScope(scope), m_pOwner(stack) {
 
 	assert(m_iterPos != m_iterEnd);
@@ -22,7 +23,7 @@ CStatementParser::CStatementParser(LinterIterator& pos, LinterIterator& end, con
 	}
 }
 
-Success CStatementParser::ParseIdentifier(TokenType tt)
+Success CStatementLinter::ParseIdentifier(TokenType tt)
 {
 	if (IsEndOfBuffer() || (*m_iterPos)->Type() != tt) {
 		CLinterErrors::PushError("expected a statement", IsEndOfBuffer() ? (*std::prev(m_iterPos))->m_oSourcePosition : (*m_iterPos)->m_oSourcePosition);
@@ -34,7 +35,7 @@ Success CStatementParser::ParseIdentifier(TokenType tt)
 	return success;
 }
 
-std::unique_ptr<AbstractSyntaxTree> CStatementParser::ParseExpression()
+std::unique_ptr<AbstractSyntaxTree> CStatementLinter::ParseExpression()
 {
 	if (IsEndOfBuffer() || !(*m_iterPos)->IsOperator(p_par_open)) {
 		CLinterErrors::PushError("expected a \"(\"", IsEndOfBuffer() ? (*std::prev(m_iterPos))->m_oSourcePosition : (*m_iterPos)->m_oSourcePosition);
@@ -51,21 +52,21 @@ std::unique_ptr<AbstractSyntaxTree> CStatementParser::ParseExpression()
 		temp = expr.ToAST();
 	}
 
-	//if (IsEndOfBuffer() || !(*m_iterPos)->IsOperator(p_par_close)) {
-	//	CLinterErrors::PushError("expected a \")\"", IsEndOfBuffer() ? (*std::prev(m_iterPos))->m_oSourcePosition : (*m_iterPos)->m_oSourcePosition);
-	//	return nullptr;
-	//}
-
-	//std::advance(m_iterPos, 1); // skip )
 	return temp;
 }
 
 
-Success CStatementParser::ParseScope()
+Success CStatementLinter::ParseScope()
 {
-	if (IsEndOfBuffer() || !(*m_iterPos)->IsOperator(p_curlybracket_open)) {
-		CLinterErrors::PushError("expected a \"{\"", IsEndOfBuffer() ? (*std::prev(m_iterPos))->m_oSourcePosition : (*m_iterPos)->m_oSourcePosition);
+	if (IsEndOfBuffer()) {
+		CLinterErrors::PushError("expected a \"{\" or an expression", (*std::prev(m_iterPos))->m_oSourcePosition);
 		return failure;
+	}
+
+
+	// no curlybracket? only add one instruction :)
+	if (!(*m_iterPos)->IsOperator(p_curlybracket_open)) {
+		return CFileLinter::LintToken(m_iterPos, m_iterEnd, m_pThisScope, m_pOwner);
 	}
 
 	auto scope = CScopeLinter(m_iterPos, m_iterEnd, m_pThisScope, m_pOwner);

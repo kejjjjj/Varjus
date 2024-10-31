@@ -9,12 +9,12 @@ enum TokenType : signed char;
 class CScope;
 class AbstractSyntaxTree;
 
-class CStatementParser : public CLinterSingle<CToken>
+class CStatementLinter : public CLinterSingle<CToken>
 {
-	NONCOPYABLE(CStatementParser);
+	NONCOPYABLE(CStatementLinter);
 
 public:
-	explicit CStatementParser(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const owner);
+	explicit CStatementLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const owner);
 
 protected:
 

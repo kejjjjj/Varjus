@@ -19,6 +19,8 @@ public:
 	[[nodiscard]] static Success LintOperator(LinterIterator& start, LinterIterator& end, const WeakScope& scope, CMemory* const stack);
 	[[nodiscard]] static Success LintExpression(LinterIterator& start, LinterIterator& end, const WeakScope& scope, CMemory* const stack);
 	[[nodiscard]] static Success LintDeclaration(LinterIterator& start, LinterIterator& end, const WeakScope& scope, CMemory* const stack);
+	[[nodiscard]] static Success LintIfStatement(LinterIterator& start, LinterIterator& end, const WeakScope& scope, CMemory* const stack);
+	[[nodiscard]] static Success LintElseStatement(LinterIterator& start, LinterIterator& end, const WeakScope& scope, CMemory* const stack);
 	[[nodiscard]] static Success LintWhileStatement(LinterIterator& start, LinterIterator& end, const WeakScope& scope, CMemory* const stack);
 
 	[[nodiscard]] static Success LintFunction(LinterIterator& start, LinterIterator& end, const WeakScope& scope, CMemory* const stack);

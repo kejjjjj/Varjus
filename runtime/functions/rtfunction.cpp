@@ -4,11 +4,22 @@
 #include "runtime/variables.hpp"
 #include "runtime/values/types/types.hpp"
 
+#include "linter/functions/function.hpp"
+
 #include <ranges>
 #include <algorithm>
 
 #include <chrono>
 
+CRuntimeFunction::CRuntimeFunction(CFunctionBlock& linterFunction) :
+	IRuntimeStructureSequence(std::move(linterFunction.m_oInstructions)),
+	m_sName(linterFunction.m_sName),
+	m_uNumParameters(linterFunction.m_uNumParameters),
+	m_uNumVariables(linterFunction.m_pStack->GetVariableCount())
+{
+
+}
+CRuntimeFunction::~CRuntimeFunction() = default;
 
 bool CRuntimeFunction::Execute([[maybe_unused]] CFunction* const thisFunction)
 {

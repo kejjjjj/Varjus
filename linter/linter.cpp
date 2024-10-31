@@ -9,6 +9,8 @@
 #include "functions/function.hpp"
 #include "scopes/scope.hpp"
 #include "statements/while/while.hpp"
+#include "statements/if/if.hpp"
+#include "statements/if/else.hpp"
 
 #include <iostream>
 #include <cassert>
@@ -68,6 +70,28 @@ Success CFileLinter::LintDeclaration(LinterIterator& start, LinterIterator& end,
 
 	return AddInstruction(start, linter.ToRuntimeObject(), scope);
 }
+Success CFileLinter::LintIfStatement(LinterIterator& start, LinterIterator& end, const WeakScope& scope, CMemory* const memory)
+{
+	assert(memory && memory->IsStack());
+
+	CIfStatementLinter linter(start, end, scope, memory);
+	if (!linter.ParseStatement())
+		return failure;
+
+	return AddInstruction(start, linter.ToRuntimeObject(), scope);
+}
+Success CFileLinter::LintElseStatement(LinterIterator& start, LinterIterator& end, const WeakScope& scope, CMemory* const memory)
+{
+	assert(memory && memory->IsStack());
+
+	CElseStatementLinter linter(start, end, scope, memory);
+	if (!linter.ParseStatement())
+		return failure;
+
+	//the parser already adds the instruction
+	return success;
+}
+
 Success CFileLinter::LintWhileStatement(LinterIterator& start, LinterIterator& end, const WeakScope& scope, CMemory* const memory)
 {
 	assert(memory && memory->IsStack());
@@ -108,6 +132,10 @@ Success CFileLinter::LintToken(LinterIterator& m_iterPos, LinterIterator& m_iter
 		return LintOperator(m_iterPos, m_iterEnd, scope, memory);
 	case tt_fn:
 		return LintFunction(m_iterPos, m_iterEnd, scope, memory);
+	case tt_if:
+		return LintIfStatement(m_iterPos, m_iterEnd, scope, memory);
+	case tt_else:
+		return LintElseStatement(m_iterPos, m_iterEnd, scope, memory);
 	case tt_while:
 		return LintWhileStatement(m_iterPos, m_iterEnd, scope, memory);
 	case tt_error:

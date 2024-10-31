@@ -70,6 +70,12 @@
     <Filter Include="Source Files\runtime\statements\while">
       <UniqueIdentifier>{f17a6950-7ca4-49f3-a196-8a6996323662}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\linter\statements\if">
+      <UniqueIdentifier>{a989db4f-39d2-4b78-8211-038df295e7e4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\runtime\statements\conditional">
+      <UniqueIdentifier>{456f2338-d2c2-4a5d-8bfc-dbe756e64c05}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -179,6 +185,15 @@
     </ClCompile>
     <ClCompile Include="runtime\statements\while\rtwhile.cpp">
       <Filter>Source Files\runtime\statements\while</Filter>
+    </ClCompile>
+    <ClCompile Include="linter\statements\if\if.cpp">
+      <Filter>Source Files\linter\statements\if</Filter>
+    </ClCompile>
+    <ClCompile Include="linter\statements\if\else.cpp">
+      <Filter>Source Files\linter\statements\if</Filter>
+    </ClCompile>
+    <ClCompile Include="runtime\statements\conditional\rtconditional.cpp">
+      <Filter>Source Files\runtime\statements\conditional</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -316,6 +331,15 @@
     </ClInclude>
     <ClInclude Include="runtime\statements\while\rtwhile.hpp">
       <Filter>Source Files\runtime\statements\while</Filter>
+    </ClInclude>
+    <ClInclude Include="linter\statements\if\if.hpp">
+      <Filter>Source Files\linter\statements\if</Filter>
+    </ClInclude>
+    <ClInclude Include="linter\statements\if\else.hpp">
+      <Filter>Source Files\linter\statements\if</Filter>
+    </ClInclude>
+    <ClInclude Include="runtime\statements\conditional\rtconditional.hpp">
+      <Filter>Source Files\runtime\statements\conditional</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -10,6 +10,10 @@
 
 #include <cassert>
 
+CRuntimeExpression::CRuntimeExpression(std::unique_ptr<AbstractSyntaxTree>&& ast) :
+	m_pAST(std::move(ast)) {}
+CRuntimeExpression::~CRuntimeExpression() = default;
+
 bool CRuntimeExpression::Execute([[maybe_unused]]CFunction* const thisFunction)
 {
 

@@ -88,3 +88,7 @@ VectorOf<RuntimeBlock>&& CScope::MoveInstructions()
 {
 	return std::move(m_oInstructions);
 }
+IRuntimeStructure* CScope::GetLatestInstruction() const noexcept
+{
+	return m_oInstructions.size() ? &*m_oInstructions.back() : nullptr;
+}

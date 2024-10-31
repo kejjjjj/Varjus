@@ -13,6 +13,7 @@ enum EStructureType
 {
 	st_function,
 	st_expression,
+	st_conditional,
 	st_while,
 };
 
@@ -91,6 +92,28 @@ private:
 
 };
 
+class CRuntimeConditionalStatement final : public IRuntimeStructureSequence
+{
+	NONCOPYABLE(CRuntimeConditionalStatement);
+	friend class CElseStatementLinter; // so that it can add the chaining
+public:
+	CRuntimeConditionalStatement(std::unique_ptr<AbstractSyntaxTree>&& condition, InstructionSequence&& insns);
+	~CRuntimeConditionalStatement();
+
+	[[maybe_unused]] bool Execute(CFunction* const thisFunction) override;
+
+protected:
+	[[nodiscard]] constexpr EStructureType Type() const noexcept { return st_conditional; };
+
+private:
+
+	CRuntimeConditionalStatement* SeekLastBlock();
+
+
+	std::unique_ptr<CRuntimeExpression> m_pCondition;
+	std::unique_ptr<CRuntimeConditionalStatement> m_pNext; //else (if)
+};
+
 class CRuntimeWhileStatement final : public IRuntimeStructureSequence
 {
 	NONCOPYABLE(CRuntimeWhileStatement);
@@ -106,6 +129,8 @@ protected:
 private:
 	std::unique_ptr<CRuntimeExpression> m_pCondition;
 };
+
+
 
 using RuntimeBlock = std::unique_ptr<IRuntimeStructure>;
 using RuntimeFunction = std::unique_ptr<CRuntimeFunction>;

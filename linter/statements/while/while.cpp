@@ -12,7 +12,7 @@
 #include <cassert>
 
 CWhileStatementLinter::CWhileStatementLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack)
-	: CStatementParser(pos, end, scope, stack) {
+	: CStatementLinter(pos, end, scope, stack) {
 
 	assert(m_iterPos != m_iterEnd);
 }

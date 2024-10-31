@@ -11,22 +11,24 @@
 #include <chrono>
 
 
+CRuntimeWhileStatement::CRuntimeWhileStatement(std::unique_ptr<AbstractSyntaxTree>&& condition, InstructionSequence&& insns)
+	: IRuntimeStructureSequence(std::move(insns)), m_pCondition(std::make_unique<CRuntimeExpression>(std::move(condition))) {}
+CRuntimeWhileStatement::~CRuntimeWhileStatement() = default;
+
+
 bool CRuntimeWhileStatement::Execute([[maybe_unused]] CFunction* const thisFunction)
 {
 
 	while (true) {
 		auto condition = m_pCondition->Evaluate(thisFunction);
-
-		if (!condition->ToBoolean()) {
-			
-			if (!condition->HasOwner())
-				condition->Release();
-
-			break;
-		}
+		const auto boolValue = condition->ToBoolean();
 
 		if (!condition->HasOwner())
 			condition->Release();
+
+		if (!boolValue) {
+			break;
+		}
 
 		if (ExecuteBlock(thisFunction))
 			return true;

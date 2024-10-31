@@ -8,7 +8,7 @@ class CScope;
 struct CFunctionBlock;
 
 
-class CWhileStatementLinter final : public CStatementParser, protected IRuntimeBlock
+class CWhileStatementLinter final : public CStatementLinter, protected IRuntimeBlock
 {
 	NONCOPYABLE(CWhileStatementLinter);
 

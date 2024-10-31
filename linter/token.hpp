@@ -15,6 +15,8 @@ enum TokenType : signed char
 	tt_operator,
 	tt_declaration,
 	tt_fn,
+	tt_if,
+	tt_else,
 	tt_while
 };
 

@@ -42,6 +42,8 @@ public:
 	void AddInstruction(RuntimeBlock&& block);
 	VectorOf<RuntimeBlock>&& MoveInstructions();
 
+	IRuntimeStructure* GetLatestInstruction() const noexcept;
+
 private:
 	[[nodiscard]] bool VariableExists(const std::string& var) const;
 
