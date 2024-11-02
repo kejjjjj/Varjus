@@ -68,6 +68,8 @@ EValueType CIdentifierLinter::GetImmediateType() const noexcept
 		return EValueType::t_int;
 	case TokenType::tt_double:
 		return EValueType::t_double;
+	case TokenType::tt_string:
+		return EValueType::t_string;
 	default:
 		assert(false);
 		return t_undefined;
@@ -86,6 +88,8 @@ std::size_t CIdentifierLinter::GetImmediateSize() const noexcept
 		return sizeof(std::int64_t);
 	case t_double:
 		return sizeof(double);
+	case t_string:
+		return m_pToken->Source().size();
 	default:
 		assert(false);
 		return 0u;
@@ -108,6 +112,8 @@ std::string CIdentifierLinter::ToData() const noexcept
 		result = std::string(sizeof(double), 0);
 		std::from_chars(string.c_str(), string.c_str() + string.size(), reinterpret_cast<double&>(*result.data()));
 		break;
+	case t_string:
+		return string;
 	}
 
 	return result;

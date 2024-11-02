@@ -24,6 +24,7 @@ public:
 
 	[[nodiscard]] virtual constexpr bool IsLeaf() const noexcept	 { return false; }
 	[[nodiscard]] virtual constexpr bool IsOperator() const noexcept { return false; }
+	[[nodiscard]] virtual constexpr bool IsPostfix() const noexcept  { return false; }
 	[[nodiscard]] virtual constexpr bool IsVariable() const noexcept { return false; }
 	[[nodiscard]] virtual constexpr bool IsConstant() const noexcept { return false; }
 
@@ -45,17 +46,15 @@ public:
 public:
 	[[nodiscard]] static std::unique_ptr<AbstractSyntaxTree> CreateAST(VectorOf<CLinterOperand*>& operands, VectorOf<CLinterOperator*>& operators);
 
+protected:
+	[[nodiscard]] std::size_t GetLeftBranchDepth() const noexcept;
+
 private:
 
 	[[nodiscard]] static std::unique_ptr<AbstractSyntaxTree> GetPolymorphic(VectorOf<CLinterOperand*>& operands, VectorOf<CLinterOperator*>& operators);
 	[[nodiscard]] static OperatorIterator FindLowestPriorityOperator(VectorOf<CLinterOperator*>& operators);
 	
 	void CreateRecursively(VectorOf<CLinterOperand*>& operands, VectorOf<CLinterOperator*>& operators);
-
-protected:
-
-	[[nodiscard]] std::size_t GetLeftBranchDepth() const noexcept;
-
 
 };
 
@@ -93,15 +92,31 @@ public:
 	EValueType m_eDataType{};
 };
 
-class OperatorASTNode final : public AbstractSyntaxTree
+class OperatorASTNode : public AbstractSyntaxTree
 {
 	friend class AstToInstructionConverter;
 
 public:
 	OperatorASTNode() = default;
 	OperatorASTNode(Punctuation punc) : m_ePunctuation(punc) {}
+	virtual ~OperatorASTNode() = default;
+
 	[[nodiscard]] constexpr bool IsOperator() const noexcept override { return true; }
+	
+	[[nodiscard]] virtual constexpr bool IsPostfix() const noexcept { return false; }
+	[[nodiscard]] virtual constexpr bool IsSubscript() const noexcept { return false; }
 
 //private:
-	Punctuation m_ePunctuation;
+	Punctuation m_ePunctuation{};
+};
+
+class SubscriptASTNode : public OperatorASTNode
+{
+	NONCOPYABLE(SubscriptASTNode);
+public:
+	SubscriptASTNode(std::unique_ptr<AbstractSyntaxTree>&& expression) : m_pAST(std::move(expression)) {}
+	[[nodiscard]] constexpr bool IsSubscript() const noexcept override { return true; }
+	[[nodiscard]] constexpr bool IsPostfix() const noexcept { return true; }
+
+	std::unique_ptr<AbstractSyntaxTree> m_pAST;
 };

@@ -2,8 +2,10 @@
 #include "runtime/runtime.hpp"
 #include "types/types.hpp"
 
+#include "runtime/exceptions/exception.hpp"
 
 #include <cassert>
+#include <format>
 
 std::tuple<IValue*, IValue*, IValue*> Coerce(IValue* lhs, IValue* rhs)
 {
@@ -21,7 +23,9 @@ std::tuple<IValue*, IValue*, IValue*> Coerce(IValue* lhs, IValue* rhs)
 CCoercionOperands CoerceInternal(IValue* weaker, IValue* stronger, bool lhsIsWeak)
 {
 	assert(weaker->Type() != stronger->Type());
-	IVALUE_UNION v{};
+
+	if (!weaker->Coerceable())
+		throw CRuntimeError(std::format("cannot coerce from \"{}\" to \"{}\"", weaker->TypeAsString(), stronger->TypeAsString()));
 
 	auto [lhs, rhs] = lhsIsWeak ? std::tie(weaker, stronger) : std::tie(stronger, weaker);
 
@@ -35,6 +39,8 @@ CCoercionOperands CoerceInternal(IValue* weaker, IValue* stronger, bool lhsIsWea
 		return { lhs, rhs, CProgramRuntime::AcquireNewIntValue(weaker->ToInt()), lhsIsWeak };
 	case t_double:
 		return { lhs, rhs, CProgramRuntime::AcquireNewDoubleValue(weaker->ToDouble()), lhsIsWeak };
+	case t_string:
+		break;
 	}
 
 	assert(false);

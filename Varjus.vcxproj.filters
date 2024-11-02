@@ -76,6 +76,9 @@
     <Filter Include="Source Files\runtime\statements\conditional">
       <UniqueIdentifier>{456f2338-d2c2-4a5d-8bfc-dbe756e64c05}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\runtime\exceptions">
+      <UniqueIdentifier>{b59d97a6-c267-49e6-ac2e-093e8c20de79}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -194,6 +197,9 @@
     </ClCompile>
     <ClCompile Include="runtime\statements\conditional\rtconditional.cpp">
       <Filter>Source Files\runtime\statements\conditional</Filter>
+    </ClCompile>
+    <ClCompile Include="runtime\values\types\string.cpp">
+      <Filter>Source Files\runtime\values\types</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -340,6 +346,12 @@
     </ClInclude>
     <ClInclude Include="runtime\statements\conditional\rtconditional.hpp">
       <Filter>Source Files\runtime\statements\conditional</Filter>
+    </ClInclude>
+    <ClInclude Include="runtime\values\types\string.hpp">
+      <Filter>Source Files\runtime\values\types</Filter>
+    </ClInclude>
+    <ClInclude Include="runtime\exceptions\exception.hpp">
+      <Filter>Source Files\runtime\exceptions</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

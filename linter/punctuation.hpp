@@ -19,7 +19,7 @@ enum OperatorPriority : char
 	op_additive,		//	+-
 	op_multiplicative,	//	* / %
 	op_unary,			//  + - ! ~ ++ - - (type)* & sizeof	
-	op_postfix,			//  () [] -> . ++ - -	
+	op_postfix,			//  () [] -> . ++ --	
 
 };
 enum Punctuation : char

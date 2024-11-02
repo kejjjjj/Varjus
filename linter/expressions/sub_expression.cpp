@@ -16,7 +16,7 @@
 
 CLinterSubExpression::CLinterSubExpression(LinterIterator& pos, LinterIterator& end, const WeakScope& scope,
 	CMemory* const stack, std::optional<PairMatcher>& eoe)
-	: m_iterPos(pos), m_iterEnd(end), m_pScope(scope), m_pOwner(stack), m_oEndOfExpression(eoe) {
+	: CLinterSingle(pos, end), m_pScope(scope), m_pOwner(stack), m_oEndOfExpression(eoe) {
 
 	assert(m_iterPos != m_iterEnd);
 }

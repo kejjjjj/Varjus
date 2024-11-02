@@ -21,7 +21,7 @@
 #include <iostream>
 
 CLinterExpression::CLinterExpression(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack)
-	: m_iterPos(pos), m_iterEnd(end), m_pScope(scope), m_pOwner(stack) {
+	: CLinterSingle(pos, end), m_pScope(scope), m_pOwner(stack) {
 
 	assert(m_iterPos != m_iterEnd);
 

@@ -28,6 +28,7 @@ private:
 	[[nodiscard]] constexpr Success ReadWhiteSpace() noexcept;
 	[[nodiscard]] constexpr Success ReadNumber(CToken& token) noexcept;
 	[[nodiscard]] constexpr Success ReadInteger(CToken& token) noexcept;
+	[[nodiscard]] constexpr Success ReadString(CToken& token) noexcept;
 	[[nodiscard]] constexpr Success ReadName(CToken& token) noexcept;
 
 	[[nodiscard]] constexpr std::unique_ptr<CToken> ReadPunctuation() noexcept;

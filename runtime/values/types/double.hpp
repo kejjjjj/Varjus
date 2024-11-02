@@ -20,5 +20,5 @@ private:
 	[[nodiscard]] std::string ValueAsString() const override { return std::to_string(m_dValue); }
 
 public:
-	double m_dValue;
+	double m_dValue{};
 };

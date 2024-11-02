@@ -19,5 +19,5 @@ private:
 	[[nodiscard]] std::string ValueAsString() const override { return m_bValue ? "true"s : "false"s; }
 
 public:
-	bool m_bValue;
+	bool m_bValue{};
 };

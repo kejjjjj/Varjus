@@ -1,15 +1,16 @@
 #include "ast.hpp"
 
+
 #include "linter/punctuation.hpp"
 #include "linter/expressions/operator.hpp"
 #include "linter/expressions/operand.hpp"
+#include "linter/expressions/postfix.hpp"
 #include "linter/declarations/stack.hpp"
 
 #include "linter/token.hpp"
 
 #include <cassert>
 #include <sstream>
-#include <iostream>
 
 AbstractSyntaxTree::AbstractSyntaxTree() = default;
 AbstractSyntaxTree::~AbstractSyntaxTree() = default;
@@ -32,18 +33,9 @@ std::unique_ptr<AbstractSyntaxTree> AbstractSyntaxTree::GetPolymorphic(VectorOf<
 
 	std::unique_ptr<AbstractSyntaxTree> node;
 
-	if (operands.size() == 1) {
+	if (operands.size() == 1u) {
 		assert(operators.empty());
-		const auto operand = operands.front();
-		if (operand->IsImmediate()) {
-			const auto identifier = operand->GetOperand()->GetIdentifier();
-			node = std::make_unique<ConstantASTNode>(identifier->ToData(), identifier->GetImmediateType());
-		} else if (operand->IsVariable()) {
-			node = std::make_unique<VariableASTNode>(operand->GetVariable()->m_uIndex);
-		} else if (operand->IsExpression()) {
-			node = operand->ExpressionToAST();
-		}
-
+		node = operands.front()->ToAST();
 		operands.clear();
 	}
 	
@@ -137,7 +129,6 @@ std::size_t AbstractSyntaxTree::GetLeftBranchDepth() const noexcept
 
 	return depth;
 }
-
 
 /***********************************************************************
  > 

@@ -193,6 +193,7 @@
     <ClCompile Include="runtime\values\types\double.cpp" />
     <ClCompile Include="runtime\values\types\integer.cpp" />
     <ClCompile Include="runtime\values\types\simple.cpp" />
+    <ClCompile Include="runtime\values\types\string.cpp" />
     <ClCompile Include="runtime\variables.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -228,6 +229,7 @@
     <ClInclude Include="linter\statements\while\while.hpp" />
     <ClInclude Include="linter\token.hpp" />
     <ClInclude Include="linter\tokenizer.hpp" />
+    <ClInclude Include="runtime\exceptions\exception.hpp" />
     <ClInclude Include="runtime\expressions\rtexpression.hpp" />
     <ClInclude Include="runtime\functions\rtfunction.hpp" />
     <ClInclude Include="runtime\pools\object_pool_non_owning.hpp" />
@@ -242,6 +244,7 @@
     <ClInclude Include="runtime\values\types\double.hpp" />
     <ClInclude Include="runtime\values\types\integer.hpp" />
     <ClInclude Include="runtime\values\types\simple.hpp" />
+    <ClInclude Include="runtime\values\types\string.hpp" />
     <ClInclude Include="runtime\values\types\types.hpp" />
     <ClInclude Include="runtime\variables.hpp" />
   </ItemGroup>

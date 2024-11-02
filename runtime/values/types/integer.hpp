@@ -19,5 +19,5 @@ private:
 	[[nodiscard]] std::string ValueAsString() const override { return std::to_string(m_iValue); }
 
 public:
-	std::int64_t m_iValue;
+	std::int64_t m_iValue{};
 };

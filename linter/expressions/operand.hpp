@@ -14,6 +14,7 @@ class AbstractSyntaxTree;
 struct COperandBase;
 struct CIdentifierOperand; 
 struct CASTOperand;
+class CPostfixBase;
 
 enum EOperandBaseType : char {
 	identifier,
@@ -60,9 +61,10 @@ struct CASTOperand final : public COperandBase
 	std::unique_ptr<AbstractSyntaxTree> m_pAST;
 };
 
-class CLinterOperand final
+class CLinterOperand final : public CLinterSingle<CToken>
 {
 	NONCOPYABLE(CLinterOperand);
+	friend class AbstractSyntaxTree;
 public:
 
 	CLinterOperand() = delete;
@@ -75,7 +77,10 @@ public:
 
 	[[nodiscard]] bool IsExpression() const noexcept;
 
-	[[nodiscard]] std::unique_ptr<AbstractSyntaxTree> ExpressionToAST() const noexcept;
+
+	[[nodiscard]] std::unique_ptr<AbstractSyntaxTree> ToAST();
+
+	[[nodiscard]] std::unique_ptr<AbstractSyntaxTree> PostfixesToAST() const noexcept;
 
 
 	[[nodiscard]] bool IsVariable() const noexcept;
@@ -87,13 +92,14 @@ public:
 	[[nodiscard]] std::unique_ptr<COperandBase>& GetOperandRaw() noexcept { return m_pOperand; }
 
 private:
-	std::vector<const CPunctuationToken*> m_oUnaryTokens;
-	std::unique_ptr<COperandBase> m_pOperand;
-	std::vector<const CPunctuationToken*> m_oPostfixTokens;
 
-	LinterIterator& m_iterPos;
-	LinterIterator& m_iterEnd;
+	[[nodiscard]] std::unique_ptr<AbstractSyntaxTree> OperandToAST() const noexcept;
+	[[nodiscard]] std::unique_ptr<AbstractSyntaxTree> ExpressionToAST() const noexcept;
+
+	VectorOf<const CPunctuationToken*> m_oUnaryTokens;
+	std::unique_ptr<COperandBase> m_pOperand;
+	VectorOf<std::unique_ptr<CPostfixBase>> m_oPostfixes;
+
 	std::weak_ptr<CScope> m_pScope;
 	CMemory* const m_pOwner;
-
 };

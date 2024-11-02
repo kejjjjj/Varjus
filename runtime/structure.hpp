@@ -20,6 +20,7 @@ enum EStructureType
 class CRuntimeFunction;
 class CFunction;
 class IValue;
+class OperatorASTNode;
 
 struct CFunctionBlock;
 
@@ -88,6 +89,8 @@ protected:
 private:
 	[[nodiscard]] IValue* Evaluate(CFunction* const thisFunction, AbstractSyntaxTree* node);
 	[[nodiscard]] IValue* EvaluateLeaf(CFunction* const thisFunction, AbstractSyntaxTree* node);
+	[[nodiscard]] IValue* EvaluatePostfix(CFunction* const thisFunction, const OperatorASTNode* node);
+
 	std::unique_ptr<AbstractSyntaxTree> m_pAST;
 
 };

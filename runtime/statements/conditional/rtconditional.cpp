@@ -23,7 +23,7 @@ CRuntimeConditionalStatement* CRuntimeConditionalStatement::SeekLastBlock()
 bool CRuntimeConditionalStatement::Execute([[maybe_unused]] CFunction* const thisFunction)
 {
 
-	if (!m_pCondition) {
+	if (!m_pCondition) { // else
 		return ExecuteBlock(thisFunction);
 	}
 
@@ -38,7 +38,7 @@ bool CRuntimeConditionalStatement::Execute([[maybe_unused]] CFunction* const thi
 		return ExecuteBlock(thisFunction);
 	}
 	
-	if (m_pNext)
+	if (m_pNext) //else (if)
 		return m_pNext->Execute(thisFunction);
 
 	return false;

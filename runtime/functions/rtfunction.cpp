@@ -10,6 +10,7 @@
 #include <algorithm>
 
 #include <chrono>
+#include <iostream>
 
 CRuntimeFunction::CRuntimeFunction(CFunctionBlock& linterFunction) :
 	IRuntimeStructureSequence(std::move(linterFunction.m_oInstructions)),
@@ -40,7 +41,7 @@ bool CRuntimeFunction::Execute([[maybe_unused]] CFunction* const thisFunction)
 	std::chrono::duration<float> difference = now - old;
 
 	std::ranges::for_each(func.m_oStack, [&variablePool](std::unique_ptr<CVariable>& v) {
-		v->GetValue()->Print();
+		std::cout << v->GetValue()->ToPrintableString() << '\n';
 		v->GetValue()->Release();
 		variablePool.Release(std::move(v)); });
 

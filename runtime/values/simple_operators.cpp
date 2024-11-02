@@ -4,19 +4,19 @@
 #include "types/types.hpp"
 #include "runtime/variables.hpp"
 #include "runtime/runtime.hpp"
+#include "runtime/exceptions/exception.hpp"
 
 void OP_ASSIGNMENT(IValue* lhs, IValue* rhs)
 {
 	auto variable = lhs->GetOwner();
 	if (!variable)
-		throw std::exception("Left-handside must have a memory address");
+		throw CRuntimeError("Left-handside must have a memory address");
 
 	
 	if (auto value = variable->GetValue()) {
 		value->SetOwner(nullptr);
 		value->Release();
 	}
-
 
 	switch (rhs->Type()) {
 		case t_undefined:
@@ -31,6 +31,9 @@ void OP_ASSIGNMENT(IValue* lhs, IValue* rhs)
 		case t_double:
 			variable->SetValue(CProgramRuntime::AcquireNewDoubleValue(rhs->AsDouble()));
 			break;
+		case t_string:
+			variable->SetValue(CProgramRuntime::AcquireNewStringValue(rhs->AsString()));
+			break;
 	}
 
 	lhs->SetOwner(variable);
@@ -39,7 +42,7 @@ void OP_ASSIGNMENT(IValue* lhs, IValue* rhs)
 IValue* OP_ADDITION(IValue* _lhs, IValue* _rhs)
 {
 	if (_lhs->Type() == t_undefined || _rhs->Type() == t_undefined) {
-		throw std::exception("incompatible operands");
+		throw CRuntimeError("incompatible operands");
 	}
 
 	//lhs contains the weaker value that possibly needs to be freed
@@ -59,6 +62,9 @@ IValue* OP_ADDITION(IValue* _lhs, IValue* _rhs)
 	case t_double:
 		result = CProgramRuntime::AcquireNewDoubleValue(lhs->ToDouble() + rhs->ToDouble());
 		break;
+	case t_string:
+		result = CProgramRuntime::AcquireNewStringValue(lhs->ToString() + rhs->ToString());
+		break;
 	}
 
 	//was this allocated just now?
@@ -70,7 +76,7 @@ IValue* OP_ADDITION(IValue* _lhs, IValue* _rhs)
 IValue* OP_LESS_THAN(IValue* _lhs, IValue* _rhs)
 {
 	if (_lhs->Type() == t_undefined || _rhs->Type() == t_undefined) {
-		throw std::exception("incompatible operands");
+		throw CRuntimeError("incompatible operands");
 	}
 
 	//lhs contains the weaker value that possibly needs to be freed
@@ -90,6 +96,9 @@ IValue* OP_LESS_THAN(IValue* _lhs, IValue* _rhs)
 		break;
 	case t_double:
 		result = CProgramRuntime::AcquireNewBooleanValue(lhs->AsDouble() < rhs->AsDouble());
+		break;
+	case t_string:
+		result = CProgramRuntime::AcquireNewBooleanValue(lhs->ToString().length() < rhs->ToString().length());
 		break;
 	}
 

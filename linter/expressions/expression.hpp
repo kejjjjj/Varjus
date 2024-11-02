@@ -17,7 +17,7 @@ struct CSortedSubExpression;
 
 
 
-class CLinterExpression final : protected IRuntimeBlock 
+class CLinterExpression final : public CLinterSingle<CToken>, protected IRuntimeBlock
 {
 	NONCOPYABLE(CLinterExpression);
 
@@ -37,11 +37,7 @@ public:
 private:
 	[[nodiscard]] bool EndOfExpression(const std::optional<PairMatcher>& eoe) const noexcept;
 
-	//std::optional<PairMatcher> m_oEndOfExpression;
 	UniquePointerVector<CLinterSubExpression> m_oSubExpressions;
-
-	LinterIterator& m_iterPos;
-	LinterIterator& m_iterEnd;
 	WeakScope m_pScope;
 	CMemory* const m_pOwner;
 };

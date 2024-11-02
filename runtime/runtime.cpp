@@ -8,10 +8,11 @@
 
 CNonOwningObjectPool<CVariable>  CProgramRuntime::m_oVariablePool(100);
 
-COwningObjectPool<IValue>		 CProgramRuntime::m_oUndefinedValuePool(100);
+COwningObjectPool<IValue>        CProgramRuntime::m_oUndefinedValuePool(100);
 COwningObjectPool<CBooleanValue> CProgramRuntime::m_oBooleanValuePool(100);
-COwningObjectPool<CIntValue>	 CProgramRuntime::m_oIntValuePool(100);
+COwningObjectPool<CIntValue>     CProgramRuntime::m_oIntValuePool(100);
 COwningObjectPool<CDoubleValue>  CProgramRuntime::m_oDoubleValuePool(100);
+COwningObjectPool<CStringValue>  CProgramRuntime::m_oStringValuePool(100);
 
 CProgramRuntime::CProgramRuntime(CFileRuntimeData* const file) :
 	m_oFunctions(std::move(file->m_oFunctions))
@@ -37,7 +38,9 @@ void CProgramRuntime::Execute()
 	std::cout << std::format("undefined: {}\n", m_oUndefinedValuePool.GetInUseCount());
 	std::cout << std::format("boolean:   {}\n", m_oBooleanValuePool.GetInUseCount());
 	std::cout << std::format("int:       {}\n", m_oIntValuePool.GetInUseCount());
-	std::cout << std::format("double:    {}\n\n", m_oDoubleValuePool.GetInUseCount());
+	std::cout << std::format("double:    {}\n", m_oDoubleValuePool.GetInUseCount());
+	std::cout << std::format("string:    {}\n\n", m_oStringValuePool.GetInUseCount());
+
 
 	return;
 
@@ -61,7 +64,12 @@ CDoubleValue* CProgramRuntime::AcquireNewDoubleValue(double value){
 	v->m_dValue = value;
 	return v;
 }
-
+CStringValue* CProgramRuntime::AcquireNewStringValue(const std::string& value)
+{
+	auto v = m_oStringValuePool.Acquire();
+	v->m_sValue = value;
+	return v;
+}
 void CProgramRuntime::FreeUndefinedValue(IValue* value) {
 	return m_oUndefinedValuePool.Release(value);
 }
@@ -73,4 +81,7 @@ void CProgramRuntime::FreeIntValue(CIntValue* value) {
 }
 void CProgramRuntime::FreeDoubleValue(CDoubleValue* value){
 	return m_oDoubleValuePool.Release(value);
+}
+void CProgramRuntime::FreeStringValue(CStringValue* value) {
+	return m_oStringValuePool.Release(value);
 }

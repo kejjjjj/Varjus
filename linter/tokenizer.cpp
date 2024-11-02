@@ -69,13 +69,15 @@ constexpr std::unique_ptr<CToken> CBufferTokenizer::ReadToken()
 		if (!ReadNumber(token)) {
 			return nullptr;
 		}
-	}
-	else if (IsAlpha(*m_oScriptPos) || *m_oScriptPos == '_') {
+	} else if (IsAlpha(*m_oScriptPos) || *m_oScriptPos == '_') {
 		if (!ReadName(token)) {
 			return nullptr;
 		}
-	}
-	else {
+	} else if (*m_oScriptPos == '\"') {
+		if (!ReadString(token)) {
+			return nullptr;
+		}
+	} else {
 
 		auto&& punc = ReadPunctuation();
 
@@ -157,9 +159,6 @@ constexpr Success CBufferTokenizer::ReadNumber(CToken& token) noexcept
 				return failure;
 
 		}
-		//an integer
-		else {
-		}
 
 		//todo -> suffixes
 	}
@@ -181,7 +180,7 @@ constexpr Success CBufferTokenizer::ReadInteger(CToken& token) noexcept
 		if (EndOfBuffer())
 			return success;
 
-		while (isdigit(*m_oScriptPos)) {
+		while (IsDigit(*m_oScriptPos)) {
 			token.m_sSource.push_back(*m_oScriptPos++);
 
 			if (EndOfBuffer())
@@ -189,6 +188,36 @@ constexpr Success CBufferTokenizer::ReadInteger(CToken& token) noexcept
 
 		}
 	}
+
+	return success;
+}
+constexpr Success CBufferTokenizer::ReadString(CToken& token) noexcept
+{
+	auto& [line, column] = m_oParserPosition;
+
+	token.m_eTokenType = tt_string;
+	++m_oScriptPos;
+
+	do {
+		if (EndOfBuffer())
+			return failure;
+
+		if (*m_oScriptPos == '\n') {
+			line++;
+			column = 1ull;
+		} else {
+			column += (*m_oScriptPos == '\t' ? 4 : 1);
+		}
+
+		token.m_sSource.push_back(*m_oScriptPos++);
+
+		if (EndOfBuffer())
+			return failure;
+
+	} while (*m_oScriptPos != '\"');
+
+	m_oScriptPos++;  //skip "
+	column++;
 
 	return success;
 }

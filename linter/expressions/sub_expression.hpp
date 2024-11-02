@@ -16,7 +16,7 @@ enum OperatorPriority : char;
  > stores the operand on the lhs and optionally the operator (if exists)
  > throws on failure
 ***********************************************************************/
-class CLinterSubExpression final
+class CLinterSubExpression final : public CLinterSingle<CToken>
 {
 	NONCOPYABLE(CLinterSubExpression);
 	friend class CLinterExpression;
@@ -41,10 +41,7 @@ private:
 
 	std::unique_ptr<CLinterOperand> m_oLhsOperand;
 	std::unique_ptr<CLinterOperator> m_oOperator;
-	//std::unique_ptr<CLinterOperand> m_oRhsOperand;
 
-	LinterIterator& m_iterPos;
-	LinterIterator& m_iterEnd;
 	std::weak_ptr<CScope> m_pScope;
 	CMemory* const m_pOwner;
 

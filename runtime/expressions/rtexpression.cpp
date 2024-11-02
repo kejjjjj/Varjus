@@ -39,6 +39,10 @@ IValue* CRuntimeExpression::Evaluate(CFunction* const thisFunction, AbstractSynt
 
 	assert(node != nullptr);
 
+	if (node->IsPostfix()) {
+		return EvaluatePostfix(thisFunction, node->As<OperatorASTNode*>());
+	}
+
 	if (node->IsLeaf()) {
 		return EvaluateLeaf(thisFunction, node);
 	}
@@ -89,10 +93,27 @@ IValue* CRuntimeExpression::EvaluateLeaf(CFunction* const thisFunction, Abstract
 			case t_int:
 				return CProgramRuntime::AcquireNewIntValue(*reinterpret_cast<std::int64_t*>((char*)constant->m_pConstant.data()));
 			case t_double:
-				return CProgramRuntime::AcquireNewDoubleValue(*reinterpret_cast<double*>((char*)constant->m_pConstant.data()));;
+				return CProgramRuntime::AcquireNewDoubleValue(*reinterpret_cast<double*>((char*)constant->m_pConstant.data()));
+			case t_string:
+				return CProgramRuntime::AcquireNewStringValue(constant->m_pConstant);
 		}
 	}
 
 	assert(false);
+	return nullptr;
+}
+IValue* CRuntimeExpression::EvaluatePostfix(CFunction* const thisFunction, const OperatorASTNode* node)
+{
+	auto expression = Evaluate(thisFunction, node->left.get());
+
+	if (node->IsSubscript()) {
+
+		// todo:
+		// virtual bool CanSubscript();
+		// IValue* Subscript(AbstractSyntaxTree* expression);
+		// if(expression->CanSubscript())
+		//	expression->Subscript(dynamic_cast<SubscriptASTNode*>(node)->m_pAST);
+	}
+
 	return nullptr;
 }

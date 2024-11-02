@@ -1,18 +1,20 @@
 #include "operand.hpp"
 #include "unary.hpp"
 #include "identifier.hpp"
+#include "postfix.hpp"
+#include "expression.hpp"
 
 #include "linter/punctuation.hpp"
 #include "linter/token.hpp"
 #include "linter/error.hpp"
 #include "linter/declarations/stack.hpp"
-#include "globalEnums.hpp"
 
 #include "ast.hpp"
 
+#include "globalEnums.hpp"
+
 #include <cassert>
-#include "expression.hpp"
-#include <iostream>
+#include <ranges>
 
 CIdentifierLinter* COperandBase::GetIdentifier()const  noexcept {
 	return dynamic_cast<const CIdentifierOperand*>(this)->m_oIdentifierToken.get();
@@ -20,7 +22,7 @@ CIdentifierLinter* COperandBase::GetIdentifier()const  noexcept {
 
 
 CLinterOperand::CLinterOperand(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack)
-	: m_iterPos(pos), m_iterEnd(end), m_pScope(scope), m_pOwner(stack) {
+	:CLinterSingle(pos, end), m_pScope(scope), m_pOwner(stack) {
 
 	assert(m_iterPos != m_iterEnd);
 
@@ -31,7 +33,8 @@ Success CLinterOperand::ParseOperand()
 {
 	// Parse unary
 	CUnaryLinter unaryLinter(m_iterPos, m_iterEnd);
-	unaryLinter.ParseUnary();
+	if (!unaryLinter.ParseUnary())
+		return failure;
 
 
 	const auto token = (*m_iterPos);
@@ -52,16 +55,34 @@ Success CLinterOperand::ParseOperand()
 		m_pOperand = std::move(operand);
 	}
 
-	//TODO: Parse postfix
+	CPostfixLinter postfix(m_iterPos, m_iterEnd, m_pScope, m_pOwner);
+	if (!postfix.ParsePostfix())
+		return failure;
 
 	// Save results
 	m_oUnaryTokens = unaryLinter.GetTokens();
+	m_oPostfixes = postfix.Move();
 	return success;
 }
 bool CLinterOperand::IsExpression() const noexcept
 {
 	assert(m_pOperand != nullptr);
 	return m_pOperand->Type() == abstract_syntax_tree;
+}
+std::unique_ptr<AbstractSyntaxTree> CLinterOperand::OperandToAST() const noexcept
+{
+	if (IsImmediate()) {
+		const auto identifier = m_pOperand->GetIdentifier();
+		return std::make_unique<ConstantASTNode>(identifier->ToData(), identifier->GetImmediateType());
+	}
+	else if (IsVariable()) {
+		return std::make_unique<VariableASTNode>(GetVariable()->m_uIndex);
+	}
+	else if (IsExpression()) {
+		return ExpressionToAST();
+	}
+
+	return nullptr;
 }
 std::unique_ptr<AbstractSyntaxTree> CLinterOperand::ExpressionToAST() const noexcept
 {
@@ -70,6 +91,41 @@ std::unique_ptr<AbstractSyntaxTree> CLinterOperand::ExpressionToAST() const noex
 
 	auto ast = dynamic_cast<CASTOperand*>(m_pOperand.get());
 	return std::move(ast->m_pAST);
+}
+
+[[nodiscard]] std::unique_ptr<AbstractSyntaxTree> CLinterOperand::ToAST()
+{
+	if (auto pfs = PostfixesToAST()) {
+		pfs->left = OperandToAST();
+		return pfs;
+	}
+
+	return OperandToAST();
+}
+
+std::unique_ptr<AbstractSyntaxTree> CLinterOperand::PostfixesToAST() const noexcept
+{
+	if (!m_oPostfixes.size())
+		return nullptr;
+
+	std::unique_ptr<AbstractSyntaxTree> root;
+	std::shared_ptr<AbstractSyntaxTree>* position{ nullptr };
+
+	for (auto& pf : m_oPostfixes) {
+		
+		if (!root) {
+			root = pf->ToAST();
+			position = &root->left;
+			continue;
+		}
+
+		assert(position);
+
+		*position = pf->ToAST();
+		position = &(*position)->left;
+	}
+
+	return root;
 }
 bool CLinterOperand::IsVariable() const noexcept
 {

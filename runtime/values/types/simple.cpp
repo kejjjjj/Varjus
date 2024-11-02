@@ -15,6 +15,8 @@ void IValue::Release()
 		return CProgramRuntime::FreeIntValue(dynamic_cast<CIntValue*>(this));
 	case t_double:
 		return CProgramRuntime::FreeDoubleValue(dynamic_cast<CDoubleValue*>(this));
+	case t_string:
+		return CProgramRuntime::FreeStringValue(dynamic_cast<CStringValue*>(this));
 	}
 }
 IValue* IValue::Copy() const
@@ -30,7 +32,10 @@ std::int64_t& IValue::AsInt() {
 double& IValue::AsDouble() {
 	return dynamic_cast<CDoubleValue*>(this)->m_dValue;
 }
-void IValue::Print() const
+std::string& IValue::AsString(){
+	return dynamic_cast<CStringValue*>(this)->m_sValue;
+}
+std::string IValue::ToPrintableString() const
 {
-	std::cout << std::format("{}: {}", ValueAsString(), TypeAsString()) << '\n';
+	return std::format("{}: {}", ValueAsString(), TypeAsString());
 }
