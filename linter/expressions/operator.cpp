@@ -29,6 +29,7 @@ Success CLinterOperatorParser::ParseOperator()
 		return failure;
 	}
 
+
 	if (!CheckOperator()) {
 		CLinterErrors::PushError("Expected operator, but found " + (*m_iterPos)->Source(), (*m_iterPos)->m_oSourcePosition);
 		return failure;
@@ -36,6 +37,9 @@ Success CLinterOperatorParser::ParseOperator()
 
 	auto& iterPos = *m_iterPos;
 	const auto& asPunctuation = dynamic_cast<CPunctuationToken&>(*iterPos);
+
+	if ((*m_iterPos)->IsOperator(p_comma))
+		return failure;
 
 	if (!IsOperator(asPunctuation)) {
 		CLinterErrors::PushError("Expected operator, but found " + iterPos->Source(), iterPos->m_oSourcePosition);

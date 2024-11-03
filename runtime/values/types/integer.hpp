@@ -14,6 +14,8 @@ public:
 	[[nodiscard]] std::int64_t ToInt() const override { return m_iValue; }
 	[[nodiscard]] double ToDouble() const override { return static_cast<double>(m_iValue); }
 
+	[[nodiscard]] constexpr bool IsIntegral() const noexcept override { return true; }
+
 private:
 	[[nodiscard]] std::string TypeAsString() const override { return "int"s; }
 	[[nodiscard]] std::string ValueAsString() const override { return std::to_string(m_iValue); }

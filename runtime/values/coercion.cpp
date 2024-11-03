@@ -24,7 +24,7 @@ CCoercionOperands CoerceInternal(IValue* weaker, IValue* stronger, bool lhsIsWea
 {
 	assert(weaker->Type() != stronger->Type());
 
-	if (!weaker->Coerceable())
+	if (!weaker->IsCoerceable())
 		throw CRuntimeError(std::format("cannot coerce from \"{}\" to \"{}\"", weaker->TypeAsString(), stronger->TypeAsString()));
 
 	auto [lhs, rhs] = lhsIsWeak ? std::tie(weaker, stronger) : std::tie(stronger, weaker);

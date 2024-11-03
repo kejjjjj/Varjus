@@ -3,7 +3,7 @@
 
 class IValue;
 
-struct CCoercionOperands
+struct CCoercionOperands final
 {
 	CCoercionOperands(IValue* l, IValue* r, IValue* alloc, bool lhsIsWeak)
 		: lhs(l), rhs(r), allocated(alloc), allocatedIsLHS(lhsIsWeak){}

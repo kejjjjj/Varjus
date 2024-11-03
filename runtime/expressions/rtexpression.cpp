@@ -5,10 +5,13 @@
 
 #include "runtime/variables.hpp"
 #include "runtime/runtime.hpp"
+#include "runtime/exceptions/exception.hpp"
 
 #include "linter/expressions/ast.hpp"
 
 #include <cassert>
+#include <format>
+#include <iostream>
 
 CRuntimeExpression::CRuntimeExpression(std::unique_ptr<AbstractSyntaxTree>&& ast) :
 	m_pAST(std::move(ast)) {}
@@ -39,13 +42,15 @@ IValue* CRuntimeExpression::Evaluate(CFunction* const thisFunction, AbstractSynt
 
 	assert(node != nullptr);
 
-	if (node->IsPostfix()) {
+	if (node->IsPostfix()) 
 		return EvaluatePostfix(thisFunction, node->As<OperatorASTNode*>());
-	}
+	
+	if (node->IsSequence())
+		return EvaluateSequence(thisFunction, node);
 
-	if (node->IsLeaf()) {
+	if (node->IsLeaf()) 
 		return EvaluateLeaf(thisFunction, node);
-	}
+	
 
 	auto lhs = Evaluate(thisFunction, node->left.get());
 	auto rhs = Evaluate(thisFunction, node->right.get());
@@ -108,12 +113,36 @@ IValue* CRuntimeExpression::EvaluatePostfix(CFunction* const thisFunction, const
 
 	if (node->IsSubscript()) {
 
-		// todo:
-		// virtual bool CanSubscript();
-		// IValue* Subscript(AbstractSyntaxTree* expression);
-		// if(expression->CanSubscript())
-		//	expression->Subscript(dynamic_cast<SubscriptASTNode*>(node)->m_pAST);
+		if (!expression->IsIndexable())
+			throw CRuntimeError(std::format("a value of type \"{}\" cannot be indexed", expression->TypeAsString()));
+		
+		auto accessor = Evaluate(thisFunction, node->As<const SubscriptASTNode*>()->m_pAST.get());
+
+		if (!accessor->IsIntegral())
+			throw CRuntimeError(std::format("array accessor must be integral, but is \"{}\"", accessor->TypeAsString()));
+
+		if (!accessor->HasOwner())
+			accessor->Release();
+
+		auto index = expression->Index(accessor->ToInt());
+
+		index->MakeImmutable(); //cannot modify parts
+
+		if (!expression->HasOwner())
+			expression->Release();
+
+		return index;
 	}
 
 	return nullptr;
+}
+IValue* CRuntimeExpression::EvaluateSequence(CFunction* const thisFunction, const AbstractSyntaxTree* node)
+{
+	//discard lhs
+	auto lhs = Evaluate(thisFunction, node->left.get());
+
+	if (!lhs->HasOwner())
+		lhs->Release();
+
+	return Evaluate(thisFunction, node->right.get());
 }

@@ -25,15 +25,22 @@ public:
 	[[nodiscard]] constexpr auto HasOwner() const noexcept { return !!m_pOwner; }
 
 	void Release();
-	std::string ToPrintableString() const;
+	[[nodiscard]] std::string ToPrintableString() const;
 
 	[[nodiscard]] virtual std::string TypeAsString() const { return "undefined"s; }
 	[[nodiscard]] virtual std::string ValueAsString() const { return "undefined"s; }
 	
 	[[nodiscard]] virtual IValue* Copy() const;
 
-	[[nodiscard]] constexpr virtual bool Coerceable() const noexcept { return true; }
+	constexpr void MakeImmutable() noexcept { m_bIsConst = true; }
+
+	[[nodiscard]] constexpr virtual bool IsImmutable() const noexcept { return m_bIsConst; }
+	[[nodiscard]] constexpr virtual bool IsCoerceable() const noexcept { return true; }
 	[[nodiscard]] constexpr virtual bool IsArithmetic() const noexcept { return true; }
+	[[nodiscard]] constexpr virtual bool IsIntegral() const noexcept { return false; }
+	[[nodiscard]] constexpr virtual bool IsIndexable() const noexcept { return false; }
+
+	[[nodiscard]] virtual IValue* Index(std::int64_t index);
 
 	[[nodiscard]] bool& AsBoolean();
 	[[nodiscard]] std::int64_t& AsInt();
@@ -48,6 +55,7 @@ public:
 protected:
 
 	CVariable* m_pOwner{ nullptr };
+	bool m_bIsConst{ false };
 };
 
 

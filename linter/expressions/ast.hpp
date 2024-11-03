@@ -27,6 +27,7 @@ public:
 	[[nodiscard]] virtual constexpr bool IsPostfix() const noexcept  { return false; }
 	[[nodiscard]] virtual constexpr bool IsVariable() const noexcept { return false; }
 	[[nodiscard]] virtual constexpr bool IsConstant() const noexcept { return false; }
+	[[nodiscard]] virtual constexpr bool IsSequence() const noexcept { return false; }
 
 	template<typename T>
 	[[nodiscard]] inline constexpr T As() const noexcept {
@@ -105,6 +106,7 @@ public:
 	
 	[[nodiscard]] virtual constexpr bool IsPostfix() const noexcept { return false; }
 	[[nodiscard]] virtual constexpr bool IsSubscript() const noexcept { return false; }
+	[[nodiscard]] virtual constexpr bool IsSequence() const noexcept { return m_ePunctuation == p_comma; }
 
 //private:
 	Punctuation m_ePunctuation{};
@@ -117,6 +119,7 @@ public:
 	SubscriptASTNode(std::unique_ptr<AbstractSyntaxTree>&& expression) : m_pAST(std::move(expression)) {}
 	[[nodiscard]] constexpr bool IsSubscript() const noexcept override { return true; }
 	[[nodiscard]] constexpr bool IsPostfix() const noexcept { return true; }
+	[[nodiscard]] constexpr bool IsSequence() const noexcept override { return false; }
 
 	std::unique_ptr<AbstractSyntaxTree> m_pAST;
 };

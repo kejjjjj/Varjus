@@ -6,6 +6,8 @@
 
 void IValue::Release()
 {
+	m_bIsConst = false;
+
 	switch (Type()) {
 	case t_undefined:
 		return CProgramRuntime::FreeUndefinedValue(this);
@@ -38,4 +40,9 @@ std::string& IValue::AsString(){
 std::string IValue::ToPrintableString() const
 {
 	return std::format("{}: {}", ValueAsString(), TypeAsString());
+}
+
+IValue* IValue::Index([[maybe_unused]]std::int64_t index)
+{
+	return nullptr;
 }

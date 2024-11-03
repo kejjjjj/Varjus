@@ -36,7 +36,7 @@ Success CLinterExpression::ParseExpression(std::optional<PairMatcher> m_oEndOfEx
 
 		//the previous token was an operator, so we need an operand
 		if (EndOfExpression(m_oEndOfExpression) && !m_oSubExpressions.empty()) {
-			CLinterErrors::PushError("Expected an operand, but found " + (*m_iterPos)->Source(), (*m_iterPos)->m_oSourcePosition);
+			CLinterErrors::PushError("expected an operand, but found " + (*m_iterPos)->Source(), (*m_iterPos)->m_oSourcePosition);
 			return failure;
 		}
 
@@ -44,12 +44,42 @@ Success CLinterExpression::ParseExpression(std::optional<PairMatcher> m_oEndOfEx
 		status = subExpression->ParseSubExpression();
 		m_oSubExpressions.emplace_back(std::move(subExpression));
 
+		if (!ParseSequence(m_oEndOfExpression))
+			return failure;
+
 	} while (status == success);
+
+	if (m_oSubExpressions.empty()) {
+		CLinterErrors::PushError("expected an expression", IsEndOfBuffer() ? (*std::prev(m_iterPos))->m_oSourcePosition : (*m_iterPos)->m_oSourcePosition);
+		return failure;
+	}
+
 
 	assert(m_oSubExpressions.size() > 0u);
 
 	if (m_oEndOfExpression && EndOfExpression(m_oEndOfExpression)) {
 		std::advance(m_iterPos, 1);
+	}
+
+	return success;
+}
+Success CLinterExpression::ParseSequence(std::optional<PairMatcher>& m_oEndOfExpression)
+{
+	// don't evaluate a sequence when parsing a list
+	const auto parsingList = m_oEndOfExpression && m_oEndOfExpression->IsClosing(p_comma);
+
+	if (parsingList)
+		return success;
+
+	if ((*m_iterPos)->IsOperator(p_comma)) {
+
+		std::advance(m_iterPos, 1);
+		auto nextExpr = CLinterExpression(m_iterPos, m_iterEnd, m_pScope, m_pOwner);
+
+		if (!nextExpr.ParseExpression(m_oEndOfExpression))
+			return failure;
+
+		m_pNextExpression = nextExpr.ToAST();
 	}
 
 	return success;
@@ -79,7 +109,18 @@ std::unique_ptr<AbstractSyntaxTree> CLinterExpression::ToAST() const
 	}
 
 	assert(operands.size() == operators.size() + 1u);
-	return AbstractSyntaxTree::CreateAST(operands, operators);
+	auto ast = AbstractSyntaxTree::CreateAST(operands, operators);
+
+	if (!m_pNextExpression)
+		return ast;
+
+	auto newRoot = std::make_unique<OperatorASTNode>(p_comma);
+	
+	newRoot->left = std::move(ast);
+	newRoot->right = std::move(m_pNextExpression);
+
+	return newRoot;
+
 }
 
 std::string CLinterExpression::ToString() const noexcept

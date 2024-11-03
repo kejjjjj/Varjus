@@ -12,7 +12,12 @@ void OP_ASSIGNMENT(IValue* lhs, IValue* rhs)
 	if (!variable)
 		throw CRuntimeError("Left-handside must have a memory address");
 
-	
+	if (lhs->IsImmutable())
+		throw CRuntimeError("Cannot assign to an immutable value");
+
+	if (lhs == rhs)
+		return;
+
 	if (auto value = variable->GetValue()) {
 		value->SetOwner(nullptr);
 		value->Release();
