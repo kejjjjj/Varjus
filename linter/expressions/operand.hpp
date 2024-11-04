@@ -14,7 +14,7 @@ class AbstractSyntaxTree;
 struct COperandBase;
 struct CIdentifierOperand; 
 struct CASTOperand;
-class CPostfixBase;
+class IPostfixBase;
 
 enum EOperandBaseType : char {
 	identifier,
@@ -98,7 +98,7 @@ private:
 
 	VectorOf<const CPunctuationToken*> m_oUnaryTokens;
 	std::unique_ptr<COperandBase> m_pOperand;
-	VectorOf<std::unique_ptr<CPostfixBase>> m_oPostfixes;
+	VectorOf<std::unique_ptr<IPostfixBase>> m_oPostfixes;
 
 	std::weak_ptr<CScope> m_pScope;
 	CMemory* const m_pOwner;

@@ -49,7 +49,7 @@ std::unique_ptr<AbstractSyntaxTree> CStatementLinter::ParseExpression()
 	std::unique_ptr<AbstractSyntaxTree>&& temp = nullptr;
 
 	if (expr.ParseExpression(PairMatcher(p_par_open))) {
-		temp = expr.ToAST();
+		temp = expr.ToMergedAST();
 	}
 
 	return temp;

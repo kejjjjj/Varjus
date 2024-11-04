@@ -78,7 +78,7 @@ Success CVariableDeclarationLinter::ParseDeclaration()
 	if (!linter.ParseExpression())
 		return failure;
 
-	m_pInitializerAST = linter.ToAST();
+	m_pInitializerAST = linter.ToMergedAST();
 	return success;
 }
 

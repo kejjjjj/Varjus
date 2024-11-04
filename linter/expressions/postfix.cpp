@@ -31,6 +31,9 @@ Success CPostfixLinter::ParsePostfix()
 		case p_bracket_open:
 			m_oPostfixes.emplace_back(ParseSubscript());
 			break;
+		case p_par_open:
+			m_oPostfixes.emplace_back(ParseFunctionCall());
+			break;
 		default:
 			assert(false);
 		}
@@ -57,10 +60,24 @@ std::unique_ptr<CPostfixSubscript> CPostfixLinter::ParseSubscript()
 	if (!expr.ParseExpression(PairMatcher(p_bracket_open)))
 		return nullptr;
 
-	return std::make_unique<CPostfixSubscript>(expr.ToAST());
+	return std::make_unique<CPostfixSubscript>(expr.ToMergedAST());
 }
 
-[[nodiscard]] VectorOf<std::unique_ptr<CPostfixBase>> CPostfixLinter::Move() noexcept
+std::unique_ptr<CPostfixFunctionCall> CPostfixLinter::ParseFunctionCall()
+{
+
+	assert((*m_iterPos)->IsOperator(p_par_open));
+
+	std::advance(m_iterPos, 1); // skip (
+	CLinterExpression expr(m_iterPos, m_iterEnd, m_pScope, m_pOwner);
+
+	if (!expr.ParseExpression(PairMatcher(p_par_open)))
+		return nullptr;
+
+	return std::make_unique<CPostfixFunctionCall>(expr.ToExpressionList());
+}
+
+[[nodiscard]] VectorOf<std::unique_ptr<IPostfixBase>> CPostfixLinter::Move() noexcept
 {
 	return std::move(m_oPostfixes);
 }
@@ -72,3 +89,14 @@ std::unique_ptr<AbstractSyntaxTree> CPostfixSubscript::ToAST()
 {
 	return std::make_unique<SubscriptASTNode>(std::move(m_pAST));
 }
+
+/***********************************************************************
+ > 
+***********************************************************************/
+CPostfixFunctionCall::CPostfixFunctionCall(ExpressionList&& args) 
+	:  m_pArgs(std::move(args)){}
+CPostfixFunctionCall::~CPostfixFunctionCall() = default;
+
+
+
+

@@ -37,7 +37,10 @@ public:
 protected:
 };
 
-using InstructionSequence = std::vector<std::unique_ptr<IRuntimeStructure>>;
+template<typename T>
+using VectorOf = std::vector<T>;
+
+using InstructionSequence = VectorOf<std::unique_ptr<IRuntimeStructure>>;
 
 // contains more than one instruction
 class IRuntimeStructureSequence : public IRuntimeStructure
@@ -139,6 +142,10 @@ private:
 using RuntimeBlock = std::unique_ptr<IRuntimeStructure>;
 using RuntimeFunction = std::unique_ptr<CRuntimeFunction>;
 
+using FunctionArgument = RuntimeBlock;
+using FunctionArguments = VectorOf<FunctionArgument>;
+using ExpressionList = VectorOf<RuntimeBlock>;
+
 class IRuntimeBlock
 {
 public:
@@ -156,6 +163,7 @@ public:
 	CFileRuntimeData() = default;
 	constexpr void AddFunction(RuntimeFunction&& func) { m_oFunctions.emplace_back(std::move(func)); }
 
+	[[nodiscard]] CRuntimeFunction* FindFunction(const std::string& v) const;
 private:
-	std::vector<RuntimeFunction> m_oFunctions;
+	VectorOf<RuntimeFunction> m_oFunctions;
 };

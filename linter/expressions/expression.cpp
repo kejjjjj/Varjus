@@ -27,10 +27,41 @@ CLinterExpression::CLinterExpression(LinterIterator& pos, LinterIterator& end, c
 
 }
 CLinterExpression::~CLinterExpression() = default;
+CExpressionList::CExpressionList() = default;
+CExpressionList::~CExpressionList() = default;
 
-Success CLinterExpression::ParseExpression(std::optional<PairMatcher> m_oEndOfExpression)
+std::unique_ptr<AbstractSyntaxTree> CExpressionList::ToMergedAST()
+{
+	if (!m_pNext)
+		return std::move(m_pAST);
+
+	auto newRoot = std::make_unique<OperatorASTNode>(p_comma);
+	newRoot->left = std::move(m_pAST);
+	newRoot->right = m_pNext->ToMergedAST();
+	return newRoot;
+}
+ExpressionList CExpressionList::ToExpressionList()
+{
+	ExpressionList list;
+	auto pos = this;
+	while (pos) {
+		assert(pos->m_pAST);
+		list.emplace_back(std::make_unique<CRuntimeExpression>(std::move(pos->m_pAST)));
+		pos = pos->m_pNext.get();
+	}
+
+	return list;
+}
+Success CLinterExpression::ParseExpression(std::optional<PairMatcher> m_oEndOfExpression, CExpressionList* expression)
 {
 	Success status = failure;
+
+	if (!expression) {
+		m_pEvaluatedExpressions = std::make_unique<CExpressionList>();
+	}
+
+	auto actualExpression = expression ? expression : m_pEvaluatedExpressions.get();
+	assert(actualExpression);
 
 	do {
 
@@ -44,7 +75,7 @@ Success CLinterExpression::ParseExpression(std::optional<PairMatcher> m_oEndOfEx
 		status = subExpression->ParseSubExpression();
 		m_oSubExpressions.emplace_back(std::move(subExpression));
 
-		if (!ParseSequence(m_oEndOfExpression))
+		if (!ParseSequence(m_oEndOfExpression, actualExpression))
 			return failure;
 
 	} while (status == success);
@@ -61,9 +92,10 @@ Success CLinterExpression::ParseExpression(std::optional<PairMatcher> m_oEndOfEx
 		std::advance(m_iterPos, 1);
 	}
 
+	actualExpression->m_pAST = ToAST();
 	return success;
 }
-Success CLinterExpression::ParseSequence(std::optional<PairMatcher>& m_oEndOfExpression)
+Success CLinterExpression::ParseSequence(std::optional<PairMatcher>& m_oEndOfExpression, CExpressionList* expression)
 {
 	// don't evaluate a sequence when parsing a list
 	const auto parsingList = m_oEndOfExpression && m_oEndOfExpression->IsClosing(p_comma);
@@ -76,10 +108,11 @@ Success CLinterExpression::ParseSequence(std::optional<PairMatcher>& m_oEndOfExp
 		std::advance(m_iterPos, 1);
 		auto nextExpr = CLinterExpression(m_iterPos, m_iterEnd, m_pScope, m_pOwner);
 
-		if (!nextExpr.ParseExpression(m_oEndOfExpression))
+		expression->m_pNext = std::make_unique<CExpressionList>();
+		if (!nextExpr.ParseExpression(m_oEndOfExpression, expression->m_pNext.get()))
 			return failure;
 
-		m_pNextExpression = nextExpr.ToAST();
+		//m_pNextExpression = nextExpr.ToAST();
 	}
 
 	return success;
@@ -109,20 +142,18 @@ std::unique_ptr<AbstractSyntaxTree> CLinterExpression::ToAST() const
 	}
 
 	assert(operands.size() == operators.size() + 1u);
-	auto ast = AbstractSyntaxTree::CreateAST(operands, operators);
-
-	if (!m_pNextExpression)
-		return ast;
-
-	auto newRoot = std::make_unique<OperatorASTNode>(p_comma);
-	
-	newRoot->left = std::move(ast);
-	newRoot->right = std::move(m_pNextExpression);
-
-	return newRoot;
-
+	return AbstractSyntaxTree::CreateAST(operands, operators);
 }
-
+std::unique_ptr<AbstractSyntaxTree> CLinterExpression::ToMergedAST() const
+{
+	assert(m_pEvaluatedExpressions);
+	return m_pEvaluatedExpressions->ToMergedAST();
+}
+ExpressionList CLinterExpression::ToExpressionList() const
+{
+	assert(m_pEvaluatedExpressions);
+	return m_pEvaluatedExpressions->ToExpressionList();
+}
 std::string CLinterExpression::ToString() const noexcept
 {
 	assert(!m_oSubExpressions.empty());

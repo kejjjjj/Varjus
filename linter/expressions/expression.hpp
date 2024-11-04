@@ -15,7 +15,18 @@ class CMemory;
 class CScope;
 struct CSortedSubExpression;
 
+struct CExpressionList
+{
+	NONCOPYABLE(CExpressionList);
+	CExpressionList();
+	~CExpressionList();
 
+	[[nodiscard]] std::unique_ptr<AbstractSyntaxTree> ToMergedAST();
+	[[nodiscard]] ExpressionList ToExpressionList();
+
+	std::unique_ptr<AbstractSyntaxTree> m_pAST;
+	std::unique_ptr<CExpressionList> m_pNext;
+};
 
 class CLinterExpression final : public CLinterSingle<CToken>, protected IRuntimeBlock
 {
@@ -27,16 +38,20 @@ public:
 	explicit CLinterExpression(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack);
 	~CLinterExpression();
 
-	[[maybe_unused]] Success ParseExpression(std::optional<PairMatcher> m_oEndOfExpression=std::nullopt);
+	[[nodiscard]] Success ParseExpression(std::optional<PairMatcher> m_oEndOfExpression=std::nullopt, CExpressionList* expression=nullptr);
 	[[nodiscard]] std::string ToString() const noexcept;
 
-	[[nodiscard]] std::unique_ptr<AbstractSyntaxTree> ToAST() const;
+	// merge all evaluated expressions into one
+	[[nodiscard]] std::unique_ptr<AbstractSyntaxTree> ToMergedAST() const;
+	[[nodiscard]] ExpressionList ToExpressionList() const;
 
 	[[nodiscard]] RuntimeBlock ToRuntimeObject() const override;
 
 private:
 
-	[[maybe_unused]] Success ParseSequence(std::optional<PairMatcher>& m_oEndOfExpressiont);
+	[[nodiscard]] std::unique_ptr<AbstractSyntaxTree> ToAST() const;
+
+	[[maybe_unused]] Success ParseSequence(std::optional<PairMatcher>& m_oEndOfExpression, CExpressionList* expression);
 
 	[[nodiscard]] bool EndOfExpression(const std::optional<PairMatcher>& eoe) const noexcept;
 
@@ -44,7 +59,8 @@ private:
 	WeakScope m_pScope;
 	CMemory* const m_pOwner;
 
-	mutable std::unique_ptr<AbstractSyntaxTree> m_pNextExpression; // comma
+	mutable std::unique_ptr<CExpressionList> m_pEvaluatedExpressions;
+	//mutable std::unique_ptr<AbstractSyntaxTree> m_pNextExpression; // comma
 };
 
 

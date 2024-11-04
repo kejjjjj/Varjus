@@ -15,19 +15,47 @@ class CFileRuntimeData;
 
 struct CFunctionBlock;
 
-struct CLinterVariable final
+enum EMemoryIdentifierType
 {
-	CLinterVariable() = default;
-	CLinterVariable(const CMemory* owner, const std::string& name, std::size_t index) : m_pOwner(owner), m_sName(name), m_uIndex(index) {}
+	mi_variable,
+	mi_function
+};
 
+struct CMemoryIdentifier
+{
+	CMemoryIdentifier() = default;
+	CMemoryIdentifier(const CMemory* owner, const std::string& name, std::size_t index) 
+		: m_pOwner(owner), m_sName(name), m_uIndex(index) {}
+	virtual ~CMemoryIdentifier() = default;
+
+	[[nodiscard]] virtual constexpr EMemoryIdentifierType Type() const noexcept = 0;
+
+protected:
 	const CMemory* m_pOwner{};
 	std::string m_sName;
 	std::size_t m_uIndex{};
 };
 
+struct CLinterVariable final : public CMemoryIdentifier
+{
+	CLinterVariable() = default;
+	CLinterVariable(const CMemory* owner, const std::string& name, std::size_t index) 
+		: CMemoryIdentifier(owner, name, index) {}
+
+	[[nodiscard]] virtual constexpr EMemoryIdentifierType Type() const noexcept override { return mi_variable; }
+};
+struct CLinterFunction final : public CMemoryIdentifier
+{
+	CLinterFunction() = default;
+	CLinterFunction(const CMemory* owner, const std::string& name, std::size_t index) 
+		: CMemoryIdentifier(owner, name, index) {}
+
+	[[nodiscard]] virtual constexpr EMemoryIdentifierType Type() const noexcept override { return mi_function; }
+};
 class CMemory
 {
 	friend class CFunctionLinter;
+	friend class CIdentifierLinter;
 public:
 	CMemory(CFileRuntimeData* const file);
 	virtual ~CMemory();

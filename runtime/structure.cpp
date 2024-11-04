@@ -27,3 +27,9 @@ bool IRuntimeStructureSequence::ExecuteBlock([[maybe_unused]] CFunction* const t
 
 	return false;
 }
+
+CRuntimeFunction* CFileRuntimeData::FindFunction(const std::string& v) const
+{
+	const auto it = std::ranges::find(m_oFunctions, v, [](const RuntimeFunction& v) { return v->GetName(); });
+	return it != m_oFunctions.end() ? it->get() : nullptr;
+}

@@ -43,7 +43,7 @@ Success CLinterOperand::ParseOperand()
 
 		CLinterExpression expr(m_iterPos, m_iterEnd, m_pScope, m_pOwner);		
 		if (expr.ParseExpression(PairMatcher(p_par_open))) {
-			m_pOperand = std::make_unique<CASTOperand>(expr.ToAST());
+			m_pOperand = std::make_unique<CASTOperand>(expr.ToMergedAST());
 		}
 
 	} else {

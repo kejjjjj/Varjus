@@ -2,9 +2,12 @@
 
 #include "definitions.hpp"
 
+#include "runtime/structure.hpp"
+
 class AbstractSyntaxTree;
-class CPostfixBase;
+class IPostfixBase;
 class CPostfixSubscript;
+class CPostfixFunctionCall;
 class CMemory;
 
 class CPostfixLinter final : public CVectorLinter<CPunctuationToken>
@@ -17,16 +20,18 @@ public:
 	[[maybe_unused]] Success ParsePostfix();
 	[[nodiscard]] auto& GetTokens() const { return m_oTokens; }
 
-	[[nodiscard]] VectorOf<std::unique_ptr<CPostfixBase>> Move() noexcept;
+	[[nodiscard]] VectorOf<std::unique_ptr<IPostfixBase>> Move() noexcept;
 private:
 
 	[[nodiscard]] std::unique_ptr<CPostfixSubscript> ParseSubscript();
+	[[nodiscard]] std::unique_ptr<CPostfixFunctionCall> ParseFunctionCall();
+
 	[[nodiscard]] bool IsPostfixOperator(const CPunctuationToken& token) const noexcept;
 
 	WeakScope m_pScope;
 	CMemory* const m_pOwner;
 
-	VectorOf<std::unique_ptr<CPostfixBase>> m_oPostfixes;
+	VectorOf<std::unique_ptr<IPostfixBase>> m_oPostfixes;
 };
 
 enum EPostfixType
@@ -34,30 +39,43 @@ enum EPostfixType
 	pf_increment,
 	pf_decrement,
 	pf_subscript,
+	pf_functioncall,
 };
 
-class CPostfixBase
+class IPostfixBase
 {
-	NONCOPYABLE(CPostfixBase);
+	NONCOPYABLE(IPostfixBase);
 public:
-	CPostfixBase() = default;
-	virtual ~CPostfixBase() = default;
+	IPostfixBase() = default;
+	virtual ~IPostfixBase() = default;
 
-	[[nodiscard]] virtual std::unique_ptr<AbstractSyntaxTree> ToAST() = 0;
 	[[nodiscard]] virtual constexpr EPostfixType Type() const noexcept = 0;
 };
 
-class CPostfixSubscript final : public CPostfixBase
+class CPostfixSubscript final : public IPostfixBase
 {
 	NONCOPYABLE(CPostfixSubscript);
 public:
 	CPostfixSubscript(std::unique_ptr<AbstractSyntaxTree>&& ast);
 	~CPostfixSubscript();
 
-	[[nodiscard]] std::unique_ptr<AbstractSyntaxTree> ToAST() override;
-	[[nodiscard]] constexpr EPostfixType Type() const noexcept override { return pf_subscript;}
+	[[nodiscard]] constexpr EPostfixType Type() const noexcept override { return pf_subscript; }
+	[[nodiscard]] std::unique_ptr<AbstractSyntaxTree> ToAST();
 
 
 private:
 	std::unique_ptr<AbstractSyntaxTree> m_pAST;
+};
+
+class CPostfixFunctionCall final : public IPostfixBase
+{
+	NONCOPYABLE(CPostfixFunctionCall);
+public:
+	CPostfixFunctionCall(ExpressionList&& args);
+	~CPostfixFunctionCall();
+
+	[[nodiscard]] constexpr EPostfixType Type() const noexcept override { return pf_functioncall; }
+
+private:
+	ExpressionList m_pArgs;
 };
