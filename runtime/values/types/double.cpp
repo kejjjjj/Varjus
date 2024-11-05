@@ -3,5 +3,5 @@
 
 IValue* CDoubleValue::Copy() const
 {
-	return CProgramRuntime::AcquireNewDoubleValue(m_dValue);
+	return CProgramRuntime::AcquireNewValue<CDoubleValue>(m_oValue);
 }

@@ -5,13 +5,13 @@
 
 IValue* CStringValue::Copy() const
 {
-	return CProgramRuntime::AcquireNewStringValue(m_sValue);
+	return CProgramRuntime::AcquireNewValue<CStringValue>(m_oValue);
 }
 
 IValue* CStringValue::Index(std::int64_t index)
 {
-	if (index < 0 || static_cast<size_t>(index) >= m_sValue.length())
+	if (index < 0 || static_cast<size_t>(index) >= m_oValue.length())
 		throw CRuntimeError("string index out of bounds");
 
-	return CProgramRuntime::AcquireNewStringValue(std::string(size_t(1), m_sValue[static_cast<size_t>(index)]));
+	return CProgramRuntime::AcquireNewValue<CStringValue>(std::string(size_t(1), m_oValue[static_cast<size_t>(index)]));
 }

@@ -32,14 +32,16 @@ CCoercionOperands CoerceInternal(IValue* weaker, IValue* stronger, bool lhsIsWea
 	switch (stronger->Type()) {
 
 	case t_undefined:
-		return { lhs, rhs, CProgramRuntime::AcquireNewValue(), lhsIsWeak };
+		return { lhs, rhs, CProgramRuntime::AcquireNewValue<IValue>(), lhsIsWeak};
 	case t_boolean:
-		return { lhs, rhs, CProgramRuntime::AcquireNewBooleanValue(weaker->ToBoolean()), lhsIsWeak };
+		return { lhs, rhs, CProgramRuntime::AcquireNewValue<CBooleanValue>(weaker->ToBoolean()), lhsIsWeak };
 	case t_int:
-		return { lhs, rhs, CProgramRuntime::AcquireNewIntValue(weaker->ToInt()), lhsIsWeak };
+		return { lhs, rhs, CProgramRuntime::AcquireNewValue<CIntValue>(weaker->ToInt()), lhsIsWeak };
 	case t_double:
-		return { lhs, rhs, CProgramRuntime::AcquireNewDoubleValue(weaker->ToDouble()), lhsIsWeak };
+		return { lhs, rhs, CProgramRuntime::AcquireNewValue<CDoubleValue>(weaker->ToDouble()), lhsIsWeak };
 	case t_string:
+		break;
+	case t_callable:
 		break;
 	}
 

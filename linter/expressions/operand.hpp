@@ -8,13 +8,16 @@ class CMemory;
 class CIdentifierLinter;
 class CScope;
 
-struct CLinterVariable;
+struct CMemoryIdentifier;
 class AbstractSyntaxTree;
 
 struct COperandBase;
 struct CIdentifierOperand; 
 struct CASTOperand;
 class IPostfixBase;
+
+struct CLinterFunction;
+struct CLinterVariable;
 
 enum EOperandBaseType : char {
 	identifier,
@@ -83,10 +86,13 @@ public:
 	[[nodiscard]] std::unique_ptr<AbstractSyntaxTree> PostfixesToAST() const noexcept;
 
 
-	[[nodiscard]] bool IsVariable() const noexcept;
 	[[nodiscard]] bool IsImmediate() const noexcept;
 
+	[[nodiscard]] bool IsVariable() const noexcept;
 	[[nodiscard]] const CLinterVariable* GetVariable() const noexcept;
+
+	[[nodiscard]] bool IsFunction() const noexcept;
+	[[nodiscard]] const CLinterFunction* GetFunction() const noexcept;
 
 	[[nodiscard]] const COperandBase* GetOperand() const noexcept { return m_pOperand.get(); }
 	[[nodiscard]] std::unique_ptr<COperandBase>& GetOperandRaw() noexcept { return m_pOperand; }

@@ -182,6 +182,7 @@
     <ClCompile Include="linter\tokenizer.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="runtime\expressions\rtexpression.cpp" />
+    <ClCompile Include="runtime\expressions\rtpostfix.cpp" />
     <ClCompile Include="runtime\functions\rtfunction.cpp" />
     <ClCompile Include="runtime\runtime.cpp" />
     <ClCompile Include="runtime\statements\conditional\rtconditional.cpp" />
@@ -190,6 +191,7 @@
     <ClCompile Include="runtime\values\coercion.cpp" />
     <ClCompile Include="runtime\values\simple_operators.cpp" />
     <ClCompile Include="runtime\values\types\boolean.cpp" />
+    <ClCompile Include="runtime\values\types\callable.cpp" />
     <ClCompile Include="runtime\values\types\double.cpp" />
     <ClCompile Include="runtime\values\types\integer.cpp" />
     <ClCompile Include="runtime\values\types\simple.cpp" />
@@ -231,6 +233,7 @@
     <ClInclude Include="linter\tokenizer.hpp" />
     <ClInclude Include="runtime\exceptions\exception.hpp" />
     <ClInclude Include="runtime\expressions\rtexpression.hpp" />
+    <ClInclude Include="runtime\expressions\rtpostfix.hpp" />
     <ClInclude Include="runtime\functions\rtfunction.hpp" />
     <ClInclude Include="runtime\pools\object_pool_non_owning.hpp" />
     <ClInclude Include="runtime\pools\object_pool_owning.hpp" />
@@ -241,6 +244,7 @@
     <ClInclude Include="runtime\values\coercion.hpp" />
     <ClInclude Include="runtime\values\simple_operators.hpp" />
     <ClInclude Include="runtime\values\types\boolean.hpp" />
+    <ClInclude Include="runtime\values\types\callable.hpp" />
     <ClInclude Include="runtime\values\types\double.hpp" />
     <ClInclude Include="runtime\values\types\integer.hpp" />
     <ClInclude Include="runtime\values\types\simple.hpp" />

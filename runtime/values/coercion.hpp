@@ -1,7 +1,7 @@
 #pragma once
 #include <tuple>
 
-class IValue;
+#include "types/simple.hpp"
 
 struct CCoercionOperands final
 {

@@ -74,11 +74,11 @@ std::unique_ptr<AbstractSyntaxTree> CLinterOperand::OperandToAST() const noexcep
 	if (IsImmediate()) {
 		const auto identifier = m_pOperand->GetIdentifier();
 		return std::make_unique<ConstantASTNode>(identifier->ToData(), identifier->GetImmediateType());
-	}
-	else if (IsVariable()) {
+	} else if (IsVariable()) {
 		return std::make_unique<VariableASTNode>(GetVariable()->m_uIndex);
-	}
-	else if (IsExpression()) {
+	} else if (IsFunction()) {
+		return std::make_unique<FunctionASTNode>(GetFunction()->m_uIndex);
+	} else if (IsExpression()) {
 		return ExpressionToAST();
 	}
 
@@ -127,15 +127,6 @@ std::unique_ptr<AbstractSyntaxTree> CLinterOperand::PostfixesToAST() const noexc
 
 	return root;
 }
-bool CLinterOperand::IsVariable() const noexcept
-{
-	assert(m_pOperand != nullptr);
-
-	if (IsExpression())
-		return false;
-
-	return m_pOperand->GetIdentifier()->m_pVariable != nullptr;
-}
 bool CLinterOperand::IsImmediate() const noexcept
 {
 	assert(m_pOperand != nullptr);
@@ -146,13 +137,35 @@ bool CLinterOperand::IsImmediate() const noexcept
 	const auto type = m_pOperand->GetIdentifier()->GetToken()->Type();
 	return type >= tt_false && type <= tt_string;
 }
-const CLinterVariable* CLinterOperand::GetVariable() const noexcept
+bool CLinterOperand::IsVariable() const noexcept
 {
 	assert(m_pOperand != nullptr);
-	assert(!IsExpression());
 
-	return m_pOperand->GetIdentifier()->m_pVariable;
+	if (IsExpression() || !m_pOperand->GetIdentifier()->m_pIdentifier)
+		return false;
+
+	return m_pOperand->GetIdentifier()->m_pIdentifier->Type() == mi_variable;
 }
+const CLinterVariable* CLinterOperand::GetVariable() const noexcept
+{
+	assert(IsVariable());
+	return dynamic_cast<const CLinterVariable*>(m_pOperand->GetIdentifier()->m_pIdentifier);
+}
+bool CLinterOperand::IsFunction() const noexcept 
+{
+	assert(m_pOperand != nullptr);
+
+	if (IsExpression() || !m_pOperand->GetIdentifier()->m_pIdentifier)
+		return false;
+
+	return m_pOperand->GetIdentifier()->m_pIdentifier->Type() == mi_function;
+}
+const CLinterFunction* CLinterOperand::GetFunction() const noexcept 
+{
+	assert(IsFunction());
+	return dynamic_cast<const CLinterFunction*>(m_pOperand->GetIdentifier()->m_pIdentifier);
+}
+
 std::string CLinterOperand::ToString() const noexcept
 {
 	assert(m_pOperand != nullptr);

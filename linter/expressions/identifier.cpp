@@ -35,14 +35,22 @@ Success CIdentifierLinter::ParseIdentifier()
 
 	if (m_pToken->Type() == TokenType::tt_name){
 		if (const auto scope = m_pScope.lock()) {
-			if (!scope->VariableExists(m_pToken->Source())) {
-				CLinterErrors::PushError("Use of an undefined variable: " + m_pToken->Source(), m_pToken->m_oSourcePosition);
+
+			const auto varExists = scope->VariableExists(m_pToken->Source());
+			const auto funcExists = m_pOwner->GetFunction(m_pToken->Source());
+
+			if (!varExists && !funcExists) {
+				CLinterErrors::PushError("Use of an undefined identifier: " + m_pToken->Source(), m_pToken->m_oSourcePosition);
 				return failure;
 			}
+
+			if(varExists)
+				m_pIdentifier = m_pOwner->GetVariable(m_pToken->Source());
+			else if(funcExists)
+				m_pIdentifier = m_pOwner->GetFunction(m_pToken->Source());
 		}
 
-		m_pVariable = m_pOwner->GetVariable(m_pToken->Source());
-		assert(m_pVariable != nullptr);
+		assert(m_pIdentifier != nullptr);
 	}
 
 	std::advance(m_iterPos, 1);

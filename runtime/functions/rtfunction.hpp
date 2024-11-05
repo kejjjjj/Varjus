@@ -9,13 +9,14 @@ template <typename T>
 using VectorOf = std::vector<T>;
 
 class CVariable;
+class IValue;
 
 class CFunction
 {
 	NONCOPYABLE(CFunction);
 	friend class CRuntimeFunction;
 public:
-	CFunction(VectorOf<std::unique_ptr<CVariable>>&& variables);
+	CFunction(VectorOf<IValue*>& args, VectorOf<std::unique_ptr<CVariable>>&& variables);
 
 	[[nodiscard]] CVariable* GetVariableByIndex(std::size_t index) const;
 

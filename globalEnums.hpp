@@ -13,5 +13,6 @@ enum EValueType : unsigned char
 	t_boolean,
 	t_int,
 	t_double,
-	t_string
+	t_string,
+	t_callable,
 };

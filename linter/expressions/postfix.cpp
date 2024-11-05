@@ -97,6 +97,7 @@ CPostfixFunctionCall::CPostfixFunctionCall(ExpressionList&& args)
 	:  m_pArgs(std::move(args)){}
 CPostfixFunctionCall::~CPostfixFunctionCall() = default;
 
-
-
-
+std::unique_ptr<AbstractSyntaxTree> CPostfixFunctionCall::ToAST()
+{
+	return std::make_unique<FunctionCallASTNode>(std::move(m_pArgs));
+}

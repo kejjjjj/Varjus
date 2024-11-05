@@ -10,32 +10,35 @@ void IValue::Release()
 
 	switch (Type()) {
 	case t_undefined:
-		return CProgramRuntime::FreeUndefinedValue(this);
+		return CProgramRuntime::FreeValue(this);
 	case t_boolean:
-		return CProgramRuntime::FreeBooleanValue(dynamic_cast<CBooleanValue*>(this));
+		return CProgramRuntime::FreeValue<CBooleanValue>(dynamic_cast<CBooleanValue*>(this));
 	case t_int:
-		return CProgramRuntime::FreeIntValue(dynamic_cast<CIntValue*>(this));
+		return CProgramRuntime::FreeValue<CIntValue>(dynamic_cast<CIntValue*>(this));
 	case t_double:
-		return CProgramRuntime::FreeDoubleValue(dynamic_cast<CDoubleValue*>(this));
+		return CProgramRuntime::FreeValue<CDoubleValue>(dynamic_cast<CDoubleValue*>(this));
 	case t_string:
-		return CProgramRuntime::FreeStringValue(dynamic_cast<CStringValue*>(this));
+		return CProgramRuntime::FreeValue<CStringValue>(dynamic_cast<CStringValue*>(this));
+	case t_callable:
+		assert(false);
+		break;
 	}
 }
 IValue* IValue::Copy() const
 {
-	return CProgramRuntime::AcquireNewValue();
+	return CProgramRuntime::AcquireNewValue<IValue>();
 }
 bool& IValue::AsBoolean(){
-	return dynamic_cast<CBooleanValue*>(this)->m_bValue;
+	return dynamic_cast<CBooleanValue*>(this)->m_oValue;
 }
 std::int64_t& IValue::AsInt() {
-	return dynamic_cast<CIntValue*>(this)->m_iValue;
+	return dynamic_cast<CIntValue*>(this)->m_oValue;
 }
 double& IValue::AsDouble() {
-	return dynamic_cast<CDoubleValue*>(this)->m_dValue;
+	return dynamic_cast<CDoubleValue*>(this)->m_oValue;
 }
 std::string& IValue::AsString(){
-	return dynamic_cast<CStringValue*>(this)->m_sValue;
+	return dynamic_cast<CStringValue*>(this)->m_oValue;
 }
 std::string IValue::ToPrintableString() const
 {

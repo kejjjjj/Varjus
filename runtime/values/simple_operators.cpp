@@ -25,19 +25,22 @@ void OP_ASSIGNMENT(IValue* lhs, IValue* rhs)
 
 	switch (rhs->Type()) {
 		case t_undefined:
-			variable->SetValue(CProgramRuntime::AcquireNewValue());
+			variable->SetValue(CProgramRuntime::AcquireNewValue<IValue>());
 			break;
 		case t_boolean:
-			variable->SetValue(CProgramRuntime::AcquireNewBooleanValue(rhs->AsBoolean()));
+			variable->SetValue(CProgramRuntime::AcquireNewValue<CBooleanValue>(rhs->AsBoolean()));
 			break;
 		case t_int:
-			variable->SetValue(CProgramRuntime::AcquireNewIntValue(rhs->AsInt()));
+			variable->SetValue(CProgramRuntime::AcquireNewValue<CIntValue>(rhs->AsInt()));
 			break;
 		case t_double:
-			variable->SetValue(CProgramRuntime::AcquireNewDoubleValue(rhs->AsDouble()));
+			variable->SetValue(CProgramRuntime::AcquireNewValue<CDoubleValue>(rhs->AsDouble()));
 			break;
 		case t_string:
-			variable->SetValue(CProgramRuntime::AcquireNewStringValue(rhs->AsString()));
+			variable->SetValue(CProgramRuntime::AcquireNewValue<CStringValue>(rhs->AsString()));
+			break;
+		case t_callable:
+			assert(false);
 			break;
 	}
 
@@ -59,16 +62,19 @@ IValue* OP_ADDITION(IValue* _lhs, IValue* _rhs)
 	case t_undefined:
 		break;
 	case t_boolean:
-		result = CProgramRuntime::AcquireNewBooleanValue(static_cast<bool>(lhs->ToBoolean() + rhs->ToBoolean()));
+		result = CProgramRuntime::AcquireNewValue<CBooleanValue>(static_cast<bool>(lhs->ToBoolean() + rhs->ToBoolean()));
 		break;
 	case t_int:
-		result = CProgramRuntime::AcquireNewIntValue(lhs->ToInt() + rhs->ToInt());
+		result = CProgramRuntime::AcquireNewValue<CIntValue>(lhs->ToInt() + rhs->ToInt());
 		break;
 	case t_double:
-		result = CProgramRuntime::AcquireNewDoubleValue(lhs->ToDouble() + rhs->ToDouble());
+		result = CProgramRuntime::AcquireNewValue<CDoubleValue>(lhs->ToDouble() + rhs->ToDouble());
 		break;
 	case t_string:
-		result = CProgramRuntime::AcquireNewStringValue(lhs->ToString() + rhs->ToString());
+		result = CProgramRuntime::AcquireNewValue<CStringValue>(lhs->ToString() + rhs->ToString());
+		break;
+	case t_callable:
+		assert(false);
 		break;
 	}
 
@@ -94,16 +100,19 @@ IValue* OP_LESS_THAN(IValue* _lhs, IValue* _rhs)
 	case t_undefined:
 		break;
 	case t_boolean:
-		result = CProgramRuntime::AcquireNewBooleanValue(lhs->AsBoolean() < rhs->AsBoolean());
+		result = CProgramRuntime::AcquireNewValue<CBooleanValue>(lhs->AsBoolean() < rhs->AsBoolean());
 		break;
 	case t_int:
-		result = CProgramRuntime::AcquireNewBooleanValue(lhs->AsInt() < rhs->AsInt());
+		result = CProgramRuntime::AcquireNewValue<CBooleanValue>(lhs->AsInt() < rhs->AsInt());
 		break;
 	case t_double:
-		result = CProgramRuntime::AcquireNewBooleanValue(lhs->AsDouble() < rhs->AsDouble());
+		result = CProgramRuntime::AcquireNewValue<CBooleanValue>(lhs->AsDouble() < rhs->AsDouble());
 		break;
 	case t_string:
-		result = CProgramRuntime::AcquireNewBooleanValue(lhs->ToString().length() < rhs->ToString().length());
+		result = CProgramRuntime::AcquireNewValue<CBooleanValue>(lhs->ToString().length() < rhs->ToString().length());
+		break;
+	case t_callable:
+		assert(false);
 		break;
 	}
 

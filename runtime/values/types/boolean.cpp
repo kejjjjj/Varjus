@@ -3,5 +3,5 @@
 
 IValue* CBooleanValue::Copy() const
 {
-	return CProgramRuntime::AcquireNewBooleanValue(m_bValue);
+	return CProgramRuntime::AcquireNewValue<CBooleanValue>(m_oValue);
 }

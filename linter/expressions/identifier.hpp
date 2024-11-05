@@ -5,7 +5,7 @@
 
 class CMemory;
 class CScope;
-struct CLinterVariable;
+struct CMemoryIdentifier;
 
 class CIdentifierLinter final : public CLinterSingle<CToken>
 {
@@ -28,5 +28,5 @@ private:
 
 	WeakScope m_pScope;
 	CMemory* const m_pOwner;
-	CLinterVariable* m_pVariable{};
+	CMemoryIdentifier* m_pIdentifier;
 };

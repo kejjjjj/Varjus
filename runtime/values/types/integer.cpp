@@ -3,5 +3,5 @@
 
 IValue* CIntValue::Copy() const
 {
-	return CProgramRuntime::AcquireNewIntValue(m_iValue);
+	return CProgramRuntime::AcquireNewValue<CIntValue>(m_oValue);
 }

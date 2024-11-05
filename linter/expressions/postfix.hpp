@@ -50,6 +50,7 @@ public:
 	virtual ~IPostfixBase() = default;
 
 	[[nodiscard]] virtual constexpr EPostfixType Type() const noexcept = 0;
+	[[nodiscard]] virtual std::unique_ptr<AbstractSyntaxTree> ToAST() = 0;
 };
 
 class CPostfixSubscript final : public IPostfixBase
@@ -60,7 +61,7 @@ public:
 	~CPostfixSubscript();
 
 	[[nodiscard]] constexpr EPostfixType Type() const noexcept override { return pf_subscript; }
-	[[nodiscard]] std::unique_ptr<AbstractSyntaxTree> ToAST();
+	[[nodiscard]] std::unique_ptr<AbstractSyntaxTree> ToAST() override;
 
 
 private:
@@ -75,6 +76,7 @@ public:
 	~CPostfixFunctionCall();
 
 	[[nodiscard]] constexpr EPostfixType Type() const noexcept override { return pf_functioncall; }
+	[[nodiscard]] std::unique_ptr<AbstractSyntaxTree> ToAST() override;
 
 private:
 	ExpressionList m_pArgs;

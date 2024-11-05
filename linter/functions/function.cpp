@@ -44,6 +44,8 @@ Success CFunctionLinter::ParseFunction()
 	
 	//base -> derived conversion 
 	m_pOwner->m_pFile->AddFunction(std::unique_ptr<CRuntimeFunction>(static_cast<CRuntimeFunction*>(asGeneric.release())));
+	m_pOwner->DeclareFunction(m_oFunctionName);
+
 	return success;
 }
 

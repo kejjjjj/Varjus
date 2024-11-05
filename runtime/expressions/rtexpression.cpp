@@ -11,7 +11,6 @@
 
 #include <cassert>
 #include <format>
-#include <iostream>
 
 CRuntimeExpression::CRuntimeExpression(std::unique_ptr<AbstractSyntaxTree>&& ast) :
 	m_pAST(std::move(ast)) {}
@@ -92,48 +91,19 @@ IValue* CRuntimeExpression::EvaluateLeaf(CFunction* const thisFunction, Abstract
 		const auto constant = node->As<const ConstantASTNode*>();
 		switch (constant->m_eDataType) {
 			case t_undefined:
-				return CProgramRuntime::AcquireNewValue();
+				return CProgramRuntime::AcquireNewValue<IValue>();
 			case t_boolean:
-				return CProgramRuntime::AcquireNewBooleanValue(static_cast<bool>(constant->m_pConstant[0]));
+				return CProgramRuntime::AcquireNewValue<CBooleanValue>(static_cast<bool>(constant->m_pConstant[0]));
 			case t_int:
-				return CProgramRuntime::AcquireNewIntValue(*reinterpret_cast<std::int64_t*>((char*)constant->m_pConstant.data()));
+				return CProgramRuntime::AcquireNewValue<CIntValue>(*reinterpret_cast<std::int64_t*>((char*)constant->m_pConstant.data()));
 			case t_double:
-				return CProgramRuntime::AcquireNewDoubleValue(*reinterpret_cast<double*>((char*)constant->m_pConstant.data()));
+				return CProgramRuntime::AcquireNewValue<CDoubleValue>(*reinterpret_cast<double*>((char*)constant->m_pConstant.data()));
 			case t_string:
-				return CProgramRuntime::AcquireNewStringValue(constant->m_pConstant);
+				return CProgramRuntime::AcquireNewValue<CStringValue>(constant->m_pConstant);
 		}
 	}
 
 	assert(false);
-	return nullptr;
-}
-IValue* CRuntimeExpression::EvaluatePostfix(CFunction* const thisFunction, const OperatorASTNode* node)
-{
-	auto expression = Evaluate(thisFunction, node->left.get());
-
-	if (node->IsSubscript()) {
-
-		if (!expression->IsIndexable())
-			throw CRuntimeError(std::format("a value of type \"{}\" cannot be indexed", expression->TypeAsString()));
-		
-		auto accessor = Evaluate(thisFunction, node->As<const SubscriptASTNode*>()->m_pAST.get());
-
-		if (!accessor->IsIntegral())
-			throw CRuntimeError(std::format("array accessor must be integral, but is \"{}\"", accessor->TypeAsString()));
-
-		if (!accessor->HasOwner())
-			accessor->Release();
-
-		auto index = expression->Index(accessor->ToInt());
-
-		index->MakeImmutable(); //cannot modify parts
-
-		if (!expression->HasOwner())
-			expression->Release();
-
-		return index;
-	}
-
 	return nullptr;
 }
 IValue* CRuntimeExpression::EvaluateSequence(CFunction* const thisFunction, const AbstractSyntaxTree* node)

@@ -46,7 +46,7 @@ ExpressionList CExpressionList::ToExpressionList()
 	auto pos = this;
 	while (pos) {
 		assert(pos->m_pAST);
-		list.emplace_back(std::make_unique<CRuntimeExpression>(std::move(pos->m_pAST)));
+		list.emplace_back(std::move(pos->m_pAST));
 		pos = pos->m_pNext.get();
 	}
 

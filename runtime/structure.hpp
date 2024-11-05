@@ -21,8 +21,16 @@ class CRuntimeFunction;
 class CFunction;
 class IValue;
 class OperatorASTNode;
+class SubscriptASTNode;
+class FunctionCallASTNode;
 
 struct CFunctionBlock;
+
+template<typename T>
+using VectorOf = std::vector<T>;
+
+#pragma pack(push)
+#pragma warning(disable : 4266)
 
 class IRuntimeStructure
 {
@@ -32,13 +40,12 @@ public:
 	virtual ~IRuntimeStructure();
 
 	[[nodiscard]] virtual constexpr EStructureType Type() const noexcept = 0;
-	[[nodiscard]] virtual bool Execute([[maybe_unused]]CFunction* const thisFunction) { return false; };
+	[[nodiscard]] virtual bool Execute([[maybe_unused]] CFunction* const thisFunction) { return false; };
+	[[nodiscard]] virtual bool Execute(
+		[[maybe_unused]] CFunction* const thisFunction, [[maybe_unused]] VectorOf<IValue*>& args) { return false; };
 
 protected:
 };
-
-template<typename T>
-using VectorOf = std::vector<T>;
 
 using InstructionSequence = VectorOf<std::unique_ptr<IRuntimeStructure>>;
 
@@ -65,7 +72,7 @@ public:
 	~CRuntimeFunction();
 
 	[[nodiscard]] constexpr auto& GetName() const noexcept { return m_sName; }
-	[[maybe_unused]] bool Execute(CFunction* const thisFunction) override;
+	[[maybe_unused]] bool Execute(CFunction* const thisFunction, VectorOf<IValue*>& args) override;
 protected:
 
 	[[nodiscard]] constexpr EStructureType Type() const noexcept { return st_function; };
@@ -90,10 +97,13 @@ protected:
 	[[nodiscard]] constexpr EStructureType Type() const noexcept { return st_expression;};
 
 private:
-	[[nodiscard]] IValue* Evaluate(CFunction* const thisFunction, AbstractSyntaxTree* node);
-	[[nodiscard]] IValue* EvaluateLeaf(CFunction* const thisFunction, AbstractSyntaxTree* node);
-	[[nodiscard]] IValue* EvaluatePostfix(CFunction* const thisFunction, const OperatorASTNode* node);
-	[[nodiscard]] IValue* EvaluateSequence(CFunction* const thisFunction, const AbstractSyntaxTree* node);
+	[[nodiscard]] static IValue* Evaluate(CFunction* const thisFunction, AbstractSyntaxTree* node);
+	[[nodiscard]] static IValue* EvaluateLeaf(CFunction* const thisFunction, AbstractSyntaxTree* node);
+	[[nodiscard]] static IValue* EvaluatePostfix(CFunction* const thisFunction, const OperatorASTNode* node);
+	[[nodiscard]] static IValue* EvaluateSequence(CFunction* const thisFunction, const AbstractSyntaxTree* node);
+
+	[[nodiscard]] static IValue* EvaluateSubscript(CFunction* const thisFunction, IValue* operand, const SubscriptASTNode* node);
+	[[nodiscard]] static IValue* EvaluateFunctionCall(CFunction* const thisFunction, IValue* operand, const FunctionCallASTNode* node);
 
 	std::unique_ptr<AbstractSyntaxTree> m_pAST;
 
@@ -144,7 +154,7 @@ using RuntimeFunction = std::unique_ptr<CRuntimeFunction>;
 
 using FunctionArgument = RuntimeBlock;
 using FunctionArguments = VectorOf<FunctionArgument>;
-using ExpressionList = VectorOf<RuntimeBlock>;
+using ExpressionList = VectorOf<std::unique_ptr<AbstractSyntaxTree>>;
 
 class IRuntimeBlock
 {
@@ -167,3 +177,5 @@ public:
 private:
 	VectorOf<RuntimeFunction> m_oFunctions;
 };
+
+#pragma pack(pop)

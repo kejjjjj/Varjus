@@ -30,7 +30,6 @@ struct CMemoryIdentifier
 
 	[[nodiscard]] virtual constexpr EMemoryIdentifierType Type() const noexcept = 0;
 
-protected:
 	const CMemory* m_pOwner{};
 	std::string m_sName;
 	std::size_t m_uIndex{};
@@ -67,10 +66,18 @@ public:
 	[[nodiscard]] bool ContainsVariable(const std::string& name) const;
 	[[nodiscard]] std::size_t GetVariableCount() const noexcept;
 
+
+	[[maybe_unused]] CLinterFunction* DeclareFunction(const std::string& var);
+	[[nodiscard]] CLinterFunction* GetFunction(const std::string& var);
+	[[nodiscard]] bool ContainsFunction(const std::string& name) const;
+	[[nodiscard]] std::size_t GetFunctionCount() const noexcept;
+
 	[[nodiscard]] CStack* ToStack();
 	[[nodiscard]] auto ToStack() const;
 protected:
 	std::unordered_map<std::string, CLinterVariable> m_oVariables;
+	std::unordered_map<std::string, CLinterFunction> m_oFunctions;
+
 	CFileRuntimeData* const m_pFile{};
 };
 

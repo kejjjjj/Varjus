@@ -11,6 +11,7 @@ using ASTNode = std::shared_ptr<AbstractSyntaxTree>;
 
 class CLinterOperand;
 class CLinterOperator;
+class IRuntimeStructure;
 struct COperandBase;
 
 class AbstractSyntaxTree
@@ -26,6 +27,7 @@ public:
 	[[nodiscard]] virtual constexpr bool IsOperator() const noexcept { return false; }
 	[[nodiscard]] virtual constexpr bool IsPostfix() const noexcept  { return false; }
 	[[nodiscard]] virtual constexpr bool IsVariable() const noexcept { return false; }
+	[[nodiscard]] virtual constexpr bool IsFunction() const noexcept { return false; }
 	[[nodiscard]] virtual constexpr bool IsConstant() const noexcept { return false; }
 	[[nodiscard]] virtual constexpr bool IsSequence() const noexcept { return false; }
 
@@ -52,7 +54,7 @@ protected:
 
 private:
 
-	[[nodiscard]] static std::unique_ptr<AbstractSyntaxTree> GetPolymorphic(VectorOf<CLinterOperand*>& operands, VectorOf<CLinterOperator*>& operators);
+	[[nodiscard]] static std::unique_ptr<AbstractSyntaxTree> GetLeaf(VectorOf<CLinterOperand*>& operands, VectorOf<CLinterOperator*>& operators);
 	[[nodiscard]] static OperatorIterator FindLowestPriorityOperator(VectorOf<CLinterOperator*>& operators);
 	
 	void CreateRecursively(VectorOf<CLinterOperand*>& operands, VectorOf<CLinterOperator*>& operators);
@@ -64,8 +66,7 @@ class VariableASTNode final : public AbstractSyntaxTree
 	friend class AstToInstructionConverter;
 	NONCOPYABLE(VariableASTNode);
 public:
-	VariableASTNode(std::size_t variableIndex);
-	~VariableASTNode();
+	VariableASTNode(std::size_t variableIndex) : m_uIndex(variableIndex) {}
 
 	[[nodiscard]] constexpr bool IsLeaf() const noexcept override { return true; }
 	[[nodiscard]] constexpr bool IsVariable() const noexcept override { return true; }
@@ -75,7 +76,21 @@ public:
 private:
 
 };
+class FunctionASTNode final : public AbstractSyntaxTree
+{
+	friend class AstToInstructionConverter;
+	NONCOPYABLE(FunctionASTNode);
+public:
+	FunctionASTNode(std::size_t i) : m_uIndex(i) {}
 
+	[[nodiscard]] constexpr bool IsLeaf() const noexcept override { return true; }
+	[[nodiscard]] constexpr bool IsFunction() const noexcept override { return true; }
+
+	std::size_t m_uIndex{};
+
+private:
+
+};
 class ConstantASTNode final : public AbstractSyntaxTree
 {
 	NONCOPYABLE(ConstantASTNode);
@@ -106,6 +121,8 @@ public:
 	
 	[[nodiscard]] virtual constexpr bool IsPostfix() const noexcept { return false; }
 	[[nodiscard]] virtual constexpr bool IsSubscript() const noexcept { return false; }
+	[[nodiscard]] virtual constexpr bool IsFunctionCall() const noexcept { return false; }
+
 	[[nodiscard]] virtual constexpr bool IsSequence() const noexcept { return m_ePunctuation == p_comma; }
 
 //private:
@@ -119,7 +136,17 @@ public:
 	SubscriptASTNode(std::unique_ptr<AbstractSyntaxTree>&& expression) : m_pAST(std::move(expression)) {}
 	[[nodiscard]] constexpr bool IsSubscript() const noexcept override { return true; }
 	[[nodiscard]] constexpr bool IsPostfix() const noexcept { return true; }
-	[[nodiscard]] constexpr bool IsSequence() const noexcept override { return false; }
 
 	std::unique_ptr<AbstractSyntaxTree> m_pAST;
+};
+
+class FunctionCallASTNode : public OperatorASTNode
+{
+	NONCOPYABLE(FunctionCallASTNode);
+public:
+	FunctionCallASTNode(VectorOf<std::unique_ptr<AbstractSyntaxTree>>&& args) : m_oArguments(std::move(args)) {}
+	[[nodiscard]] constexpr bool IsFunctionCall() const noexcept override { return true; }
+	[[nodiscard]] constexpr bool IsPostfix() const noexcept { return true; }
+
+	VectorOf<std::unique_ptr<AbstractSyntaxTree>> m_oArguments;
 };

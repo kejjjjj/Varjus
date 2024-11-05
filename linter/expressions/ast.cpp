@@ -19,7 +19,7 @@ std::unique_ptr<AbstractSyntaxTree> AbstractSyntaxTree::CreateAST(VectorOf<CLint
 {
 	assert(!operands.empty());
 
-	auto root = GetPolymorphic(operands, operators);
+	auto root = GetLeaf(operands, operators);
 
 	if (!root)
 		root = std::make_unique<OperatorASTNode>((*FindLowestPriorityOperator(operators))->GetPunctuation());
@@ -28,7 +28,7 @@ std::unique_ptr<AbstractSyntaxTree> AbstractSyntaxTree::CreateAST(VectorOf<CLint
 	return root;
 }
 
-std::unique_ptr<AbstractSyntaxTree> AbstractSyntaxTree::GetPolymorphic(VectorOf<CLinterOperand*>& operands, [[maybe_unused]] VectorOf<CLinterOperator*>& operators)
+std::unique_ptr<AbstractSyntaxTree> AbstractSyntaxTree::GetLeaf(VectorOf<CLinterOperand*>& operands, [[maybe_unused]] VectorOf<CLinterOperator*>& operators)
 {
 
 	std::unique_ptr<AbstractSyntaxTree> node;
@@ -70,14 +70,14 @@ void AbstractSyntaxTree::CreateRecursively(VectorOf<CLinterOperand*>& operands, 
 
 	//check size to avoid unnecessary allocations
 	if (lhsOperands.size()) {
-		if (left = GetPolymorphic(lhsOperands, lhsOperators), !left) {
+		if (left = GetLeaf(lhsOperands, lhsOperators), !left) {
 			const OperatorIterator l = FindLowestPriorityOperator(lhsOperators);
 			left = std::make_shared<OperatorASTNode>((*l)->GetPunctuation());
 			left->CreateRecursively(lhsOperands, lhsOperators);
 		}
 	}
 	if (rhsOperands.size()) {
-		if (right = GetPolymorphic(rhsOperands, rhsOperators), !right) {
+		if (right = GetLeaf(rhsOperands, rhsOperators), !right) {
 
 			const OperatorIterator l = FindLowestPriorityOperator(rhsOperators);
 			right = std::make_shared<OperatorASTNode>((*l)->GetPunctuation());
@@ -133,10 +133,6 @@ std::size_t AbstractSyntaxTree::GetLeftBranchDepth() const noexcept
 /***********************************************************************
  > 
 ***********************************************************************/
-VariableASTNode::VariableASTNode(std::size_t variableIndex)
-	: m_uIndex(variableIndex) {}
-VariableASTNode::~VariableASTNode() = default;
-
 
 ConstantASTNode::ConstantASTNode(const std::string& data, EValueType datatype)
 	: m_pConstant(data), m_eDataType(datatype) {}

@@ -35,10 +35,11 @@ public:
 	constexpr void MakeImmutable() noexcept { m_bIsConst = true; }
 
 	[[nodiscard]] constexpr virtual bool IsImmutable() const noexcept { return m_bIsConst; }
-	[[nodiscard]] constexpr virtual bool IsCoerceable() const noexcept { return true; }
-	[[nodiscard]] constexpr virtual bool IsArithmetic() const noexcept { return true; }
+	[[nodiscard]] constexpr virtual bool IsCoerceable() const noexcept { return false; }
+	[[nodiscard]] constexpr virtual bool IsArithmetic() const noexcept { return false; }
 	[[nodiscard]] constexpr virtual bool IsIntegral() const noexcept { return false; }
 	[[nodiscard]] constexpr virtual bool IsIndexable() const noexcept { return false; }
+	[[nodiscard]] constexpr virtual bool IsCallable() const noexcept { return false; }
 
 	[[nodiscard]] virtual IValue* Index(std::int64_t index);
 
@@ -53,9 +54,23 @@ public:
 	[[nodiscard]] virtual const std::string& ToString() const { return emptyString; }
 
 protected:
-
 	CVariable* m_pOwner{ nullptr };
 	bool m_bIsConst{ false };
 };
 
 
+template<typename Value>
+class CValue : public IValue
+{
+	friend class IValue;
+public:
+	CValue() = default;
+	CValue(const Value& v) : m_oValue(v) {}
+	virtual ~CValue() = default;
+
+	Value& GetRawValue() noexcept { return m_oValue; }
+	void SetRawValue(const Value&v) noexcept { m_oValue = v; }
+
+protected:
+	Value m_oValue;
+};
