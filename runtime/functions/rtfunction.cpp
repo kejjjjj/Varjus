@@ -49,7 +49,7 @@ bool CRuntimeFunction::Execute([[maybe_unused]] CFunction* const thisFunction, V
 		v->GetValue()->Release();
 		variablePool.Release(std::move(v)); });
 
-	printf("\ntime taken: %.6f\n", difference.count());
+	//printf("\ntime taken: %.6f\n", difference.count());
 
 	return returnVal;
 }

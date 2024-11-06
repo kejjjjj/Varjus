@@ -49,6 +49,14 @@ protected:
 
 using InstructionSequence = VectorOf<std::unique_ptr<IRuntimeStructure>>;
 
+using RuntimeBlock = std::unique_ptr<IRuntimeStructure>;
+using RuntimeFunction = std::unique_ptr<CRuntimeFunction>;
+
+using FunctionArgument = RuntimeBlock;
+using FunctionArguments = VectorOf<FunctionArgument>;
+using ExpressionList = VectorOf<std::unique_ptr<AbstractSyntaxTree>>;
+
+
 // contains more than one instruction
 class IRuntimeStructureSequence : public IRuntimeStructure
 {
@@ -97,13 +105,15 @@ protected:
 	[[nodiscard]] constexpr EStructureType Type() const noexcept { return st_expression;};
 
 private:
-	[[nodiscard]] static IValue* Evaluate(CFunction* const thisFunction, AbstractSyntaxTree* node);
-	[[nodiscard]] static IValue* EvaluateLeaf(CFunction* const thisFunction, AbstractSyntaxTree* node);
+	[[nodiscard]] static IValue* Evaluate(CFunction* const thisFunction, const AbstractSyntaxTree* node);
+	[[nodiscard]] static IValue* EvaluateLeaf(CFunction* const thisFunction, const AbstractSyntaxTree* node);
 	[[nodiscard]] static IValue* EvaluatePostfix(CFunction* const thisFunction, const OperatorASTNode* node);
 	[[nodiscard]] static IValue* EvaluateSequence(CFunction* const thisFunction, const AbstractSyntaxTree* node);
 
 	[[nodiscard]] static IValue* EvaluateSubscript(CFunction* const thisFunction, IValue* operand, const SubscriptASTNode* node);
 	[[nodiscard]] static IValue* EvaluateFunctionCall(CFunction* const thisFunction, IValue* operand, const FunctionCallASTNode* node);
+
+	[[nodiscard]] static VectorOf<IValue*> EvaluateList(CFunction* const thisFunction, const ExpressionList& list);
 
 	std::unique_ptr<AbstractSyntaxTree> m_pAST;
 
@@ -147,15 +157,6 @@ private:
 	std::unique_ptr<CRuntimeExpression> m_pCondition;
 };
 
-
-
-using RuntimeBlock = std::unique_ptr<IRuntimeStructure>;
-using RuntimeFunction = std::unique_ptr<CRuntimeFunction>;
-
-using FunctionArgument = RuntimeBlock;
-using FunctionArguments = VectorOf<FunctionArgument>;
-using ExpressionList = VectorOf<std::unique_ptr<AbstractSyntaxTree>>;
-
 class IRuntimeBlock
 {
 public:
@@ -174,6 +175,8 @@ public:
 	constexpr void AddFunction(RuntimeFunction&& func) { m_oFunctions.emplace_back(std::move(func)); }
 
 	[[nodiscard]] CRuntimeFunction* FindFunction(const std::string& v) const;
+	[[nodiscard]] size_t FindFunctionIndex(const std::string& v) const;
+
 private:
 	VectorOf<RuntimeFunction> m_oFunctions;
 };

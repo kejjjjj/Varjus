@@ -8,6 +8,7 @@
 using namespace std::string_literals;
 
 class CVariable;
+class CRuntimeFunction;
 
 inline std::string emptyString;
 
@@ -24,7 +25,8 @@ public:
 	[[nodiscard]] constexpr auto GetOwner() const noexcept { return m_pOwner; }
 	[[nodiscard]] constexpr auto HasOwner() const noexcept { return !!m_pOwner; }
 
-	void Release();
+	virtual void Release();
+
 	[[nodiscard]] std::string ToPrintableString() const;
 
 	[[nodiscard]] virtual std::string TypeAsString() const { return "undefined"s; }
@@ -47,6 +49,7 @@ public:
 	[[nodiscard]] std::int64_t& AsInt();
 	[[nodiscard]] double &AsDouble();
 	[[nodiscard]] std::string& AsString();
+	[[nodiscard]] CRuntimeFunction* AsCallable();
 
 	[[nodiscard]] virtual bool ToBoolean() const { return false; }
 	[[nodiscard]] virtual std::int64_t ToInt() const { return 0; }
@@ -54,6 +57,9 @@ public:
 	[[nodiscard]] virtual const std::string& ToString() const { return emptyString; }
 
 protected:
+	void ReleaseInternal();
+	void RemoveConstness() noexcept { m_bIsConst = false; }
+
 	CVariable* m_pOwner{ nullptr };
 	bool m_bIsConst{ false };
 };

@@ -10,6 +10,8 @@ public:
 
 	[[nodiscard]] IValue* Copy() const override;
 
+	void Release() override;
+
 	[[nodiscard]] bool ToBoolean() const override { return m_oValue; }
 	[[nodiscard]] std::int64_t ToInt() const override { return static_cast<std::int64_t>(m_oValue); }
 	[[nodiscard]] double ToDouble() const override { return static_cast<double>(m_oValue); }

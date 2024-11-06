@@ -5,6 +5,7 @@
 #include "integer.hpp"
 #include "double.hpp"
 #include "string.hpp"
+#include "callable.hpp"
 
 #define IVALUE_UNION \
 union { \
@@ -13,4 +14,5 @@ CBooleanValue* booleanValue; \
 CIntValue* intValue; \
 CDoubleValue* doubleValue; \
 CStringValue* stringValue; \
+CCallableValue* callableValue; \
 }

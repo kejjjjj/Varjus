@@ -12,6 +12,7 @@ using ASTNode = std::shared_ptr<AbstractSyntaxTree>;
 class CLinterOperand;
 class CLinterOperator;
 class IRuntimeStructure;
+class CRuntimeFunction;
 struct COperandBase;
 
 class AbstractSyntaxTree
@@ -87,9 +88,6 @@ public:
 	[[nodiscard]] constexpr bool IsFunction() const noexcept override { return true; }
 
 	std::size_t m_uIndex{};
-
-private:
-
 };
 class ConstantASTNode final : public AbstractSyntaxTree
 {

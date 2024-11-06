@@ -47,7 +47,7 @@ Success CPostfixLinter::ParsePostfix()
 
 bool CPostfixLinter::IsPostfixOperator(const CPunctuationToken& token) const noexcept
 {
-	return token.m_ePriority == op_postfix && token.m_ePunctuation == p_bracket_open;
+	return token.m_ePriority == op_postfix;
 }
 
 std::unique_ptr<CPostfixSubscript> CPostfixLinter::ParseSubscript()

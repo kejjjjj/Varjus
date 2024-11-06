@@ -4,25 +4,15 @@
 #include <format>
 #include <iostream>
 
+void IValue::ReleaseInternal()
+{
+	RemoveConstness();
+	SetOwner(nullptr);
+}
 void IValue::Release()
 {
-	m_bIsConst = false;
-
-	switch (Type()) {
-	case t_undefined:
-		return CProgramRuntime::FreeValue(this);
-	case t_boolean:
-		return CProgramRuntime::FreeValue<CBooleanValue>(dynamic_cast<CBooleanValue*>(this));
-	case t_int:
-		return CProgramRuntime::FreeValue<CIntValue>(dynamic_cast<CIntValue*>(this));
-	case t_double:
-		return CProgramRuntime::FreeValue<CDoubleValue>(dynamic_cast<CDoubleValue*>(this));
-	case t_string:
-		return CProgramRuntime::FreeValue<CStringValue>(dynamic_cast<CStringValue*>(this));
-	case t_callable:
-		assert(false);
-		break;
-	}
+	ReleaseInternal();
+	return CProgramRuntime::FreeValue(this);
 }
 IValue* IValue::Copy() const
 {
@@ -39,6 +29,10 @@ double& IValue::AsDouble() {
 }
 std::string& IValue::AsString(){
 	return dynamic_cast<CStringValue*>(this)->m_oValue;
+}
+CRuntimeFunction* IValue::AsCallable()
+{
+	return dynamic_cast<CCallableValue*>(this)->m_oValue;
 }
 std::string IValue::ToPrintableString() const
 {

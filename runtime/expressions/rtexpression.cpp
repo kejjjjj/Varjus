@@ -21,7 +21,7 @@ bool CRuntimeExpression::Execute([[maybe_unused]]CFunction* const thisFunction)
 
 	[[maybe_unused]] const auto result = Evaluate(thisFunction);
 	
-	if (!result->HasOwner())
+	if (result && !result->HasOwner())
 		result->Release();
 
 	//TODO: make sure that all objects from the pool get released
@@ -36,13 +36,13 @@ IValue* CRuntimeExpression::Evaluate(CFunction* const thisFunction)
 #pragma pack(push)
 #pragma warning(disable : 4061)
 #pragma warning(disable : 4062)
-IValue* CRuntimeExpression::Evaluate(CFunction* const thisFunction, AbstractSyntaxTree* node)
+IValue* CRuntimeExpression::Evaluate(CFunction* const thisFunction, const AbstractSyntaxTree* node)
 {
 
 	assert(node != nullptr);
 
 	if (node->IsPostfix()) 
-		return EvaluatePostfix(thisFunction, node->As<OperatorASTNode*>());
+		return EvaluatePostfix(thisFunction, node->As<const OperatorASTNode*>());
 	
 	if (node->IsSequence())
 		return EvaluateSequence(thisFunction, node);
@@ -80,11 +80,16 @@ IValue* CRuntimeExpression::Evaluate(CFunction* const thisFunction, AbstractSynt
 }
 #pragma pack(pop)
 
-IValue* CRuntimeExpression::EvaluateLeaf(CFunction* const thisFunction, AbstractSyntaxTree* node)
+IValue* CRuntimeExpression::EvaluateLeaf(CFunction* const thisFunction, const AbstractSyntaxTree* node)
 {
 	if (node->IsVariable()) {
 		const auto var = node->As<const VariableASTNode*>();
 		return thisFunction->GetVariableByIndex(var->m_uIndex)->GetValue();
+	}
+
+	if (node->IsFunction()) {
+		const auto var = node->As<const FunctionASTNode*>();
+		return CProgramRuntime::AcquireNewValue<CCallableValue>(CProgramRuntime::GetFunctionByIndex(var->m_uIndex));
 	}
 
 	if (node->IsConstant()) {

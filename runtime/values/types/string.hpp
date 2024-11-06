@@ -10,6 +10,8 @@ public:
 
 	[[nodiscard]] IValue* Copy() const override;
 
+	void Release() override;
+
 	[[nodiscard]] constexpr bool IsCoerceable() const noexcept override { return false; }
 	[[nodiscard]] constexpr bool IsArithmetic() const noexcept override { return false; }
 	[[nodiscard]] constexpr bool IsIndexable() const noexcept override { return true; }

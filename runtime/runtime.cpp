@@ -6,21 +6,24 @@
 #include <ranges>
 #include <iostream>
 
-CNonOwningObjectPool<CVariable>  CProgramRuntime::m_oVariablePool(100);
+#define VALUEPOOL_INIT_SIZE size_t(100)
 
-template<> COwningObjectPool<IValue>        CProgramRuntime::m_oValuePool<IValue>(100);
-template<> COwningObjectPool<CBooleanValue> CProgramRuntime::m_oValuePool<CBooleanValue>(100);
-template<> COwningObjectPool<CIntValue>     CProgramRuntime::m_oValuePool<CIntValue>(100);
-template<> COwningObjectPool<CDoubleValue>  CProgramRuntime::m_oValuePool<CDoubleValue>(100);
-template<> COwningObjectPool<CStringValue>  CProgramRuntime::m_oValuePool<CStringValue>(100);
+CNonOwningObjectPool<CVariable>             CProgramRuntime::m_oVariablePool             (VALUEPOOL_INIT_SIZE);
 
-CProgramRuntime::CProgramRuntime(CFileRuntimeData* const file) :
-	m_oFunctions(std::move(file->m_oFunctions))
+template<> COwningObjectPool<IValue>        CProgramRuntime::m_oValuePool<IValue>        (VALUEPOOL_INIT_SIZE);
+template<> COwningObjectPool<CBooleanValue> CProgramRuntime::m_oValuePool<CBooleanValue> (VALUEPOOL_INIT_SIZE);
+template<> COwningObjectPool<CIntValue>     CProgramRuntime::m_oValuePool<CIntValue>     (VALUEPOOL_INIT_SIZE);
+template<> COwningObjectPool<CDoubleValue>  CProgramRuntime::m_oValuePool<CDoubleValue>  (VALUEPOOL_INIT_SIZE);
+template<> COwningObjectPool<CStringValue>  CProgramRuntime::m_oValuePool<CStringValue>  (VALUEPOOL_INIT_SIZE);
+template<> COwningObjectPool<CCallableValue>CProgramRuntime::m_oValuePool<CCallableValue>(VALUEPOOL_INIT_SIZE);
+
+std::vector<RuntimeFunction> CProgramRuntime::m_oFunctions;
+
+CProgramRuntime::CProgramRuntime(CFileRuntimeData* const file)
 {
-
+	m_oFunctions = (std::move(file->m_oFunctions));
 }
-CProgramRuntime::~CProgramRuntime() = default;
-
+CProgramRuntime::~CProgramRuntime() { m_oFunctions.clear(); };
 
 void CProgramRuntime::Execute()
 {
@@ -40,9 +43,16 @@ void CProgramRuntime::Execute()
 	std::cout << std::format("boolean:   {}\n",   GetPool<CBooleanValue>().GetInUseCount());
 	std::cout << std::format("int:       {}\n",   GetPool<CIntValue>().GetInUseCount());
 	std::cout << std::format("double:    {}\n",   GetPool<CDoubleValue>().GetInUseCount());
-	std::cout << std::format("string:    {}\n\n", GetPool<CStringValue>().GetInUseCount());
+	std::cout << std::format("string:    {}\n", GetPool<CStringValue>().GetInUseCount());
+	std::cout << std::format("callable:  {}\n\n", GetPool<CCallableValue>().GetInUseCount());
 
 
 	return;
 
+}
+
+CRuntimeFunction* CProgramRuntime::GetFunctionByIndex(std::size_t index)
+{
+	assert(index < m_oFunctions.size());
+	return m_oFunctions[index].get();
 }

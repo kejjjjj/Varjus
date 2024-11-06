@@ -19,13 +19,18 @@ IValue* CRuntimeExpression::EvaluatePostfix(CFunction* const thisFunction, const
 {
 	auto operand = Evaluate(thisFunction, node->left.get());
 
-	if (node->IsSubscript()) 
-		return EvaluateSubscript(thisFunction, operand, node->As<const SubscriptASTNode*>());
-	
-	if(node->IsFunctionCall())
-		return EvaluateFunctionCall(thisFunction, operand, node->As<const FunctionCallASTNode*>());
+	IValue* returnVal{ nullptr };
 
-	return nullptr;
+	if (node->IsSubscript()) {
+		returnVal = EvaluateSubscript(thisFunction, operand, node->As<const SubscriptASTNode*>());
+	}else if (node->IsFunctionCall()) {
+		returnVal = EvaluateFunctionCall(thisFunction, operand, node->As<const FunctionCallASTNode*>());
+	}
+
+	if (!operand->HasOwner())
+		operand->Release();
+
+	return returnVal;
 }
 
 IValue* CRuntimeExpression::EvaluateSubscript(CFunction* const thisFunction, IValue* operand, const SubscriptASTNode* node)
@@ -42,18 +47,20 @@ IValue* CRuntimeExpression::EvaluateSubscript(CFunction* const thisFunction, IVa
 		accessor->Release();
 
 	auto index = operand->Index(accessor->ToInt());
-
 	index->MakeImmutable(); //cannot modify parts
-
-	if (!operand->HasOwner())
-		operand->Release();
 
 	return index;
 }
-IValue* CRuntimeExpression::EvaluateFunctionCall(
-	[[maybe_unused]]CFunction* const thisFunction, [[maybe_unused]] IValue* operand, [[maybe_unused]] const FunctionCallASTNode* node)
+IValue* CRuntimeExpression::EvaluateFunctionCall(CFunction* const thisFunction, IValue* operand, const FunctionCallASTNode* node)
 {
 
+	if (!operand->IsCallable())
+		throw CRuntimeError(std::format("a value of type \"{}\" is not callable", operand->TypeAsString()));
 
+	// the callee will take ownership of temp-value args
+	auto args = EvaluateList(thisFunction, node->m_oArguments);
+	auto& callable = dynamic_cast<CCallableValue*>(operand)->GetRawValue();
+
+	callable->Execute(thisFunction, args);
 	return nullptr;
 }

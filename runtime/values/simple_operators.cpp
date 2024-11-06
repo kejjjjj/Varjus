@@ -40,7 +40,7 @@ void OP_ASSIGNMENT(IValue* lhs, IValue* rhs)
 			variable->SetValue(CProgramRuntime::AcquireNewValue<CStringValue>(rhs->AsString()));
 			break;
 		case t_callable:
-			assert(false);
+			variable->SetValue(CProgramRuntime::AcquireNewValue<CCallableValue>(rhs->AsCallable()));
 			break;
 	}
 

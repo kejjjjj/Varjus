@@ -56,6 +56,9 @@ Success CLinterExpression::ParseExpression(std::optional<PairMatcher> m_oEndOfEx
 {
 	Success status = failure;
 
+	if(EndOfExpression(m_oEndOfExpression))
+		CLinterErrors::PushError("expected an expression", IsEndOfBuffer() ? (*std::prev(m_iterPos))->m_oSourcePosition : (*m_iterPos)->m_oSourcePosition);
+
 	if (!expression) {
 		m_pEvaluatedExpressions = std::make_unique<CExpressionList>();
 	}
@@ -169,5 +172,5 @@ std::string CLinterExpression::ToString() const noexcept
 }
 RuntimeBlock CLinterExpression::ToRuntimeObject() const
 {
-	return std::make_unique<CRuntimeExpression>(ToAST());
+	return std::make_unique<CRuntimeExpression>(ToMergedAST());
 }

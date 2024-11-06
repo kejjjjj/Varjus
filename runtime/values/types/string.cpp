@@ -7,7 +7,11 @@ IValue* CStringValue::Copy() const
 {
 	return CProgramRuntime::AcquireNewValue<CStringValue>(m_oValue);
 }
-
+void CStringValue::Release()
+{
+	ReleaseInternal();
+	CProgramRuntime::FreeValue<CStringValue>(this);
+}
 IValue* CStringValue::Index(std::int64_t index)
 {
 	if (index < 0 || static_cast<size_t>(index) >= m_oValue.length())

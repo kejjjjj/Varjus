@@ -137,3 +137,4 @@ std::size_t AbstractSyntaxTree::GetLeftBranchDepth() const noexcept
 ConstantASTNode::ConstantASTNode(const std::string& data, EValueType datatype)
 	: m_pConstant(data), m_eDataType(datatype) {}
 ConstantASTNode::~ConstantASTNode() = default;
+

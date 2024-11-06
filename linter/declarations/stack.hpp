@@ -24,13 +24,12 @@ enum EMemoryIdentifierType
 struct CMemoryIdentifier
 {
 	CMemoryIdentifier() = default;
-	CMemoryIdentifier(const CMemory* owner, const std::string& name, std::size_t index) 
-		: m_pOwner(owner), m_sName(name), m_uIndex(index) {}
+	CMemoryIdentifier(const std::string& name, std::size_t index) 
+		: m_sName(name), m_uIndex(index) {}
 	virtual ~CMemoryIdentifier() = default;
 
 	[[nodiscard]] virtual constexpr EMemoryIdentifierType Type() const noexcept = 0;
 
-	const CMemory* m_pOwner{};
 	std::string m_sName;
 	std::size_t m_uIndex{};
 };
@@ -39,15 +38,18 @@ struct CLinterVariable final : public CMemoryIdentifier
 {
 	CLinterVariable() = default;
 	CLinterVariable(const CMemory* owner, const std::string& name, std::size_t index) 
-		: CMemoryIdentifier(owner, name, index) {}
+		: CMemoryIdentifier(name, index), m_pOwner(owner) {}
 
 	[[nodiscard]] virtual constexpr EMemoryIdentifierType Type() const noexcept override { return mi_variable; }
+
+	const CMemory* m_pOwner{};
+
 };
 struct CLinterFunction final : public CMemoryIdentifier
 {
 	CLinterFunction() = default;
-	CLinterFunction(const CMemory* owner, const std::string& name, std::size_t index) 
-		: CMemoryIdentifier(owner, name, index) {}
+	CLinterFunction(const std::string& name, std::size_t index) 
+		: CMemoryIdentifier(name, index) {}
 
 	[[nodiscard]] virtual constexpr EMemoryIdentifierType Type() const noexcept override { return mi_function; }
 };
@@ -66,15 +68,18 @@ public:
 	[[nodiscard]] bool ContainsVariable(const std::string& name) const;
 	[[nodiscard]] std::size_t GetVariableCount() const noexcept;
 
-
 	[[maybe_unused]] CLinterFunction* DeclareFunction(const std::string& var);
 	[[nodiscard]] CLinterFunction* GetFunction(const std::string& var);
+	[[nodiscard]] std::size_t GetFunctionIndex(const std::string& var);
 	[[nodiscard]] bool ContainsFunction(const std::string& name) const;
+	[[nodiscard]] bool ContainsFunctionGlobally(const std::string& name) const;
+
 	[[nodiscard]] std::size_t GetFunctionCount() const noexcept;
 
 	[[nodiscard]] CStack* ToStack();
 	[[nodiscard]] auto ToStack() const;
 protected:
+
 	std::unordered_map<std::string, CLinterVariable> m_oVariables;
 	std::unordered_map<std::string, CLinterFunction> m_oFunctions;
 

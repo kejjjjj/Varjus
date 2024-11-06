@@ -32,6 +32,7 @@ public:
 
 	void Execute();
 
+	[[nodiscard]] static CRuntimeFunction* GetFunctionByIndex(std::size_t index);
 
 private:
 
@@ -69,5 +70,5 @@ public:
 
 private:
 	static CNonOwningObjectPool<CVariable> m_oVariablePool;
-	std::vector<RuntimeFunction> m_oFunctions;
+	static std::vector<RuntimeFunction> m_oFunctions;
 };

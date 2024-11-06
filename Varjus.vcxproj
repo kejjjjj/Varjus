@@ -182,6 +182,7 @@
     <ClCompile Include="linter\tokenizer.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="runtime\expressions\rtexpression.cpp" />
+    <ClCompile Include="runtime\expressions\rtlist.cpp" />
     <ClCompile Include="runtime\expressions\rtpostfix.cpp" />
     <ClCompile Include="runtime\functions\rtfunction.cpp" />
     <ClCompile Include="runtime\runtime.cpp" />
@@ -233,6 +234,7 @@
     <ClInclude Include="linter\tokenizer.hpp" />
     <ClInclude Include="runtime\exceptions\exception.hpp" />
     <ClInclude Include="runtime\expressions\rtexpression.hpp" />
+    <ClInclude Include="runtime\expressions\rtlist.hpp" />
     <ClInclude Include="runtime\expressions\rtpostfix.hpp" />
     <ClInclude Include="runtime\functions\rtfunction.hpp" />
     <ClInclude Include="runtime\pools\object_pool_non_owning.hpp" />

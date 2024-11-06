@@ -28,5 +28,5 @@ private:
 
 	WeakScope m_pScope;
 	CMemory* const m_pOwner;
-	CMemoryIdentifier* m_pIdentifier;
+	CMemoryIdentifier* m_pIdentifier{ nullptr };
 };
