@@ -72,6 +72,7 @@ class CPostfixFunctionCall final : public IPostfixBase
 {
 	NONCOPYABLE(CPostfixFunctionCall);
 public:
+	CPostfixFunctionCall();
 	CPostfixFunctionCall(ExpressionList&& args);
 	~CPostfixFunctionCall();
 

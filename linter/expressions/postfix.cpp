@@ -69,6 +69,13 @@ std::unique_ptr<CPostfixFunctionCall> CPostfixLinter::ParseFunctionCall()
 	assert((*m_iterPos)->IsOperator(p_par_open));
 
 	std::advance(m_iterPos, 1); // skip (
+	
+	//no args
+	if (!IsEndOfBuffer() && (*m_iterPos)->IsOperator(p_par_close)) {
+		std::advance(m_iterPos, 1); // skip )
+		return std::make_unique<CPostfixFunctionCall>();
+	}
+
 	CLinterExpression expr(m_iterPos, m_iterEnd, m_pScope, m_pOwner);
 
 	if (!expr.Parse(PairMatcher(p_par_open)))
@@ -93,6 +100,7 @@ std::unique_ptr<AbstractSyntaxTree> CPostfixSubscript::ToAST()
 /***********************************************************************
  > 
 ***********************************************************************/
+CPostfixFunctionCall::CPostfixFunctionCall() = default;
 CPostfixFunctionCall::CPostfixFunctionCall(ExpressionList&& args) 
 	:  m_pArgs(std::move(args)){}
 CPostfixFunctionCall::~CPostfixFunctionCall() = default;

@@ -12,7 +12,7 @@ void IValue::ReleaseInternal()
 void IValue::Release()
 {
 	ReleaseInternal();
-	return CProgramRuntime::FreeValue(this);
+	return CProgramRuntime::FreeValue<IValue>(this);
 }
 IValue* IValue::Copy() const
 {

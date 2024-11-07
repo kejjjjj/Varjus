@@ -9,11 +9,12 @@
 IValue* OP_ASSIGNMENT(IValue* lhs, IValue* rhs)
 {
 	auto variable = lhs->GetOwner();
-	if (!variable)
-		throw CRuntimeError("Left-handside must have a memory address");
 
 	if (lhs->IsImmutable())
 		throw CRuntimeError("Cannot assign to an immutable value");
+
+	if (!variable)
+		throw CRuntimeError("Left-handside must have a memory address");
 
 	if (lhs == rhs)
 		return lhs;
@@ -45,6 +46,10 @@ IValue* OP_ASSIGNMENT(IValue* lhs, IValue* rhs)
 	}
 
 	lhs->SetOwner(variable);
+
+	if (!lhs->GetOwner())
+		throw CRuntimeError("lhs lost owner");
+
 	return lhs;
 }
 

@@ -35,7 +35,7 @@ Success CReturnStatementLinter::Parse()
 		return failure;
 
 	// return;
-	if (!IsEndOfBuffer() && (*m_iterPos)->IsOperator(p_comma))
+	if (!IsEndOfBuffer() && (*m_iterPos)->IsOperator(p_semicolon))
 		return success;
 
 	m_pAST = ParseExpression();

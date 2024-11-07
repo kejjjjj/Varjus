@@ -39,12 +39,13 @@ private:
 	template <IValueChild T>
 	static COwningObjectPool<T> m_oValuePool;
 
+
+public:
+
 	template <IValueChild T>
 	static constexpr COwningObjectPool<T>& GetPool() {
 		return m_oValuePool<T>;
 	}
-
-public:
 
 	template <IValueChild T>
 	static constexpr T* AcquireNewValue() {

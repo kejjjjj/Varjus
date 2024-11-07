@@ -11,11 +11,11 @@ VectorOf<IValue*> CRuntimeExpression::EvaluateList(CFunction* const thisFunction
 
 		if (value->HasOwner()) {
 			args.emplace_back(value->Copy());
-			//value->Release();
 		}else {
-			args.emplace_back(value);
+			args.push_back(value);
 		}
 	}
+
 	return args;
 
 }
