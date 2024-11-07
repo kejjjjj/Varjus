@@ -42,7 +42,7 @@ Success CLinterOperand::ParseOperand()
 		std::advance(m_iterPos, 1);
 
 		CLinterExpression expr(m_iterPos, m_iterEnd, m_pScope, m_pOwner);		
-		if (expr.ParseExpression(PairMatcher(p_par_open))) {
+		if (expr.Parse(PairMatcher(p_par_open))) {
 			m_pOperand = std::make_unique<CASTOperand>(expr.ToMergedAST());
 		}
 

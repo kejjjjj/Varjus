@@ -18,7 +18,7 @@ CIfStatementLinter::CIfStatementLinter(LinterIterator& pos, LinterIterator& end,
 }
 CIfStatementLinter::~CIfStatementLinter() = default;
 
-Success CIfStatementLinter::ParseStatement()
+Success CIfStatementLinter::Parse()
 {
 
 	if (!ParseIdentifier(TokenType::tt_if))

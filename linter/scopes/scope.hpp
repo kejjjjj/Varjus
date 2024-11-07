@@ -14,7 +14,7 @@ class CScopeLinter final : public CLinterSingle<CToken>
 public:
 	explicit CScopeLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& s, CMemory* const owner);
 
-	[[maybe_unused]] Success ParseScope();
+	[[maybe_unused]] Success Parse();
 
 private:
 

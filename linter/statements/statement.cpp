@@ -48,7 +48,7 @@ std::unique_ptr<AbstractSyntaxTree> CStatementLinter::ParseExpression()
 
 	std::unique_ptr<AbstractSyntaxTree>&& temp = nullptr;
 
-	if (expr.ParseExpression(PairMatcher(p_par_open))) {
+	if (expr.Parse(PairMatcher(p_par_open))) {
 		temp = expr.ToMergedAST();
 	}
 
@@ -70,7 +70,7 @@ Success CStatementLinter::ParseScope()
 	}
 
 	auto scope = CScopeLinter(m_iterPos, m_iterEnd, m_pThisScope, m_pOwner);
-	if (!scope.ParseScope()) {
+	if (!scope.Parse()) {
 		return failure;
 	}
 

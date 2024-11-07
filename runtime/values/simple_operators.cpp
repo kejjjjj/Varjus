@@ -6,7 +6,7 @@
 #include "runtime/runtime.hpp"
 #include "runtime/exceptions/exception.hpp"
 
-void OP_ASSIGNMENT(IValue* lhs, IValue* rhs)
+IValue* OP_ASSIGNMENT(IValue* lhs, IValue* rhs)
 {
 	auto variable = lhs->GetOwner();
 	if (!variable)
@@ -16,7 +16,7 @@ void OP_ASSIGNMENT(IValue* lhs, IValue* rhs)
 		throw CRuntimeError("Cannot assign to an immutable value");
 
 	if (lhs == rhs)
-		return;
+		return lhs;
 
 	if (auto value = variable->GetValue()) {
 		value->SetOwner(nullptr);
@@ -45,6 +45,7 @@ void OP_ASSIGNMENT(IValue* lhs, IValue* rhs)
 	}
 
 	lhs->SetOwner(variable);
+	return lhs;
 }
 
 IValue* OP_ADDITION(IValue* _lhs, IValue* _rhs)

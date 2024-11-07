@@ -18,7 +18,7 @@ CFunctionLinter::CFunctionLinter(LinterIterator& pos, LinterIterator& end, const
 	assert(m_iterPos != m_iterEnd);
 }
 
-Success CFunctionLinter::ParseFunction()
+Success CFunctionLinter::Parse()
 {
 	m_pThisStack = std::make_unique<CStack>(m_pOwner->m_pFile);
 	
@@ -145,7 +145,7 @@ Success CFunctionLinter::ParseFunctionScope()
 	}
 
 	auto scope = CScopeLinter(m_iterPos, m_iterEnd, m_pThisScope, &*m_pThisStack);
-	if (!scope.ParseScope()) {
+	if (!scope.Parse()) {
 		return failure;
 	}
 

@@ -18,7 +18,7 @@ CWhileStatementLinter::CWhileStatementLinter(LinterIterator& pos, LinterIterator
 }
 CWhileStatementLinter::~CWhileStatementLinter() = default;
 
-Success CWhileStatementLinter::ParseStatement()
+Success CWhileStatementLinter::Parse()
 {
 
 	if (!ParseIdentifier(TokenType::tt_while))

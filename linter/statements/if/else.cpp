@@ -25,7 +25,7 @@ CElseStatementLinter::CElseStatementLinter(LinterIterator& pos, LinterIterator& 
 }
 CElseStatementLinter::~CElseStatementLinter() = default;
 
-Success CElseStatementLinter::ParseStatement()
+Success CElseStatementLinter::Parse()
 {
 	if (!IsInConditionalContext()) {
 		CLinterErrors::PushError("an else block must be after an if block", 
@@ -48,7 +48,7 @@ Success CElseStatementLinter::ParseStatement()
 
 		auto ifStatement = CIfStatementLinter(m_iterPos, m_iterEnd, m_pThisScope, m_pOwner);
 
-		if (!ifStatement.ParseStatement())
+		if (!ifStatement.Parse())
 			return failure;
 
 		//else if

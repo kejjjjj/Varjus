@@ -15,7 +15,7 @@ class CWhileStatementLinter final : public CStatementLinter, protected IRuntimeB
 public:
 	explicit CWhileStatementLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const owner);
 	~CWhileStatementLinter();
-	[[nodiscard]] Success ParseStatement();
+	[[nodiscard]] Success Parse();
 
 	[[nodiscard]] RuntimeBlock ToRuntimeObject() const override;
 

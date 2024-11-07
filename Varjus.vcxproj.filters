@@ -79,6 +79,12 @@
     <Filter Include="Source Files\runtime\exceptions">
       <UniqueIdentifier>{b59d97a6-c267-49e6-ac2e-093e8c20de79}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\linter\statements\return">
+      <UniqueIdentifier>{c07f49f6-21a3-4851-8bd7-11f304123930}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\runtime\statements\return">
+      <UniqueIdentifier>{a0aa3984-892f-49cb-97c3-a06cda6a320d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -209,6 +215,12 @@
     </ClCompile>
     <ClCompile Include="runtime\expressions\rtlist.cpp">
       <Filter>Source Files\runtime\expressions</Filter>
+    </ClCompile>
+    <ClCompile Include="linter\statements\return\return.cpp">
+      <Filter>Source Files\linter\statements\return</Filter>
+    </ClCompile>
+    <ClCompile Include="runtime\statements\return\rtreturn.cpp">
+      <Filter>Source Files\runtime\statements\return</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -370,6 +382,9 @@
     </ClInclude>
     <ClInclude Include="runtime\expressions\rtlist.hpp">
       <Filter>Source Files\runtime\expressions</Filter>
+    </ClInclude>
+    <ClInclude Include="linter\statements\return\return.hpp">
+      <Filter>Source Files\linter\statements\return</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

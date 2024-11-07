@@ -52,7 +52,7 @@ ExpressionList CExpressionList::ToExpressionList()
 
 	return list;
 }
-Success CLinterExpression::ParseExpression(std::optional<PairMatcher> m_oEndOfExpression, CExpressionList* expression)
+Success CLinterExpression::Parse(std::optional<PairMatcher> m_oEndOfExpression, CExpressionList* expression)
 {
 	Success status = failure;
 
@@ -112,7 +112,7 @@ Success CLinterExpression::ParseSequence(std::optional<PairMatcher>& m_oEndOfExp
 		auto nextExpr = CLinterExpression(m_iterPos, m_iterEnd, m_pScope, m_pOwner);
 
 		expression->m_pNext = std::make_unique<CExpressionList>();
-		if (!nextExpr.ParseExpression(m_oEndOfExpression, expression->m_pNext.get()))
+		if (!nextExpr.Parse(m_oEndOfExpression, expression->m_pNext.get()))
 			return failure;
 
 		//m_pNextExpression = nextExpr.ToAST();

@@ -23,7 +23,7 @@ CRuntimeFunction::CRuntimeFunction(CFunctionBlock& linterFunction) :
 }
 CRuntimeFunction::~CRuntimeFunction() = default;
 
-bool CRuntimeFunction::Execute([[maybe_unused]] CFunction* const thisFunction, VectorOf<IValue*>& args)
+IValue* CRuntimeFunction::Execute([[maybe_unused]] CFunction* const thisFunction, VectorOf<IValue*>& args)
 {
 	std::chrono::time_point<std::chrono::steady_clock> old = std::chrono::steady_clock::now();
 
@@ -33,11 +33,11 @@ bool CRuntimeFunction::Execute([[maybe_unused]] CFunction* const thisFunction, V
 	auto& variablePool = CProgramRuntime::m_oVariablePool;
 	auto func = CFunction(args, variablePool.Acquire(m_uNumVariables));
 
-	bool returnVal = false;
+	IValue* returnVal{ nullptr };
 
 	for (const auto& insn : m_oInstructions) {
-		if (insn->Execute(&func)) {
-			returnVal = true;
+		if (returnVal = insn->Execute(&func), returnVal) {
+			break;
 		}
 	}
 
@@ -51,7 +51,13 @@ bool CRuntimeFunction::Execute([[maybe_unused]] CFunction* const thisFunction, V
 
 	//printf("\ntime taken: %.6f\n", difference.count());
 
-	return returnVal;
+	if (returnVal) {
+		auto copy = returnVal->Copy();
+		returnVal->Release();
+		return copy;
+	}
+
+	return nullptr;
 }
 
 CFunction::CFunction(VectorOf<IValue*>& args, VectorOf<std::unique_ptr<CVariable>>&& variables) : m_oStack(std::move(variables))

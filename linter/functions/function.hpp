@@ -13,7 +13,7 @@ class CFunctionLinter final : public CLinterSingle<CToken>, protected IRuntimeBl
 public:
 	explicit CFunctionLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const owner);
 
-	[[nodiscard]] Success ParseFunction();
+	[[nodiscard]] Success Parse();
 	[[nodiscard]] Success ParseFunctionParameters();
 
 	[[nodiscard]] std::unique_ptr<CFunctionBlock> ToFunction() const;

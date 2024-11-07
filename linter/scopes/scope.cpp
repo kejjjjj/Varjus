@@ -17,7 +17,7 @@ CScopeLinter::CScopeLinter(LinterIterator& pos, LinterIterator& end, const WeakS
 	assert(!IsEndOfBuffer() && (*m_iterPos)->IsOperator(p_curlybracket_open));
 }
 
-Success CScopeLinter::ParseScope()
+Success CScopeLinter::Parse()
 {
 	assert(!IsEndOfBuffer() && (*m_iterPos)->IsOperator(p_curlybracket_open));
 	std::advance(m_iterPos, 1);
@@ -33,10 +33,6 @@ Success CScopeLinter::ParseScope()
 	if (IsEndOfBuffer())
 		return success;
 
-	//if(!(*m_iterPos)->IsOperator(p_curlybracket_close))
-	//	CLinterErrors::PushError("expected a \"}\"", (*m_iterPos)->m_oSourcePosition);
-
-	//std::advance(m_iterPos, 1);
 	return success;
 }
 CScope::CScope(CMemory* const owner) : m_pOwner(owner){}

@@ -14,7 +14,7 @@ class CIfStatementLinter final : public CStatementLinter, protected IRuntimeBloc
 public:
 	explicit CIfStatementLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const owner);
 	~CIfStatementLinter();
-	[[nodiscard]] Success ParseStatement();
+	[[nodiscard]] Success Parse();
 
 	[[nodiscard]] RuntimeBlock ToRuntimeObject() const override;
 	[[nodiscard]] std::unique_ptr<CRuntimeConditionalStatement> ToConditionalObject();

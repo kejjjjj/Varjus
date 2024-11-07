@@ -11,6 +11,7 @@
 #include "statements/while/while.hpp"
 #include "statements/if/if.hpp"
 #include "statements/if/else.hpp"
+#include "statements/return/return.hpp"
 
 #include <iostream>
 #include <cassert>
@@ -35,84 +36,40 @@ static Success AddInstruction(LinterIterator& pos, RuntimeBlock&& block, const W
 	return success;
 }
 
+template<typename Linter> Success Lint(LinterIterator& start, LinterIterator& end, const WeakScope& scope, CMemory* const memory)
+{
+
+	Linter linter(start, end, scope, memory);
+	if (!linter.Parse())
+		return failure;
+
+	return success;
+}
+
+template<typename Linter> 
+Success LintAddInstruction(LinterIterator& start, LinterIterator& end, const WeakScope& scope, CMemory* const memory)
+{
+
+	Linter linter(start, end, scope, memory);
+	if (!linter.Parse())
+		return failure;
+
+	return AddInstruction(start, linter.ToRuntimeObject(), scope);
+}
+
 Success CFileLinter::LintOperator(LinterIterator& start, LinterIterator& end, const WeakScope& scope, CMemory* const memory)
 {
-	assert(memory && memory->IsStack());
-
 	// a new scope
 	if ((*start)->IsOperator(p_curlybracket_open)) {
 		CScopeLinter scopeLinter(start, end, scope, memory);
-		scopeLinter.ParseScope();
+		scopeLinter.Parse();
 		return success;
 	}
 
 	// otherwise a normal expression
-	return LintExpression(start, end, scope, memory);
-}
-Success CFileLinter::LintExpression(LinterIterator& start, LinterIterator& end, const WeakScope& scope, CMemory* const memory)
-{
-	assert(memory && memory->IsStack());
-
-	CLinterExpression linter(start, end, scope, memory);
-	if (!linter.ParseExpression()) 
-		return failure;
-
-	return AddInstruction(start, linter.ToRuntimeObject(), scope);
+	return LintAddInstruction<CLinterExpression>(start, end, scope, memory);
 }
 
-Success CFileLinter::LintDeclaration(LinterIterator& start, LinterIterator& end, const WeakScope& scope, CMemory* const memory)
-{
-	assert(memory && memory->IsStack());
-
-	CVariableDeclarationLinter linter(start, end, scope, memory);
-	if (!linter.ParseDeclaration())
-		return failure;
-
-	return AddInstruction(start, linter.ToRuntimeObject(), scope);
-}
-Success CFileLinter::LintIfStatement(LinterIterator& start, LinterIterator& end, const WeakScope& scope, CMemory* const memory)
-{
-	assert(memory && memory->IsStack());
-
-	CIfStatementLinter linter(start, end, scope, memory);
-	if (!linter.ParseStatement())
-		return failure;
-
-	return AddInstruction(start, linter.ToRuntimeObject(), scope);
-}
-Success CFileLinter::LintElseStatement(LinterIterator& start, LinterIterator& end, const WeakScope& scope, CMemory* const memory)
-{
-	assert(memory && memory->IsStack());
-
-	CElseStatementLinter linter(start, end, scope, memory);
-	if (!linter.ParseStatement())
-		return failure;
-
-	//the parser already adds the instruction
-	return success;
-}
-
-Success CFileLinter::LintWhileStatement(LinterIterator& start, LinterIterator& end, const WeakScope& scope, CMemory* const memory)
-{
-	assert(memory && memory->IsStack());
-
-	CWhileStatementLinter linter(start, end, scope, memory);
-	if (!linter.ParseStatement())
-		return failure;
-
-	return AddInstruction(start, linter.ToRuntimeObject(), scope);
-}
-Success CFileLinter::LintFunction(LinterIterator& start, LinterIterator& end, const WeakScope& scope, CMemory* const memory)
-{
-	assert(memory && !memory->IsStack());
-
-	CFunctionLinter linter(start, end, scope, memory);
-	if (!linter.ParseFunction())
-		return failure;
-
-	return success;
-
-}
 Success CFileLinter::LintToken(LinterIterator& m_iterPos, LinterIterator& m_iterEnd, const WeakScope& scope, CMemory* const memory)
 {
 	if (m_iterPos == m_iterEnd)
@@ -120,24 +77,26 @@ Success CFileLinter::LintToken(LinterIterator& m_iterPos, LinterIterator& m_iter
 
 	switch ((*m_iterPos)->Type()) {
 	case tt_declaration:
-		return LintDeclaration(m_iterPos, m_iterEnd, scope, memory);
+		return LintAddInstruction<CVariableDeclarationLinter>(m_iterPos, m_iterEnd, scope, memory);
 	case tt_false:
 	case tt_true:
 	case tt_int:
 	case tt_double:
 	case tt_string:
 	case tt_name:
-		return LintExpression(m_iterPos, m_iterEnd, scope, memory);
+		return LintAddInstruction<CLinterExpression>(m_iterPos, m_iterEnd, scope, memory);
 	case tt_operator:
 		return LintOperator(m_iterPos, m_iterEnd, scope, memory);
 	case tt_fn:
-		return LintFunction(m_iterPos, m_iterEnd, scope, memory);
+		return LintAddInstruction<CFunctionLinter>(m_iterPos, m_iterEnd, scope, memory);
 	case tt_if:
-		return LintIfStatement(m_iterPos, m_iterEnd, scope, memory);
+		return LintAddInstruction<CIfStatementLinter>(m_iterPos, m_iterEnd, scope, memory);
 	case tt_else:
-		return LintElseStatement(m_iterPos, m_iterEnd, scope, memory);
+		return Lint<CElseStatementLinter>(m_iterPos, m_iterEnd, scope, memory);
 	case tt_while:
-		return LintWhileStatement(m_iterPos, m_iterEnd, scope, memory);
+		return LintAddInstruction<CWhileStatementLinter>(m_iterPos, m_iterEnd, scope, memory);
+	case tt_return:
+		return LintAddInstruction<CReturnStatementLinter>(m_iterPos, m_iterEnd, scope, memory);
 	case tt_error:
 	default:
 		CLinterErrors::PushError("Unexpected token", (*m_iterPos)->m_oSourcePosition);

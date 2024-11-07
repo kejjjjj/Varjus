@@ -176,6 +176,7 @@
     <ClCompile Include="linter\scopes\scope.cpp" />
     <ClCompile Include="linter\statements\if\else.cpp" />
     <ClCompile Include="linter\statements\if\if.cpp" />
+    <ClCompile Include="linter\statements\return\return.cpp" />
     <ClCompile Include="linter\statements\statement.cpp" />
     <ClCompile Include="linter\statements\while\while.cpp" />
     <ClCompile Include="linter\token.cpp" />
@@ -187,6 +188,7 @@
     <ClCompile Include="runtime\functions\rtfunction.cpp" />
     <ClCompile Include="runtime\runtime.cpp" />
     <ClCompile Include="runtime\statements\conditional\rtconditional.cpp" />
+    <ClCompile Include="runtime\statements\return\rtreturn.cpp" />
     <ClCompile Include="runtime\statements\while\rtwhile.cpp" />
     <ClCompile Include="runtime\structure.cpp" />
     <ClCompile Include="runtime\values\coercion.cpp" />
@@ -228,6 +230,7 @@
     <ClInclude Include="linter\scopes\scope.hpp" />
     <ClInclude Include="linter\statements\if\else.hpp" />
     <ClInclude Include="linter\statements\if\if.hpp" />
+    <ClInclude Include="linter\statements\return\return.hpp" />
     <ClInclude Include="linter\statements\statement.hpp" />
     <ClInclude Include="linter\statements\while\while.hpp" />
     <ClInclude Include="linter\token.hpp" />

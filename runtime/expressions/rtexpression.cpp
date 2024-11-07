@@ -16,7 +16,7 @@ CRuntimeExpression::CRuntimeExpression(std::unique_ptr<AbstractSyntaxTree>&& ast
 	m_pAST(std::move(ast)) {}
 CRuntimeExpression::~CRuntimeExpression() = default;
 
-bool CRuntimeExpression::Execute([[maybe_unused]]CFunction* const thisFunction)
+IValue* CRuntimeExpression::Execute([[maybe_unused]]CFunction* const thisFunction)
 {
 
 	[[maybe_unused]] const auto result = Evaluate(thisFunction);
@@ -26,7 +26,7 @@ bool CRuntimeExpression::Execute([[maybe_unused]]CFunction* const thisFunction)
 
 	//TODO: make sure that all objects from the pool get released
 
-	return false;
+	return nullptr;
 }
 IValue* CRuntimeExpression::Evaluate(CFunction* const thisFunction)
 {
@@ -60,8 +60,7 @@ IValue* CRuntimeExpression::Evaluate(CFunction* const thisFunction, const Abstra
 
 	switch (node->As<const OperatorASTNode*>()->m_ePunctuation) {
 	case p_assign:
-		result = lhs;
-		OP_ASSIGNMENT(lhs, rhs);
+		result = OP_ASSIGNMENT(lhs, rhs);
 		break;
 	case p_add:
 		result = OP_ADDITION(lhs, rhs);
@@ -89,7 +88,9 @@ IValue* CRuntimeExpression::EvaluateLeaf(CFunction* const thisFunction, const Ab
 
 	if (node->IsFunction()) {
 		const auto var = node->As<const FunctionASTNode*>();
-		return CProgramRuntime::AcquireNewValue<CCallableValue>(CProgramRuntime::GetFunctionByIndex(var->m_uIndex));
+		auto v = CProgramRuntime::AcquireNewValue<CCallableValue>(CProgramRuntime::GetFunctionByIndex(var->m_uIndex));
+		v->MakeImmutable();
+		return v;
 	}
 
 	if (node->IsConstant()) {

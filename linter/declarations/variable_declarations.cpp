@@ -17,7 +17,7 @@ CVariableDeclarationLinter::CVariableDeclarationLinter(LinterIterator& pos, Lint
 }
 CVariableDeclarationLinter::~CVariableDeclarationLinter() = default;
 
-Success CVariableDeclarationLinter::ParseDeclaration()
+Success CVariableDeclarationLinter::Parse()
 {
 	if (IsEndOfBuffer()) {
 		CLinterErrors::PushError("expected \"let\", but reached end of file", (*std::prev(m_iterPos))->m_oSourcePosition);
@@ -75,7 +75,7 @@ Success CVariableDeclarationLinter::ParseDeclaration()
 	std::advance(m_iterPos, -1);
 
 	CLinterExpression linter(m_iterPos, m_iterEnd, m_pScope, m_pOwner);
-	if (!linter.ParseExpression())
+	if (!linter.Parse())
 		return failure;
 
 	m_pInitializerAST = linter.ToMergedAST();

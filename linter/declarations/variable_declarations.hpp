@@ -17,7 +17,7 @@ public:
 	CVariableDeclarationLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack);
 	~CVariableDeclarationLinter();
 
-	[[nodiscard]] Success ParseDeclaration();
+	[[nodiscard]] Success Parse();
 
 	[[nodiscard]] bool IsGlobalVariable() const noexcept;
 

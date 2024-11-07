@@ -38,7 +38,7 @@ public:
 	explicit CLinterExpression(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack);
 	~CLinterExpression();
 
-	[[nodiscard]] Success ParseExpression(std::optional<PairMatcher> m_oEndOfExpression=std::nullopt, CExpressionList* expression=nullptr);
+	[[nodiscard]] Success Parse(std::optional<PairMatcher> m_oEndOfExpression=std::nullopt, CExpressionList* expression=nullptr);
 	[[nodiscard]] std::string ToString() const noexcept;
 
 	// merge all evaluated expressions into one

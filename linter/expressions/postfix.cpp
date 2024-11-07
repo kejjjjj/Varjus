@@ -57,7 +57,7 @@ std::unique_ptr<CPostfixSubscript> CPostfixLinter::ParseSubscript()
 	std::advance(m_iterPos, 1); // skip [
 	CLinterExpression expr(m_iterPos, m_iterEnd, m_pScope, m_pOwner);
 
-	if (!expr.ParseExpression(PairMatcher(p_bracket_open)))
+	if (!expr.Parse(PairMatcher(p_bracket_open)))
 		return nullptr;
 
 	return std::make_unique<CPostfixSubscript>(expr.ToMergedAST());
@@ -71,7 +71,7 @@ std::unique_ptr<CPostfixFunctionCall> CPostfixLinter::ParseFunctionCall()
 	std::advance(m_iterPos, 1); // skip (
 	CLinterExpression expr(m_iterPos, m_iterEnd, m_pScope, m_pOwner);
 
-	if (!expr.ParseExpression(PairMatcher(p_par_open)))
+	if (!expr.Parse(PairMatcher(p_par_open)))
 		return nullptr;
 
 	return std::make_unique<CPostfixFunctionCall>(expr.ToExpressionList());

@@ -20,13 +20,13 @@ CRuntimeConditionalStatement::~CRuntimeConditionalStatement() = default;
 
 
 
-bool IRuntimeStructureSequence::ExecuteBlock([[maybe_unused]] CFunction* const thisFunction)
+IValue* IRuntimeStructureSequence::ExecuteBlock([[maybe_unused]] CFunction* const thisFunction)
 {
 	for (auto& insn : m_oInstructions)
-		if (insn->Execute(thisFunction))
-			return true;
+		if (auto v = insn->Execute(thisFunction))
+			return v;
 
-	return false;
+	return nullptr;
 }
 
 CRuntimeFunction* CFileRuntimeData::FindFunction(const std::string& v) const

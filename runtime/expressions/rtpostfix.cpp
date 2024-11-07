@@ -61,6 +61,5 @@ IValue* CRuntimeExpression::EvaluateFunctionCall(CFunction* const thisFunction, 
 	auto args = EvaluateList(thisFunction, node->m_oArguments);
 	auto& callable = dynamic_cast<CCallableValue*>(operand)->GetRawValue();
 
-	callable->Execute(thisFunction, args);
-	return nullptr;
+	return callable->Execute(thisFunction, args);
 }

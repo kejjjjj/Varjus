@@ -15,6 +15,7 @@ enum EStructureType
 	st_expression,
 	st_conditional,
 	st_while,
+	st_return,
 };
 
 class CRuntimeFunction;
@@ -40,9 +41,9 @@ public:
 	virtual ~IRuntimeStructure();
 
 	[[nodiscard]] virtual constexpr EStructureType Type() const noexcept = 0;
-	[[nodiscard]] virtual bool Execute([[maybe_unused]] CFunction* const thisFunction) { return false; };
-	[[nodiscard]] virtual bool Execute(
-		[[maybe_unused]] CFunction* const thisFunction, [[maybe_unused]] VectorOf<IValue*>& args) { return false; };
+	[[nodiscard]] virtual IValue* Execute([[maybe_unused]] CFunction* const thisFunction) { return nullptr; };
+	[[nodiscard]] virtual IValue* Execute(
+		[[maybe_unused]] CFunction* const thisFunction, [[maybe_unused]] VectorOf<IValue*>& args) { return nullptr; };
 
 protected:
 };
@@ -65,7 +66,7 @@ public:
 	IRuntimeStructureSequence(InstructionSequence&& insns);
 	~IRuntimeStructureSequence();
 
-	[[nodiscard]] bool ExecuteBlock([[maybe_unused]] CFunction* const thisFunction);
+	[[nodiscard]] IValue* ExecuteBlock([[maybe_unused]] CFunction* const thisFunction);
 
 protected:
 	InstructionSequence m_oInstructions;
@@ -80,7 +81,7 @@ public:
 	~CRuntimeFunction();
 
 	[[nodiscard]] constexpr auto& GetName() const noexcept { return m_sName; }
-	[[maybe_unused]] bool Execute(CFunction* const thisFunction, VectorOf<IValue*>& args) override;
+	[[maybe_unused]] IValue* Execute(CFunction* const thisFunction, VectorOf<IValue*>& args) override;
 protected:
 
 	[[nodiscard]] constexpr EStructureType Type() const noexcept { return st_function; };
@@ -94,11 +95,13 @@ protected:
 class CRuntimeExpression final : public IRuntimeStructure
 {
 	NONCOPYABLE(CRuntimeExpression);
+	friend class CRuntimeReturnStatement;
+
 public:
 	CRuntimeExpression(std::unique_ptr<AbstractSyntaxTree>&& ast);
 	~CRuntimeExpression();
 
-	[[maybe_unused]] bool Execute(CFunction* const thisFunction) override;
+	[[maybe_unused]] IValue* Execute(CFunction* const thisFunction) override;
 	[[nodiscard]] IValue* Evaluate(CFunction* const thisFunction);
 
 protected:
@@ -127,7 +130,7 @@ public:
 	CRuntimeConditionalStatement(std::unique_ptr<AbstractSyntaxTree>&& condition, InstructionSequence&& insns);
 	~CRuntimeConditionalStatement();
 
-	[[maybe_unused]] bool Execute(CFunction* const thisFunction) override;
+	[[maybe_unused]] IValue* Execute(CFunction* const thisFunction) override;
 
 protected:
 	[[nodiscard]] constexpr EStructureType Type() const noexcept { return st_conditional; };
@@ -148,7 +151,7 @@ public:
 	CRuntimeWhileStatement(std::unique_ptr<AbstractSyntaxTree>&& condition, InstructionSequence&& insns);
 	~CRuntimeWhileStatement();
 
-	[[maybe_unused]] bool Execute(CFunction* const thisFunction) override;
+	[[maybe_unused]] IValue* Execute(CFunction* const thisFunction) override;
 
 protected:
 	[[nodiscard]] constexpr EStructureType Type() const noexcept { return st_while; };
@@ -156,7 +159,21 @@ protected:
 private:
 	std::unique_ptr<CRuntimeExpression> m_pCondition;
 };
+class CRuntimeReturnStatement final : public IRuntimeStructure
+{
+	NONCOPYABLE(CRuntimeReturnStatement);
+public:
+	CRuntimeReturnStatement(std::unique_ptr<AbstractSyntaxTree>&& condition);
+	~CRuntimeReturnStatement();
 
+	[[maybe_unused]] IValue* Execute(CFunction* const thisFunction) override;
+
+protected:
+	[[nodiscard]] constexpr EStructureType Type() const noexcept { return st_return; };
+
+private:
+	std::unique_ptr<AbstractSyntaxTree> m_pAST;
+};
 class IRuntimeBlock
 {
 public:

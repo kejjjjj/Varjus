@@ -16,7 +16,7 @@ CRuntimeWhileStatement::CRuntimeWhileStatement(std::unique_ptr<AbstractSyntaxTre
 CRuntimeWhileStatement::~CRuntimeWhileStatement() = default;
 
 
-bool CRuntimeWhileStatement::Execute([[maybe_unused]] CFunction* const thisFunction)
+IValue* CRuntimeWhileStatement::Execute([[maybe_unused]] CFunction* const thisFunction)
 {
 
 	while (true) {
@@ -30,9 +30,9 @@ bool CRuntimeWhileStatement::Execute([[maybe_unused]] CFunction* const thisFunct
 			break;
 		}
 
-		if (ExecuteBlock(thisFunction))
-			return true;
+		if (auto v = ExecuteBlock(thisFunction))
+			return v;
 	}
 
-	return false;
+	return nullptr;
 }

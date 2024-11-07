@@ -15,7 +15,7 @@ public:
 	explicit CElseStatementLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const owner);
 	~CElseStatementLinter();
 
-	[[nodiscard]] Success ParseStatement();
+	[[nodiscard]] Success Parse();
 	[[nodiscard]] bool IsInConditionalContext() const;
 
 	[[nodiscard]] RuntimeBlock ToRuntimeObject() const override;
