@@ -9,6 +9,9 @@
 #include "globalEnums.hpp"
 
 #include <cassert>
+#include <ranges>
+#include <algorithm>
+
 CPostfixLinter::CPostfixLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack) 
 	: CVectorLinter(pos, end), m_pScope(scope), m_pOwner(stack)
 {
@@ -25,7 +28,7 @@ Success CPostfixLinter::ParsePostfix()
 		const auto& asPunctuation = dynamic_cast<CPunctuationToken&>(**m_iterPos);
 
 		if (!IsPostfixOperator(asPunctuation))
-			return success;
+			break;
 
 		switch (asPunctuation.m_ePunctuation) {
 		case p_bracket_open:
@@ -41,6 +44,7 @@ Success CPostfixLinter::ParsePostfix()
 		m_oTokens.emplace_back(&asPunctuation);
 	}
 
+	std::reverse(m_oPostfixes.begin(), m_oPostfixes.end());
 	return success;
 }
 #pragma pack(pop)

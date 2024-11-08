@@ -96,7 +96,11 @@ std::unique_ptr<AbstractSyntaxTree> CLinterOperand::ExpressionToAST() const noex
 [[nodiscard]] std::unique_ptr<AbstractSyntaxTree> CLinterOperand::ToAST()
 {
 	if (auto pfs = PostfixesToAST()) {
-		pfs->left = OperandToAST();
+		auto end = pfs.get();
+		while (end->left)
+			end = pfs->left.get();
+
+		end->left = OperandToAST();
 		return pfs;
 	}
 
