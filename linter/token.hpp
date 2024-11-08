@@ -6,6 +6,7 @@
 enum TokenType : signed char
 {
 	tt_error,
+	tt_undefined,
 	tt_false,
 	tt_true,
 	tt_int,

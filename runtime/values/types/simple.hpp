@@ -78,5 +78,5 @@ public:
 	void SetRawValue(const Value&v) noexcept { m_oValue = v; }
 
 protected:
-	Value m_oValue;
+	Value m_oValue{};
 };

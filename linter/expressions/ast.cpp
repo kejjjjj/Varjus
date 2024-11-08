@@ -36,7 +36,7 @@ std::unique_ptr<AbstractSyntaxTree> AbstractSyntaxTree::GetLeaf(VectorOf<CLinter
 	if (operands.size() == 1u) {
 		assert(operators.empty());
 		node = operands.front()->ToAST();
-		operands.clear();
+		operands.clear(); 
 	}
 	
 	return node;

@@ -22,7 +22,7 @@ Success CIdentifierLinter::ParseIdentifier()
 	auto iterPos = GetIteratorSafe();
 
 	if (IsEndOfBuffer() || !CheckIdentifier(iterPos)) {
-		CLinterErrors::PushError("Expected identifier, but found " + iterPos->Source(), iterPos->m_oSourcePosition);
+		CLinterErrors::PushError("expected an identifier, but found: " + iterPos->Source(), iterPos->m_oSourcePosition);
 		return failure;
 	}
 
@@ -60,7 +60,7 @@ Success CIdentifierLinter::ParseIdentifier()
 bool CIdentifierLinter::IsImmediate() const noexcept
 {
 	auto type = m_pToken->Type();
-	return type >= TokenType::tt_false && type <= TokenType::tt_string;
+	return IS_IMMEDIATE(type);
 }
 #pragma pack(push)
 #pragma warning(disable : 4061)
@@ -70,6 +70,8 @@ EValueType CIdentifierLinter::GetImmediateType() const noexcept
 	assert(IsImmediate());
 
 	switch (m_pToken->Type()) {
+	case TokenType::tt_undefined:
+		return EValueType::t_undefined;
 	case TokenType::tt_false:
 	case TokenType::tt_true:
 		return EValueType::t_boolean;
@@ -91,6 +93,8 @@ std::size_t CIdentifierLinter::GetImmediateSize() const noexcept
 	auto type = GetImmediateType();
 
 	switch (type) {
+	case t_undefined:
+		return std::size_t(0);
 	case t_boolean:
 		return sizeof(bool);
 	case t_int:
@@ -113,6 +117,8 @@ std::string CIdentifierLinter::ToData() const noexcept
 	auto& string = m_pToken->Source();
 	
 	switch (GetImmediateType()) {
+	case t_undefined:
+		return "";
 	case t_boolean:
 		return std::string(1, m_pToken->Type() == TokenType::tt_true ? '\x01' : '\x00');
 	
@@ -136,5 +142,5 @@ bool CIdentifierLinter::CheckIdentifier(const CToken* token) const noexcept
 {
 	assert(token != nullptr);
 	const auto type = token->Type();
-	return type >= TokenType::tt_false && type <= TokenType::tt_name;
+	return type == TokenType::tt_name || IS_IMMEDIATE(type);
 }

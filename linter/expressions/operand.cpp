@@ -135,7 +135,7 @@ bool CLinterOperand::IsImmediate() const noexcept
 		return false;
 
 	const auto type = m_pOperand->GetIdentifier()->GetToken()->Type();
-	return type >= tt_false && type <= tt_string;
+	return IS_IMMEDIATE(type);
 }
 bool CLinterOperand::IsVariable() const noexcept
 {
