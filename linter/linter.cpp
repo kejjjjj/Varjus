@@ -62,8 +62,7 @@ Success CFileLinter::LintOperator(LinterIterator& start, LinterIterator& end, co
 	// a new scope
 	if ((*start)->IsOperator(p_curlybracket_open)) {
 		CScopeLinter scopeLinter(start, end, scope, memory);
-		scopeLinter.Parse();
-		return success;
+		return scopeLinter.Parse();
 	}
 
 	// otherwise a normal expression
@@ -99,7 +98,7 @@ Success CFileLinter::LintToken(LinterIterator& m_iterPos, LinterIterator& m_iter
 		return LintAddInstruction<CReturnStatementLinter>(m_iterPos, m_iterEnd, scope, memory);
 	case tt_error:
 	default:
-		CLinterErrors::PushError("Unexpected token", (*m_iterPos)->m_oSourcePosition);
+		CLinterErrors::PushError("unexpected token: " + (*m_iterPos)->Source(), (*m_iterPos)->m_oSourcePosition);
 		return failure;
 	}
 
@@ -115,7 +114,7 @@ Success CFileLinter::ParseFile()
 		if (!LintToken(m_iterPos, m_iterEnd, globalScope, &globalMemory))
 			break;
 
-		if (m_iterPos == m_iterEnd)
+		if (IsEndOfBuffer())
 			break;
 
 		std::advance(m_iterPos, 1);

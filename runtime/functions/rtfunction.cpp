@@ -52,13 +52,19 @@ IValue* CRuntimeFunction::Execute([[maybe_unused]] CFunction* const thisFunction
 	std::chrono::time_point<std::chrono::steady_clock> now = std::chrono::steady_clock::now();
 	std::chrono::duration<float> difference = now - old;
 
-	std::ranges::for_each(func.m_oStack, [&variablePool](std::unique_ptr<CVariable>& v) {
-		auto value = v->GetValue();
-		std::cout << value->ToPrintableString() << '\n';
-		assert(value->HasOwner());
-		value->Release();
+	std::ranges::for_each(func.m_oStack, [&thisFunction, &variablePool](std::unique_ptr<CVariable>& v) {
+		
+		auto& value = v->GetValue();
 
-		variablePool.Release(std::move(v)); });
+		if(!thisFunction)
+			std::cout << value->ToPrintableString() << '\n';
+
+		assert(value->HasOwner());
+		value->Release();		
+		value = nullptr;
+		variablePool.Release(std::move(v)); 
+
+	});
 
 	//printf("\ntime taken: %.6f\n", difference.count());
 	return copy;
@@ -67,8 +73,11 @@ IValue* CRuntimeFunction::Execute([[maybe_unused]] CFunction* const thisFunction
 CFunction::CFunction(VectorOf<IValue*>& args, VectorOf<std::unique_ptr<CVariable>>&& variables) : m_oStack(std::move(variables))
 {
 
-	for (auto i = size_t(0); i < args.size(); i++)
+	for (auto i = size_t(0); i < args.size(); i++) {
+		
+		assert(m_oStack[i]->GetValue() == nullptr);
 		m_oStack[i]->SetValue(args[i]);
+	}
 
 	for (auto& v : m_oStack | std::views::drop(args.size()))
 		v->SetValue(CProgramRuntime::AcquireNewValue<IValue>());

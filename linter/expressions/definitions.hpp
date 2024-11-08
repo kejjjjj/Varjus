@@ -38,7 +38,9 @@ public:
 	explicit CLinter(LinterIterator& pos, LinterIterator& end) : m_iterPos(pos), m_iterEnd(end){}
 	virtual ~CLinter() = default;
 
-	[[nodiscard]] bool IsEndOfBuffer() const noexcept { return m_iterPos == m_iterEnd; }
+	[[nodiscard]] constexpr bool IsEndOfBuffer() const noexcept { return m_iterPos == m_iterEnd; }
+
+	[[nodiscard]] constexpr auto GetIteratorSafe() { return IsEndOfBuffer() ? *std::prev(m_iterPos) : *m_iterPos; }
 
 protected:
 	LinterIterator& m_iterPos;

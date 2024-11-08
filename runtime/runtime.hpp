@@ -47,15 +47,29 @@ public:
 		return m_oValuePool<T>;
 	}
 
+	static size_t GetPoolUseCount() {
+		return 
+			GetPool<IValue>().GetInUseCount()
+			+ GetPool<CBooleanValue>().GetInUseCount()
+			+ GetPool<CIntValue>().GetInUseCount()
+			+ GetPool<CDoubleValue>().GetInUseCount()
+			+ GetPool<CStringValue>().GetInUseCount()
+			+ GetPool<CCallableValue>().GetInUseCount();
+
+	}
+
 	template <IValueChild T>
 	static constexpr T* AcquireNewValue() {
-		return GetPool<T>().Acquire();
+		auto result = GetPool<T>().Acquire();
+		result->SetOwner(nullptr);
+		return result;
 	}
 
 	template <IValueChild T, typename Ctor>
 	static constexpr T* AcquireNewValue(const Ctor& ctor) {
 		auto v = GetPool<T>().Acquire();
-		
+		v->SetOwner(nullptr);
+
 		if constexpr (std::is_same_v<IValue, T>)
 			return v;
 		else {

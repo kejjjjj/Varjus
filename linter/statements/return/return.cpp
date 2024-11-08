@@ -23,11 +23,11 @@ Success CReturnStatementLinter::Parse()
 
 	if (const auto scope = m_pScope.lock()) {
 		if (scope->IsGlobalScope()) {
-			CLinterErrors::PushError("cannot return in the global scope", IsEndOfBuffer() ? (*std::prev(m_iterPos))->m_oSourcePosition : (*m_iterPos)->m_oSourcePosition);
+			CLinterErrors::PushError("cannot return in the global scope", GetIteratorSafe()->m_oSourcePosition);
 			return failure;
 		}
 	} else {
-		CLinterErrors::PushError("!(const auto scope = m_pScope.lock())", IsEndOfBuffer() ? (*std::prev(m_iterPos))->m_oSourcePosition : (*m_iterPos)->m_oSourcePosition);
+		CLinterErrors::PushError("!(const auto scope = m_pScope.lock())", GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 
@@ -57,5 +57,5 @@ RuntimeBlock CReturnStatementLinter::ToRuntimeObject() const
 {
 
 	decltype(auto) tempAST = const_cast<std::unique_ptr<AbstractSyntaxTree>&&>(std::move(m_pAST));
-	return tempAST ? std::make_unique<CRuntimeReturnStatement>(std::move(tempAST)) : nullptr;
+	return std::make_unique<CRuntimeReturnStatement>(std::move(tempAST));
 }

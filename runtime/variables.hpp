@@ -16,7 +16,7 @@ public:
 	~CVariable();
 
 	void SetValue(IValue* v);
-	[[nodiscard]] auto GetValue() const noexcept { return m_pValue; }
+	[[nodiscard]] auto& GetValue() noexcept { return m_pValue; }
 
 protected:
 	IValue* m_pValue{};

@@ -57,7 +57,7 @@ Success CLinterExpression::Parse(std::optional<PairMatcher> m_oEndOfExpression, 
 	Success status = failure;
 
 	if(EndOfExpression(m_oEndOfExpression))
-		CLinterErrors::PushError("expected an expression", IsEndOfBuffer() ? (*std::prev(m_iterPos))->m_oSourcePosition : (*m_iterPos)->m_oSourcePosition);
+		CLinterErrors::PushError("expected an expression", GetIteratorSafe()->m_oSourcePosition);
 
 	if (!expression) {
 		m_pEvaluatedExpressions = std::make_unique<CExpressionList>();
@@ -84,7 +84,7 @@ Success CLinterExpression::Parse(std::optional<PairMatcher> m_oEndOfExpression, 
 	} while (status == success);
 
 	if (m_oSubExpressions.empty()) {
-		CLinterErrors::PushError("expected an expression", IsEndOfBuffer() ? (*std::prev(m_iterPos))->m_oSourcePosition : (*m_iterPos)->m_oSourcePosition);
+		CLinterErrors::PushError("expected an expression", GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 

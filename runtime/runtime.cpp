@@ -35,7 +35,8 @@ void CProgramRuntime::Execute()
 	}
 
 	std::vector<IValue*> args;
-	if ((*iMainFunction)->Execute(nullptr, args)) {
+	if (auto v = (*iMainFunction)->Execute(nullptr, args)) {
+		v->Release();
 	}
 
 	std::cout << "\n\n--------------LEAKS--------------\n\n";

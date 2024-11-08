@@ -53,7 +53,7 @@ Success CFunctionLinter::ParseFunctionDeclaration()
 {
 
 	if (IsEndOfBuffer() || !IsFn((*m_iterPos))) {
-		CLinterErrors::PushError("expected \"fn\"", IsEndOfBuffer() ? (*std::prev(m_iterPos))->m_oSourcePosition : (*m_iterPos)->m_oSourcePosition);
+		CLinterErrors::PushError("expected \"fn\"", GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 
@@ -70,7 +70,7 @@ Success CFunctionLinter::ParseFunctionDeclaration()
 	std::advance(m_iterPos, 1); //skip fn
 
 	if (IsEndOfBuffer() || !IsIdentifier((*m_iterPos))) {
-		CLinterErrors::PushError("expected an identifier", IsEndOfBuffer() ? (*std::prev(m_iterPos))->m_oSourcePosition : (*m_iterPos)->m_oSourcePosition);
+		CLinterErrors::PushError("expected an identifier", GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 
@@ -86,7 +86,7 @@ Success CFunctionLinter::ParseFunctionDeclaration()
 Success CFunctionLinter::ParseFunctionParameters()
 {
 	if (IsEndOfBuffer() || !(*m_iterPos)->IsOperator(p_par_open)) {
-		CLinterErrors::PushError("expected a \"(\"", IsEndOfBuffer() ? (*std::prev(m_iterPos))->m_oSourcePosition : (*m_iterPos)->m_oSourcePosition);
+		CLinterErrors::PushError("expected a \"(\"", GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 	std::advance(m_iterPos, 1); //skip (
@@ -107,7 +107,7 @@ Success CFunctionLinter::ParseFunctionParameters()
 Success CFunctionLinter::ParseFunctionParametersRecursively()
 {
 	if (IsEndOfBuffer() || !IsIdentifier((*m_iterPos))) {
-		CLinterErrors::PushError("expected an identifier", IsEndOfBuffer() ? (*std::prev(m_iterPos))->m_oSourcePosition : (*m_iterPos)->m_oSourcePosition);
+		CLinterErrors::PushError("expected an identifier", GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 	
@@ -122,7 +122,7 @@ Success CFunctionLinter::ParseFunctionParametersRecursively()
 	std::advance(m_iterPos, 1); //skip identifier
 
 	if (IsEndOfBuffer()) {
-		CLinterErrors::PushError("expected \",\" or \")\"", IsEndOfBuffer() ? (*std::prev(m_iterPos))->m_oSourcePosition : (*m_iterPos)->m_oSourcePosition);
+		CLinterErrors::PushError("expected \",\" or \")\"", GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 
@@ -133,14 +133,14 @@ Success CFunctionLinter::ParseFunctionParametersRecursively()
 		return success;
 	}
 
-	CLinterErrors::PushError("expected \",\" or \")\"", IsEndOfBuffer() ? (*std::prev(m_iterPos))->m_oSourcePosition : (*m_iterPos)->m_oSourcePosition);
+	CLinterErrors::PushError("expected \",\" or \")\"", GetIteratorSafe()->m_oSourcePosition);
 	return failure;
 }
 
 Success CFunctionLinter::ParseFunctionScope()
 {
 	if (IsEndOfBuffer() || !(*m_iterPos)->IsOperator(p_curlybracket_open)) {
-		CLinterErrors::PushError("expected a \"{\"", IsEndOfBuffer() ? (*std::prev(m_iterPos))->m_oSourcePosition : (*m_iterPos)->m_oSourcePosition);
+		CLinterErrors::PushError("expected a \"{\"", GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 

@@ -18,7 +18,7 @@ CElseStatementLinter::CElseStatementLinter(LinterIterator& pos, LinterIterator& 
 	if (const auto oldScope = m_pScope.lock()) {
 		m_pPreviousBlock = dynamic_cast<CRuntimeConditionalStatement*>(oldScope->GetLatestInstruction());
 	} else {
-		CLinterErrors::PushError("const auto oldScope = m_pScope.lock()", IsEndOfBuffer() ? (*std::prev(m_iterPos))->m_oSourcePosition : (*m_iterPos)->m_oSourcePosition);
+		CLinterErrors::PushError("const auto oldScope = m_pScope.lock()", GetIteratorSafe()->m_oSourcePosition);
 	}
 
 	assert(m_iterPos != m_iterEnd);
@@ -29,7 +29,7 @@ Success CElseStatementLinter::Parse()
 {
 	if (!IsInConditionalContext()) {
 		CLinterErrors::PushError("an else block must be after an if block", 
-			IsEndOfBuffer() ? (*std::prev(m_iterPos))->m_oSourcePosition : (*m_iterPos)->m_oSourcePosition);
+			GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 
@@ -37,7 +37,7 @@ Success CElseStatementLinter::Parse()
 		return failure;
 
 	if (IsEndOfBuffer()) {
-		CLinterErrors::PushError("expected a \"{\" or an expression", IsEndOfBuffer() ? (*std::prev(m_iterPos))->m_oSourcePosition : (*m_iterPos)->m_oSourcePosition);
+		CLinterErrors::PushError("expected a \"{\" or an expression", GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 

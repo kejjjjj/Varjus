@@ -26,7 +26,7 @@ CStatementLinter::CStatementLinter(LinterIterator& pos, LinterIterator& end, con
 Success CStatementLinter::ParseIdentifier(TokenType tt)
 {
 	if (IsEndOfBuffer() || (*m_iterPos)->Type() != tt) {
-		CLinterErrors::PushError("expected a statement", IsEndOfBuffer() ? (*std::prev(m_iterPos))->m_oSourcePosition : (*m_iterPos)->m_oSourcePosition);
+		CLinterErrors::PushError("expected a statement", GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 
@@ -38,7 +38,7 @@ Success CStatementLinter::ParseIdentifier(TokenType tt)
 std::unique_ptr<AbstractSyntaxTree> CStatementLinter::ParseExpression()
 {
 	if (IsEndOfBuffer() || !(*m_iterPos)->IsOperator(p_par_open)) {
-		CLinterErrors::PushError("expected a \"(\"", IsEndOfBuffer() ? (*std::prev(m_iterPos))->m_oSourcePosition : (*m_iterPos)->m_oSourcePosition);
+		CLinterErrors::PushError("expected a \"(\"", GetIteratorSafe()->m_oSourcePosition);
 		return nullptr;
 	}
 

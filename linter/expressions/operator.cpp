@@ -24,14 +24,8 @@ CLinterOperatorParser::~CLinterOperatorParser() = default;
 Success CLinterOperatorParser::ParseOperator()
 {
 
-	if (m_iterPos == m_iterEnd){
-		CLinterErrors::PushError("Expected operator, but reached end of file", (*std::prev(m_iterPos))->m_oSourcePosition);
-		return failure;
-	}
-
-
-	if (!CheckOperator()) {
-		CLinterErrors::PushError("Expected operator, but found " + (*m_iterPos)->Source(), (*m_iterPos)->m_oSourcePosition);
+	if (IsEndOfBuffer() || !CheckOperator()) {
+		CLinterErrors::PushError("unexpected end of expression: " + (*m_iterPos)->Source(), GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 
@@ -42,7 +36,7 @@ Success CLinterOperatorParser::ParseOperator()
 		return failure;
 
 	if (!IsOperator(asPunctuation)) {
-		CLinterErrors::PushError("Expected operator, but found " + iterPos->Source(), iterPos->m_oSourcePosition);
+		CLinterErrors::PushError("unexpected end of expression: " + iterPos->Source(), GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 

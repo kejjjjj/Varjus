@@ -19,19 +19,14 @@ CIdentifierLinter::~CIdentifierLinter() = default;
 
 Success CIdentifierLinter::ParseIdentifier()
 {
-	if (m_iterPos == m_iterEnd) {
-		CLinterErrors::PushError("Expected identifier, but reached end of file", (*std::prev(m_iterPos))->m_oSourcePosition);
-		return failure;
-	}
+	auto iterPos = GetIteratorSafe();
 
-	auto& iterPos = *m_iterPos;
-
-	if (!CheckIdentifier(iterPos)) {
+	if (IsEndOfBuffer() || !CheckIdentifier(iterPos)) {
 		CLinterErrors::PushError("Expected identifier, but found " + iterPos->Source(), iterPos->m_oSourcePosition);
 		return failure;
 	}
 
-	m_pToken = &*iterPos;
+	m_pToken = iterPos;
 
 	if (m_pToken->Type() == TokenType::tt_name){
 		if (const auto scope = m_pScope.lock()) {

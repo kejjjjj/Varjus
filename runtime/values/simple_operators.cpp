@@ -19,10 +19,10 @@ IValue* OP_ASSIGNMENT(IValue* lhs, IValue* rhs)
 	if (lhs == rhs)
 		return lhs;
 
-	if (auto value = variable->GetValue()) {
-		value->SetOwner(nullptr);
-		value->Release();
-	}
+	//if (auto value = variable->GetValue()) {
+	//	value->SetOwner(nullptr);
+	//	value->Release();
+	//}
 
 	switch (rhs->Type()) {
 		case t_undefined:

@@ -20,7 +20,7 @@ public:
 
 private:
     std::string GetStringFormatted() const noexcept {
-        return std::format("Error: {}\nAt: {}:{}\n", m_oErrorMessage, std::get<0>(m_oSourcePosition), std::get<1>(m_oSourcePosition));
+        return std::format("Error: {}\nAt: {}:{}", m_oErrorMessage, std::get<0>(m_oSourcePosition), std::get<1>(m_oSourcePosition));
     }
 
 	std::string m_oErrorMessage;
