@@ -1,7 +1,8 @@
 #include "runtime/runtime.hpp"
 #include "boolean.hpp"
+#include <iostream>
 
-IValue* CBooleanValue::Copy() const
+IValue* CBooleanValue::Copy()
 {
 	return CProgramRuntime::AcquireNewValue<CBooleanValue>(m_oValue);
 }

@@ -1,7 +1,7 @@
 #include "runtime/runtime.hpp"
 #include "integer.hpp"
 
-IValue* CIntValue::Copy() const
+IValue* CIntValue::Copy()
 {
 	return CProgramRuntime::AcquireNewValue<CIntValue>(m_oValue);
 }

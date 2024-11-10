@@ -9,7 +9,7 @@ public:
 	CDoubleValue(double value) : CValue(value) {}
 	[[nodiscard]] EValueType Type() const noexcept override { return t_double; };
 	
-	[[nodiscard]] IValue* Copy() const override;
+	[[nodiscard]] IValue* Copy() override;
 
 	void Release() override;
 

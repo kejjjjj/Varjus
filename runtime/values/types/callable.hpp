@@ -11,7 +11,7 @@ public:
 	CCallableValue(CRuntimeFunction* callable) : CValue(callable) {}
 	[[nodiscard]] EValueType Type() const noexcept override { return t_callable; };
 
-	[[nodiscard]] IValue* Copy() const override;
+	[[nodiscard]] IValue* Copy() override;
 
 	void Release() override;
 

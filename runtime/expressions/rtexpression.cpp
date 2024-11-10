@@ -93,6 +93,14 @@ IValue* CRuntimeExpression::EvaluateLeaf(CFunction* const thisFunction, const Ab
 		return v;
 	}
 
+	if (node->IsArray()) {
+		const auto var = node->As<const ArrayASTNode*>();
+		auto ptr = CProgramRuntime::AcquireNewValue<CArrayValue>();
+		ptr->CreateOwnership();
+		ptr->Internal()->Set(EvaluateList(thisFunction, var->m_oExpressions));
+		return ptr;
+	}
+
 	if (node->IsConstant()) {
 		const auto constant = node->As<const ConstantASTNode*>();
 		switch (constant->m_eDataType) {

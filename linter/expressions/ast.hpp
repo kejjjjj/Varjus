@@ -8,6 +8,7 @@
 
 class AbstractSyntaxTree;
 using ASTNode = std::shared_ptr<AbstractSyntaxTree>;
+using ExpressionList = VectorOf<std::unique_ptr<AbstractSyntaxTree>>;
 
 class CLinterOperand;
 class CLinterOperator;
@@ -17,9 +18,7 @@ struct COperandBase;
 
 class AbstractSyntaxTree
 {
-	friend class AstToInstructionConverter;
 public:
-
 
 	AbstractSyntaxTree();
 	virtual ~AbstractSyntaxTree();
@@ -30,6 +29,7 @@ public:
 	[[nodiscard]] virtual constexpr bool IsVariable() const noexcept { return false; }
 	[[nodiscard]] virtual constexpr bool IsFunction() const noexcept { return false; }
 	[[nodiscard]] virtual constexpr bool IsConstant() const noexcept { return false; }
+	[[nodiscard]] virtual constexpr bool IsArray() const noexcept    { return false; }
 	[[nodiscard]] virtual constexpr bool IsSequence() const noexcept { return false; }
 
 	template<typename T>
@@ -104,6 +104,20 @@ public:
 	// contains the raw data for the constant
 	std::string m_pConstant;
 	EValueType m_eDataType{};
+};
+class ArrayASTNode final : public AbstractSyntaxTree
+{
+	NONCOPYABLE(ArrayASTNode);
+
+public:
+
+	ArrayASTNode(ExpressionList&& expressions);
+	~ArrayASTNode();
+
+	[[nodiscard]] constexpr bool IsLeaf() const noexcept override { return true; }
+	[[nodiscard]] constexpr bool IsArray() const noexcept override { return true; }
+
+	ExpressionList m_oExpressions;
 };
 
 class OperatorASTNode : public AbstractSyntaxTree

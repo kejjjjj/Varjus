@@ -43,11 +43,10 @@ IValue* CRuntimeExpression::EvaluateSubscript(CFunction* const thisFunction, IVa
 	if (!accessor->IsIntegral())
 		throw CRuntimeError(std::format("array accessor must be integral, but is \"{}\"", accessor->TypeAsString()));
 
+	auto index = operand->Index(accessor->ToInt());
+
 	if (!accessor->HasOwner())
 		accessor->Release();
-
-	auto index = operand->Index(accessor->ToInt());
-	index->MakeImmutable(); //cannot modify parts
 
 	return index;
 }

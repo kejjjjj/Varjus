@@ -15,4 +15,5 @@ enum EValueType : unsigned char
 	t_double,
 	t_string,
 	t_callable,
+	t_array,
 };

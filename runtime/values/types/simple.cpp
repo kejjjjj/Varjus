@@ -2,7 +2,6 @@
 #include "runtime/runtime.hpp"
 
 #include <format>
-#include <iostream>
 
 void IValue::ReleaseInternal()
 {
@@ -14,7 +13,7 @@ void IValue::Release()
 	ReleaseInternal();
 	return CProgramRuntime::FreeValue<IValue>(this);
 }
-IValue* IValue::Copy() const
+IValue* IValue::Copy()
 {
 	return CProgramRuntime::AcquireNewValue<IValue>();
 }
@@ -34,6 +33,10 @@ CRuntimeFunction* IValue::AsCallable()
 {
 	return dynamic_cast<CCallableValue*>(this)->m_oValue;
 }
+CInternalArrayValue* IValue::AsArray()
+{
+	return dynamic_cast<CInternalArrayValue*>(this);
+}
 std::string IValue::ToPrintableString() const
 {
 	return std::format("{}: {}", ValueAsString(), TypeAsString());
@@ -43,3 +46,7 @@ IValue* IValue::Index([[maybe_unused]]std::int64_t index)
 {
 	return nullptr;
 }
+
+
+
+

@@ -138,3 +138,5 @@ ConstantASTNode::ConstantASTNode(const std::string& data, EValueType datatype)
 	: m_pConstant(data), m_eDataType(datatype) {}
 ConstantASTNode::~ConstantASTNode() = default;
 
+ArrayASTNode::ArrayASTNode(ExpressionList&& expressions) : m_oExpressions(std::move(expressions)) {}
+ArrayASTNode::~ArrayASTNode() = default;

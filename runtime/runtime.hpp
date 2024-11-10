@@ -24,6 +24,7 @@ class CProgramRuntime
 
 	friend class CRuntimeFunction;
 	friend class CRuntimeExpression;
+	friend class CInternalArrayValue;
 
 public:
 	// only one file for now
@@ -61,19 +62,29 @@ public:
 	template <IValueChild T>
 	static constexpr T* AcquireNewValue() {
 		auto result = GetPool<T>().Acquire();
-		result->SetOwner(nullptr);
 		return result;
 	}
 
 	template <IValueChild T, typename Ctor>
 	static constexpr T* AcquireNewValue(const Ctor& ctor) {
 		auto v = GetPool<T>().Acquire();
-		v->SetOwner(nullptr);
 
 		if constexpr (std::is_same_v<IValue, T>)
 			return v;
 		else {
-			v->SetRawValue(ctor);
+			v->SetRawValue(std::forward<const Ctor&>(ctor));
+			return v;
+		}
+	}
+
+	template <IValueChild T, typename Ctor>
+	static constexpr T* AcquireNewValue(Ctor&& ctor) {
+		auto v = GetPool<T>().Acquire();
+
+		if constexpr (std::is_same_v<IValue, T>)
+			return v;
+		else {
+			v->SetRawValue(std::forward<Ctor&&>(ctor));
 			return v;
 		}
 	}

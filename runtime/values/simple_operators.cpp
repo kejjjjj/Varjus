@@ -19,11 +19,6 @@ IValue* OP_ASSIGNMENT(IValue* lhs, IValue* rhs)
 	if (lhs == rhs)
 		return lhs;
 
-	//if (auto value = variable->GetValue()) {
-	//	value->SetOwner(nullptr);
-	//	value->Release();
-	//}
-
 	switch (rhs->Type()) {
 		case t_undefined:
 			variable->SetValue(CProgramRuntime::AcquireNewValue<IValue>());
@@ -42,6 +37,10 @@ IValue* OP_ASSIGNMENT(IValue* lhs, IValue* rhs)
 			break;
 		case t_callable:
 			variable->SetValue(CProgramRuntime::AcquireNewValue<CCallableValue>(rhs->AsCallable()));
+			break;
+		case t_array:
+			assert(rhs->ToArray());
+			variable->SetValue(rhs->ToArray()->MakeShared());
 			break;
 	}
 
@@ -80,6 +79,7 @@ IValue* OP_ADDITION(IValue* _lhs, IValue* _rhs)
 		result = CProgramRuntime::AcquireNewValue<CStringValue>(lhs->ToString() + rhs->ToString());
 		break;
 	case t_callable:
+	case t_array:
 		assert(false);
 		break;
 	}
@@ -118,6 +118,8 @@ IValue* OP_LESS_THAN(IValue* _lhs, IValue* _rhs)
 		result = CProgramRuntime::AcquireNewValue<CBooleanValue>(lhs->ToString().length() < rhs->ToString().length());
 		break;
 	case t_callable:
+	case t_array:
+
 		assert(false);
 		break;
 	}

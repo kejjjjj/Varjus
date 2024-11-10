@@ -8,14 +8,15 @@
 
 #define VALUEPOOL_INIT_SIZE size_t(100)
 
-CNonOwningObjectPool<CVariable>             CProgramRuntime::m_oVariablePool             (VALUEPOOL_INIT_SIZE);
+CNonOwningObjectPool<CVariable>                  CProgramRuntime::m_oVariablePool                  (VALUEPOOL_INIT_SIZE);
 
-template<> COwningObjectPool<IValue>        CProgramRuntime::m_oValuePool<IValue>        (VALUEPOOL_INIT_SIZE);
-template<> COwningObjectPool<CBooleanValue> CProgramRuntime::m_oValuePool<CBooleanValue> (VALUEPOOL_INIT_SIZE);
-template<> COwningObjectPool<CIntValue>     CProgramRuntime::m_oValuePool<CIntValue>     (VALUEPOOL_INIT_SIZE);
-template<> COwningObjectPool<CDoubleValue>  CProgramRuntime::m_oValuePool<CDoubleValue>  (VALUEPOOL_INIT_SIZE);
-template<> COwningObjectPool<CStringValue>  CProgramRuntime::m_oValuePool<CStringValue>  (VALUEPOOL_INIT_SIZE);
-template<> COwningObjectPool<CCallableValue>CProgramRuntime::m_oValuePool<CCallableValue>(VALUEPOOL_INIT_SIZE);
+template<> COwningObjectPool<IValue>             CProgramRuntime::m_oValuePool<IValue>             (VALUEPOOL_INIT_SIZE);
+template<> COwningObjectPool<CBooleanValue>      CProgramRuntime::m_oValuePool<CBooleanValue>      (VALUEPOOL_INIT_SIZE);
+template<> COwningObjectPool<CIntValue>          CProgramRuntime::m_oValuePool<CIntValue>          (VALUEPOOL_INIT_SIZE);
+template<> COwningObjectPool<CDoubleValue>       CProgramRuntime::m_oValuePool<CDoubleValue>       (VALUEPOOL_INIT_SIZE);
+template<> COwningObjectPool<CStringValue>       CProgramRuntime::m_oValuePool<CStringValue>       (VALUEPOOL_INIT_SIZE);
+template<> COwningObjectPool<CCallableValue>     CProgramRuntime::m_oValuePool<CCallableValue>     (VALUEPOOL_INIT_SIZE);
+template<> COwningObjectPool<CArrayValue>        CProgramRuntime::m_oValuePool<CArrayValue>        (VALUEPOOL_INIT_SIZE);
 
 std::vector<RuntimeFunction> CProgramRuntime::m_oFunctions;
 
@@ -44,9 +45,9 @@ void CProgramRuntime::Execute()
 	std::cout << std::format("boolean:   {}\n",   GetPool<CBooleanValue>().GetInUseCount());
 	std::cout << std::format("int:       {}\n",   GetPool<CIntValue>().GetInUseCount());
 	std::cout << std::format("double:    {}\n",   GetPool<CDoubleValue>().GetInUseCount());
-	std::cout << std::format("string:    {}\n", GetPool<CStringValue>().GetInUseCount());
-	std::cout << std::format("callable:  {}\n\n", GetPool<CCallableValue>().GetInUseCount());
-
+	std::cout << std::format("string:    {}\n",   GetPool<CStringValue>().GetInUseCount());
+	std::cout << std::format("callable:  {}\n",   GetPool<CCallableValue>().GetInUseCount());
+	std::cout << std::format("array:     {}\n",   GetPool<CArrayValue>().GetInUseCount());
 
 	return;
 

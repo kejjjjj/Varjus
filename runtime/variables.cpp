@@ -12,12 +12,16 @@ void CVariable::SetValue(IValue* v)
 {
 	assert(m_pValue != v);
 
+
+
 	// give the value back to the pool
-	if (m_pValue && m_pValue->HasOwner()) {
+	if (m_pValue) {
+		assert(m_pValue->HasOwner());
 		m_pValue->Release();
 	}
 
 	m_pValue = v;
 	m_pValue->SetOwner(this);
+
 
 }

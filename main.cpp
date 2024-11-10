@@ -19,21 +19,18 @@ int Failure(const std::string_view& msg)
 
 int main()
 {
-
-    const auto reader = VarjusIOReader("\\scripts\\script.var");
-
-    const auto fileBuf = reader.IO_Read();
-
-    if (!fileBuf) {
-        return Failure("!fileBuf");
-    }
-
-    auto tokenizer = CBufferTokenizer(*fileBuf);
-
-    if(!tokenizer.Tokenize())
-        return Failure("failed during tokenization");
-
     try {
+        const auto reader = VarjusIOReader("\\scripts\\script.var");
+        const auto fileBuf = reader.IO_Read();
+
+        if (!fileBuf) {
+            throw std::exception("couldn't read the file buffer");
+        }
+
+        auto tokenizer = CBufferTokenizer(*fileBuf);
+
+        if (!tokenizer.Tokenize())
+            throw std::exception("tokenization failure");
 
 		auto tokens = tokenizer.GetTokens();
 		auto begin = tokens.begin();
@@ -41,13 +38,14 @@ int main()
 
 		CFileLinter linter(begin, end);
 
-        if (linter.ParseFile()) {
-            
-            CProgramRuntime runtime(linter.GetRuntimeInformation());
-            runtime.Execute();
+        if (!linter.ParseFile())
+            throw std::exception("couldn't parse the input file");
 
-        }
 
+        CProgramRuntime runtime(linter.GetRuntimeInformation());
+        runtime.Execute();
+
+     
     }
 	catch (std::exception& e) {
 		std::cerr << "\033[31m" <<

@@ -8,7 +8,7 @@ public:
 	CIntValue(std::int64_t value) : CValue(value) {}
 	[[nodiscard]] EValueType Type() const noexcept override { return t_int; };
 
-	[[nodiscard]] IValue* Copy() const override;
+	[[nodiscard]] IValue* Copy() override;
 
 	void Release() override;
 

@@ -2,7 +2,6 @@
 
 #include "definitions.hpp"
 
-#include <iostream>
 
 class CMemory;
 class CIdentifierLinter;
@@ -19,9 +18,12 @@ class IPostfixBase;
 struct CLinterFunction;
 struct CLinterVariable;
 
+using ExpressionList = VectorOf<std::unique_ptr<AbstractSyntaxTree>>;
+
 enum EOperandBaseType : char {
-	identifier,
-	abstract_syntax_tree,
+	ot_identifier,
+	ot_abstract_syntax_tree,
+	ot_array
 };
 
 struct COperandBase
@@ -45,7 +47,7 @@ struct CIdentifierOperand final : public COperandBase
 	~CIdentifierOperand() = default;
 
 	[[nodiscard]] EOperandBaseType Type() const noexcept override {
-		return identifier;
+		return ot_identifier;
 	}
 
 	std::unique_ptr<CIdentifierLinter> m_oIdentifierToken;
@@ -58,16 +60,30 @@ struct CASTOperand final : public COperandBase
 	~CASTOperand();
 
 	[[nodiscard]] EOperandBaseType Type() const noexcept override {
-		return abstract_syntax_tree;
+		return ot_abstract_syntax_tree;
 	}
 
 	std::unique_ptr<AbstractSyntaxTree> m_pAST;
 };
 
+struct CArrayOperand final : public COperandBase
+{
+	NONCOPYABLE(CArrayOperand);
+
+	CArrayOperand() = default;
+	CArrayOperand(ExpressionList&& ptr);
+	~CArrayOperand();
+
+	[[nodiscard]] EOperandBaseType Type() const noexcept override {
+		return ot_array;
+	}
+
+	ExpressionList m_oExpressions;
+};
+
 class CLinterOperand final : public CLinterSingle<CToken>
 {
 	NONCOPYABLE(CLinterOperand);
-	friend class AbstractSyntaxTree;
 public:
 
 	CLinterOperand() = delete;
@@ -75,18 +91,14 @@ public:
 	~CLinterOperand();
 
 	[[nodiscard]] Success ParseOperand();
-	
-	[[nodiscard]] std::string ToString() const noexcept;
-
-	[[nodiscard]] bool IsExpression() const noexcept;
-
 
 	[[nodiscard]] std::unique_ptr<AbstractSyntaxTree> ToAST();
 
-	[[nodiscard]] std::unique_ptr<AbstractSyntaxTree> PostfixesToAST() const noexcept;
-
-
+	[[nodiscard]] bool IsExpression() const noexcept;
 	[[nodiscard]] bool IsImmediate() const noexcept;
+
+	[[nodiscard]] bool IsArray() const noexcept;
+	[[nodiscard]] CArrayOperand* GetArray() const noexcept;
 
 	[[nodiscard]] bool IsVariable() const noexcept;
 	[[nodiscard]] const CLinterVariable* GetVariable() const noexcept;
@@ -94,11 +106,12 @@ public:
 	[[nodiscard]] bool IsFunction() const noexcept;
 	[[nodiscard]] const CLinterFunction* GetFunction() const noexcept;
 
-	[[nodiscard]] const COperandBase* GetOperand() const noexcept { return m_pOperand.get(); }
-	[[nodiscard]] std::unique_ptr<COperandBase>& GetOperandRaw() noexcept { return m_pOperand; }
-
 private:
+	[[nodiscard]] std::unique_ptr<COperandBase> ParseParentheses();
+	[[nodiscard]] std::unique_ptr<COperandBase> ParseIdentifier();
+	[[nodiscard]] std::unique_ptr<COperandBase> ParseArray();
 
+	[[nodiscard]] std::unique_ptr<AbstractSyntaxTree> PostfixesToAST() const noexcept;
 	[[nodiscard]] std::unique_ptr<AbstractSyntaxTree> OperandToAST() const noexcept;
 	[[nodiscard]] std::unique_ptr<AbstractSyntaxTree> ExpressionToAST() const noexcept;
 

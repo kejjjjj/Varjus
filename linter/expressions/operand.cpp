@@ -15,6 +15,7 @@
 
 #include <cassert>
 #include <ranges>
+#include <iostream>
 
 CIdentifierLinter* COperandBase::GetIdentifier()const  noexcept {
 	return dynamic_cast<const CIdentifierOperand*>(this)->m_oIdentifierToken.get();
@@ -39,20 +40,11 @@ Success CLinterOperand::ParseOperand()
 
 	const auto token = (*m_iterPos);
 	if (token->IsOperator(p_par_open)) {
-		std::advance(m_iterPos, 1);
-
-		CLinterExpression expr(m_iterPos, m_iterEnd, m_pScope, m_pOwner);		
-		if (expr.Parse(PairMatcher(p_par_open))) {
-			m_pOperand = std::make_unique<CASTOperand>(expr.ToMergedAST());
-		}
-
+		m_pOperand = ParseParentheses();
+	} else if (token->IsOperator(p_bracket_open)) {
+		m_pOperand = ParseArray();
 	} else {
-		auto operand = std::make_unique<CIdentifierOperand>(m_iterPos, m_iterEnd, m_pScope, m_pOwner);
-		if (!operand->m_oIdentifierToken->ParseIdentifier()) {
-			return failure;
-		}
-
-		m_pOperand = std::move(operand);
+		m_pOperand = ParseIdentifier();
 	}
 
 	CPostfixLinter postfix(m_iterPos, m_iterEnd, m_pScope, m_pOwner);
@@ -64,10 +56,53 @@ Success CLinterOperand::ParseOperand()
 	m_oPostfixes = postfix.Move();
 	return success;
 }
+std::unique_ptr<COperandBase> CLinterOperand::ParseParentheses()
+{
+	std::advance(m_iterPos, 1); // skip (
+
+	CLinterExpression expr(m_iterPos, m_iterEnd, m_pScope, m_pOwner);
+	if (!expr.Parse(PairMatcher(p_par_open))) 
+		return nullptr;
+
+	return std::make_unique<CASTOperand>(expr.ToMergedAST());
+}
+std::unique_ptr<COperandBase> CLinterOperand::ParseIdentifier()
+{
+	auto operand = std::make_unique<CIdentifierOperand>(m_iterPos, m_iterEnd, m_pScope, m_pOwner);
+	if (!operand->m_oIdentifierToken->ParseIdentifier()) {
+		return nullptr;
+	}
+
+	return operand;
+}
+std::unique_ptr<COperandBase> CLinterOperand::ParseArray()
+{
+	std::advance(m_iterPos, 1); // skip [
+
+	if(IsEndOfBuffer() || (*m_iterPos)->IsOperator(p_bracket_close))
+		return std::make_unique<CArrayOperand>();
+
+	CLinterExpression expr(m_iterPos, m_iterEnd, m_pScope, m_pOwner);
+	if (!expr.Parse(PairMatcher(p_bracket_open)))
+		return nullptr;
+
+	return std::make_unique<CArrayOperand>(expr.ToExpressionList());
+}
+
 bool CLinterOperand::IsExpression() const noexcept
 {
 	assert(m_pOperand != nullptr);
-	return m_pOperand->Type() == abstract_syntax_tree;
+	return m_pOperand->Type() == ot_abstract_syntax_tree;
+}
+bool CLinterOperand::IsArray() const noexcept
+{
+	assert(m_pOperand != nullptr);
+	return m_pOperand->Type() == ot_array;
+}
+[[nodiscard]] CArrayOperand* CLinterOperand::GetArray() const noexcept
+{
+	assert(IsArray());
+	return dynamic_cast<CArrayOperand*>(m_pOperand.get());
 }
 std::unique_ptr<AbstractSyntaxTree> CLinterOperand::OperandToAST() const noexcept
 {
@@ -78,6 +113,8 @@ std::unique_ptr<AbstractSyntaxTree> CLinterOperand::OperandToAST() const noexcep
 		return std::make_unique<VariableASTNode>(GetVariable()->m_uIndex);
 	} else if (IsFunction()) {
 		return std::make_unique<FunctionASTNode>(GetFunction()->m_uIndex);
+	} else if (IsArray()) {
+		return std::make_unique<ArrayASTNode>(std::move(GetArray()->m_oExpressions));
 	} else if (IsExpression()) {
 		return ExpressionToAST();
 	}
@@ -98,7 +135,7 @@ std::unique_ptr<AbstractSyntaxTree> CLinterOperand::ExpressionToAST() const noex
 	if (auto pfs = PostfixesToAST()) {
 		auto end = pfs.get();
 		while (end->left)
-			end = pfs->left.get();
+			end = end->left.get();
 
 		end->left = OperandToAST();
 		return pfs;
@@ -113,20 +150,20 @@ std::unique_ptr<AbstractSyntaxTree> CLinterOperand::PostfixesToAST() const noexc
 		return nullptr;
 
 	std::unique_ptr<AbstractSyntaxTree> root;
-	std::shared_ptr<AbstractSyntaxTree>* position{ nullptr };
+	AbstractSyntaxTree* position{ nullptr };
 
 	for (auto& pf : m_oPostfixes) {
 		
 		if (!root) {
 			root = pf->ToAST();
-			position = &root->left;
+			position = root.get();
 			continue;
 		}
 
 		assert(position);
 
-		*position = pf->ToAST();
-		position = &(*position)->left;
+		position->left = pf->ToAST();
+		position = position->left.get();
 	}
 
 	return root;
@@ -135,7 +172,7 @@ bool CLinterOperand::IsImmediate() const noexcept
 {
 	assert(m_pOperand != nullptr);
 
-	if (IsExpression())
+	if (IsExpression() || IsArray())
 		return false;
 
 	const auto type = m_pOperand->GetIdentifier()->GetToken()->Type();
@@ -145,7 +182,7 @@ bool CLinterOperand::IsVariable() const noexcept
 {
 	assert(m_pOperand != nullptr);
 
-	if (IsExpression() || !m_pOperand->GetIdentifier()->m_pIdentifier)
+	if (IsExpression() || IsArray() || !m_pOperand->GetIdentifier()->m_pIdentifier)
 		return false;
 
 	return m_pOperand->GetIdentifier()->m_pIdentifier->Type() == mi_variable;
@@ -159,7 +196,7 @@ bool CLinterOperand::IsFunction() const noexcept
 {
 	assert(m_pOperand != nullptr);
 
-	if (IsExpression() || !m_pOperand->GetIdentifier()->m_pIdentifier)
+	if (IsExpression() || IsArray() || !m_pOperand->GetIdentifier()->m_pIdentifier)
 		return false;
 
 	return m_pOperand->GetIdentifier()->m_pIdentifier->Type() == mi_function;
@@ -170,26 +207,13 @@ const CLinterFunction* CLinterOperand::GetFunction() const noexcept
 	return dynamic_cast<const CLinterFunction*>(m_pOperand->GetIdentifier()->m_pIdentifier);
 }
 
-std::string CLinterOperand::ToString() const noexcept
-{
-	assert(m_pOperand != nullptr);
-	assert(!IsExpression());
-
-	std::string result;
-	for (const auto& unary : m_oUnaryTokens) {
-		result += unary->Source();
-	}
-
-	result += m_pOperand->GetIdentifier()->GetToken()->Source();
-	return result;
-}
-
 /***********************************************************************
  > 
 ***********************************************************************/
 CASTOperand::CASTOperand(std::unique_ptr<AbstractSyntaxTree>&& ptr) : m_pAST(std::move(ptr)) {}
 CASTOperand::~CASTOperand() = default;
 
-
+CArrayOperand::CArrayOperand(ExpressionList&& ptr) : m_oExpressions(std::move(ptr)){}
+CArrayOperand::~CArrayOperand() = default;
 
 

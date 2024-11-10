@@ -1,7 +1,7 @@
 #include "runtime/runtime.hpp"
 #include "double.hpp"
 
-IValue* CDoubleValue::Copy() const
+IValue* CDoubleValue::Copy()
 {
 	return CProgramRuntime::AcquireNewValue<CDoubleValue>(m_oValue);
 }

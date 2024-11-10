@@ -39,7 +39,6 @@ public:
 	~CLinterExpression();
 
 	[[nodiscard]] Success Parse(std::optional<PairMatcher> m_oEndOfExpression=std::nullopt, CExpressionList* expression=nullptr);
-	[[nodiscard]] std::string ToString() const noexcept;
 
 	// merge all evaluated expressions into one
 	[[nodiscard]] std::unique_ptr<AbstractSyntaxTree> ToMergedAST() const;

@@ -157,19 +157,6 @@ ExpressionList CLinterExpression::ToExpressionList() const
 	assert(m_pEvaluatedExpressions);
 	return m_pEvaluatedExpressions->ToExpressionList();
 }
-std::string CLinterExpression::ToString() const noexcept
-{
-	assert(!m_oSubExpressions.empty());
-
-	std::string result;
-	for (const auto& subExpression : m_oSubExpressions) {
-		result += subExpression->m_oLhsOperand->ToString() + ' ';
-		if (subExpression->m_oOperator != nullptr) {
-			result += subExpression->m_oOperator->ToString() + ' ';
-		}
-	}
-	return result;
-}
 RuntimeBlock CLinterExpression::ToRuntimeObject() const
 {
 	return std::make_unique<CRuntimeExpression>(ToMergedAST());

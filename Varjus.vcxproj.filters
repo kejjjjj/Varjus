@@ -22,9 +22,6 @@
     <Filter Include="Source Files\linter\expressions">
       <UniqueIdentifier>{d3a66823-3d53-47d5-9cbd-543a244c3f5e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\instructions">
-      <UniqueIdentifier>{d1226f5d-a6b5-4e38-86e2-52391939faba}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\scripts">
       <UniqueIdentifier>{6dcf0874-a30a-4c73-a78d-f3bfdbf31bdd}</UniqueIdentifier>
     </Filter>
@@ -85,6 +82,9 @@
     <Filter Include="Source Files\runtime\statements\return">
       <UniqueIdentifier>{a0aa3984-892f-49cb-97c3-a06cda6a320d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\runtime\values\types\internal">
+      <UniqueIdentifier>{874474f2-7b81-4911-aebb-eca6aa360af6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -120,17 +120,11 @@
     <ClCompile Include="linter\expressions\ast.cpp">
       <Filter>Source Files\linter\expressions</Filter>
     </ClCompile>
-    <ClCompile Include="linter\expressions\ast2instruction.cpp">
-      <Filter>Source Files\linter\expressions</Filter>
-    </ClCompile>
     <ClCompile Include="linter\declarations\variable_declarations.cpp">
       <Filter>Source Files\linter\declarations</Filter>
     </ClCompile>
     <ClCompile Include="linter\declarations\stack.cpp">
       <Filter>Source Files\linter\declarations</Filter>
-    </ClCompile>
-    <ClCompile Include="linter\expressions\ast_registers.cpp">
-      <Filter>Source Files\linter\expressions</Filter>
     </ClCompile>
     <ClCompile Include="runtime\structure.cpp">
       <Filter>Source Files\runtime</Filter>
@@ -222,6 +216,12 @@
     <ClCompile Include="runtime\statements\return\rtreturn.cpp">
       <Filter>Source Files\runtime\statements\return</Filter>
     </ClCompile>
+    <ClCompile Include="runtime\values\types\array.cpp">
+      <Filter>Source Files\runtime\values\types</Filter>
+    </ClCompile>
+    <ClCompile Include="runtime\values\types\internal\shared_ownership.cpp">
+      <Filter>Source Files\runtime\values\types\internal</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="fs\fs_io.hpp">
@@ -257,19 +257,7 @@
     <ClInclude Include="linter\expressions\sub_expression.hpp">
       <Filter>Source Files\linter\expressions</Filter>
     </ClInclude>
-    <ClInclude Include="instructions\instructions.hpp">
-      <Filter>Source Files\instructions</Filter>
-    </ClInclude>
-    <ClInclude Include="instructions\register.hpp">
-      <Filter>Source Files\instructions</Filter>
-    </ClInclude>
-    <ClInclude Include="instructions\operand.hpp">
-      <Filter>Source Files\instructions</Filter>
-    </ClInclude>
     <ClInclude Include="linter\expressions\ast.hpp">
-      <Filter>Source Files\linter\expressions</Filter>
-    </ClInclude>
-    <ClInclude Include="linter\expressions\ast2instruction.hpp">
       <Filter>Source Files\linter\expressions</Filter>
     </ClInclude>
     <ClInclude Include="linter\declarations\variable_declarations.hpp">
@@ -280,9 +268,6 @@
     </ClInclude>
     <ClInclude Include="globalDefinitions.hpp">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="linter\expressions\ast_registers.hpp">
-      <Filter>Source Files\linter\expressions</Filter>
     </ClInclude>
     <ClInclude Include="runtime\structure.hpp">
       <Filter>Source Files\runtime</Filter>
@@ -385,6 +370,12 @@
     </ClInclude>
     <ClInclude Include="linter\statements\return\return.hpp">
       <Filter>Source Files\linter\statements\return</Filter>
+    </ClInclude>
+    <ClInclude Include="runtime\values\types\array.hpp">
+      <Filter>Source Files\runtime\values\types</Filter>
+    </ClInclude>
+    <ClInclude Include="runtime\values\types\internal\shared_ownership.hpp">
+      <Filter>Source Files\runtime\values\types\internal</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

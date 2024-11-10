@@ -40,8 +40,8 @@ CCoercionOperands CoerceInternal(IValue* weaker, IValue* stronger, bool lhsIsWea
 	case t_double:
 		return { lhs, rhs, CProgramRuntime::AcquireNewValue<CDoubleValue>(weaker->ToDouble()), lhsIsWeak };
 	case t_string:
-		break;
 	case t_callable:
+	case t_array:
 		break;
 	}
 

@@ -8,7 +8,7 @@ public:
 	CStringValue(const std::string& value) : CValue(value) {}
 	[[nodiscard]] EValueType Type() const noexcept override { return t_string; };
 
-	[[nodiscard]] IValue* Copy() const override;
+	[[nodiscard]] IValue* Copy() override;
 
 	void Release() override;
 
