@@ -23,7 +23,6 @@ IValue* CRuntimeExpression::Execute([[maybe_unused]]CFunction* const thisFunctio
 	
 	if (result && !result->HasOwner())
 		result->Release();
-
 	//TODO: make sure that all objects from the pool get released
 
 	return nullptr;
@@ -83,7 +82,9 @@ IValue* CRuntimeExpression::EvaluateLeaf(CFunction* const thisFunction, const Ab
 {
 	if (node->IsVariable()) {
 		const auto var = node->As<const VariableASTNode*>();
-		return thisFunction->GetVariableByIndex(var->m_uIndex)->GetValue();
+		auto v = thisFunction->GetVariableByIndex(var->m_uIndex)->GetValue();
+		assert(v->HasOwner());
+		return v;
 	}
 
 	if (node->IsFunction()) {
@@ -102,7 +103,7 @@ IValue* CRuntimeExpression::EvaluateLeaf(CFunction* const thisFunction, const Ab
 	}
 
 	if (node->IsConstant()) {
-		const auto constant = node->As<const ConstantASTNode*>();
+		const auto constant = node->As<const ConstantASTNode*>(); 
 		switch (constant->m_eDataType) {
 			case t_undefined:
 				return CProgramRuntime::AcquireNewValue<IValue>();

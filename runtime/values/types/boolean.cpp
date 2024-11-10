@@ -1,6 +1,5 @@
 #include "runtime/runtime.hpp"
 #include "boolean.hpp"
-#include <iostream>
 
 IValue* CBooleanValue::Copy()
 {

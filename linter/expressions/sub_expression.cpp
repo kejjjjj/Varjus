@@ -22,7 +22,7 @@ CLinterSubExpression::CLinterSubExpression(LinterIterator& pos, LinterIterator& 
 }
 CLinterSubExpression::~CLinterSubExpression() = default;
 
-Success CLinterSubExpression::ParseSubExpression()
+Success CLinterSubExpression::ParseSubExpression(std::optional<PairMatcher>& eoe, CExpressionList* expression)
 {
 	//empty subexpression
 	if (EndOfExpression())
@@ -38,8 +38,8 @@ Success CLinterSubExpression::ParseSubExpression()
 	if (EndOfExpression())
 		return failure;
 
-	CLinterOperatorParser cOperator(m_iterPos, m_iterEnd);
-	if (!cOperator.ParseOperator())
+	CLinterOperatorParser cOperator(m_iterPos, m_iterEnd, m_pScope, m_pOwner);
+	if (!cOperator.ParseOperator(eoe, expression))
 		return failure;
 
 	m_oOperator = std::make_unique<CLinterOperator>(cOperator.GetPriority(), cOperator.GetToken());

@@ -1,10 +1,15 @@
 #pragma once
 
 #include "identifier.hpp"
+#include "expression_context.hpp"
+
+#include <optional>
 
 enum OperatorPriority : char;
 enum Punctuation : char;
 
+struct CExpressionList;
+class CMemory;
 class CLinterOperator final
 {
 public:
@@ -29,18 +34,21 @@ class CLinterOperatorParser final : public CLinterSingle<CPunctuationToken>
 {
 public:
 	CLinterOperatorParser() = delete;
-	explicit CLinterOperatorParser(LinterIterator& pos, LinterIterator& end);
+	explicit CLinterOperatorParser(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack);
 	~CLinterOperatorParser();
 
-	[[maybe_unused]] Success ParseOperator();
+	[[maybe_unused]] Success ParseOperator(std::optional<PairMatcher>& eoe, CExpressionList* expression);
 	[[nodiscard]] auto GetToken() const { return m_pToken; }
 
 	[[nodiscard]] OperatorPriority GetPriority() const noexcept;
 
-
-	[[nodiscard]] std::string ToString() const noexcept;
-
 private:
+	[[maybe_unused]] Success ParseSequence(std::optional<PairMatcher>& m_oEndOfExpression, CExpressionList* expression);
+
 	[[nodiscard]] bool CheckOperator() const;
 	[[nodiscard]] bool IsOperator(const CPunctuationToken& token) const noexcept;
+	[[nodiscard]] bool EndOfExpression(const std::optional<PairMatcher>& eoe) const noexcept;
+
+	std::weak_ptr<CScope> m_pScope;
+	CMemory* const m_pOwner;
 };

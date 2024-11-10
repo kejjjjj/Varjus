@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <iostream>
 
 #include "globalDefinitions.hpp"
 #include "pools/object_pool_non_owning.hpp"
@@ -61,13 +62,24 @@ public:
 
 	template <IValueChild T>
 	static constexpr T* AcquireNewValue() {
-		auto result = GetPool<T>().Acquire();
-		return result;
+		//std::cout << std::format("{}A {}\n",
+		//	std::string(GetPool<T>().GetInUseCount(), '-'), typeid(T).name());
+
+		auto v = GetPool<T>().Acquire();
+		v->SetOwner(nullptr);
+		assert(!v->HasOwner());
+		return v;
 	}
 
 	template <IValueChild T, typename Ctor>
 	static constexpr T* AcquireNewValue(const Ctor& ctor) {
+		
+		//std::cout << std::format("{}A {}\n",
+		//	std::string(GetPool<T>().GetInUseCount(), '-'), typeid(T).name());
+
 		auto v = GetPool<T>().Acquire();
+		v->SetOwner(nullptr);
+		assert(!v->HasOwner());
 
 		if constexpr (std::is_same_v<IValue, T>)
 			return v;
@@ -79,7 +91,12 @@ public:
 
 	template <IValueChild T, typename Ctor>
 	static constexpr T* AcquireNewValue(Ctor&& ctor) {
+		//std::cout << std::format("{}A {}\n",
+		//	std::string(GetPool<T>().GetInUseCount(), '-'), typeid(T).name());
+
 		auto v = GetPool<T>().Acquire();
+		v->SetOwner(nullptr);
+		assert(!v->HasOwner());
 
 		if constexpr (std::is_same_v<IValue, T>)
 			return v;
@@ -91,7 +108,10 @@ public:
 
 	template <IValueChild T>
 	static constexpr void FreeValue(T* value) {
+		assert(!value->HasOwner());
 		GetPool<T>().Release(value);
+		//std::cout << std::format("{}D {}\n",
+		//	std::string(GetPool<T>().GetInUseCount(), '-'), typeid(T).name());
 	}
 
 private:

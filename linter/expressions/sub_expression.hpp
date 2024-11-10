@@ -9,6 +9,7 @@ class CLinterOperand;
 class CLinterOperator;
 class CMemory;
 class CScope;
+struct CExpressionList;
 
 enum OperatorPriority : char;
 
@@ -31,7 +32,7 @@ public:
 	 \return failure when end-of-expression is reached
 	 \return keep calling this until failure is returned
 	 */
-	[[nodiscard]] Success ParseSubExpression();
+	[[nodiscard]] Success ParseSubExpression(std::optional<PairMatcher>& eoe, CExpressionList* expression);
 
 private:
 

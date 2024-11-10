@@ -25,7 +25,7 @@ public:
 
 private:
 	[[nodiscard]] std::string TypeAsString() const override { return "string"s; }
-	[[nodiscard]] std::string ValueAsString() const override { return m_oValue; }
+	[[nodiscard]] std::string ValueAsString() const override { return '\"' + m_oValue + '\"'; }
 
 public:
 };

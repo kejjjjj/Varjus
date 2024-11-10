@@ -39,6 +39,7 @@ public:
 	~CLinterExpression();
 
 	[[nodiscard]] Success Parse(std::optional<PairMatcher> m_oEndOfExpression=std::nullopt, CExpressionList* expression=nullptr);
+	[[nodiscard]] Success ParseInternal(std::optional<PairMatcher>& m_oEndOfExpression, CExpressionList* expression = nullptr);
 
 	// merge all evaluated expressions into one
 	[[nodiscard]] std::unique_ptr<AbstractSyntaxTree> ToMergedAST() const;
@@ -49,9 +50,6 @@ public:
 private:
 
 	[[nodiscard]] std::unique_ptr<AbstractSyntaxTree> ToAST() const;
-
-	[[maybe_unused]] Success ParseSequence(std::optional<PairMatcher>& m_oEndOfExpression, CExpressionList* expression);
-
 	[[nodiscard]] bool EndOfExpression(const std::optional<PairMatcher>& eoe) const noexcept;
 
 	UniquePointerVector<CLinterSubExpression> m_oSubExpressions;

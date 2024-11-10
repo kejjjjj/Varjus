@@ -54,6 +54,10 @@ ExpressionList CExpressionList::ToExpressionList()
 }
 Success CLinterExpression::Parse(std::optional<PairMatcher> m_oEndOfExpression, CExpressionList* expression)
 {
+	return ParseInternal(m_oEndOfExpression, expression);
+}
+Success CLinterExpression::ParseInternal(std::optional<PairMatcher>& m_oEndOfExpression, CExpressionList* expression)
+{
 	Success status = failure;
 
 	if(EndOfExpression(m_oEndOfExpression))
@@ -75,11 +79,8 @@ Success CLinterExpression::Parse(std::optional<PairMatcher> m_oEndOfExpression, 
 		}
 
 		auto subExpression = std::make_unique<CLinterSubExpression>(m_iterPos, m_iterEnd, m_pScope, m_pOwner, m_oEndOfExpression);
-		status = subExpression->ParseSubExpression();
+		status = subExpression->ParseSubExpression(m_oEndOfExpression, actualExpression);
 		m_oSubExpressions.emplace_back(std::move(subExpression));
-
-		if (!ParseSequence(m_oEndOfExpression, actualExpression))
-			return failure;
 
 	} while (status == success);
 
@@ -93,33 +94,13 @@ Success CLinterExpression::Parse(std::optional<PairMatcher> m_oEndOfExpression, 
 
 	if (m_oEndOfExpression && EndOfExpression(m_oEndOfExpression)) {
 		std::advance(m_iterPos, 1);
+		m_oEndOfExpression = std::nullopt;
 	}
 
 	actualExpression->m_pAST = ToAST();
 	return success;
 }
-Success CLinterExpression::ParseSequence(std::optional<PairMatcher>& m_oEndOfExpression, CExpressionList* expression)
-{
-	// don't evaluate a sequence when parsing a list
-	const auto parsingList = m_oEndOfExpression && m_oEndOfExpression->IsClosing(p_comma);
 
-	if (parsingList)
-		return success;
-
-	if ((*m_iterPos)->IsOperator(p_comma)) {
-
-		std::advance(m_iterPos, 1);
-		auto nextExpr = CLinterExpression(m_iterPos, m_iterEnd, m_pScope, m_pOwner);
-
-		expression->m_pNext = std::make_unique<CExpressionList>();
-		if (!nextExpr.Parse(m_oEndOfExpression, expression->m_pNext.get()))
-			return failure;
-
-		//m_pNextExpression = nextExpr.ToAST();
-	}
-
-	return success;
-}
 bool CLinterExpression::EndOfExpression(const std::optional<PairMatcher>& eoe) const noexcept
 {
 	assert(m_iterPos != m_iterEnd);
