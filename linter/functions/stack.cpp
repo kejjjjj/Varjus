@@ -1,10 +1,14 @@
 #include "stack.hpp"
-#include "variable_declarations.hpp"
+#include "linter/declarations/variable_declarations.hpp"
 #include "linter/functions/function.hpp"
 
 #include <cassert>
 
-CMemory::CMemory(CFileRuntimeData* const file) : m_pFile(file){}
+CMemory::CMemory(CFileRuntimeData* const file, CProgramContext* const context) 
+	: m_pFile(file), m_pContext(context){
+	assert(m_pFile);
+	assert(m_pContext);
+}
 CMemory::~CMemory() = default;
 
 CLinterVariable* CMemory::DeclareVariable(const std::string& var){
@@ -52,9 +56,10 @@ std::size_t CMemory::GetFunctionCount() const noexcept {
 CStack* CMemory::ToStack() { return dynamic_cast<CStack*>(this); }
 auto CMemory::ToStack() const { return dynamic_cast<const CStack*>(this); }
 
-CStack::CStack(CFileRuntimeData* const file) : CMemory(file) {};
-CStack::CStack(std::unique_ptr<CFunctionBlock>&& func, CFileRuntimeData* const file)
-	: CMemory(file), m_pFunction(std::move(func)){}
+CStack::CStack(CFileRuntimeData* const file, CProgramContext* const context) 
+	: CMemory(file, context) {};
+CStack::CStack(std::unique_ptr<CFunctionBlock>&& func, CFileRuntimeData* const file, CProgramContext* const context)
+	: CMemory(file, context), m_pFunction(std::move(func)){}
 CStack::~CStack() = default;
 
 void CStack::AddFunctionInstruction(RuntimeBlock&& block) const

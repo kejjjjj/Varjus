@@ -6,7 +6,7 @@
 #include "linter/tokenizer.hpp"
 #include "linter/error.hpp"
 #include "linter/linter.hpp"
-#include "linter/expressions/expression.hpp"
+#include "linter/context.hpp"
 
 #include "runtime/runtime.hpp"
 
@@ -20,6 +20,7 @@ int Failure(const std::string_view& msg)
 int main()
 {
     try {
+
         const auto reader = VarjusIOReader("\\scripts\\script.var");
         const auto fileBuf = reader.IO_Read();
 
@@ -36,18 +37,20 @@ int main()
 		auto begin = tokens.begin();
         auto end = tokens.end();
 
-		CFileLinter linter(begin, end);
+        auto context = CProgramContext{};
+        context.m_oAllMembers["length"];
+
+		CFileLinter linter(begin, end, &context);
 
         if (!linter.ParseFile())
             throw std::exception("couldn't parse the input file");
 
 
-        CProgramRuntime runtime(linter.GetRuntimeInformation());
+        CProgramRuntime runtime(linter.GetRuntimeInformation(), &context);
         runtime.Execute();
 
      
-    }
-	catch (std::exception& e) {
+    } catch (std::exception& e) {
 		std::cerr << "\033[31m" <<
             "\n--------------ERROR--------------\n\n" 
             << e.what() <<

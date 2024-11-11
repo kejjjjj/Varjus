@@ -7,7 +7,7 @@
 #include "linter/punctuation.hpp"
 #include "linter/token.hpp"
 #include "linter/error.hpp"
-#include "linter/declarations/stack.hpp"
+#include "linter/functions/stack.hpp"
 
 #include "ast.hpp"
 
@@ -125,9 +125,7 @@ std::unique_ptr<AbstractSyntaxTree> CLinterOperand::ExpressionToAST() const noex
 {
 	assert(m_pOperand != nullptr);
 	assert(IsExpression());
-
-	auto ast = dynamic_cast<CASTOperand*>(m_pOperand.get());
-	return std::move(ast->m_pAST);
+	return std::move(dynamic_cast<CASTOperand*>(m_pOperand.get())->m_pAST);
 }
 
 [[nodiscard]] std::unique_ptr<AbstractSyntaxTree> CLinterOperand::ToAST()

@@ -2,10 +2,11 @@
 #include "token.hpp"
 #include "error.hpp"
 #include "globalEnums.hpp"
+#include "context.hpp"
 
 #include "expressions/expression.hpp"
 #include "declarations/variable_declarations.hpp"
-#include "declarations/stack.hpp"
+#include "functions/stack.hpp"
 #include "functions/function.hpp"
 #include "scopes/scope.hpp"
 #include "statements/while/while.hpp"
@@ -13,12 +14,14 @@
 #include "statements/if/else.hpp"
 #include "statements/return/return.hpp"
 
-#include <iostream>
 #include <cassert>
 
-CFileLinter::CFileLinter(LinterIterator& start, LinterIterator& end) : CLinter(start, end)
+CFileLinter::CFileLinter(LinterIterator& start, LinterIterator& end, CProgramContext* const context) 
+	: CLinter(start, end), m_pContext(context)
 {
+	assert(m_pContext);
 }
+CFileLinter::~CFileLinter() = default;
 
 static Success AddInstruction(LinterIterator& pos, RuntimeBlock&& block, const WeakScope& scope)
 {
@@ -26,8 +29,7 @@ static Success AddInstruction(LinterIterator& pos, RuntimeBlock&& block, const W
 
 		if (auto s = scope.lock()) {
 			s->AddInstruction(std::move(block));
-		}
-		else {
+		} else {
 			CLinterErrors::PushError("!(auto s = scope.lock())", (*pos)->m_oSourcePosition);
 			return failure;
 		}
@@ -108,7 +110,7 @@ Success CFileLinter::ParseFile()
 {
 
 	m_pFile = std::make_unique<CFileRuntimeData>();
-	CMemory globalMemory(m_pFile.get());
+	CMemory globalMemory(m_pFile.get(), m_pContext);
 	auto globalScope = std::make_shared<CScope>(&globalMemory);
 
 	while (!IsEndOfBuffer()) {

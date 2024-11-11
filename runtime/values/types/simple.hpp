@@ -58,8 +58,10 @@ public:
 	[[nodiscard]] constexpr virtual bool IsIntegral() const noexcept { return false; }
 	[[nodiscard]] constexpr virtual bool IsIndexable() const noexcept { return false; }
 	[[nodiscard]] constexpr virtual bool IsCallable() const noexcept { return false; }
+	[[nodiscard]] constexpr virtual bool IsAggregate() const noexcept { return false; }
 
 	[[nodiscard]] virtual IValue* Index(std::int64_t index);
+	[[nodiscard]] virtual IValue* GetAggregate([[maybe_unused]]std::size_t memberIdx) { return nullptr; }
 
 	[[nodiscard]] bool& AsBoolean();
 	[[nodiscard]] std::int64_t& AsInt();

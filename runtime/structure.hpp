@@ -22,6 +22,7 @@ class CRuntimeFunction;
 class CFunction;
 class IValue;
 class OperatorASTNode;
+class MemberAccessASTNode;
 class SubscriptASTNode;
 class FunctionCallASTNode;
 
@@ -113,6 +114,7 @@ private:
 	[[nodiscard]] static IValue* EvaluatePostfix(CFunction* const thisFunction, const OperatorASTNode* node);
 	[[nodiscard]] static IValue* EvaluateSequence(CFunction* const thisFunction, const AbstractSyntaxTree* node);
 
+	[[nodiscard]] static IValue* EvaluateMemberAccess(IValue* operand, const MemberAccessASTNode* node);
 	[[nodiscard]] static IValue* EvaluateSubscript(CFunction* const thisFunction, IValue* operand, const SubscriptASTNode* node);
 	[[nodiscard]] static IValue* EvaluateFunctionCall(CFunction* const thisFunction, IValue* operand, const FunctionCallASTNode* node);
 

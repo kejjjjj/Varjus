@@ -19,10 +19,13 @@ template<> COwningObjectPool<CCallableValue>     CProgramRuntime::m_oValuePool<C
 template<> COwningObjectPool<CArrayValue>        CProgramRuntime::m_oValuePool<CArrayValue>        (VALUEPOOL_INIT_SIZE);
 
 std::vector<RuntimeFunction> CProgramRuntime::m_oFunctions;
-
-CProgramRuntime::CProgramRuntime(CFileRuntimeData* const file)
+CProgramContext* CProgramRuntime::m_pContext{ nullptr };
+CProgramRuntime::CProgramRuntime(CFileRuntimeData* const file, CProgramContext* const context)
 {
+	m_pContext = context;
 	m_oFunctions = (std::move(file->m_oFunctions));
+
+	assert(m_pContext);
 }
 CProgramRuntime::~CProgramRuntime() { m_oFunctions.clear(); };
 
@@ -52,7 +55,10 @@ void CProgramRuntime::Execute()
 	return;
 
 }
-
+CProgramContext* CProgramRuntime::GetContext()
+{
+	return m_pContext;
+}
 CRuntimeFunction* CProgramRuntime::GetFunctionByIndex(std::size_t index)
 {
 	assert(index < m_oFunctions.size());

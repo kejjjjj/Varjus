@@ -2,7 +2,7 @@
 
 #include "linter/error.hpp"
 #include "linter/token.hpp"
-#include "linter/declarations/stack.hpp"
+#include "linter/functions/stack.hpp"
 #include "linter/scopes/scope.hpp"
 
 #include "globalEnums.hpp"

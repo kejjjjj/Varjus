@@ -3,12 +3,31 @@
 #include "runtime/variables.hpp"
 #include "runtime/exceptions/exception.hpp"
 
+#include "linter/context.hpp"
+
 #include <sstream>
 
-CArrayValue::CArrayValue(VectorOf<IValue*>&& v) :
-	CValue(std::make_shared<CInternalArrayValue>(std::move(v)))
+VectorOf<ElementIndex>& runtime::__internal::GetAggregateArrayData()
 {
+	static bool once = true;
+	static VectorOf<ElementIndex> elems;
+
+	if (!once)
+		return elems;
+
+	const auto context = CProgramRuntime::GetContext();
+	elems.push_back(context->m_oAllMembers["length"]);
+
+	once = false;
+	return elems;
 }
+
+
+CArrayValue::CArrayValue(VectorOf<IValue*>&& v) :
+	CValue(std::make_shared<CInternalArrayValue>(std::move(v))){
+}
+CArrayValue::~CArrayValue() = default;
+
 
 void CArrayValue::CreateOwnership()
 {
@@ -28,6 +47,7 @@ CArrayValue* CArrayValue::MakeShared() const
 {
 	CArrayValue* ptr = CProgramRuntime::AcquireNewValue<CArrayValue>();
 	ptr->GetRawValue() = m_oValue;
+	ptr->m_oIndexLookup = m_oIndexLookup;
 	return ptr;
 }
 IValue* CArrayValue::Copy(){
@@ -54,10 +74,21 @@ IValue* CArrayValue::Index(std::int64_t index)
 
 	return vec[static_cast<size_t>(index)]->GetValue();
 }
+IValue* CArrayValue::GetAggregate(std::size_t memberIdx)
+{
+	auto value = ElementLookup(memberIdx);
 
+	if (memberIdx == ARRAY_LENGTH) {
+		assert(value->IsIntegral());
+		value->AsInt() = static_cast<std::int64_t>(Internal()->Length());
+	}
+
+	return value;
+}
 CInternalArrayValue::CInternalArrayValue(VectorOf<IValue*>&& v){
 	Set(std::move(v));
 }
+CInternalArrayValue::~CInternalArrayValue() = default;
 
 void CInternalArrayValue::Release()
 {
@@ -78,7 +109,10 @@ void CInternalArrayValue::Set(VectorOf<IValue*>&& v){
 		var->SetValue(v[i++]);
 }
 
-
+std::size_t CInternalArrayValue::Length() const noexcept
+{
+	return m_oValue.size();
+}
 std::string CArrayValue::ValueAsString() const
 {
 	auto& vec = Internal()->GetRawValue();

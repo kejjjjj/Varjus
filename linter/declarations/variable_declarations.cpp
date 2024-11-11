@@ -1,5 +1,5 @@
 #include "variable_declarations.hpp"
-#include "stack.hpp"
+#include "linter/functions/stack.hpp"
 #include "linter/token.hpp"
 #include "linter/error.hpp"
 #include "linter/scopes/scope.hpp"

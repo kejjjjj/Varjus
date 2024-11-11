@@ -12,7 +12,7 @@
 class CVariable;
 class CRuntimeFunction;
 class CFileRuntimeData;
-
+struct CProgramContext;
 using RuntimeFunction = std::unique_ptr<CRuntimeFunction>;
 
 
@@ -29,11 +29,12 @@ class CProgramRuntime
 
 public:
 	// only one file for now
-	CProgramRuntime(CFileRuntimeData* const file);
+	CProgramRuntime(CFileRuntimeData* const file, CProgramContext* const context);
 	~CProgramRuntime();
 
 	void Execute();
 
+	[[nodiscard]] static CProgramContext* GetContext();
 	[[nodiscard]] static CRuntimeFunction* GetFunctionByIndex(std::size_t index);
 
 private:
@@ -117,4 +118,5 @@ public:
 private:
 	static CNonOwningObjectPool<CVariable> m_oVariablePool;
 	static std::vector<RuntimeFunction> m_oFunctions;
+	static CProgramContext* m_pContext;
 };

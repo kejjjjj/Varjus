@@ -6,6 +6,7 @@
 
 class AbstractSyntaxTree;
 class IPostfixBase;
+class CPostfixMemberAccess;
 class CPostfixSubscript;
 class CPostfixFunctionCall;
 class CMemory;
@@ -23,6 +24,7 @@ public:
 	[[nodiscard]] VectorOf<std::unique_ptr<IPostfixBase>> Move() noexcept;
 private:
 
+	[[nodiscard]] std::unique_ptr<CPostfixMemberAccess> ParseMemberAccess();
 	[[nodiscard]] std::unique_ptr<CPostfixSubscript> ParseSubscript();
 	[[nodiscard]] std::unique_ptr<CPostfixFunctionCall> ParseFunctionCall();
 
@@ -51,6 +53,21 @@ public:
 
 	[[nodiscard]] virtual constexpr EPostfixType Type() const noexcept = 0;
 	[[nodiscard]] virtual std::unique_ptr<AbstractSyntaxTree> ToAST() = 0;
+};
+
+class CPostfixMemberAccess final : public IPostfixBase
+{
+	NONCOPYABLE(CPostfixMemberAccess);
+public:
+	CPostfixMemberAccess(std::size_t globalMemberIndex)
+		: m_uGlobalMemberIndex(globalMemberIndex) {}
+
+	[[nodiscard]] constexpr EPostfixType Type() const noexcept override { return pf_subscript; }
+	[[nodiscard]] std::unique_ptr<AbstractSyntaxTree> ToAST() override;
+
+
+private:
+	std::size_t m_uGlobalMemberIndex;
 };
 
 class CPostfixSubscript final : public IPostfixBase

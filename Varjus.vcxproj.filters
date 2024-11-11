@@ -123,9 +123,6 @@
     <ClCompile Include="linter\declarations\variable_declarations.cpp">
       <Filter>Source Files\linter\declarations</Filter>
     </ClCompile>
-    <ClCompile Include="linter\declarations\stack.cpp">
-      <Filter>Source Files\linter\declarations</Filter>
-    </ClCompile>
     <ClCompile Include="runtime\structure.cpp">
       <Filter>Source Files\runtime</Filter>
     </ClCompile>
@@ -219,7 +216,16 @@
     <ClCompile Include="runtime\values\types\array.cpp">
       <Filter>Source Files\runtime\values\types</Filter>
     </ClCompile>
-    <ClCompile Include="runtime\values\types\internal\shared_ownership.cpp">
+    <ClCompile Include="linter\declarations\members.cpp">
+      <Filter>Source Files\linter\declarations</Filter>
+    </ClCompile>
+    <ClCompile Include="linter\functions\stack.cpp">
+      <Filter>Source Files\linter\functions</Filter>
+    </ClCompile>
+    <ClCompile Include="linter\context.cpp">
+      <Filter>Source Files\linter\global</Filter>
+    </ClCompile>
+    <ClCompile Include="runtime\values\types\internal\aggregate.cpp">
       <Filter>Source Files\runtime\values\types\internal</Filter>
     </ClCompile>
   </ItemGroup>
@@ -261,9 +267,6 @@
       <Filter>Source Files\linter\expressions</Filter>
     </ClInclude>
     <ClInclude Include="linter\declarations\variable_declarations.hpp">
-      <Filter>Source Files\linter\declarations</Filter>
-    </ClInclude>
-    <ClInclude Include="linter\declarations\stack.hpp">
       <Filter>Source Files\linter\declarations</Filter>
     </ClInclude>
     <ClInclude Include="globalDefinitions.hpp">
@@ -374,7 +377,16 @@
     <ClInclude Include="runtime\values\types\array.hpp">
       <Filter>Source Files\runtime\values\types</Filter>
     </ClInclude>
-    <ClInclude Include="runtime\values\types\internal\shared_ownership.hpp">
+    <ClInclude Include="linter\declarations\members.hpp">
+      <Filter>Source Files\linter\declarations</Filter>
+    </ClInclude>
+    <ClInclude Include="linter\functions\stack.hpp">
+      <Filter>Source Files\linter\functions</Filter>
+    </ClInclude>
+    <ClInclude Include="linter\context.hpp">
+      <Filter>Source Files\linter\global</Filter>
+    </ClInclude>
+    <ClInclude Include="runtime\values\types\internal\aggregate.hpp">
       <Filter>Source Files\runtime\values\types\internal</Filter>
     </ClInclude>
   </ItemGroup>

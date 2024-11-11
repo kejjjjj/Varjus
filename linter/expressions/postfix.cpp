@@ -2,7 +2,9 @@
 #include "linter/token.hpp"
 #include "linter/punctuation.hpp"
 #include "linter/scopes/scope.hpp"
-#include "linter/declarations/stack.hpp"
+#include "linter/functions/stack.hpp"
+#include "linter/error.hpp"
+#include "linter/context.hpp"
 
 #include "ast.hpp"
 #include "expression.hpp"
@@ -24,13 +26,16 @@ CPostfixLinter::~CPostfixLinter() = default;
 Success CPostfixLinter::ParsePostfix()
 {
 
-	while (m_iterPos != m_iterEnd && (*m_iterPos)->IsOperator()) {
+	while (!IsEndOfBuffer() && (*m_iterPos)->IsOperator()) {
 		const auto& asPunctuation = dynamic_cast<CPunctuationToken&>(**m_iterPos);
 
 		if (!IsPostfixOperator(asPunctuation))
 			break;
 
 		switch (asPunctuation.m_ePunctuation) {
+		case p_period:
+			m_oPostfixes.emplace_back(ParseMemberAccess());
+			break;
 		case p_bracket_open:
 			m_oPostfixes.emplace_back(ParseSubscript());
 			break;
@@ -52,6 +57,24 @@ Success CPostfixLinter::ParsePostfix()
 bool CPostfixLinter::IsPostfixOperator(const CPunctuationToken& token) const noexcept
 {
 	return token.m_ePriority == op_postfix;
+}
+
+std::unique_ptr<CPostfixMemberAccess> CPostfixLinter::ParseMemberAccess()
+{
+	assert((*m_iterPos)->IsOperator(p_period));
+	std::advance(m_iterPos, 1); // skip .
+
+	if (IsEndOfBuffer() || (*m_iterPos)->Type() != tt_name) {
+		CLinterErrors::PushError("expected a member name", GetIteratorSafe()->m_oSourcePosition);
+		return nullptr;
+	}
+
+	const auto& string = (*m_iterPos)->Source();
+
+	std::advance(m_iterPos, 1); // skip this identifier
+
+	auto& members = m_pOwner->GetContext()->m_oAllMembers;
+	return std::make_unique<CPostfixMemberAccess>(members[string]);
 }
 
 std::unique_ptr<CPostfixSubscript> CPostfixLinter::ParseSubscript()
@@ -88,16 +111,18 @@ std::unique_ptr<CPostfixFunctionCall> CPostfixLinter::ParseFunctionCall()
 	return std::make_unique<CPostfixFunctionCall>(expr.ToExpressionList());
 }
 
-[[nodiscard]] VectorOf<std::unique_ptr<IPostfixBase>> CPostfixLinter::Move() noexcept
-{
+[[nodiscard]] VectorOf<std::unique_ptr<IPostfixBase>> CPostfixLinter::Move() noexcept{
 	return std::move(m_oPostfixes);
+}
+
+std::unique_ptr<AbstractSyntaxTree> CPostfixMemberAccess::ToAST(){
+	return std::make_unique<MemberAccessASTNode>(m_uGlobalMemberIndex);
 }
 
 CPostfixSubscript::CPostfixSubscript(std::unique_ptr<AbstractSyntaxTree>&& ast) : m_pAST(std::move(ast)){}
 CPostfixSubscript::~CPostfixSubscript() = default;
 
-std::unique_ptr<AbstractSyntaxTree> CPostfixSubscript::ToAST()
-{
+std::unique_ptr<AbstractSyntaxTree> CPostfixSubscript::ToAST(){
 	return std::make_unique<SubscriptASTNode>(std::move(m_pAST));
 }
 
@@ -109,7 +134,6 @@ CPostfixFunctionCall::CPostfixFunctionCall(ExpressionList&& args)
 	:  m_pArgs(std::move(args)){}
 CPostfixFunctionCall::~CPostfixFunctionCall() = default;
 
-std::unique_ptr<AbstractSyntaxTree> CPostfixFunctionCall::ToAST()
-{
+std::unique_ptr<AbstractSyntaxTree> CPostfixFunctionCall::ToAST(){
 	return std::make_unique<FunctionCallASTNode>(std::move(m_pArgs));
 }

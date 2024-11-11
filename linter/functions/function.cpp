@@ -7,7 +7,7 @@
 #include "linter/punctuation.hpp"
 #include "linter/scopes/scope.hpp"
 #include "linter/linter.hpp"
-#include "linter/declarations/stack.hpp"
+#include "linter/functions/stack.hpp"
 #include "globalEnums.hpp"
 
 #include "runtime/structure.hpp"
@@ -20,7 +20,7 @@ CFunctionLinter::CFunctionLinter(LinterIterator& pos, LinterIterator& end, const
 
 Success CFunctionLinter::Parse()
 {
-	m_pThisStack = std::make_unique<CStack>(m_pOwner->m_pFile);
+	m_pThisStack = std::make_unique<CStack>(m_pOwner->m_pFile, m_pOwner->m_pContext);
 	
 	if (const auto scope = m_pScope.lock()) {
 		m_pThisScope = scope->CreateScope();

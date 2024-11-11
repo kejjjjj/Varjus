@@ -14,6 +14,7 @@ class IRuntimeStructure;
 class CFileRuntimeData;
 
 struct CFunctionBlock;
+struct CProgramContext;
 
 enum EMemoryIdentifierType
 {
@@ -58,7 +59,7 @@ class CMemory
 	friend class CFunctionLinter;
 	friend class CIdentifierLinter;
 public:
-	CMemory(CFileRuntimeData* const file);
+	CMemory(CFileRuntimeData* const file, CProgramContext* const context);
 	virtual ~CMemory();
 
 	[[nodiscard]] virtual bool IsStack() const noexcept { return false; }
@@ -78,12 +79,15 @@ public:
 
 	[[nodiscard]] CStack* ToStack();
 	[[nodiscard]] auto ToStack() const;
+
+	[[nodiscard]] constexpr CProgramContext* GetContext() const { return m_pContext; }
 protected:
 
 	std::unordered_map<std::string, CLinterVariable> m_oVariables;
 	std::unordered_map<std::string, CLinterFunction> m_oFunctions;
 
 	CFileRuntimeData* const m_pFile{};
+	CProgramContext* const m_pContext{};
 };
 
 using RuntimeBlock = std::unique_ptr<IRuntimeStructure>;
@@ -92,8 +96,8 @@ class CStack final : public CMemory
 {
 	NONCOPYABLE(CStack);
 public:
-	CStack(CFileRuntimeData* const file);
-	CStack(std::unique_ptr<CFunctionBlock>&& func, CFileRuntimeData* const file);
+	CStack(CFileRuntimeData* const file, CProgramContext* const context);
+	CStack(std::unique_ptr<CFunctionBlock>&& func, CFileRuntimeData* const file, CProgramContext* const context);
 	~CStack();
 
 	void AddFunctionInstruction(RuntimeBlock&& block) const;

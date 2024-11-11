@@ -5,7 +5,7 @@
 #include "linter/expressions/operator.hpp"
 #include "linter/expressions/operand.hpp"
 #include "linter/expressions/postfix.hpp"
-#include "linter/declarations/stack.hpp"
+#include "linter/functions/stack.hpp"
 
 #include "linter/token.hpp"
 

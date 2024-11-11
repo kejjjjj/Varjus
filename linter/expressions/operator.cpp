@@ -10,7 +10,7 @@
 #include <cassert>
 #include "sub_expression.hpp"
 #include <linter/declarations/variable_declarations.hpp>
-#include <linter/declarations/stack.hpp>
+#include <linter/functions/stack.hpp>
 
 Punctuation CLinterOperator::GetPunctuation() const noexcept { return m_pToken->m_ePunctuation; }
 
@@ -45,10 +45,6 @@ Success CLinterOperatorParser::ParseOperator(std::optional<PairMatcher>& eoe, CE
 		m_pToken = &asPunctuation;
 		if (!ParseSequence(eoe, expression))
 			return failure;
-
-		//if (EndOfExpression(eoe)) {
-		//	return success;
-		//}
 	}
 
 

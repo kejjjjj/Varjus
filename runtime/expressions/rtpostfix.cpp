@@ -23,8 +23,10 @@ IValue* CRuntimeExpression::EvaluatePostfix(CFunction* const thisFunction, const
 
 	if (node->IsSubscript()) {
 		returnVal = EvaluateSubscript(thisFunction, operand, node->As<const SubscriptASTNode*>());
-	}else if (node->IsFunctionCall()) {
+	} else if (node->IsFunctionCall()) {
 		returnVal = EvaluateFunctionCall(thisFunction, operand, node->As<const FunctionCallASTNode*>());
+	} else if (node->IsMemberAccess()) {
+		returnVal = EvaluateMemberAccess(operand, node->As<const MemberAccessASTNode*>());
 	}
 
 	if (!operand->HasOwner())
@@ -32,7 +34,15 @@ IValue* CRuntimeExpression::EvaluatePostfix(CFunction* const thisFunction, const
 
 	return returnVal;
 }
+IValue* CRuntimeExpression::EvaluateMemberAccess(IValue* operand, const MemberAccessASTNode* node)
+{
 
+	if(!operand->IsAggregate())
+		throw CRuntimeError(std::format("a value of type \"{}\" is not aggregate", operand->TypeAsString()));
+
+	return operand->GetAggregate(node->m_uGlobalMemberIndex);
+
+}
 IValue* CRuntimeExpression::EvaluateSubscript(CFunction* const thisFunction, IValue* operand, const SubscriptASTNode* node)
 {
 	if (!operand->IsIndexable())

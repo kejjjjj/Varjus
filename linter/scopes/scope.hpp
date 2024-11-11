@@ -1,7 +1,7 @@
 #pragma once
 
 #include "linter/expressions/definitions.hpp"
-#include "linter/declarations/stack.hpp"
+#include "linter/functions/stack.hpp"
 #include <unordered_set>
 
 struct CLinterVariable;

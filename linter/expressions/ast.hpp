@@ -132,6 +132,7 @@ public:
 	[[nodiscard]] constexpr bool IsOperator() const noexcept override { return true; }
 	
 	[[nodiscard]] virtual constexpr bool IsPostfix() const noexcept { return false; }
+	[[nodiscard]] virtual constexpr bool IsMemberAccess() const noexcept { return false; }
 	[[nodiscard]] virtual constexpr bool IsSubscript() const noexcept { return false; }
 	[[nodiscard]] virtual constexpr bool IsFunctionCall() const noexcept { return false; }
 
@@ -139,6 +140,19 @@ public:
 
 //private:
 	Punctuation m_ePunctuation{};
+};
+
+class MemberAccessASTNode : public OperatorASTNode
+{
+	NONCOPYABLE(MemberAccessASTNode);
+public:
+	MemberAccessASTNode(std::size_t globalMemberIndex)
+		: m_uGlobalMemberIndex(globalMemberIndex) {}
+
+	[[nodiscard]] constexpr bool IsMemberAccess() const noexcept override { return true; }
+	[[nodiscard]] constexpr bool IsPostfix() const noexcept { return true; }
+
+	std::size_t m_uGlobalMemberIndex;
 };
 
 class SubscriptASTNode : public OperatorASTNode

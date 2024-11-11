@@ -9,7 +9,7 @@
 #include "linter/token.hpp"
 #include "linter/error.hpp"
 #include "linter/punctuation.hpp"
-#include "linter/declarations/stack.hpp"
+#include "linter/functions/stack.hpp"
 #include "globalEnums.hpp"
 
 #include <cassert>
