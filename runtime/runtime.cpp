@@ -5,6 +5,7 @@
 
 #include <ranges>
 #include <iostream>
+#include <chrono>
 
 #define VALUEPOOL_INIT_SIZE size_t(100)
 
@@ -34,14 +35,21 @@ void CProgramRuntime::Execute()
 
 	const auto iMainFunction = std::ranges::find(m_oFunctions, "main", [](const RuntimeFunction& rf) { return rf->GetName(); });
 
+
 	if (iMainFunction == m_oFunctions.end()) {
 		return;
 	}
+
+	std::chrono::time_point<std::chrono::steady_clock> old = std::chrono::steady_clock::now();
 
 	std::vector<IValue*> args;
 	if (auto v = (*iMainFunction)->Execute(nullptr, args)) {
 		v->Release();
 	}
+
+	std::chrono::time_point<std::chrono::steady_clock> now = std::chrono::steady_clock::now();
+	std::chrono::duration<float> difference = now - old;
+	printf("\ntime taken: %.6f\n", difference.count());
 
 	std::cout << "\n\n--------------LEAKS--------------\n\n";
 	std::cout << std::format("undefined: {}\n",   GetPool<IValue>().GetInUseCount());

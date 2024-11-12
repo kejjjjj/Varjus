@@ -28,6 +28,7 @@ public:
     VectorOf<std::unique_ptr<T>> Acquire(std::size_t count) {
 
         VectorOf<std::unique_ptr<T>> result;
+        result.reserve(count);
 
         for ([[maybe_unused]] const auto i : std::views::iota(size_t(0), count))
             result.emplace_back(Acquire());

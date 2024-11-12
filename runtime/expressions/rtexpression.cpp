@@ -41,7 +41,7 @@ IValue* CRuntimeExpression::Evaluate(CFunction* const thisFunction, const Abstra
 	assert(node != nullptr);
 
 	if (node->IsPostfix()) 
-		return EvaluatePostfix(thisFunction, node->As<const OperatorASTNode*>());
+		return EvaluatePostfix(thisFunction, node->GetOperator());
 	
 	if (node->IsSequence())
 		return EvaluateSequence(thisFunction, node);
@@ -57,7 +57,7 @@ IValue* CRuntimeExpression::Evaluate(CFunction* const thisFunction, const Abstra
 
 	IValue* result{ nullptr };
 
-	switch (node->As<const OperatorASTNode*>()->m_ePunctuation) {
+	switch (node->GetOperator()->m_ePunctuation) {
 	case p_assign:
 		result = OP_ASSIGNMENT(lhs, rhs);
 		break;
@@ -81,21 +81,21 @@ IValue* CRuntimeExpression::Evaluate(CFunction* const thisFunction, const Abstra
 IValue* CRuntimeExpression::EvaluateLeaf(CFunction* const thisFunction, const AbstractSyntaxTree* node)
 {
 	if (node->IsVariable()) {
-		const auto var = node->As<const VariableASTNode*>();
+		const auto var = node->GetVariable();
 		auto v = thisFunction->GetVariableByIndex(var->m_uIndex)->GetValue();
 		assert(v->HasOwner());
 		return v;
 	}
 
 	if (node->IsFunction()) {
-		const auto var = node->As<const FunctionASTNode*>();
+		const auto var = node->GetFunction();
 		auto v = CProgramRuntime::AcquireNewValue<CCallableValue>(CProgramRuntime::GetFunctionByIndex(var->m_uIndex));
 		v->MakeImmutable();
 		return v;
 	}
 
 	if (node->IsArray()) {
-		const auto var = node->As<const ArrayASTNode*>();
+		const auto var = node->GetArray();
 		auto ptr = CProgramRuntime::AcquireNewValue<CArrayValue>();
 		ptr->CreateOwnership();
 		auto internal = ptr->Internal();
@@ -106,7 +106,7 @@ IValue* CRuntimeExpression::EvaluateLeaf(CFunction* const thisFunction, const Ab
 	}
 
 	if (node->IsConstant()) {
-		const auto constant = node->As<const ConstantASTNode*>(); 
+		const auto constant = node->GetConstant();
 		switch (constant->m_eDataType) {
 			case t_undefined:
 				return CProgramRuntime::AcquireNewValue<IValue>();

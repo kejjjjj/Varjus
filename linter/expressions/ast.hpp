@@ -16,6 +16,12 @@ class IRuntimeStructure;
 class CRuntimeFunction;
 struct COperandBase;
 
+class VariableASTNode;
+class ConstantASTNode;
+class FunctionASTNode;
+class ArrayASTNode;
+class OperatorASTNode;
+
 class AbstractSyntaxTree
 {
 public:
@@ -31,6 +37,12 @@ public:
 	[[nodiscard]] virtual constexpr bool IsConstant() const noexcept { return false; }
 	[[nodiscard]] virtual constexpr bool IsArray() const noexcept    { return false; }
 	[[nodiscard]] virtual constexpr bool IsSequence() const noexcept { return false; }
+
+	[[nodiscard]] virtual constexpr const OperatorASTNode* GetOperator() const noexcept { return nullptr; }
+	[[nodiscard]] virtual constexpr const VariableASTNode* GetVariable() const noexcept { return nullptr; }
+	[[nodiscard]] virtual constexpr const ConstantASTNode* GetConstant() const noexcept { return nullptr; }
+	[[nodiscard]] virtual constexpr const FunctionASTNode* GetFunction() const noexcept { return nullptr; }
+	[[nodiscard]] virtual constexpr const ArrayASTNode* GetArray() const noexcept { return nullptr; }
 
 	template<typename T>
 	[[nodiscard]] inline constexpr T As() const noexcept {
@@ -72,6 +84,8 @@ public:
 	[[nodiscard]] constexpr bool IsLeaf() const noexcept override { return true; }
 	[[nodiscard]] constexpr bool IsVariable() const noexcept override { return true; }
 
+	[[nodiscard]] constexpr const VariableASTNode* GetVariable() const noexcept override { return this; }
+
 	std::size_t m_uIndex{};
 
 private:
@@ -87,6 +101,8 @@ public:
 	[[nodiscard]] constexpr bool IsLeaf() const noexcept override { return true; }
 	[[nodiscard]] constexpr bool IsFunction() const noexcept override { return true; }
 
+	[[nodiscard]] constexpr const FunctionASTNode* GetFunction() const noexcept override { return this; }
+
 	std::size_t m_uIndex{};
 };
 class ConstantASTNode final : public AbstractSyntaxTree
@@ -100,6 +116,8 @@ public:
 
 	[[nodiscard]] constexpr bool IsLeaf() const noexcept override { return true; }
 	[[nodiscard]] constexpr bool IsConstant() const noexcept override { return true; }
+	[[nodiscard]] constexpr const ConstantASTNode* GetConstant() const noexcept override { return this; }
+
 
 	// contains the raw data for the constant
 	std::string m_pConstant;
@@ -117,6 +135,8 @@ public:
 	[[nodiscard]] constexpr bool IsLeaf() const noexcept override { return true; }
 	[[nodiscard]] constexpr bool IsArray() const noexcept override { return true; }
 
+	[[nodiscard]] constexpr const ArrayASTNode* GetArray() const noexcept override { return this; }
+
 	ExpressionList m_oExpressions;
 };
 
@@ -128,6 +148,8 @@ public:
 	OperatorASTNode() = default;
 	OperatorASTNode(Punctuation punc) : m_ePunctuation(punc) {}
 	virtual ~OperatorASTNode() = default;
+
+	[[nodiscard]] constexpr const OperatorASTNode* GetOperator() const noexcept override { return this; }
 
 	[[nodiscard]] constexpr bool IsOperator() const noexcept override { return true; }
 	

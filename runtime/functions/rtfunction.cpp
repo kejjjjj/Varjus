@@ -9,7 +9,6 @@
 #include <ranges>
 #include <algorithm>
 
-#include <chrono>
 #include <iostream>
 #include <runtime/exceptions/exception.hpp>
 
@@ -25,8 +24,6 @@ CRuntimeFunction::~CRuntimeFunction() = default;
 
 IValue* CRuntimeFunction::Execute([[maybe_unused]] CFunction* const thisFunction, VectorOf<IValue*>& args)
 {
-	std::chrono::time_point<std::chrono::steady_clock> old = std::chrono::steady_clock::now();
-
 	if (m_uNumParameters != args.size())
 		throw CRuntimeError(std::format("the callable expected {} arguments instead of {}", m_uNumParameters, args.size()));
 
@@ -49,15 +46,12 @@ IValue* CRuntimeFunction::Execute([[maybe_unused]] CFunction* const thisFunction
 		copy = CProgramRuntime::AcquireNewValue<IValue>();
 	}
 
-	std::chrono::time_point<std::chrono::steady_clock> now = std::chrono::steady_clock::now();
-	std::chrono::duration<float> difference = now - old;
-
 	std::ranges::for_each(func.m_oStack, [&thisFunction, &variablePool](std::unique_ptr<CVariable>& v) {
 		
 		auto& value = v->GetValue();
 
-		if(!thisFunction)
-			std::cout << value->ToPrintableString() << '\n';
+		//if(!thisFunction)
+		//	std::cout << value->ToPrintableString() << '\n';
 
 		assert(value->HasOwner());
 		value->Release();		
@@ -66,7 +60,6 @@ IValue* CRuntimeFunction::Execute([[maybe_unused]] CFunction* const thisFunction
 
 	});
 
-	//printf("\ntime taken: %.6f\n", difference.count());
 	return copy;
 }
 
