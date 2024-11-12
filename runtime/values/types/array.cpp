@@ -47,7 +47,6 @@ CArrayValue* CArrayValue::MakeShared() const
 {
 	CArrayValue* ptr = CProgramRuntime::AcquireNewValue<CArrayValue>();
 	ptr->GetRawValue() = m_oValue;
-	ptr->m_oIndexLookup = m_oIndexLookup;
 	return ptr;
 }
 IValue* CArrayValue::Copy(){
@@ -67,7 +66,7 @@ CInternalArrayValue* CArrayValue::Internal() const {
 
 IValue* CArrayValue::Index(std::int64_t index)
 {
-	auto& vec = m_oValue->GetRawValue();
+	auto& vec = m_oValue->GetVariables();
 
 	if (index < 0 || static_cast<size_t>(index) >= vec.size())
 		throw CRuntimeError("array index out of bounds");
@@ -76,7 +75,7 @@ IValue* CArrayValue::Index(std::int64_t index)
 }
 IValue* CArrayValue::GetAggregate(std::size_t memberIdx)
 {
-	auto value = ElementLookup(memberIdx);
+	auto value = Internal()->GetAggregateValue().ElementLookup(memberIdx);
 
 	if (memberIdx == ARRAY_LENGTH) {
 		assert(value->IsIntegral());
@@ -92,7 +91,9 @@ CInternalArrayValue::~CInternalArrayValue() = default;
 
 void CInternalArrayValue::Release()
 {
-	for (auto& v : m_oValue) {
+	GetAggregateValue().Release();
+
+	for (auto& v : GetVariables()) {
 		auto& value = v.get()->GetValue();
 		value->Release();
 		value = nullptr;
@@ -103,19 +104,19 @@ void CInternalArrayValue::Release()
 
 }
 void CInternalArrayValue::Set(VectorOf<IValue*>&& v){
-	m_oValue = CProgramRuntime::m_oVariablePool.Acquire(v.size());
+	m_oValue.m_oVariables = CProgramRuntime::m_oVariablePool.Acquire(v.size());
 
-	for (auto i = size_t(0); auto & var : m_oValue)
+	for (auto i = size_t(0); auto & var : m_oValue.m_oVariables)
 		var->SetValue(v[i++]);
 }
 
 std::size_t CInternalArrayValue::Length() const noexcept
 {
-	return m_oValue.size();
+	return GetVariables().size();
 }
 std::string CArrayValue::ValueAsString() const
 {
-	auto& vec = Internal()->GetRawValue();
+	auto& vec = Internal()->GetVariables();
 
 	if (vec.empty())
 		return "[]";

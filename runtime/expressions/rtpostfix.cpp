@@ -23,15 +23,26 @@ IValue* CRuntimeExpression::EvaluatePostfix(CFunction* const thisFunction, const
 
 	if (node->IsSubscript()) {
 		returnVal = EvaluateSubscript(thisFunction, operand, node->As<const SubscriptASTNode*>());
+		
+		if (!operand->HasOwner()) {
+			//accessing a temporary e.g. [[1, 2, 3]][0]
+			returnVal = returnVal->Copy();
+		}
+
 	} else if (node->IsFunctionCall()) {
 		returnVal = EvaluateFunctionCall(thisFunction, operand, node->As<const FunctionCallASTNode*>());
 	} else if (node->IsMemberAccess()) {
 		returnVal = EvaluateMemberAccess(operand, node->As<const MemberAccessASTNode*>());
+
+		if (!operand->HasOwner()) {
+			//accessing a temporary e.g. [1, 2, 3].length
+			returnVal = returnVal->Copy();
+		}
 	}
 
-	if (!operand->HasOwner())
+	if (!operand->HasOwner()) 
 		operand->Release();
-
+	
 	return returnVal;
 }
 IValue* CRuntimeExpression::EvaluateMemberAccess(IValue* operand, const MemberAccessASTNode* node)

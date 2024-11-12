@@ -98,8 +98,10 @@ IValue* CRuntimeExpression::EvaluateLeaf(CFunction* const thisFunction, const Ab
 		const auto var = node->As<const ArrayASTNode*>();
 		auto ptr = CProgramRuntime::AcquireNewValue<CArrayValue>();
 		ptr->CreateOwnership();
-		ptr->Internal()->Set(EvaluateList(thisFunction, var->m_oExpressions));
-		ptr->Setup(runtime::__internal::GetAggregateArrayData());
+		auto internal = ptr->Internal();
+		internal->Set(EvaluateList(thisFunction, var->m_oExpressions));
+		internal->GetAggregateValue().Setup(runtime::__internal::GetAggregateArrayData());
+
 		return ptr;
 	}
 

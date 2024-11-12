@@ -18,7 +18,7 @@ namespace runtime::__internal {
 	VectorOf<ElementIndex>& GetAggregateArrayData();
 }
 
-class CArrayValue final : public CValue<std::shared_ptr<CInternalArrayValue>>, public CAggregate
+class CArrayValue final : public CValue<std::shared_ptr<CInternalArrayValue>>
 {
 public:
 	CArrayValue() = default;
@@ -48,7 +48,15 @@ private:
 
 };
 
-class CInternalArrayValue : public CValue<VectorOf<std::unique_ptr<CVariable>>>
+using UniqueVariable = std::unique_ptr<CVariable>;
+
+struct CArrayContent final
+{
+	CAggregate m_oAggregate;
+	VectorOf<UniqueVariable> m_oVariables;
+};
+
+class CInternalArrayValue final : public CValue<CArrayContent>
 {
 public:
 	CInternalArrayValue() = default;
@@ -58,6 +66,12 @@ public:
 	void Release() override;
 
 	void Set(VectorOf<IValue*>&& v);
+
+	[[nodiscard]] constexpr auto& GetVariables() noexcept { return m_oValue.m_oVariables; }
+	[[nodiscard]] constexpr auto& GetVariables() const noexcept { return m_oValue.m_oVariables; }
+
+	[[nodiscard]] constexpr auto& GetAggregateValue() const noexcept { return m_oValue.m_oAggregate; }
+	[[nodiscard]] constexpr auto& GetAggregateValue() noexcept { return m_oValue.m_oAggregate; }
 
 	[[nodiscard]] std::size_t Length() const noexcept;
 };

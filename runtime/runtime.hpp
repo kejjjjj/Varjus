@@ -26,6 +26,7 @@ class CProgramRuntime
 	friend class CRuntimeFunction;
 	friend class CRuntimeExpression;
 	friend class CInternalArrayValue;
+	friend class CAggregate;
 
 public:
 	// only one file for now

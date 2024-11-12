@@ -11,10 +11,10 @@ IValue* OP_ASSIGNMENT(IValue* lhs, IValue* rhs)
 	auto variable = lhs->GetOwner();
 
 	if (lhs->IsImmutable())
-		throw CRuntimeError("Cannot assign to an immutable value");
+		throw CRuntimeError("cannot assign to an immutable value");
 
 	if (!variable)
-		throw CRuntimeError("Left-handside must have a memory address");
+		throw CRuntimeError("cannot assign to a temporary value");
 
 	if (lhs == rhs)
 		return lhs;
