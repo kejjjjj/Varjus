@@ -19,6 +19,8 @@ public:
 
 	[[nodiscard]] auto& GetValue() noexcept { return m_pValue; }
 
+	void Release();
+
 protected:
 	IValue* m_pValue{};
 };

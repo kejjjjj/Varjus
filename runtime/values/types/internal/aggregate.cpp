@@ -14,7 +14,7 @@ void CAggregate::Setup(const std::vector<ElementIndex>& elements)
 
 	for (auto& l : elements) {
 		
-		const auto& var = (m_oIndexLookup[l] = std::move(CProgramRuntime::m_oVariablePool.Acquire()));
+		const auto& var = m_oIndexLookup[l] = CProgramRuntime::AcquireNewVariable();
 
 		if (l == ARRAY_LENGTH) {			
 			var->SetValue(CProgramRuntime::AcquireNewValue<CIntValue>(0));
@@ -30,10 +30,7 @@ void CAggregate::Setup(const std::vector<ElementIndex>& elements)
 void CAggregate::Release()
 {
 	for (auto& [idx, v] : m_oIndexLookup) {
-		auto& value = v->GetValue();
-		value->Release();
-		value = nullptr;
-		CProgramRuntime::m_oVariablePool.Release(std::move(v));
+		v->Release();
 	}
 
 }

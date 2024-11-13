@@ -28,7 +28,7 @@ Success CLinterSubExpression::ParseSubExpression(std::optional<PairMatcher>& eoe
 	if (EndOfExpression())
 		return failure;
 
-	m_oLhsOperand = std::make_unique<CLinterOperand>(m_iterPos, m_iterEnd, m_pScope, m_pOwner);
+	m_oLhsOperand = std::make_unique<CLinterOperand>(m_iterPos, m_iterEnd, m_pScope, m_pOwner, eoe);
 	if (!m_oLhsOperand->ParseOperand()) {
 		m_oLhsOperand.reset();
 		return failure;

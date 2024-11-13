@@ -94,17 +94,11 @@ void CInternalArrayValue::Release()
 	GetAggregateValue().Release();
 
 	for (auto& v : GetVariables()) {
-		auto& value = v.get()->GetValue();
-		value->Release();
-		value = nullptr;
-		CProgramRuntime::m_oVariablePool.Release(std::move(v));
+		v->Release();
 	}
-
-	//ReleaseInternal();
-
 }
 void CInternalArrayValue::Set(VectorOf<IValue*>&& v){
-	m_oValue.m_oVariables = CProgramRuntime::m_oVariablePool.Acquire(v.size());
+	m_oValue.m_oVariables = CProgramRuntime::AcquireNewVariables(v.size());
 
 	for (auto i = size_t(0); auto & var : m_oValue.m_oVariables)
 		var->SetValue(v[i++]);
@@ -124,7 +118,7 @@ std::string CArrayValue::ValueAsString() const
 	std::stringstream ss;
 
 	for (const auto& v : vec)
-		ss << v.get()->GetValue()->ValueAsString() << ", ";
+		ss << v->GetValue()->ValueAsString() << ", ";
 
 	auto result = ss.str();
 	result.erase(result.size() - 2, 2);

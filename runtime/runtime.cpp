@@ -9,8 +9,9 @@
 
 #define VALUEPOOL_INIT_SIZE size_t(100)
 
-CNonOwningObjectPool<CVariable>                  CProgramRuntime::m_oVariablePool                  (VALUEPOOL_INIT_SIZE);
+//CNonOwningObjectPool<CVariable>                  CProgramRuntime::m_oVariablePool                  (VALUEPOOL_INIT_SIZE);
 
+template<> COwningObjectPool<CVariable>          CProgramRuntime::m_oValuePool<CVariable>          (VALUEPOOL_INIT_SIZE);
 template<> COwningObjectPool<IValue>             CProgramRuntime::m_oValuePool<IValue>             (VALUEPOOL_INIT_SIZE);
 template<> COwningObjectPool<CBooleanValue>      CProgramRuntime::m_oValuePool<CBooleanValue>      (VALUEPOOL_INIT_SIZE);
 template<> COwningObjectPool<CIntValue>          CProgramRuntime::m_oValuePool<CIntValue>          (VALUEPOOL_INIT_SIZE);

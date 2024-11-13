@@ -16,10 +16,10 @@ class CFunction
 	NONCOPYABLE(CFunction);
 	friend class CRuntimeFunction;
 public:
-	CFunction(VectorOf<IValue*>& args, VectorOf<std::unique_ptr<CVariable>>&& variables);
+	CFunction(VectorOf<IValue*>& args, VectorOf<CVariable*>&& variables);
 
 	[[nodiscard]] CVariable* GetVariableByIndex(std::size_t index) const;
 
 private:
-	VectorOf<std::unique_ptr<CVariable>> m_oStack;
+	VectorOf<CVariable*> m_oStack;
 };

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <utility>
 
 #include "globalDefinitions.hpp"
 #include "definitions.hpp"
@@ -9,6 +10,9 @@
 class AbstractSyntaxTree;
 using ASTNode = std::shared_ptr<AbstractSyntaxTree>;
 using ExpressionList = VectorOf<std::unique_ptr<AbstractSyntaxTree>>;
+using UniqueAST = std::unique_ptr<AbstractSyntaxTree>;
+template<typename A, typename B>
+using KeyValue = std::pair<A, B>;
 
 class CLinterOperand;
 class CLinterOperator;
@@ -20,6 +24,8 @@ class VariableASTNode;
 class ConstantASTNode;
 class FunctionASTNode;
 class ArrayASTNode;
+class KeyValueASTNode;
+class ObjectASTNode;
 class OperatorASTNode;
 
 class AbstractSyntaxTree
@@ -43,6 +49,8 @@ public:
 	[[nodiscard]] virtual constexpr const ConstantASTNode* GetConstant() const noexcept { return nullptr; }
 	[[nodiscard]] virtual constexpr const FunctionASTNode* GetFunction() const noexcept { return nullptr; }
 	[[nodiscard]] virtual constexpr const ArrayASTNode* GetArray() const noexcept { return nullptr; }
+	[[nodiscard]] virtual constexpr const KeyValueASTNode* GetKeyValue() const noexcept { return nullptr; }
+	[[nodiscard]] virtual constexpr const ObjectASTNode* GetObject() const noexcept { return nullptr; }
 
 	template<typename T>
 	[[nodiscard]] inline constexpr T As() const noexcept {
@@ -140,6 +148,39 @@ public:
 	ExpressionList m_oExpressions;
 };
 
+class KeyValueASTNode final : public AbstractSyntaxTree
+{
+	NONCOPYABLE(KeyValueASTNode);
+
+public:
+
+	KeyValueASTNode(KeyValue<std::size_t, UniqueAST>&& expressions);
+	~KeyValueASTNode();
+
+	[[nodiscard]] constexpr bool IsLeaf() const noexcept override { return true; }
+	[[nodiscard]] constexpr bool IsArray() const noexcept override { return true; }
+
+	[[nodiscard]] constexpr const KeyValueASTNode* GetKeyValue() const noexcept override { return this; }
+
+	KeyValue<std::size_t, UniqueAST> m_oValue;
+};
+
+class ObjectASTNode final : public AbstractSyntaxTree
+{
+	NONCOPYABLE(ObjectASTNode);
+
+public:
+
+	ObjectASTNode(VectorOf<KeyValue<std::size_t, UniqueAST>>&& expressions);
+	~ObjectASTNode();
+
+	[[nodiscard]] constexpr bool IsLeaf() const noexcept override { return true; }
+	[[nodiscard]] constexpr bool IsArray() const noexcept override { return true; }
+
+	[[nodiscard]] constexpr const ObjectASTNode* GetObject() const noexcept override { return this; }
+
+	VectorOf<KeyValue<std::size_t, UniqueAST>> m_oAttributes;
+};
 class OperatorASTNode : public AbstractSyntaxTree
 {
 	friend class AstToInstructionConverter;

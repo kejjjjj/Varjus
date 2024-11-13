@@ -138,5 +138,14 @@ ConstantASTNode::ConstantASTNode(const std::string& data, EValueType datatype)
 	: m_pConstant(data), m_eDataType(datatype) {}
 ConstantASTNode::~ConstantASTNode() = default;
 
-ArrayASTNode::ArrayASTNode(ExpressionList&& expressions) : m_oExpressions(std::move(expressions)) {}
+ArrayASTNode::ArrayASTNode(ExpressionList&& expressions) 
+	: m_oExpressions(std::move(expressions)) {}
 ArrayASTNode::~ArrayASTNode() = default;
+
+KeyValueASTNode::KeyValueASTNode(KeyValue<std::size_t, UniqueAST>&& expr)
+	: m_oValue(std::move(expr)){}
+KeyValueASTNode::~KeyValueASTNode() = default;
+
+ObjectASTNode::ObjectASTNode(VectorOf<KeyValue<std::size_t, UniqueAST>>&& expressions) 
+	: m_oAttributes(std::move(expressions)){}
+ObjectASTNode::~ObjectASTNode() = default;

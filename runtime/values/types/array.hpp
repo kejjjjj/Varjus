@@ -48,12 +48,10 @@ private:
 
 };
 
-using UniqueVariable = std::unique_ptr<CVariable>;
-
 struct CArrayContent final
 {
 	CAggregate m_oAggregate;
-	VectorOf<UniqueVariable> m_oVariables;
+	VectorOf<CVariable*> m_oVariables;
 };
 
 class CInternalArrayValue final : public CValue<CArrayContent>

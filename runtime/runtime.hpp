@@ -17,7 +17,9 @@ using RuntimeFunction = std::unique_ptr<CRuntimeFunction>;
 
 
 template<typename T>
-concept IValueChild = std::is_base_of_v<IValue, T>;
+concept IValueChild = std::is_base_of_v<IValue, T> || std::is_same_v<CVariable, T>;
+template<typename T>
+concept VariableT = std::is_same_v<CVariable, T>;
 
 class CProgramRuntime
 {
@@ -47,11 +49,11 @@ private:
 public:
 
 	template <IValueChild T>
-	static constexpr COwningObjectPool<T>& GetPool() {
+	[[nodiscard]] static constexpr COwningObjectPool<T>& GetPool() {
 		return m_oValuePool<T>;
 	}
 
-	static size_t GetPoolUseCount() {
+	[[nodiscard]] static size_t GetPoolUseCount() {
 		return 
 			GetPool<IValue>().GetInUseCount()
 			+ GetPool<CBooleanValue>().GetInUseCount()
@@ -62,11 +64,12 @@ public:
 
 	}
 
-	template <IValueChild T>
-	static constexpr T* AcquireNewValue() {
-		//std::cout << std::format("{}A {}\n",
-		//	std::string(GetPool<T>().GetInUseCount(), '-'), typeid(T).name());
+	[[nodiscard]] static CVariable* AcquireNewVariable();
+	[[nodiscard]] static VectorOf<CVariable*> AcquireNewVariables(std::size_t count);
+	[[nodiscard]] static void FreeVariable(CVariable* var);
 
+	template <IValueChild T>
+	[[nodiscard]] static constexpr T* AcquireNewValue() {
 		auto v = GetPool<T>().Acquire();
 		v->SetOwner(nullptr);
 		assert(!v->HasOwner());
@@ -74,11 +77,8 @@ public:
 	}
 
 	template <IValueChild T, typename Ctor>
-	static constexpr T* AcquireNewValue(const Ctor& ctor) {
-		
-		//std::cout << std::format("{}A {}\n",
-		//	std::string(GetPool<T>().GetInUseCount(), '-'), typeid(T).name());
-
+	[[nodiscard]] static constexpr T* AcquireNewValue(const Ctor& ctor) {
+	
 		auto v = GetPool<T>().Acquire();
 		v->SetOwner(nullptr);
 		assert(!v->HasOwner());
@@ -92,10 +92,7 @@ public:
 	}
 
 	template <IValueChild T, typename Ctor>
-	static constexpr T* AcquireNewValue(Ctor&& ctor) {
-		//std::cout << std::format("{}A {}\n",
-		//	std::string(GetPool<T>().GetInUseCount(), '-'), typeid(T).name());
-
+	[[nodiscard]] static constexpr T* AcquireNewValue(Ctor&& ctor) {
 		auto v = GetPool<T>().Acquire();
 		v->SetOwner(nullptr);
 		assert(!v->HasOwner());
@@ -112,12 +109,9 @@ public:
 	static constexpr void FreeValue(T* value) {
 		assert(!value->HasOwner());
 		GetPool<T>().Release(value);
-		//std::cout << std::format("{}D {}\n",
-		//	std::string(GetPool<T>().GetInUseCount(), '-'), typeid(T).name());
 	}
 
 private:
-	static CNonOwningObjectPool<CVariable> m_oVariablePool;
 	static std::vector<RuntimeFunction> m_oFunctions;
 	static CProgramContext* m_pContext;
 };

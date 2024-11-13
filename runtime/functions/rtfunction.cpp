@@ -27,8 +27,7 @@ IValue* CRuntimeFunction::Execute([[maybe_unused]] CFunction* const thisFunction
 	if (m_uNumParameters != args.size())
 		throw CRuntimeError(std::format("the callable expected {} arguments instead of {}", m_uNumParameters, args.size()));
 
-	auto& variablePool = CProgramRuntime::m_oVariablePool;
-	auto func = CFunction(args, variablePool.Acquire(m_uNumVariables));
+	auto func = CFunction(args, CProgramRuntime::AcquireNewVariables(m_uNumVariables));
 
 	IValue* returnVal{ nullptr };
 
@@ -46,24 +45,16 @@ IValue* CRuntimeFunction::Execute([[maybe_unused]] CFunction* const thisFunction
 		copy = CProgramRuntime::AcquireNewValue<IValue>();
 	}
 
-	std::ranges::for_each(func.m_oStack, [&thisFunction, &variablePool](std::unique_ptr<CVariable>& v) {
-		
-		auto& value = v->GetValue();
-
+	std::ranges::for_each(func.m_oStack, [](CVariable*& v) {
 		//if(!thisFunction)
-		//	std::cout << value->ToPrintableString() << '\n';
-
-		assert(value->HasOwner());
-		value->Release();		
-		value = nullptr;
-		variablePool.Release(std::move(v)); 
-
+			//	std::cout << value->ToPrintableString() << '\n';
+		v->Release();
 	});
 
 	return copy;
 }
 
-CFunction::CFunction(VectorOf<IValue*>& args, VectorOf<std::unique_ptr<CVariable>>&& variables) : m_oStack(std::move(variables))
+CFunction::CFunction(VectorOf<IValue*>& args, VectorOf<CVariable*>&& variables) : m_oStack(std::move(variables))
 {
 
 	for (auto i = size_t(0); i < args.size(); i++) {
@@ -79,5 +70,5 @@ CFunction::CFunction(VectorOf<IValue*>& args, VectorOf<std::unique_ptr<CVariable
 
 CVariable* CFunction::GetVariableByIndex(std::size_t index) const
 {
-	return m_oStack[index].get();
+	return m_oStack[index];
 }

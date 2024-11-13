@@ -9,7 +9,6 @@ class CVariable;
 
 using GlobalMemberIndex = std::size_t;
 using ElementIndex = std::size_t;
-using UniqueVariable = std::unique_ptr<CVariable>;
 
 #define ARRAY_LENGTH std::size_t(0)
 
@@ -26,5 +25,5 @@ public:
 	[[nodiscard]] IValue* ElementLookup(GlobalMemberIndex index) const;
 
 protected:
-	std::unordered_map<ElementIndex, UniqueVariable> m_oIndexLookup;
+	std::unordered_map<ElementIndex, CVariable*> m_oIndexLookup;
 };

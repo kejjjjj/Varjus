@@ -7,6 +7,7 @@
 #include "linter/punctuation.hpp"
 #include "linter/token.hpp"
 #include "linter/error.hpp"
+#include "linter/context.hpp"
 #include "linter/functions/stack.hpp"
 
 #include "ast.hpp"
@@ -22,8 +23,9 @@ CIdentifierLinter* COperandBase::GetIdentifier()const  noexcept {
 }
 
 
-CLinterOperand::CLinterOperand(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack)
-	:CLinterSingle(pos, end), m_pScope(scope), m_pOwner(stack) {
+CLinterOperand::CLinterOperand(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, 
+	CMemory* const stack, std::optional<PairMatcher>& eoe)
+	:CLinterSingle(pos, end), m_pScope(scope), m_pOwner(stack), m_oEndOfExpression(eoe) {
 
 	assert(m_iterPos != m_iterEnd);
 
@@ -43,6 +45,8 @@ Success CLinterOperand::ParseOperand()
 		m_pOperand = ParseParentheses();
 	} else if (token->IsOperator(p_bracket_open)) {
 		m_pOperand = ParseArray();
+	} else if (token->IsOperator(p_curlybracket_open)) {
+		m_pOperand = ParseObject();
 	} else {
 		m_pOperand = ParseIdentifier();
 	}
@@ -68,6 +72,8 @@ std::unique_ptr<COperandBase> CLinterOperand::ParseParentheses()
 }
 std::unique_ptr<COperandBase> CLinterOperand::ParseIdentifier()
 {
+	//todo: parse keyvalue
+
 	auto operand = std::make_unique<CIdentifierOperand>(m_iterPos, m_iterEnd, m_pScope, m_pOwner);
 	if (!operand->m_oIdentifierToken->ParseIdentifier()) {
 		return nullptr;
@@ -88,6 +94,49 @@ std::unique_ptr<COperandBase> CLinterOperand::ParseArray()
 
 	return std::make_unique<CArrayOperand>(expr.ToExpressionList());
 }
+std::unique_ptr<COperandBase> CLinterOperand::ParseKeyValue()
+{
+	if (IsEndOfBuffer() || (*m_iterPos)->Type() != tt_name) {
+		CLinterErrors::PushError("expected an identifier", GetIteratorSafe()->m_oSourcePosition);
+		return nullptr;
+	}
+	auto& identifier = (*m_iterPos)->Source();
+
+	std::advance(m_iterPos, 1); // skip identifier
+
+	if (IsEndOfBuffer() || (*m_iterPos)->IsOperator(p_colon)) {
+		CLinterErrors::PushError("expected \":\"", GetIteratorSafe()->m_oSourcePosition);
+		return nullptr;
+	}
+
+	std::advance(m_iterPos, 1); // skip :
+
+	CLinterExpression expr(m_iterPos, m_iterEnd, m_pScope, m_pOwner);
+	if (!expr.Parse(m_oEndOfExpression))
+		return nullptr;
+
+	return std::make_unique<CKeyValueOperand>(
+		std::make_pair(
+			m_pOwner->GetContext()->m_oAllMembers[identifier],
+			expr.ToMergedAST()
+		)
+	);
+}
+std::unique_ptr<COperandBase> CLinterOperand::ParseObject()
+{
+	std::advance(m_iterPos, 1); // skip {
+
+	if (IsEndOfBuffer() || (*m_iterPos)->IsOperator(p_curlybracket_close))
+		return std::make_unique<CObjectOperand>();
+
+	CLinterExpression expr(m_iterPos, m_iterEnd, m_pScope, m_pOwner);
+	if (!expr.Parse(PairMatcher(p_curlybracket_open)))
+		return nullptr;
+
+	assert(false);
+	return nullptr;
+
+}
 
 bool CLinterOperand::IsExpression() const noexcept
 {
@@ -104,6 +153,18 @@ bool CLinterOperand::IsArray() const noexcept
 	assert(IsArray());
 	return dynamic_cast<CArrayOperand*>(m_pOperand.get());
 }
+
+bool CLinterOperand::IsObject() const noexcept
+{
+	assert(m_pOperand != nullptr);
+	return m_pOperand->Type() == ot_object;
+}
+CObjectOperand* CLinterOperand::GetObject() const noexcept
+{
+	assert(IsObject());
+	return dynamic_cast<CObjectOperand*>(m_pOperand.get());
+}
+
 std::unique_ptr<AbstractSyntaxTree> CLinterOperand::OperandToAST() const noexcept
 {
 	if (IsImmediate()) {
@@ -115,6 +176,8 @@ std::unique_ptr<AbstractSyntaxTree> CLinterOperand::OperandToAST() const noexcep
 		return std::make_unique<FunctionASTNode>(GetFunction()->m_uIndex);
 	} else if (IsArray()) {
 		return std::make_unique<ArrayASTNode>(std::move(GetArray()->m_oExpressions));
+	} else if (IsObject()) {
+		return std::make_unique<ObjectASTNode>(std::move(GetObject()->m_oAttributes));
 	} else if (IsExpression()) {
 		return ExpressionToAST();
 	}
@@ -214,4 +277,8 @@ CASTOperand::~CASTOperand() = default;
 CArrayOperand::CArrayOperand(ExpressionList&& ptr) : m_oExpressions(std::move(ptr)){}
 CArrayOperand::~CArrayOperand() = default;
 
+CKeyValueOperand::CKeyValueOperand(KeyValue<std::size_t, UniqueAST>&& ptr) : m_oValue(std::move(ptr)){}
+CKeyValueOperand::~CKeyValueOperand() = default;
 
+CObjectOperand::CObjectOperand(VectorOf<KeyValue<std::size_t, UniqueAST>>&& ptr) : m_oAttributes(std::move(ptr)){}
+CObjectOperand::~CObjectOperand() = default;
