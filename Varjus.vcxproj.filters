@@ -228,6 +228,9 @@
     <ClCompile Include="runtime\values\types\internal\aggregate.cpp">
       <Filter>Source Files\runtime\values\types\internal</Filter>
     </ClCompile>
+    <ClCompile Include="runtime\values\types\object.cpp">
+      <Filter>Source Files\runtime\values\types</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="fs\fs_io.hpp">
@@ -388,6 +391,9 @@
     </ClInclude>
     <ClInclude Include="runtime\values\types\internal\aggregate.hpp">
       <Filter>Source Files\runtime\values\types\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="runtime\values\types\object.hpp">
+      <Filter>Source Files\runtime\values\types</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

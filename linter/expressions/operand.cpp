@@ -72,7 +72,12 @@ std::unique_ptr<COperandBase> CLinterOperand::ParseParentheses()
 }
 std::unique_ptr<COperandBase> CLinterOperand::ParseIdentifier()
 {
-	//todo: parse keyvalue
+	//key:value?
+	auto nextToken = std::next(m_iterPos);
+	if (!EndOfExpression(m_oEndOfExpression, nextToken)) {
+		if ((*nextToken)->IsOperator(p_colon))
+			return ParseKeyValue();
+	}
 
 	auto operand = std::make_unique<CIdentifierOperand>(m_iterPos, m_iterEnd, m_pScope, m_pOwner);
 	if (!operand->m_oIdentifierToken->ParseIdentifier()) {
@@ -104,7 +109,7 @@ std::unique_ptr<COperandBase> CLinterOperand::ParseKeyValue()
 
 	std::advance(m_iterPos, 1); // skip identifier
 
-	if (IsEndOfBuffer() || (*m_iterPos)->IsOperator(p_colon)) {
+	if (IsEndOfBuffer() || !(*m_iterPos)->IsOperator(p_colon)) {
 		CLinterErrors::PushError("expected \":\"", GetIteratorSafe()->m_oSourcePosition);
 		return nullptr;
 	}
@@ -112,7 +117,7 @@ std::unique_ptr<COperandBase> CLinterOperand::ParseKeyValue()
 	std::advance(m_iterPos, 1); // skip :
 
 	CLinterExpression expr(m_iterPos, m_iterEnd, m_pScope, m_pOwner);
-	if (!expr.Parse(m_oEndOfExpression))
+	if (!expr.ParseInternal(m_oEndOfExpression))
 		return nullptr;
 
 	return std::make_unique<CKeyValueOperand>(
@@ -133,8 +138,20 @@ std::unique_ptr<COperandBase> CLinterOperand::ParseObject()
 	if (!expr.Parse(PairMatcher(p_curlybracket_open)))
 		return nullptr;
 
-	assert(false);
-	return nullptr;
+	auto object = std::make_unique<CObjectOperand>();
+	for (auto& elem : expr.ToExpressionList()) {
+
+		auto keyValue = const_cast<KeyValueASTNode*>(elem->GetKeyValue());
+
+		if (!keyValue) {
+			CLinterErrors::PushError("expected a key:value pair in object creation", GetIteratorSafe()->m_oSourcePosition);
+			return nullptr;
+		}
+
+		object->m_oAttributes.emplace_back(std::move(keyValue->m_oValue));
+	}
+
+	return object;
 
 }
 
@@ -153,7 +170,16 @@ bool CLinterOperand::IsArray() const noexcept
 	assert(IsArray());
 	return dynamic_cast<CArrayOperand*>(m_pOperand.get());
 }
-
+bool CLinterOperand::IsKeyValue() const noexcept
+{
+	assert(m_pOperand != nullptr);
+	return m_pOperand->Type() == ot_key_value;
+}
+CKeyValueOperand* CLinterOperand::GetKeyValue() const noexcept
+{
+	assert(IsKeyValue());
+	return dynamic_cast<CKeyValueOperand*>(m_pOperand.get());
+}
 bool CLinterOperand::IsObject() const noexcept
 {
 	assert(m_pOperand != nullptr);
@@ -176,6 +202,8 @@ std::unique_ptr<AbstractSyntaxTree> CLinterOperand::OperandToAST() const noexcep
 		return std::make_unique<FunctionASTNode>(GetFunction()->m_uIndex);
 	} else if (IsArray()) {
 		return std::make_unique<ArrayASTNode>(std::move(GetArray()->m_oExpressions));
+	} else if (IsKeyValue()) {
+		return std::make_unique<KeyValueASTNode>(std::move(GetKeyValue()->m_oValue));
 	} else if (IsObject()) {
 		return std::make_unique<ObjectASTNode>(std::move(GetObject()->m_oAttributes));
 	} else if (IsExpression()) {
@@ -233,7 +261,7 @@ bool CLinterOperand::IsImmediate() const noexcept
 {
 	assert(m_pOperand != nullptr);
 
-	if (IsExpression() || IsArray())
+	if (IsExpression() || IsArray() || IsObject() || IsKeyValue())
 		return false;
 
 	const auto type = m_pOperand->GetIdentifier()->GetToken()->Type();
@@ -243,7 +271,7 @@ bool CLinterOperand::IsVariable() const noexcept
 {
 	assert(m_pOperand != nullptr);
 
-	if (IsExpression() || IsArray() || !m_pOperand->GetIdentifier()->m_pIdentifier)
+	if (IsExpression() || IsArray() || IsObject() || IsKeyValue() || !m_pOperand->GetIdentifier()->m_pIdentifier)
 		return false;
 
 	return m_pOperand->GetIdentifier()->m_pIdentifier->Type() == mi_variable;
@@ -257,7 +285,7 @@ bool CLinterOperand::IsFunction() const noexcept
 {
 	assert(m_pOperand != nullptr);
 
-	if (IsExpression() || IsArray() || !m_pOperand->GetIdentifier()->m_pIdentifier)
+	if (IsExpression() || IsArray() || IsObject() || IsKeyValue() || !m_pOperand->GetIdentifier()->m_pIdentifier)
 		return false;
 
 	return m_pOperand->GetIdentifier()->m_pIdentifier->Type() == mi_function;
@@ -266,6 +294,20 @@ const CLinterFunction* CLinterOperand::GetFunction() const noexcept
 {
 	assert(IsFunction());
 	return dynamic_cast<const CLinterFunction*>(m_pOperand->GetIdentifier()->m_pIdentifier);
+}
+
+bool CLinterOperand::EndOfExpression(const std::optional<PairMatcher>& eoe, LinterIterator& pos) const noexcept
+{
+	if (pos == m_iterEnd)
+		return true;
+
+	if (!eoe)
+		return (*pos)->IsOperator(p_semicolon);
+
+	if (!(*pos)->IsOperator())
+		return false;
+
+	return eoe->IsClosing(dynamic_cast<const CPunctuationToken*>(*pos)->m_ePunctuation);
 }
 
 /***********************************************************************

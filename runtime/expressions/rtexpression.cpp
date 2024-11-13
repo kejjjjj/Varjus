@@ -80,6 +80,11 @@ IValue* CRuntimeExpression::Evaluate(CFunction* const thisFunction, const Abstra
 
 IValue* CRuntimeExpression::EvaluateLeaf(CFunction* const thisFunction, const AbstractSyntaxTree* node)
 {
+
+	if (node->GetKeyValue()) {
+		throw CRuntimeError("key:value pairs are only allowed in object initializers");
+	}
+
 	if (node->IsVariable()) {
 		const auto var = node->GetVariable();
 		auto v = thisFunction->GetVariableByIndex(var->m_uIndex)->GetValue();

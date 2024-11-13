@@ -100,7 +100,7 @@ struct CKeyValueOperand final : public COperandBase
 	~CKeyValueOperand();
 
 	[[nodiscard]] EOperandBaseType Type() const noexcept override {
-		return ot_object;
+		return ot_key_value;
 	}
 
 	KeyValue<std::size_t, UniqueAST> m_oValue;
@@ -141,6 +141,9 @@ public:
 	[[nodiscard]] bool IsArray() const noexcept;
 	[[nodiscard]] CArrayOperand* GetArray() const noexcept;
 
+	[[nodiscard]] bool IsKeyValue() const noexcept;
+	[[nodiscard]] CKeyValueOperand* GetKeyValue() const noexcept;
+
 	[[nodiscard]] bool IsObject() const noexcept;
 	[[nodiscard]] CObjectOperand* GetObject() const noexcept;
 
@@ -156,6 +159,9 @@ private:
 	[[nodiscard]] std::unique_ptr<COperandBase> ParseArray();
 	[[nodiscard]] std::unique_ptr<COperandBase> ParseKeyValue();
 	[[nodiscard]] std::unique_ptr<COperandBase> ParseObject();
+
+	[[nodiscard]] bool EndOfExpression(const std::optional<PairMatcher>& eoe, LinterIterator& pos) const noexcept;
+
 
 	[[nodiscard]] UniqueAST PostfixesToAST() const noexcept;
 	[[nodiscard]] UniqueAST OperandToAST() const noexcept;

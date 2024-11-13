@@ -200,6 +200,7 @@
     <ClCompile Include="runtime\values\types\double.cpp" />
     <ClCompile Include="runtime\values\types\integer.cpp" />
     <ClCompile Include="runtime\values\types\internal\aggregate.cpp" />
+    <ClCompile Include="runtime\values\types\object.cpp" />
     <ClCompile Include="runtime\values\types\simple.cpp" />
     <ClCompile Include="runtime\values\types\string.cpp" />
     <ClCompile Include="runtime\variables.cpp" />
@@ -254,6 +255,7 @@
     <ClInclude Include="runtime\values\types\double.hpp" />
     <ClInclude Include="runtime\values\types\integer.hpp" />
     <ClInclude Include="runtime\values\types\internal\aggregate.hpp" />
+    <ClInclude Include="runtime\values\types\object.hpp" />
     <ClInclude Include="runtime\values\types\simple.hpp" />
     <ClInclude Include="runtime\values\types\string.hpp" />
     <ClInclude Include="runtime\values\types\types.hpp" />

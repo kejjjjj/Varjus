@@ -154,7 +154,7 @@ class KeyValueASTNode final : public AbstractSyntaxTree
 
 public:
 
-	KeyValueASTNode(KeyValue<std::size_t, UniqueAST>&& expressions);
+	KeyValueASTNode(KeyValue<std::size_t, UniqueAST>&& pair);
 	~KeyValueASTNode();
 
 	[[nodiscard]] constexpr bool IsLeaf() const noexcept override { return true; }
