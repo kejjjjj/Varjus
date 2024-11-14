@@ -21,15 +21,15 @@ class IPostfixBase;
 struct CLinterFunction;
 struct CLinterVariable;
 
-
 using UniqueAST = std::unique_ptr<AbstractSyntaxTree>;
 using ExpressionList = VectorOf<UniqueAST>;
+
+struct CExpressionList;
 
 enum EOperandBaseType : char {
 	ot_identifier,
 	ot_abstract_syntax_tree,
 	ot_array,
-	ot_key_value,
 	ot_object
 };
 
@@ -91,20 +91,6 @@ struct CArrayOperand final : public COperandBase
 template<typename A, typename B>
 using KeyValue = std::pair<A, B>;
 
-struct CKeyValueOperand final : public COperandBase
-{
-	NONCOPYABLE(CKeyValueOperand);
-
-	CKeyValueOperand() = default;
-	CKeyValueOperand(KeyValue<std::size_t, UniqueAST>&& ptr);
-	~CKeyValueOperand();
-
-	[[nodiscard]] EOperandBaseType Type() const noexcept override {
-		return ot_key_value;
-	}
-
-	KeyValue<std::size_t, UniqueAST> m_oValue;
-};
 
 struct CObjectOperand final : public COperandBase
 {
@@ -121,14 +107,23 @@ struct CObjectOperand final : public COperandBase
 	VectorOf<KeyValue<std::size_t, UniqueAST>> m_oAttributes;
 };
 
+struct CKeyValue
+{
+	NONCOPYABLE(CKeyValue);
+
+	CKeyValue(std::size_t k, UniqueAST&& ast);
+
+	std::size_t m_uKey;
+	UniqueAST m_pValue;
+};
+
 class CLinterOperand final : public CLinterSingle<CToken>
 {
 	NONCOPYABLE(CLinterOperand);
 public:
 
 	CLinterOperand() = delete;
-	explicit CLinterOperand(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, 
-		CMemory* const stack, std::optional<PairMatcher>& eoe);
+	explicit CLinterOperand(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack);
 	~CLinterOperand();
 
 	[[nodiscard]] Success ParseOperand();
@@ -140,9 +135,6 @@ public:
 
 	[[nodiscard]] bool IsArray() const noexcept;
 	[[nodiscard]] CArrayOperand* GetArray() const noexcept;
-
-	[[nodiscard]] bool IsKeyValue() const noexcept;
-	[[nodiscard]] CKeyValueOperand* GetKeyValue() const noexcept;
 
 	[[nodiscard]] bool IsObject() const noexcept;
 	[[nodiscard]] CObjectOperand* GetObject() const noexcept;
@@ -157,7 +149,7 @@ private:
 	[[nodiscard]] std::unique_ptr<COperandBase> ParseParentheses();
 	[[nodiscard]] std::unique_ptr<COperandBase> ParseIdentifier();
 	[[nodiscard]] std::unique_ptr<COperandBase> ParseArray();
-	[[nodiscard]] std::unique_ptr<COperandBase> ParseKeyValue();
+	[[nodiscard]] std::unique_ptr<CKeyValue> ParseKeyValue(std::optional<PairMatcher> eoe);
 	[[nodiscard]] std::unique_ptr<COperandBase> ParseObject();
 
 	[[nodiscard]] bool EndOfExpression(const std::optional<PairMatcher>& eoe, LinterIterator& pos) const noexcept;
@@ -173,5 +165,4 @@ private:
 
 	std::weak_ptr<CScope> m_pScope;
 	CMemory* const m_pOwner;
-	std::optional<PairMatcher>& m_oEndOfExpression;
 };

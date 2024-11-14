@@ -39,6 +39,8 @@ public:
 
 	[[nodiscard]] IValue* GetAggregate(std::size_t memberIdx) override;
 
+	[[nodiscard]] CObjectValue* ToObject() override { return this; }
+
 private:
 	[[nodiscard]] std::string TypeAsString() const override { return "object"s; }
 	[[nodiscard]] std::string ValueAsString() const override;

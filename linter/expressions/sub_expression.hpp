@@ -32,7 +32,7 @@ public:
 	 \return failure when end-of-expression is reached
 	 \return keep calling this until failure is returned
 	 */
-	[[nodiscard]] Success ParseSubExpression(std::optional<PairMatcher>& eoe, CExpressionList* expression);
+	[[nodiscard]] Success ParseSubExpression(std::optional<PairMatcher>& eoe, CExpressionList* expression, EvaluationType evalType);
 
 private:
 

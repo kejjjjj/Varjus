@@ -123,5 +123,5 @@ std::string CArrayValue::ValueAsString() const
 	auto result = ss.str();
 	result.erase(result.size() - 2, 2);
 
-	return '[' + result + ']';
+	return "[ " + result + " ]";
 }

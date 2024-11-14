@@ -81,10 +81,6 @@ IValue* CRuntimeExpression::Evaluate(CFunction* const thisFunction, const Abstra
 IValue* CRuntimeExpression::EvaluateLeaf(CFunction* const thisFunction, const AbstractSyntaxTree* node)
 {
 
-	if (node->GetKeyValue()) {
-		throw CRuntimeError("key:value pairs are only allowed in object initializers");
-	}
-
 	if (node->IsVariable()) {
 		const auto var = node->GetVariable();
 		auto v = thisFunction->GetVariableByIndex(var->m_uIndex)->GetValue();
@@ -106,7 +102,15 @@ IValue* CRuntimeExpression::EvaluateLeaf(CFunction* const thisFunction, const Ab
 		auto internal = ptr->Internal();
 		internal->Set(EvaluateList(thisFunction, var->m_oExpressions));
 		internal->GetAggregateValue().Setup(runtime::__internal::GetAggregateArrayData());
+		return ptr;
+	}
 
+	if (node->IsObject()) {
+		const auto var = node->GetObject();
+		auto ptr = CProgramRuntime::AcquireNewValue<CObjectValue>();
+		ptr->CreateOwnership();
+		auto internal = ptr->Internal();
+		internal->Set(EvaluateObject(thisFunction, var->m_oAttributes));
 		return ptr;
 	}
 

@@ -22,13 +22,14 @@ CLinterSubExpression::CLinterSubExpression(LinterIterator& pos, LinterIterator& 
 }
 CLinterSubExpression::~CLinterSubExpression() = default;
 
-Success CLinterSubExpression::ParseSubExpression(std::optional<PairMatcher>& eoe, CExpressionList* expression)
+Success CLinterSubExpression::ParseSubExpression(std::optional<PairMatcher>& eoe,
+	CExpressionList* expression, EvaluationType evalType)
 {
 	//empty subexpression
 	if (EndOfExpression())
 		return failure;
 
-	m_oLhsOperand = std::make_unique<CLinterOperand>(m_iterPos, m_iterEnd, m_pScope, m_pOwner, eoe);
+	m_oLhsOperand = std::make_unique<CLinterOperand>(m_iterPos, m_iterEnd, m_pScope, m_pOwner);
 	if (!m_oLhsOperand->ParseOperand()) {
 		m_oLhsOperand.reset();
 		return failure;
@@ -39,7 +40,7 @@ Success CLinterSubExpression::ParseSubExpression(std::optional<PairMatcher>& eoe
 		return failure;
 
 	CLinterOperatorParser cOperator(m_iterPos, m_iterEnd, m_pScope, m_pOwner);
-	if (!cOperator.ParseOperator(eoe, expression))
+	if (!cOperator.ParseOperator(eoe, expression, evalType))
 		return failure;
 
 	m_oOperator = std::make_unique<CLinterOperator>(cOperator.GetPriority(), cOperator.GetToken());

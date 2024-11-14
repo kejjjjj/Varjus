@@ -231,6 +231,9 @@
     <ClCompile Include="runtime\values\types\object.cpp">
       <Filter>Source Files\runtime\values\types</Filter>
     </ClCompile>
+    <ClCompile Include="runtime\expressions\rtobject.cpp">
+      <Filter>Source Files\runtime\expressions</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="fs\fs_io.hpp">
@@ -370,9 +373,6 @@
     </ClInclude>
     <ClInclude Include="runtime\values\types\callable.hpp">
       <Filter>Source Files\runtime\values\types</Filter>
-    </ClInclude>
-    <ClInclude Include="runtime\expressions\rtlist.hpp">
-      <Filter>Source Files\runtime\expressions</Filter>
     </ClInclude>
     <ClInclude Include="linter\statements\return\return.hpp">
       <Filter>Source Files\linter\statements\return</Filter>

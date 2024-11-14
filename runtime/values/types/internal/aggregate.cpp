@@ -1,5 +1,7 @@
 #include "aggregate.hpp"
 
+#include "linter/expressions/ast.hpp"
+
 #include "runtime/runtime.hpp"
 #include "runtime/structure.hpp"
 #include "runtime/variables.hpp"
@@ -9,23 +11,26 @@
 #include <cassert>
 #include <stdexcept>
 
-void CAggregate::Setup(const std::vector<ElementIndex>& elements)
-{
-
+void CAggregate::Setup(const std::vector<ElementIndex>& elements){
 	for (auto& l : elements) {
-		
-		const auto& var = m_oIndexLookup[l] = CProgramRuntime::AcquireNewVariable();
+		AddAttribute(l);
+	}
+}
+CVariable* CAggregate::AddAttribute(ElementIndex elem)
+{
+	auto& var = m_oIndexLookup[elem] = CProgramRuntime::AcquireNewVariable();
 
-		if (l == ARRAY_LENGTH) {			
-			var->SetValue(CProgramRuntime::AcquireNewValue<CIntValue>(0));
-			var->GetValue()->MakeImmutable();
-		}
-		else {
-			var->SetValue(CProgramRuntime::AcquireNewValue<IValue>());
-		}
+	if (elem == ARRAY_LENGTH) {
+		var->SetValue(CProgramRuntime::AcquireNewValue<CIntValue>(0));
+		var->GetValue()->MakeImmutable();
+	} else {
+		var->SetValue(CProgramRuntime::AcquireNewValue<IValue>());
 	}
 
-	assert(elements.size());
+	return var;
+}
+void CAggregate::AddAttribute(ElementIndex elem, IValue* value){
+	return AddAttribute(elem)->SetValue(value);
 }
 void CAggregate::Release()
 {

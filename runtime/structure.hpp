@@ -58,6 +58,16 @@ using FunctionArgument = RuntimeBlock;
 using FunctionArguments = VectorOf<FunctionArgument>;
 using ExpressionList = VectorOf<std::unique_ptr<AbstractSyntaxTree>>;
 
+template<typename T>
+using VectorOf = std::vector<T>;
+
+template<typename A, typename B>
+using KeyValue = std::pair<A, B>;
+
+using ElementIndex = std::size_t;
+using UniqueAST = std::unique_ptr<AbstractSyntaxTree>;
+using ObjectInitializer = VectorOf<KeyValue<ElementIndex, IValue*>>;
+using ObjectInitializerData = VectorOf<KeyValue<std::size_t, UniqueAST>>;
 
 // contains more than one instruction
 class IRuntimeStructureSequence : public IRuntimeStructure
@@ -119,7 +129,7 @@ private:
 	[[nodiscard]] static IValue* EvaluateFunctionCall(CFunction* const thisFunction, IValue* operand, const FunctionCallASTNode* node);
 
 	[[nodiscard]] static VectorOf<IValue*> EvaluateList(CFunction* const thisFunction, const ExpressionList& list);
-
+	[[nodiscard]] static ObjectInitializer EvaluateObject(CFunction* const thisFunction, const ObjectInitializerData& obj);
 	std::unique_ptr<AbstractSyntaxTree> m_pAST;
 
 };

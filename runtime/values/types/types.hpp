@@ -7,6 +7,7 @@
 #include "string.hpp"
 #include "callable.hpp"
 #include "array.hpp"
+#include "object.hpp"
 
 #define IVALUE_UNION \
 union { \
@@ -17,4 +18,5 @@ CDoubleValue* doubleValue; \
 CStringValue* stringValue; \
 CCallableValue* callableValue; \
 CArrayValue* arrayValue; \
+CObjectValue* objectValue; \
 }

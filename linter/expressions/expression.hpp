@@ -38,18 +38,24 @@ public:
 	explicit CLinterExpression(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack);
 	~CLinterExpression();
 
-	[[nodiscard]] Success Parse(std::optional<PairMatcher> m_oEndOfExpression=std::nullopt, CExpressionList* expression=nullptr);
-	[[nodiscard]] Success ParseInternal(std::optional<PairMatcher>& m_oEndOfExpression, CExpressionList* expression = nullptr);
+	[[nodiscard]] Success Parse(
+		std::optional<PairMatcher> m_oEndOfExpression=std::nullopt, 
+		CExpressionList* expression=nullptr,
+		EvaluationType evalType = evaluate_everything);
+	[[nodiscard]] Success ParseInternal(
+		std::optional<PairMatcher>& m_oEndOfExpression, 
+		CExpressionList* expression = nullptr,
+		EvaluationType evalType = evaluate_everything);
 
 	// merge all evaluated expressions into one
 	[[nodiscard]] std::unique_ptr<AbstractSyntaxTree> ToMergedAST() const;
 	[[nodiscard]] ExpressionList ToExpressionList() const;
+	[[nodiscard]] std::unique_ptr<AbstractSyntaxTree> ToAST() const;
 
 	[[nodiscard]] RuntimeBlock ToRuntimeObject() const override;
 
 private:
 
-	[[nodiscard]] std::unique_ptr<AbstractSyntaxTree> ToAST() const;
 	[[nodiscard]] bool EndOfExpression(const std::optional<PairMatcher>& eoe) const noexcept;
 
 	UniquePointerVector<CLinterSubExpression> m_oSubExpressions;

@@ -42,6 +42,10 @@ IValue* OP_ASSIGNMENT(IValue* lhs, IValue* rhs)
 			assert(rhs->ToArray());
 			variable->SetValue(rhs->ToArray()->MakeShared());
 			break;
+		case t_object:
+			assert(rhs->ToObject());
+			variable->SetValue(rhs->ToObject()->MakeShared());
+			break;
 	}
 
 	lhs->SetOwner(variable);
@@ -80,6 +84,7 @@ IValue* OP_ADDITION(IValue* _lhs, IValue* _rhs)
 		break;
 	case t_callable:
 	case t_array:
+	case t_object:
 		assert(false);
 		break;
 	}
@@ -119,7 +124,7 @@ IValue* OP_LESS_THAN(IValue* _lhs, IValue* _rhs)
 		break;
 	case t_callable:
 	case t_array:
-
+	case t_object:
 		assert(false);
 		break;
 	}

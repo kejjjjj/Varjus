@@ -37,6 +37,8 @@ std::unique_ptr<AbstractSyntaxTree> AbstractSyntaxTree::GetLeaf(VectorOf<CLinter
 		assert(operators.empty());
 		node = operands.front()->ToAST();
 		operands.clear(); 
+
+		assert(node != nullptr);
 	}
 	
 	return node;
@@ -141,10 +143,6 @@ ConstantASTNode::~ConstantASTNode() = default;
 ArrayASTNode::ArrayASTNode(ExpressionList&& expressions) 
 	: m_oExpressions(std::move(expressions)) {}
 ArrayASTNode::~ArrayASTNode() = default;
-
-KeyValueASTNode::KeyValueASTNode(KeyValue<std::size_t, UniqueAST>&& expr)
-	: m_oValue(std::move(expr)){}
-KeyValueASTNode::~KeyValueASTNode() = default;
 
 ObjectASTNode::ObjectASTNode(VectorOf<KeyValue<std::size_t, UniqueAST>>&& expressions) 
 	: m_oAttributes(std::move(expressions)){}

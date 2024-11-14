@@ -12,6 +12,7 @@ class CRuntimeFunction;
 class IValue;
 class CInternalArrayValue;
 class CArrayValue;
+class CObjectValue;
 
 inline std::string emptyString;
 
@@ -76,6 +77,8 @@ public:
 	[[nodiscard]] virtual const std::string& ToString() const { return emptyString; }
 
 	[[nodiscard]] virtual CArrayValue* ToArray() { return nullptr; }
+	[[nodiscard]] virtual CObjectValue* ToObject() { return nullptr; }
+
 protected:
 	void ReleaseInternal();
 	void RemoveConstness() noexcept { m_bIsConst = false; }

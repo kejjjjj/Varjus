@@ -71,3 +71,9 @@ public:
 protected:
 	VectorOf<const ContainerType*> m_oTokens;
 };
+
+enum EvaluationType
+{
+	evaluate_everything,
+	evaluate_singular
+};

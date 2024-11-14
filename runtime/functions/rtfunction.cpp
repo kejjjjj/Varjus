@@ -45,9 +45,9 @@ IValue* CRuntimeFunction::Execute([[maybe_unused]] CFunction* const thisFunction
 		copy = CProgramRuntime::AcquireNewValue<IValue>();
 	}
 
-	std::ranges::for_each(func.m_oStack, [](CVariable*& v) {
-		//if(!thisFunction)
-			//	std::cout << value->ToPrintableString() << '\n';
+	std::ranges::for_each(func.m_oStack, [&thisFunction](CVariable*& v) {
+		if(!thisFunction)
+				std::cout << v->GetValue()->ToPrintableString() << '\n';
 		v->Release();
 	});
 

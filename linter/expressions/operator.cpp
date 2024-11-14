@@ -27,7 +27,8 @@ CLinterOperatorParser::CLinterOperatorParser(LinterIterator& pos, LinterIterator
 }
 CLinterOperatorParser::~CLinterOperatorParser() = default;
 
-Success CLinterOperatorParser::ParseOperator(std::optional<PairMatcher>& eoe, CExpressionList* expression)
+Success CLinterOperatorParser::ParseOperator(std::optional<PairMatcher>& eoe, 
+	CExpressionList* expression, EvaluationType evalType)
 {
 
 	if (EndOfExpression(eoe))
@@ -42,6 +43,10 @@ Success CLinterOperatorParser::ParseOperator(std::optional<PairMatcher>& eoe, CE
 	const auto& asPunctuation = dynamic_cast<CPunctuationToken&>(*iterPos);
 
 	if ((*m_iterPos)->IsOperator(p_comma)) {
+
+		if (evalType == evaluate_singular)
+			return failure;
+
 		m_pToken = &asPunctuation;
 		if (!ParseSequence(eoe, expression))
 			return failure;

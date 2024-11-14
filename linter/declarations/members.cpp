@@ -12,9 +12,11 @@ std::size_t CMembers::operator[](const std::string& key)
 
 	return m_oStringToId[key];
 }
-bool CMembers::Contains(const std::string& key) const
-{
+bool CMembers::Contains(const std::string& key) const{
 	return m_oStringToId.contains(key);
+}
+const std::string& CMembers::At(const GlobalMemberIndex key) const{
+	return m_oIdToString.at(key);
 }
 
 std::size_t CMembers::GetCurrentIndex() const

@@ -19,6 +19,7 @@ template<> COwningObjectPool<CDoubleValue>       CProgramRuntime::m_oValuePool<C
 template<> COwningObjectPool<CStringValue>       CProgramRuntime::m_oValuePool<CStringValue>       (VALUEPOOL_INIT_SIZE);
 template<> COwningObjectPool<CCallableValue>     CProgramRuntime::m_oValuePool<CCallableValue>     (VALUEPOOL_INIT_SIZE);
 template<> COwningObjectPool<CArrayValue>        CProgramRuntime::m_oValuePool<CArrayValue>        (VALUEPOOL_INIT_SIZE);
+template<> COwningObjectPool<CObjectValue>       CProgramRuntime::m_oValuePool<CObjectValue>       (VALUEPOOL_INIT_SIZE);
 
 std::vector<RuntimeFunction> CProgramRuntime::m_oFunctions;
 CProgramContext* CProgramRuntime::m_pContext{ nullptr };
@@ -50,7 +51,7 @@ void CProgramRuntime::Execute()
 
 	std::chrono::time_point<std::chrono::steady_clock> now = std::chrono::steady_clock::now();
 	std::chrono::duration<float> difference = now - old;
-	printf("\ntime taken: %.6f\n", difference.count());
+	//printf("\ntime taken: %.6f\n", difference.count());
 
 	std::cout << "\n\n--------------LEAKS--------------\n\n";
 	std::cout << std::format("undefined: {}\n",   GetPool<IValue>().GetInUseCount());
@@ -60,6 +61,7 @@ void CProgramRuntime::Execute()
 	std::cout << std::format("string:    {}\n",   GetPool<CStringValue>().GetInUseCount());
 	std::cout << std::format("callable:  {}\n",   GetPool<CCallableValue>().GetInUseCount());
 	std::cout << std::format("array:     {}\n",   GetPool<CArrayValue>().GetInUseCount());
+	std::cout << std::format("object:    {}\n\n", GetPool<CObjectValue>().GetInUseCount());
 
 	return;
 

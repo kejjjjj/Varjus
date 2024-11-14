@@ -52,11 +52,13 @@ ExpressionList CExpressionList::ToExpressionList()
 
 	return list;
 }
-Success CLinterExpression::Parse(std::optional<PairMatcher> m_oEndOfExpression, CExpressionList* expression)
+Success CLinterExpression::Parse(std::optional<PairMatcher> m_oEndOfExpression, 
+	CExpressionList* expression, EvaluationType evalType)
 {
-	return ParseInternal(m_oEndOfExpression, expression);
+	return ParseInternal(m_oEndOfExpression, expression, evalType);
 }
-Success CLinterExpression::ParseInternal(std::optional<PairMatcher>& m_oEndOfExpression, CExpressionList* expression)
+Success CLinterExpression::ParseInternal(std::optional<PairMatcher>& m_oEndOfExpression, 
+	CExpressionList* expression, EvaluationType evalType)
 {
 	Success status = failure;
 
@@ -79,7 +81,7 @@ Success CLinterExpression::ParseInternal(std::optional<PairMatcher>& m_oEndOfExp
 		}
 
 		auto subExpression = std::make_unique<CLinterSubExpression>(m_iterPos, m_iterEnd, m_pScope, m_pOwner, m_oEndOfExpression);
-		status = subExpression->ParseSubExpression(m_oEndOfExpression, actualExpression);
+		status = subExpression->ParseSubExpression(m_oEndOfExpression, actualExpression, evalType);
 		m_oSubExpressions.emplace_back(std::move(subExpression));
 
 	} while (status == success);
@@ -92,7 +94,8 @@ Success CLinterExpression::ParseInternal(std::optional<PairMatcher>& m_oEndOfExp
 
 	assert(m_oSubExpressions.size() > 0u);
 
-	if (m_oEndOfExpression && EndOfExpression(m_oEndOfExpression)) {
+	//singular does NOT want to iterate over the eoe symbol
+	if (evalType == evaluate_everything && m_oEndOfExpression && EndOfExpression(m_oEndOfExpression)) {
 		std::advance(m_iterPos, 1);
 		m_oEndOfExpression = std::nullopt;
 	}

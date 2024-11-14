@@ -24,7 +24,6 @@ class VariableASTNode;
 class ConstantASTNode;
 class FunctionASTNode;
 class ArrayASTNode;
-class KeyValueASTNode;
 class ObjectASTNode;
 class OperatorASTNode;
 
@@ -42,6 +41,7 @@ public:
 	[[nodiscard]] virtual constexpr bool IsFunction() const noexcept { return false; }
 	[[nodiscard]] virtual constexpr bool IsConstant() const noexcept { return false; }
 	[[nodiscard]] virtual constexpr bool IsArray() const noexcept    { return false; }
+	[[nodiscard]] virtual constexpr bool IsObject() const noexcept { return false; }
 	[[nodiscard]] virtual constexpr bool IsSequence() const noexcept { return false; }
 
 	[[nodiscard]] virtual constexpr const OperatorASTNode* GetOperator() const noexcept { return nullptr; }
@@ -49,7 +49,6 @@ public:
 	[[nodiscard]] virtual constexpr const ConstantASTNode* GetConstant() const noexcept { return nullptr; }
 	[[nodiscard]] virtual constexpr const FunctionASTNode* GetFunction() const noexcept { return nullptr; }
 	[[nodiscard]] virtual constexpr const ArrayASTNode* GetArray() const noexcept { return nullptr; }
-	[[nodiscard]] virtual constexpr const KeyValueASTNode* GetKeyValue() const noexcept { return nullptr; }
 	[[nodiscard]] virtual constexpr const ObjectASTNode* GetObject() const noexcept { return nullptr; }
 
 	template<typename T>
@@ -148,23 +147,6 @@ public:
 	ExpressionList m_oExpressions;
 };
 
-class KeyValueASTNode final : public AbstractSyntaxTree
-{
-	NONCOPYABLE(KeyValueASTNode);
-
-public:
-
-	KeyValueASTNode(KeyValue<std::size_t, UniqueAST>&& pair);
-	~KeyValueASTNode();
-
-	[[nodiscard]] constexpr bool IsLeaf() const noexcept override { return true; }
-	[[nodiscard]] constexpr bool IsArray() const noexcept override { return true; }
-
-	[[nodiscard]] constexpr const KeyValueASTNode* GetKeyValue() const noexcept override { return this; }
-
-	KeyValue<std::size_t, UniqueAST> m_oValue;
-};
-
 class ObjectASTNode final : public AbstractSyntaxTree
 {
 	NONCOPYABLE(ObjectASTNode);
@@ -175,7 +157,7 @@ public:
 	~ObjectASTNode();
 
 	[[nodiscard]] constexpr bool IsLeaf() const noexcept override { return true; }
-	[[nodiscard]] constexpr bool IsArray() const noexcept override { return true; }
+	[[nodiscard]] constexpr bool IsObject() const noexcept override { return true; }
 
 	[[nodiscard]] constexpr const ObjectASTNode* GetObject() const noexcept override { return this; }
 
