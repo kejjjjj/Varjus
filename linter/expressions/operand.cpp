@@ -33,7 +33,7 @@ CLinterOperand::CLinterOperand(LinterIterator& pos, LinterIterator& end, const W
 }
 CLinterOperand::~CLinterOperand() = default;
 
-Success CLinterOperand::ParseOperand()
+Success CLinterOperand::ParseOperand(std::optional<PairMatcher>& eoe)
 {
 	// Parse unary
 	CUnaryLinter unaryLinter(m_iterPos, m_iterEnd);
@@ -59,6 +59,13 @@ Success CLinterOperand::ParseOperand()
 	// Save results
 	m_oUnaryTokens = unaryLinter.GetTokens();
 	m_oPostfixes = postfix.Move();
+
+	if (!IsEndOfBuffer() && (*m_iterPos)->IsOperator(p_question_mark)) {
+		m_pOperand = ParseTernary(eoe);
+		m_oPostfixes.clear();
+		m_oUnaryTokens.clear();
+	}
+
 	return success;
 }
 std::unique_ptr<COperandBase> CLinterOperand::ParseParentheses()
@@ -79,6 +86,27 @@ std::unique_ptr<COperandBase> CLinterOperand::ParseIdentifier()
 	}
 
 	return operand;
+}
+std::unique_ptr<COperandBase> CLinterOperand::ParseTernary(std::optional<PairMatcher>& eoe)
+{
+	assert((*m_iterPos)->IsOperator(p_question_mark));
+	std::advance(m_iterPos, 1); // skip ?
+
+	auto ifTrue = CLinterExpression(m_iterPos, m_iterEnd, m_pScope, m_pOwner);
+	if (!ifTrue.Parse(PairMatcher(p_colon))) // the expression can't end with eoe context, because we also need the : part
+		return nullptr;
+
+	if (IsEndOfBuffer() || !(*std::prev(m_iterPos))->IsOperator(p_colon)) {
+		CLinterErrors::PushError("expected \":\", but found " + (*std::prev(m_iterPos))->Source(),
+			GetIteratorSafe()->m_oSourcePosition);
+		return nullptr;
+	}
+
+	auto ifFalse = CLinterExpression(m_iterPos, m_iterEnd, m_pScope, m_pOwner);
+	if (!ifFalse.ParseInternal(eoe))
+		return nullptr;
+
+	return std::make_unique<CTernaryOperand>(ToAST(), ifTrue.ToMergedAST(), ifFalse.ToMergedAST());
 }
 std::unique_ptr<COperandBase> CLinterOperand::ParseArray()
 {
@@ -174,6 +202,17 @@ CObjectOperand* CLinterOperand::GetObject() const noexcept
 	return dynamic_cast<CObjectOperand*>(m_pOperand.get());
 }
 
+bool CLinterOperand::IsTernary() const noexcept
+{
+	assert(m_pOperand != nullptr);
+	return m_pOperand->Type() == ot_ternary;
+}
+CTernaryOperand* CLinterOperand::GetTernary() const noexcept
+{
+	assert(IsTernary());
+	return dynamic_cast<CTernaryOperand*>(m_pOperand.get());
+}
+
 std::unique_ptr<AbstractSyntaxTree> CLinterOperand::OperandToAST() const noexcept
 {
 	if (IsImmediate()) {
@@ -187,6 +226,8 @@ std::unique_ptr<AbstractSyntaxTree> CLinterOperand::OperandToAST() const noexcep
 		return std::make_unique<ArrayASTNode>(std::move(GetArray()->m_oExpressions));
 	} else if (IsObject()) {
 		return std::make_unique<ObjectASTNode>(std::move(GetObject()->m_oAttributes));
+	} else if (IsTernary()) {
+		return std::make_unique<TernaryASTNode>(std::move(GetTernary()));
 	} else if (IsExpression()) {
 		return ExpressionToAST();
 	}
@@ -243,7 +284,7 @@ bool CLinterOperand::IsImmediate() const noexcept
 {
 	assert(m_pOperand != nullptr);
 
-	if (IsExpression() || IsArray() || IsObject())
+	if (IsExpression() || IsArray() || IsObject() || IsTernary())
 		return false;
 
 	const auto type = m_pOperand->GetIdentifier()->GetToken()->Type();
@@ -253,7 +294,7 @@ bool CLinterOperand::IsVariable() const noexcept
 {
 	assert(m_pOperand != nullptr);
 
-	if (IsExpression() || IsArray() || IsObject() || !m_pOperand->GetIdentifier()->m_pIdentifier)
+	if (IsExpression() || IsArray() || IsObject() || IsTernary() || !m_pOperand->GetIdentifier()->m_pIdentifier)
 		return false;
 
 	return m_pOperand->GetIdentifier()->m_pIdentifier->Type() == mi_variable;
@@ -267,7 +308,7 @@ bool CLinterOperand::IsFunction() const noexcept
 {
 	assert(m_pOperand != nullptr);
 
-	if (IsExpression() || IsArray() || IsObject() || !m_pOperand->GetIdentifier()->m_pIdentifier)
+	if (IsExpression() || IsArray() || IsObject() || IsTernary() || !m_pOperand->GetIdentifier()->m_pIdentifier)
 		return false;
 
 	return m_pOperand->GetIdentifier()->m_pIdentifier->Type() == mi_function;
@@ -301,3 +342,7 @@ CArrayOperand::~CArrayOperand() = default;
 
 CObjectOperand::CObjectOperand(VectorOf<KeyValue<std::size_t, UniqueAST>>&& ptr) : m_oAttributes(std::move(ptr)){}
 CObjectOperand::~CObjectOperand() = default;
+
+CTernaryOperand::CTernaryOperand(UniqueAST&& value, UniqueAST&& m_true, UniqueAST&& m_false)
+	: m_pValue(std::move(value)), m_pTrue(std::move(m_true)), m_pFalse(std::move(m_false)){}
+CTernaryOperand::~CTernaryOperand() = default;

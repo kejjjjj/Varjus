@@ -46,6 +46,9 @@ IValue* CRuntimeExpression::Evaluate(CFunction* const thisFunction, const Abstra
 	if (node->IsSequence())
 		return EvaluateSequence(thisFunction, node);
 
+	if (node->IsTernary())
+		return EvaluateTernary(thisFunction, node->GetTernary());
+
 	if (node->IsLeaf()) 
 		return EvaluateLeaf(thisFunction, node);
 	
@@ -142,4 +145,24 @@ IValue* CRuntimeExpression::EvaluateSequence(CFunction* const thisFunction, cons
 		lhs->Release();
 
 	return Evaluate(thisFunction, node->right.get());
+}
+
+IValue* CRuntimeExpression::EvaluateTernary(CFunction* const thisFunction, const TernaryASTNode* node)
+{
+	auto operand = Evaluate(thisFunction, node->m_pOperand.get());
+
+	if (!operand->IsBooleanConvertible())
+		throw CRuntimeError("the operand is not convertible to a boolean");
+
+	const auto boolValue = operand->ToBoolean();
+
+	if (!operand->HasOwner())
+		operand->Release();
+
+	if (boolValue) {
+		return Evaluate(thisFunction, node->m_pTrue.get());
+	}
+
+	return Evaluate(thisFunction, node->m_pFalse.get());
+
 }

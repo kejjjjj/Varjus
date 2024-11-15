@@ -25,6 +25,7 @@ class OperatorASTNode;
 class MemberAccessASTNode;
 class SubscriptASTNode;
 class FunctionCallASTNode;
+class TernaryASTNode;
 
 struct CFunctionBlock;
 
@@ -123,6 +124,7 @@ private:
 	[[nodiscard]] static IValue* EvaluateLeaf(CFunction* const thisFunction, const AbstractSyntaxTree* node);
 	[[nodiscard]] static IValue* EvaluatePostfix(CFunction* const thisFunction, const OperatorASTNode* node);
 	[[nodiscard]] static IValue* EvaluateSequence(CFunction* const thisFunction, const AbstractSyntaxTree* node);
+	[[nodiscard]] static IValue* EvaluateTernary(CFunction* const thisFunction, const TernaryASTNode* node);
 
 	[[nodiscard]] static IValue* EvaluateMemberAccess(IValue* operand, const MemberAccessASTNode* node);
 	[[nodiscard]] static IValue* EvaluateSubscript(CFunction* const thisFunction, IValue* operand, const SubscriptASTNode* node);

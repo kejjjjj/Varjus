@@ -9,6 +9,7 @@
 #include <algorithm>
 
 #include <chrono>
+#include <runtime/exceptions/exception.hpp>
 
 
 CRuntimeWhileStatement::CRuntimeWhileStatement(std::unique_ptr<AbstractSyntaxTree>&& condition, InstructionSequence&& insns)
@@ -21,6 +22,10 @@ IValue* CRuntimeWhileStatement::Execute([[maybe_unused]] CFunction* const thisFu
 
 	while (true) {
 		auto condition = m_pCondition->Evaluate(thisFunction);
+		
+		if (!condition->IsBooleanConvertible())
+			throw CRuntimeError("the operand is not convertible to a boolean");
+
 		const auto boolValue = condition->ToBoolean();
 
 		if (!condition->HasOwner())

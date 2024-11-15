@@ -25,6 +25,7 @@ class ConstantASTNode;
 class FunctionASTNode;
 class ArrayASTNode;
 class ObjectASTNode;
+class TernaryASTNode;
 class OperatorASTNode;
 
 class AbstractSyntaxTree
@@ -42,6 +43,8 @@ public:
 	[[nodiscard]] virtual constexpr bool IsConstant() const noexcept { return false; }
 	[[nodiscard]] virtual constexpr bool IsArray() const noexcept    { return false; }
 	[[nodiscard]] virtual constexpr bool IsObject() const noexcept { return false; }
+	[[nodiscard]] virtual constexpr bool IsTernary() const noexcept { return false; }
+
 	[[nodiscard]] virtual constexpr bool IsSequence() const noexcept { return false; }
 
 	[[nodiscard]] virtual constexpr const OperatorASTNode* GetOperator() const noexcept { return nullptr; }
@@ -50,6 +53,7 @@ public:
 	[[nodiscard]] virtual constexpr const FunctionASTNode* GetFunction() const noexcept { return nullptr; }
 	[[nodiscard]] virtual constexpr const ArrayASTNode* GetArray() const noexcept { return nullptr; }
 	[[nodiscard]] virtual constexpr const ObjectASTNode* GetObject() const noexcept { return nullptr; }
+	[[nodiscard]] virtual constexpr const TernaryASTNode* GetTernary() const noexcept { return nullptr; }
 
 	template<typename T>
 	[[nodiscard]] inline constexpr T As() const noexcept {
@@ -163,6 +167,26 @@ public:
 
 	VectorOf<KeyValue<std::size_t, UniqueAST>> m_oAttributes;
 };
+
+class TernaryASTNode final : public AbstractSyntaxTree
+{
+	NONCOPYABLE(TernaryASTNode);
+
+public:
+
+	TernaryASTNode(struct CTernaryOperand* operand);
+	~TernaryASTNode();
+
+	[[nodiscard]] constexpr bool IsLeaf() const noexcept override { return true; }
+	[[nodiscard]] constexpr bool IsTernary() const noexcept override { return true; }
+
+	[[nodiscard]] constexpr const TernaryASTNode* GetTernary() const noexcept override { return this; }
+
+	UniqueAST m_pOperand;
+	UniqueAST m_pTrue;
+	UniqueAST m_pFalse;
+};
+
 class OperatorASTNode : public AbstractSyntaxTree
 {
 	friend class AstToInstructionConverter;

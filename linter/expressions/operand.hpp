@@ -30,7 +30,8 @@ enum EOperandBaseType : char {
 	ot_identifier,
 	ot_abstract_syntax_tree,
 	ot_array,
-	ot_object
+	ot_object,
+	ot_ternary,
 };
 
 struct COperandBase
@@ -107,6 +108,24 @@ struct CObjectOperand final : public COperandBase
 	VectorOf<KeyValue<std::size_t, UniqueAST>> m_oAttributes;
 };
 
+struct CTernaryOperand final : public COperandBase
+{
+	NONCOPYABLE(CTernaryOperand);
+
+	CTernaryOperand() = default;
+	CTernaryOperand(UniqueAST&& value, UniqueAST&& m_true, UniqueAST&& m_false);
+	~CTernaryOperand();
+
+	[[nodiscard]] EOperandBaseType Type() const noexcept override {
+		return ot_ternary;
+	}
+
+	UniqueAST m_pValue;
+	UniqueAST m_pTrue;
+	UniqueAST m_pFalse;
+};
+
+
 struct CKeyValue
 {
 	NONCOPYABLE(CKeyValue);
@@ -126,7 +145,7 @@ public:
 	explicit CLinterOperand(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack);
 	~CLinterOperand();
 
-	[[nodiscard]] Success ParseOperand();
+	[[nodiscard]] Success ParseOperand(std::optional<PairMatcher>& eoe);
 
 	[[nodiscard]] UniqueAST ToAST();
 
@@ -139,6 +158,9 @@ public:
 	[[nodiscard]] bool IsObject() const noexcept;
 	[[nodiscard]] CObjectOperand* GetObject() const noexcept;
 
+	[[nodiscard]] bool IsTernary() const noexcept;
+	[[nodiscard]] CTernaryOperand* GetTernary() const noexcept;
+
 	[[nodiscard]] bool IsVariable() const noexcept;
 	[[nodiscard]] const CLinterVariable* GetVariable() const noexcept;
 
@@ -148,8 +170,10 @@ public:
 private:
 	[[nodiscard]] std::unique_ptr<COperandBase> ParseParentheses();
 	[[nodiscard]] std::unique_ptr<COperandBase> ParseIdentifier();
+	[[nodiscard]] std::unique_ptr<COperandBase> ParseTernary(std::optional<PairMatcher>& eoe);
+
 	[[nodiscard]] std::unique_ptr<COperandBase> ParseArray();
-	[[nodiscard]] std::unique_ptr<CKeyValue> ParseKeyValue(std::optional<PairMatcher> eoe);
+	[[nodiscard]] std::unique_ptr<CKeyValue>    ParseKeyValue(std::optional<PairMatcher> eoe);
 	[[nodiscard]] std::unique_ptr<COperandBase> ParseObject();
 
 	[[nodiscard]] bool EndOfExpression(const std::optional<PairMatcher>& eoe, LinterIterator& pos) const noexcept;

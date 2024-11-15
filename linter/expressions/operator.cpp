@@ -5,12 +5,10 @@
 #include "linter/token.hpp"
 #include "linter/punctuation.hpp"
 #include "linter/error.hpp"
+#include "linter/expressions/ast.hpp"
 #include "globalEnums.hpp"
 
 #include <cassert>
-#include "sub_expression.hpp"
-#include <linter/declarations/variable_declarations.hpp>
-#include <linter/functions/stack.hpp>
 
 Punctuation CLinterOperator::GetPunctuation() const noexcept { return m_pToken->m_ePunctuation; }
 
@@ -41,17 +39,17 @@ Success CLinterOperatorParser::ParseOperator(std::optional<PairMatcher>& eoe,
 
 	auto& iterPos = *m_iterPos;
 	const auto& asPunctuation = dynamic_cast<CPunctuationToken&>(*iterPos);
+	m_pToken = &asPunctuation;
 
 	if ((*m_iterPos)->IsOperator(p_comma)) {
 
 		if (evalType == evaluate_singular)
 			return failure;
 
-		m_pToken = &asPunctuation;
 		if (!ParseSequence(eoe, expression))
 			return failure;
-	}
 
+	}
 
 	if (!IsOperator(asPunctuation)) {
 		CLinterErrors::PushError("unexpected end of expression: " + iterPos->Source(), GetIteratorSafe()->m_oSourcePosition);
@@ -89,7 +87,6 @@ Success CLinterOperatorParser::ParseSequence(std::optional<PairMatcher>& m_oEndO
 
 	return failure;
 }
-
 bool CLinterOperatorParser::CheckOperator() const
 {
 

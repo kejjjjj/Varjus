@@ -56,7 +56,8 @@ enum Punctuation : char
 	p_comma,
 	p_period,
 	p_semicolon,
-	p_colon
+	p_colon,
+	p_question_mark,
 };
 
 struct CPunctuation final
@@ -66,7 +67,7 @@ struct CPunctuation final
 	OperatorPriority m_ePriority{};
 };
 
-constexpr std::array<CPunctuation, 22u> punctuations
+constexpr std::array<CPunctuation, 23u> punctuations
 {
 	CPunctuation{"==", p_equality, op_relational},
 	CPunctuation{"!=", p_unequality, op_relational},
@@ -99,6 +100,7 @@ constexpr std::array<CPunctuation, 22u> punctuations
 	CPunctuation{",", p_comma},
 	CPunctuation{".", p_period, op_postfix},
 	CPunctuation{";", p_semicolon },
-	CPunctuation{":", p_colon}
+	CPunctuation{":", p_colon},
+	CPunctuation{"?", p_question_mark, op_conditional}
 
 };

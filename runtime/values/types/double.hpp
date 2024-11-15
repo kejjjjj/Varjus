@@ -19,6 +19,7 @@ public:
 
 	[[nodiscard]] constexpr bool IsCoerceable() const noexcept override { return true; }
 	[[nodiscard]] constexpr bool IsArithmetic() const noexcept override { return true; }
+	[[nodiscard]] constexpr bool IsBooleanConvertible() const noexcept override { return true; }
 
 private:
 	[[nodiscard]] std::string TypeAsString() const override { return "double"s; }

@@ -147,3 +147,9 @@ ArrayASTNode::~ArrayASTNode() = default;
 ObjectASTNode::ObjectASTNode(VectorOf<KeyValue<std::size_t, UniqueAST>>&& expressions) 
 	: m_oAttributes(std::move(expressions)){}
 ObjectASTNode::~ObjectASTNode() = default;
+
+TernaryASTNode::TernaryASTNode(CTernaryOperand* operand)
+	: m_pOperand(std::move(operand->m_pValue)), 
+	m_pTrue(std::move(operand->m_pTrue)),
+	m_pFalse(std::move(operand->m_pFalse)){ }
+TernaryASTNode::~TernaryASTNode() = default;

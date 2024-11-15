@@ -10,11 +10,15 @@ enum Punctuation : char;
 
 struct CExpressionList;
 class CMemory;
+
+class AbstractSyntaxTree;
+using UniqueAST = std::unique_ptr<AbstractSyntaxTree>;
+
 class CLinterOperator final
 {
+	NONCOPYABLE(CLinterOperator);
 public:
 
-	CLinterOperator() = default;
 	CLinterOperator(OperatorPriority priority, const CPunctuationToken* token) :
 		m_ePriority(priority), m_pToken(token) {}
 
@@ -32,6 +36,7 @@ private:
 
 class CLinterOperatorParser final : public CLinterSingle<CPunctuationToken>
 {
+	NONCOPYABLE(CLinterOperatorParser);
 public:
 	CLinterOperatorParser() = delete;
 	explicit CLinterOperatorParser(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack);

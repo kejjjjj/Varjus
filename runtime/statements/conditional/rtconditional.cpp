@@ -4,6 +4,7 @@
 #include "runtime/structure.hpp"
 #include "runtime/variables.hpp"
 #include "runtime/values/types/types.hpp"
+#include <runtime/exceptions/exception.hpp>
 
 
 CRuntimeConditionalStatement* CRuntimeConditionalStatement::SeekLastBlock()
@@ -29,6 +30,10 @@ IValue* CRuntimeConditionalStatement::Execute([[maybe_unused]] CFunction* const 
 
 
 	auto condition = m_pCondition->Evaluate(thisFunction);
+
+	if (!condition->IsBooleanConvertible())
+		throw CRuntimeError("the operand is not convertible to a boolean");
+
 	const auto boolValue = condition->ToBoolean();
 
 	if (!condition->HasOwner())
