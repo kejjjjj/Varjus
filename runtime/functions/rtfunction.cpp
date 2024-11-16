@@ -12,11 +12,18 @@
 #include <iostream>
 #include <runtime/exceptions/exception.hpp>
 
-CRuntimeFunction::CRuntimeFunction(CFunctionBlock& linterFunction) :
+CRuntimeFunction::CRuntimeFunction(CFunctionBlock& linterFunction,
+	VectorOf<VariableIndex>&& args,
+	VectorOf<VariableIndex>&& variableIndices,
+	VectorOf<VariableIndex>&& sharedOwnershipIndices) :
+
 	IRuntimeStructureSequence(std::move(linterFunction.m_oInstructions)),
 	m_sName(linterFunction.m_sName),
 	m_uNumParameters(linterFunction.m_uNumParameters),
-	m_uNumVariables(linterFunction.m_pStack->GetVariableCount())
+	m_uNumVariables(linterFunction.m_pStack->GetVariableCount()),
+	m_oArgumentIndices(std::move(args)),
+	m_oVariableIndices(std::move(variableIndices)),
+	m_oSharedOwnershipVariables(std::move(sharedOwnershipIndices))
 {
 
 }
@@ -27,7 +34,7 @@ IValue* CRuntimeFunction::Execute([[maybe_unused]] CFunction* const thisFunction
 	if (m_uNumParameters != args.size())
 		throw CRuntimeError(std::format("the callable expected {} arguments instead of {}", m_uNumParameters, args.size()));
 
-	auto func = CFunction(args, CProgramRuntime::AcquireNewVariables(m_uNumVariables));
+	auto func = CFunction(args, *this);
 
 	IValue* returnVal{ nullptr };
 
@@ -45,30 +52,32 @@ IValue* CRuntimeFunction::Execute([[maybe_unused]] CFunction* const thisFunction
 		copy = CProgramRuntime::AcquireNewValue<IValue>();
 	}
 
-	std::ranges::for_each(func.m_oStack, [&thisFunction](CVariable*& v) {
-		if(!thisFunction)
-				std::cout << v->GetValue()->ToPrintableString() << '\n';
-		v->Release();
-	});
+	for (auto& [index, value] : func.m_oStack) {
+		if (!thisFunction)
+			std::cout << value->GetValue()->ToPrintableString() << '\n';
+		value->Release();
+	}
 
 	return copy;
 }
 
-CFunction::CFunction(VectorOf<IValue*>& args, VectorOf<CVariable*>&& variables) : m_oStack(std::move(variables))
+CFunction::CFunction(VectorOf<IValue*>& args, const CRuntimeFunction& func)
 {
 
-	for (auto i = size_t(0); i < args.size(); i++) {
-		
-		assert(m_oStack[i]->GetValue() == nullptr);
-		m_oStack[i]->SetValue(args[i]);
+	for (auto i = std::size_t(0); auto& arg : func.m_oArgumentIndices) {
+		auto var = m_oStack[arg] = CProgramRuntime::AcquireNewVariable();
+		var->SetValue(args[i++]);
 	}
 
-	for (auto& v : m_oStack | std::views::drop(args.size()))
-		v->SetValue(CProgramRuntime::AcquireNewValue<IValue>());
+	for (auto& v : func.m_oVariableIndices) {
+		auto var = m_oStack[v] = CProgramRuntime::AcquireNewVariable();
+		assert(var->GetValue() == nullptr);
+		var->SetValue(CProgramRuntime::AcquireNewValue<IValue>());
+	}
 
 }
 
 CVariable* CFunction::GetVariableByIndex(std::size_t index) const
 {
-	return m_oStack[index];
+	return m_oStack.at(index);
 }

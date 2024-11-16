@@ -26,7 +26,7 @@ void CObjectValue::Release() {
 
 CObjectValue* CObjectValue::MakeShared() const {
 	CObjectValue* ptr = CProgramRuntime::AcquireNewValue<CObjectValue>();
-	ptr->GetRawValue() = m_oValue;
+	ptr->Get() = m_oValue;
 	return ptr;
 }
 CObjectValue* CObjectValue::Copy() {

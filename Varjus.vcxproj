@@ -171,6 +171,7 @@
     <ClCompile Include="linter\expressions\operand\operand_expression.cpp" />
     <ClCompile Include="linter\expressions\operand\operand_identifier.cpp" />
     <ClCompile Include="linter\expressions\operand\operand_immediate.cpp" />
+    <ClCompile Include="linter\expressions\operand\operand_lambda.cpp" />
     <ClCompile Include="linter\expressions\operand\operand_object.cpp" />
     <ClCompile Include="linter\expressions\operand\operand_ternary.cpp" />
     <ClCompile Include="linter\expressions\operator.cpp" />
@@ -207,6 +208,8 @@
     <ClCompile Include="runtime\values\types\double.cpp" />
     <ClCompile Include="runtime\values\types\integer.cpp" />
     <ClCompile Include="runtime\values\types\internal\aggregate.cpp" />
+    <ClCompile Include="runtime\values\types\internal\reference.cpp" />
+    <ClCompile Include="runtime\values\types\lambda.cpp" />
     <ClCompile Include="runtime\values\types\object.cpp" />
     <ClCompile Include="runtime\values\types\simple.cpp" />
     <ClCompile Include="runtime\values\types\string.cpp" />
@@ -232,6 +235,7 @@
     <ClInclude Include="linter\expressions\operand\operand_identifier.hpp" />
     <ClInclude Include="linter\expressions\operand\operand_immediate.hpp" />
     <ClInclude Include="linter\expressions\operand\operand_includes.hpp" />
+    <ClInclude Include="linter\expressions\operand\operand_lambda.hpp" />
     <ClInclude Include="linter\expressions\operand\operand_object.hpp" />
     <ClInclude Include="linter\expressions\operand\operand_ternary.hpp" />
     <ClInclude Include="linter\expressions\operator.hpp" />
@@ -268,6 +272,8 @@
     <ClInclude Include="runtime\values\types\double.hpp" />
     <ClInclude Include="runtime\values\types\integer.hpp" />
     <ClInclude Include="runtime\values\types\internal\aggregate.hpp" />
+    <ClInclude Include="runtime\values\types\internal\reference.hpp" />
+    <ClInclude Include="runtime\values\types\lambda.hpp" />
     <ClInclude Include="runtime\values\types\object.hpp" />
     <ClInclude Include="runtime\values\types\simple.hpp" />
     <ClInclude Include="runtime\values\types\string.hpp" />

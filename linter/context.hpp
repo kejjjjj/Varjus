@@ -4,5 +4,6 @@
 
 struct CProgramContext
 {
-	CMembers m_oAllMembers;
+	CStringIntegerHashMap m_oAllMembers;
+	CStringIntegerHashMap m_oAllVariables;
 };

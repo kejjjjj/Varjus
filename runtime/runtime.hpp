@@ -86,7 +86,7 @@ public:
 		if constexpr (std::is_same_v<IValue, T>)
 			return v;
 		else {
-			v->SetRawValue(std::forward<const Ctor&>(ctor));
+			v->SetStorageValue(std::forward<const Ctor&>(ctor));
 			return v;
 		}
 	}
@@ -100,7 +100,7 @@ public:
 		if constexpr (std::is_same_v<IValue, T>)
 			return v;
 		else {
-			v->SetRawValue(std::forward<Ctor&&>(ctor));
+			v->SetStorageValue(std::forward<Ctor&&>(ctor));
 			return v;
 		}
 	}

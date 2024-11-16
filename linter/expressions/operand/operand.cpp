@@ -37,6 +37,8 @@ Success CLinterOperand::ParseOperand(std::optional<PairMatcher>& eoe)
 		m_pOperand = ParseArray();
 	} else if (token->IsOperator(p_curlybracket_open)) {
 		m_pOperand = ParseObject();
+	} else if (token->Type() == tt_fn) {
+		m_pOperand = ParseLambda();
 	} else {
 		m_pOperand = ParseIdentifier();
 	}

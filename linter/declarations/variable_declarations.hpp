@@ -22,8 +22,6 @@ public:
 	[[nodiscard]] bool IsGlobalVariable() const noexcept;
 
 	[[nodiscard]] RuntimeBlock ToRuntimeObject() const override;
-
-
 private:
 	[[nodiscard]] bool IsDeclaration(const CToken* token) const noexcept;
 	[[nodiscard]] bool IsIdentifier(const CToken* token) const noexcept;

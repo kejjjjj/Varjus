@@ -18,6 +18,7 @@ class CLinterOperand;
 class CLinterOperator;
 class IRuntimeStructure;
 class CRuntimeFunction;
+
 struct IOperand;
 
 class VariableASTNode;
@@ -26,10 +27,12 @@ class FunctionASTNode;
 class ArrayASTNode;
 class ObjectASTNode;
 class TernaryASTNode;
+class LambdaASTNode;
 class OperatorASTNode;
 
 template<typename T>
 concept Pointer = std::is_pointer_v<T> || std::is_reference_v<T>;
+using RuntimeFunction = std::unique_ptr<CRuntimeFunction>;
 
 class AbstractSyntaxTree
 {
@@ -45,8 +48,9 @@ public:
 	[[nodiscard]] virtual constexpr bool IsFunction() const noexcept { return false; }
 	[[nodiscard]] virtual constexpr bool IsConstant() const noexcept { return false; }
 	[[nodiscard]] virtual constexpr bool IsArray() const noexcept    { return false; }
-	[[nodiscard]] virtual constexpr bool IsObject() const noexcept { return false; }
-	[[nodiscard]] virtual constexpr bool IsTernary() const noexcept { return false; }
+	[[nodiscard]] virtual constexpr bool IsObject() const noexcept   { return false; }
+	[[nodiscard]] virtual constexpr bool IsTernary() const noexcept  { return false; }
+	[[nodiscard]] virtual constexpr bool IsLambda() const noexcept   { return false; }
 
 	[[nodiscard]] virtual constexpr bool IsSequence() const noexcept { return false; }
 
@@ -57,6 +61,7 @@ public:
 	[[nodiscard]] virtual constexpr const ArrayASTNode* GetArray() const noexcept { return nullptr; }
 	[[nodiscard]] virtual constexpr const ObjectASTNode* GetObject() const noexcept { return nullptr; }
 	[[nodiscard]] virtual constexpr const TernaryASTNode* GetTernary() const noexcept { return nullptr; }
+	[[nodiscard]] virtual constexpr const LambdaASTNode* GetLambda() const noexcept { return nullptr; }
 
 	template<Pointer T>
 	[[nodiscard]] inline constexpr T As() const noexcept {
@@ -187,6 +192,24 @@ public:
 	UniqueAST m_pTrue;
 	UniqueAST m_pFalse;
 };
+
+class LambdaASTNode final : public AbstractSyntaxTree
+{
+	NONCOPYABLE(LambdaASTNode);
+
+public:
+
+	LambdaASTNode(RuntimeFunction&& operand);
+	~LambdaASTNode();
+
+	[[nodiscard]] constexpr bool IsLeaf() const noexcept override { return true; }
+	[[nodiscard]] constexpr bool IsLambda() const noexcept override { return true; }
+
+	[[nodiscard]] constexpr const LambdaASTNode* GetLambda() const noexcept override { return this; }
+
+	RuntimeFunction m_pLambda;
+};
+
 
 class OperatorASTNode : public AbstractSyntaxTree
 {

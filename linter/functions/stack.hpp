@@ -44,7 +44,8 @@ struct CLinterVariable final : public CMemoryIdentifier
 	[[nodiscard]] virtual constexpr EMemoryIdentifierType Type() const noexcept override { return mi_variable; }
 
 	const CMemory* m_pOwner{};
-
+	bool m_bIsParameter{ false };
+	bool m_bRequiresSharedOwnership{ false };
 };
 struct CLinterFunction final : public CMemoryIdentifier
 {
@@ -68,6 +69,7 @@ public:
 	[[nodiscard]] CLinterVariable* GetVariable(const std::string& var);
 	[[nodiscard]] bool ContainsVariable(const std::string& name) const;
 	[[nodiscard]] std::size_t GetVariableCount() const noexcept;
+	[[nodiscard]] auto& GetVariableIterator() { return m_oVariables; }
 
 	[[maybe_unused]] CLinterFunction* DeclareFunction(const std::string& var);
 	[[nodiscard]] CLinterFunction* GetFunction(const std::string& var);
@@ -100,8 +102,12 @@ public:
 	CStack(std::unique_ptr<CFunctionBlock>&& func, CFileRuntimeData* const file, CProgramContext* const context);
 	~CStack();
 
+	CStack* GetGlobalFunction();
+
 	void AddFunctionInstruction(RuntimeBlock&& block) const;
 
 	[[nodiscard]] bool IsStack() const noexcept override { return true; }
 	std::unique_ptr<CFunctionBlock> m_pFunction;
+
+	CStack* m_pLowerFunction{ nullptr };
 };

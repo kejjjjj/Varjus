@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <memory>
+#include <unordered_map>
 
 #include "globalDefinitions.hpp"
 
@@ -11,15 +12,21 @@ using VectorOf = std::vector<T>;
 class CVariable;
 class IValue;
 
+template<typename A, typename B>
+using KeyValue = std::pair<A, B>;
+using VariableIndex = std::size_t;
+
+using IndexToVariable = KeyValue<VariableIndex, CVariable*>;
+
 class CFunction
 {
 	NONCOPYABLE(CFunction);
 	friend class CRuntimeFunction;
 public:
-	CFunction(VectorOf<IValue*>& args, VectorOf<CVariable*>&& variables);
+	CFunction(VectorOf<IValue*>& args, const CRuntimeFunction& func);
 
 	[[nodiscard]] CVariable* GetVariableByIndex(std::size_t index) const;
 
 private:
-	VectorOf<CVariable*> m_oStack;
+	std::unordered_map<VariableIndex, CVariable*> m_oStack;
 };

@@ -23,6 +23,7 @@ enum EOperandBaseType : char {
 	ot_array,
 	ot_object,
 	ot_ternary,
+	ot_lambda,
 };
 
 struct IOperand
@@ -57,6 +58,7 @@ private:
 	[[nodiscard]] std::unique_ptr<IOperand> ParseArray();
 	[[nodiscard]] std::unique_ptr<CKeyValue>ParseKeyValue(std::optional<PairMatcher> eoe);
 	[[nodiscard]] std::unique_ptr<IOperand> ParseObject();
+	[[nodiscard]] std::unique_ptr<IOperand> ParseLambda();
 
 	[[nodiscard]] bool EndOfExpression(const std::optional<PairMatcher>& eoe, LinterIterator& pos) const noexcept;
 

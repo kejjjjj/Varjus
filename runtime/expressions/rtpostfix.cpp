@@ -79,7 +79,7 @@ IValue* CRuntimeExpression::EvaluateFunctionCall(CFunction* const thisFunction, 
 
 	// the callee will take ownership of temp-value args
 	auto args = EvaluateList(thisFunction, node->m_oArguments);
-	auto& callable = dynamic_cast<CCallableValue*>(operand)->GetRawValue();
+	auto& callable = dynamic_cast<CCallableValue*>(operand)->Get();
 
 	return callable->Execute(thisFunction, args);
 }

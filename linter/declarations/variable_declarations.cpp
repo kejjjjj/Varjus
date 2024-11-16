@@ -19,25 +19,18 @@ CVariableDeclarationLinter::~CVariableDeclarationLinter() = default;
 
 Success CVariableDeclarationLinter::Parse()
 {
-	if (IsEndOfBuffer()) {
-		CLinterErrors::PushError("expected \"let\", but reached end of file", (*std::prev(m_iterPos))->m_oSourcePosition);
-		return failure;
-	}
 
-	if (!IsDeclaration(*m_iterPos)) {
-		CLinterErrors::PushError("expected \"let\"", (*m_iterPos)->m_oSourcePosition);
+	if (IsEndOfBuffer() || !IsDeclaration(*m_iterPos)) {
+		CLinterErrors::PushError("expected \"let\"", GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 
 	std::advance(m_iterPos, 1);
 
-	if (IsEndOfBuffer()) {
-		CLinterErrors::PushError("expected variable name, but reached end of file", (*std::prev(m_iterPos))->m_oSourcePosition);
-		return failure;
-	}
 
-	if (!IsIdentifier(*m_iterPos)) {
-		CLinterErrors::PushError("expected variable name, but found " + (*m_iterPos)->Source(), (*m_iterPos)->m_oSourcePosition);
+	if (IsEndOfBuffer() ||!IsIdentifier(*m_iterPos)) {
+		CLinterErrors::PushError("expected variable name, but found " + 
+			GetIteratorSafe()->Source(), GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 
@@ -57,7 +50,7 @@ Success CVariableDeclarationLinter::Parse()
 	std::advance(m_iterPos, 1);
 
 	if (IsEndOfBuffer()) {
-		CLinterErrors::PushError("expected \";\"", (*std::prev(m_iterPos))->m_oSourcePosition);
+		CLinterErrors::PushError("expected \";\"", GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 

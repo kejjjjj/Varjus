@@ -65,11 +65,11 @@ public:
 
 	void Set(VectorOf<IValue*>&& v);
 
-	[[nodiscard]] constexpr auto& GetVariables() noexcept { return m_oValue.m_oVariables; }
-	[[nodiscard]] constexpr auto& GetVariables() const noexcept { return m_oValue.m_oVariables; }
+	[[nodiscard]] constexpr auto& GetVariables() noexcept { return Get().m_oVariables; }
+	[[nodiscard]] constexpr auto& GetVariables() const noexcept { return Get().m_oVariables; }
 
-	[[nodiscard]] constexpr auto& GetAggregateValue() const noexcept { return m_oValue.m_oAggregate; }
-	[[nodiscard]] constexpr auto& GetAggregateValue() noexcept { return m_oValue.m_oAggregate; }
+	[[nodiscard]] constexpr auto& GetAggregateValue() const noexcept { return Get().m_oAggregate; }
+	[[nodiscard]] constexpr auto& GetAggregateValue() noexcept { return Get().m_oAggregate; }
 
 	[[nodiscard]] std::size_t Length() const noexcept;
 };

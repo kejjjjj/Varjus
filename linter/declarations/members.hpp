@@ -8,7 +8,7 @@ using ElementIndex = std::size_t;
 /***********************************************************************
  > provides quick lookup values for object member names
 ***********************************************************************/
-class CMembers
+class CStringIntegerHashMap
 {
 public:
 	[[maybe_unused]] std::size_t operator[](const std::string& key);

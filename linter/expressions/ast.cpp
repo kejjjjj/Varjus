@@ -154,3 +154,6 @@ TernaryASTNode::TernaryASTNode(CTernaryOperand* operand)
 	m_pTrue(std::move(operand->m_pTrue)),
 	m_pFalse(std::move(operand->m_pFalse)){ }
 TernaryASTNode::~TernaryASTNode() = default;
+
+LambdaASTNode::LambdaASTNode(RuntimeFunction&& operand) : m_pLambda(std::move(operand)){}
+LambdaASTNode::~LambdaASTNode() = default;

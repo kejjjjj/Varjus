@@ -13,9 +13,9 @@ public:
 
 	[[nodiscard]] IValue* Copy() override;
 
-	void Release() override;
+	virtual void Release() override;
 
-	[[nodiscard]] bool ToBoolean() const override { return !!m_oValue; }
+	[[nodiscard]] bool ToBoolean() const override { return !!Get(); }
 	[[nodiscard]] std::int64_t ToInt() const override { return static_cast<std::int64_t>(ToBoolean()); }
 	[[nodiscard]] double ToDouble() const override { return static_cast<double>(ToBoolean()); }
 
@@ -23,7 +23,7 @@ public:
 
 private:
 	[[nodiscard]] std::string TypeAsString() const override { return "callable"s; }
-	[[nodiscard]] std::string ValueAsString() const override { return std::format("{:x}", (std::size_t)m_oValue); }
+	[[nodiscard]] std::string ValueAsString() const override { return std::format("{:x}", (std::size_t)Get()); }
 
 public:
 };

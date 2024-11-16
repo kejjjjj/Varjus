@@ -88,23 +88,66 @@ protected:
 	bool m_bIsConst{ false };
 };
 
+template <typename Value>
+struct DirectStorage {
+	using StorageType = Value;
+	StorageType m_oValue;
 
-template<typename Value>
-class CValue : public IValue
-{
-	friend class IValue;
+	DirectStorage() = default;
+	explicit DirectStorage(const Value& value) : m_oValue(value) {}
+	explicit DirectStorage(Value&& value) : m_oValue(std::move(value)) {}
+
+	constexpr Value& Get() { return m_oValue; }
+	constexpr const Value& Get() const { return m_oValue; }
+
+	void SetStorageValue(Value&& v) { m_oValue = std::move(v); }
+	void SetStorageValue(const Value& v) { m_oValue = v; }
+
+};
+
+template <typename Value>
+struct SharedStorage {
+	using StorageType = std::shared_ptr<Value>;
+	StorageType m_oValue;
+
+	SharedStorage() : m_oValue(std::make_shared<Value>()) {}
+	explicit SharedStorage(const Value& value) : m_oValue(std::make_shared<Value>(value)) {}
+	explicit SharedStorage(Value&& value) : m_oValue(std::make_shared<Value>(std::move(value))) {}
+
+	Value& Get() { return m_oValue; }
+	const Value& Get() const { return m_oValue; }
+
+	void SetStorageValue(Value&& v) { m_oValue = std::move(v); }
+	void SetStorageValue(const Value& v) { m_oValue = v; }
+};
+
+template <typename Value, template <typename> class StoragePolicy = DirectStorage>
+class CValue : public IValue, public StoragePolicy<Value> {
+protected:
+	using StoragePolicy<Value>::m_oValue;
+
 public:
 	CValue() = default;
-	CValue(const Value& v) : m_oValue(v) {}
-	CValue(Value&& v) : m_oValue(std::move(v)) {}
-
+	explicit CValue(const Value& value) : StoragePolicy<Value>(value) {}
+	explicit CValue(Value&& value) : StoragePolicy<Value>(std::move(value)) {}
 	virtual ~CValue() = default;
-
-	Value& GetRawValue() noexcept { return m_oValue; }
-	void SetRawValue(const Value&v) noexcept { m_oValue = v; }
-	void SetRawValue(Value&& v) noexcept { m_oValue = std::move(v); }
-
-protected:
-	Value m_oValue{};
 };
+
+// Generic wrapper for shared ownership
+template <typename Derived, typename Value>
+class CSharedValue : public Derived {
+public:
+	using Base = Derived;
+	using StorageType = SharedStorage<Value>;
+
+	CSharedValue() = default;
+	explicit CSharedValue(const Value& value) : Base(value) {
+		static_assert(std::is_base_of_v<CValue<Value, SharedStorage>, Derived>,
+			"Derived must inherit from CValue<Value, SharedStorage>");
+	}
+	explicit CSharedValue(Value&& value) : Base(std::move(value)) {}
+};
+
+template<typename T>
+using SharedCValue = CValue<T, SharedStorage>;
 

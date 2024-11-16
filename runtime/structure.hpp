@@ -83,13 +83,18 @@ public:
 protected:
 	InstructionSequence m_oInstructions;
 };
-
+using ArgumentIndex = std::size_t;
+using VariableIndex = std::size_t;
 class CRuntimeFunction final : public IRuntimeStructureSequence
 {
+	friend class CFunction;
 	NONCOPYABLE(CRuntimeFunction);
 
 public:
-	CRuntimeFunction(CFunctionBlock& linterFunction);
+	CRuntimeFunction(CFunctionBlock& linterFunction,
+		VectorOf<VariableIndex>&& args,
+		VectorOf<VariableIndex>&& variableIndices,
+		VectorOf<VariableIndex>&& sharedOwnershipIndices);
 	~CRuntimeFunction();
 
 	[[nodiscard]] constexpr auto& GetName() const noexcept { return m_sName; }
@@ -101,6 +106,10 @@ protected:
 	std::string m_sName;
 	std::size_t m_uNumParameters{ 0u };
 	std::size_t m_uNumVariables{ 0u };
+
+	VectorOf<VariableIndex> m_oArgumentIndices;
+	VectorOf<VariableIndex> m_oVariableIndices;
+	VectorOf<VariableIndex> m_oSharedOwnershipVariables;
 };
 
 

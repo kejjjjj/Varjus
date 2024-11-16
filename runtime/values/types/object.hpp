@@ -58,6 +58,6 @@ public:
 
 	void Set(ObjectInitializer&& v);
 
-	[[nodiscard]] constexpr auto& GetAggregateValue() const noexcept { return m_oValue; }
-	[[nodiscard]] constexpr auto& GetAggregateValue() noexcept { return m_oValue; }
+	[[nodiscard]] constexpr auto& GetAggregateValue() const noexcept { return Get(); }
+	[[nodiscard]] constexpr auto& GetAggregateValue() noexcept { return Get(); }
 };

@@ -1,7 +1,7 @@
 #include "stack.hpp"
 #include "linter/declarations/variable_declarations.hpp"
 #include "linter/functions/function.hpp"
-
+#include "linter/context.hpp"
 #include <cassert>
 
 CMemory::CMemory(CFileRuntimeData* const file, CProgramContext* const context) 
@@ -13,7 +13,11 @@ CMemory::~CMemory() = default;
 
 CLinterVariable* CMemory::DeclareVariable(const std::string& var){
 	assert(!var.empty());
-	m_oVariables[var] = CLinterVariable(this, var, GetVariableCount());
+
+	if (ContainsVariable(var))
+		return &m_oVariables[var];
+
+	m_oVariables[var] = CLinterVariable(this, var, GetContext()->m_oAllVariables[var]);
 	return &m_oVariables[var];
 }
 
@@ -65,4 +69,15 @@ CStack::~CStack() = default;
 void CStack::AddFunctionInstruction(RuntimeBlock&& block) const
 {
 	m_pFunction->m_oInstructions.emplace_back(std::move(block));
+}
+
+CStack* CStack::GetGlobalFunction()
+{
+	auto func = this;
+
+	while (func->m_pLowerFunction) {
+		func = func->m_pLowerFunction;
+	}
+
+	return func;
 }

@@ -46,7 +46,7 @@ void CArrayValue::Release(){
 CArrayValue* CArrayValue::MakeShared() const
 {
 	CArrayValue* ptr = CProgramRuntime::AcquireNewValue<CArrayValue>();
-	ptr->GetRawValue() = m_oValue;
+	ptr->Get() = m_oValue;
 	return ptr;
 }
 IValue* CArrayValue::Copy(){

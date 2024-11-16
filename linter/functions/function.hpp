@@ -10,20 +10,29 @@ struct CFunctionBlock;
 class CFunctionLinter final : public CLinterSingle<CToken>, protected IRuntimeBlock
 {
 	NONCOPYABLE(CFunctionLinter);
+	friend class CLinterOperand;
 public:
 	explicit CFunctionLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const owner);
 
 	[[nodiscard]] Success Parse();
 	[[nodiscard]] Success ParseFunctionParameters();
+	[[nodiscard]] Success ParseFunctionScope();
 
 	[[nodiscard]] std::unique_ptr<CFunctionBlock> ToFunction() const;
 
 	[[nodiscard]] RuntimeBlock ToRuntimeObject() const override;
+	[[nodiscard]] std::unique_ptr<CRuntimeFunction> ToRuntimeFunction() const;
+
+
+	[[nodiscard]] VectorOf<std::size_t> GetParameterIndices(CStack* stack) const;
+	[[nodiscard]] VectorOf<std::size_t> GetVariableIndices(CStack* stack) const;
+	[[nodiscard]] VectorOf<std::size_t> GetSharedOwnershipVariables(CStack* stack) const;
+
 private:
 	[[nodiscard]] Success ParseFunctionDeclaration();
-	[[nodiscard]] Success ParseFunctionScope();
 
 	[[nodiscard]] Success ParseFunctionParametersRecursively();
+
 
 	[[nodiscard]] bool IsFn(const CToken* token) const noexcept;
 	[[nodiscard]] bool IsIdentifier(const CToken* token) const noexcept;
@@ -47,6 +56,5 @@ struct CFunctionBlock final
 	std::size_t m_uNumParameters; // function paramters
 	CStack* const m_pStack; // the stack
 	VectorOf<RuntimeBlock> m_oInstructions; // sorted list of all function instructions
-	std::size_t m_uNesting{}; //current nesting offset from root scope
 };
 #pragma pack(pop)

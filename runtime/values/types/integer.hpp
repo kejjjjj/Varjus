@@ -10,11 +10,11 @@ public:
 
 	[[nodiscard]] IValue* Copy() override;
 
-	void Release() override;
+	virtual void Release() override;
 
-	[[nodiscard]] bool ToBoolean() const override { return static_cast<bool>(m_oValue); }
-	[[nodiscard]] std::int64_t ToInt() const override { return m_oValue; }
-	[[nodiscard]] double ToDouble() const override { return static_cast<double>(m_oValue); }
+	[[nodiscard]] bool ToBoolean() const override { return static_cast<bool>(Get()); }
+	[[nodiscard]] std::int64_t ToInt() const override { return Get(); }
+	[[nodiscard]] double ToDouble() const override { return static_cast<double>(Get()); }
 
 	[[nodiscard]] constexpr bool IsIntegral() const noexcept override { return true; }
 	[[nodiscard]] constexpr bool IsCoerceable() const noexcept override { return true; }
@@ -23,5 +23,5 @@ public:
 
 private:
 	[[nodiscard]] std::string TypeAsString() const override { return "int"s; }
-	[[nodiscard]] std::string ValueAsString() const override { return std::to_string(m_oValue); }
+	[[nodiscard]] std::string ValueAsString() const override { return std::to_string(Get()); }
 };

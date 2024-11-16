@@ -98,6 +98,12 @@ IValue* CRuntimeExpression::EvaluateLeaf(CFunction* const thisFunction, const Ab
 		return v;
 	}
 
+	if (node->IsLambda()) {
+		const auto var = node->GetLambda();
+		auto v = CProgramRuntime::AcquireNewValue<CCallableValue>(var->m_pLambda.get());
+		return v;
+	}
+
 	if (node->IsArray()) {
 		const auto var = node->GetArray();
 		auto ptr = CProgramRuntime::AcquireNewValue<CArrayValue>();
