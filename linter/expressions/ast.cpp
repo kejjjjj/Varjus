@@ -3,7 +3,8 @@
 
 #include "linter/punctuation.hpp"
 #include "linter/expressions/operator.hpp"
-#include "linter/expressions/operand.hpp"
+#include "linter/expressions/operand/operand.hpp"
+#include "linter/expressions/operand/operand_includes.hpp"
 #include "linter/expressions/postfix.hpp"
 #include "linter/functions/stack.hpp"
 

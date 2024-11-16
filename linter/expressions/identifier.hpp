@@ -18,10 +18,7 @@ public:
 	[[nodiscard]] Success ParseIdentifier();
 	[[nodiscard]] auto GetToken() const { return m_pToken; }
 
-	[[nodiscard]] bool IsImmediate() const noexcept;
-	[[nodiscard]] EValueType GetImmediateType() const noexcept;
-	[[nodiscard]] std::size_t GetImmediateSize() const noexcept;
-	[[nodiscard]] std::string ToData() const noexcept;
+
 
 private:
 	[[nodiscard]] bool CheckIdentifier(const CToken* token) const noexcept;

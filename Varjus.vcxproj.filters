@@ -85,6 +85,9 @@
     <Filter Include="Source Files\runtime\values\types\internal">
       <UniqueIdentifier>{874474f2-7b81-4911-aebb-eca6aa360af6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\linter\expressions\operand">
+      <UniqueIdentifier>{6490f639-38ae-449d-aa3e-2dd1fe8d5a5c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -109,9 +112,6 @@
       <Filter>Source Files\linter\expressions</Filter>
     </ClCompile>
     <ClCompile Include="linter\expressions\operator.cpp">
-      <Filter>Source Files\linter\expressions</Filter>
-    </ClCompile>
-    <ClCompile Include="linter\expressions\operand.cpp">
       <Filter>Source Files\linter\expressions</Filter>
     </ClCompile>
     <ClCompile Include="linter\expressions\sub_expression.cpp">
@@ -234,6 +234,27 @@
     <ClCompile Include="runtime\expressions\rtobject.cpp">
       <Filter>Source Files\runtime\expressions</Filter>
     </ClCompile>
+    <ClCompile Include="linter\expressions\operand\operand_object.cpp">
+      <Filter>Source Files\linter\expressions\operand</Filter>
+    </ClCompile>
+    <ClCompile Include="linter\expressions\operand\operand_ternary.cpp">
+      <Filter>Source Files\linter\expressions\operand</Filter>
+    </ClCompile>
+    <ClCompile Include="linter\expressions\operand\operand.cpp">
+      <Filter>Source Files\linter\expressions\operand</Filter>
+    </ClCompile>
+    <ClCompile Include="linter\expressions\operand\operand_array.cpp">
+      <Filter>Source Files\linter\expressions\operand</Filter>
+    </ClCompile>
+    <ClCompile Include="linter\expressions\operand\operand_immediate.cpp">
+      <Filter>Source Files\linter\expressions\operand</Filter>
+    </ClCompile>
+    <ClCompile Include="linter\expressions\operand\operand_identifier.cpp">
+      <Filter>Source Files\linter\expressions\operand</Filter>
+    </ClCompile>
+    <ClCompile Include="linter\expressions\operand\operand_expression.cpp">
+      <Filter>Source Files\linter\expressions\operand</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="fs\fs_io.hpp">
@@ -261,9 +282,6 @@
       <Filter>Source Files\linter\expressions</Filter>
     </ClInclude>
     <ClInclude Include="linter\expressions\operator.hpp">
-      <Filter>Source Files\linter\expressions</Filter>
-    </ClInclude>
-    <ClInclude Include="linter\expressions\operand.hpp">
       <Filter>Source Files\linter\expressions</Filter>
     </ClInclude>
     <ClInclude Include="linter\expressions\sub_expression.hpp">
@@ -394,6 +412,30 @@
     </ClInclude>
     <ClInclude Include="runtime\values\types\object.hpp">
       <Filter>Source Files\runtime\values\types</Filter>
+    </ClInclude>
+    <ClInclude Include="linter\expressions\operand\operand.hpp">
+      <Filter>Source Files\linter\expressions\operand</Filter>
+    </ClInclude>
+    <ClInclude Include="linter\expressions\operand\operand_array.hpp">
+      <Filter>Source Files\linter\expressions\operand</Filter>
+    </ClInclude>
+    <ClInclude Include="linter\expressions\operand\operand_expression.hpp">
+      <Filter>Source Files\linter\expressions\operand</Filter>
+    </ClInclude>
+    <ClInclude Include="linter\expressions\operand\operand_identifier.hpp">
+      <Filter>Source Files\linter\expressions\operand</Filter>
+    </ClInclude>
+    <ClInclude Include="linter\expressions\operand\operand_immediate.hpp">
+      <Filter>Source Files\linter\expressions\operand</Filter>
+    </ClInclude>
+    <ClInclude Include="linter\expressions\operand\operand_object.hpp">
+      <Filter>Source Files\linter\expressions\operand</Filter>
+    </ClInclude>
+    <ClInclude Include="linter\expressions\operand\operand_ternary.hpp">
+      <Filter>Source Files\linter\expressions\operand</Filter>
+    </ClInclude>
+    <ClInclude Include="linter\expressions\operand\operand_includes.hpp">
+      <Filter>Source Files\linter\expressions\operand</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

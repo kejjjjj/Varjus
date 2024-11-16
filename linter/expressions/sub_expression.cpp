@@ -1,6 +1,6 @@
 #include "sub_expression.hpp"
 #include "expression.hpp"
-#include "operand.hpp"
+#include "operand/operand.hpp"
 #include "operator.hpp"
 
 #include "unary.hpp"

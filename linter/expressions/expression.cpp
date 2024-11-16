@@ -1,23 +1,19 @@
+#include "ast.hpp"
 #include "expression.hpp"
 #include "expression_context.hpp"
-#include "sub_expression.hpp"
-#include "operand.hpp"
-#include "operator.hpp"
-
-#include "unary.hpp"
-#include "identifier.hpp"
-
-#include "linter/token.hpp"
-#include "linter/error.hpp"
-#include "linter/punctuation.hpp"
-#include "linter/functions/stack.hpp"
-
-#include "ast.hpp"
-
 #include "globalEnums.hpp"
+#include "identifier.hpp"
+#include "linter/error.hpp"
+#include "linter/functions/stack.hpp"
+#include "linter/punctuation.hpp"
+#include "linter/token.hpp"
+#include "operand/operand.hpp"
+#include "operator.hpp"
+#include "sub_expression.hpp"
+#include "unary.hpp"
 
-#include <cassert>
 #include <algorithm>
+#include <cassert>
 #include <iostream>
 
 CLinterExpression::CLinterExpression(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack)

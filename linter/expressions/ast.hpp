@@ -18,7 +18,7 @@ class CLinterOperand;
 class CLinterOperator;
 class IRuntimeStructure;
 class CRuntimeFunction;
-struct COperandBase;
+struct IOperand;
 
 class VariableASTNode;
 class ConstantASTNode;
@@ -27,6 +27,9 @@ class ArrayASTNode;
 class ObjectASTNode;
 class TernaryASTNode;
 class OperatorASTNode;
+
+template<typename T>
+concept Pointer = std::is_pointer_v<T> || std::is_reference_v<T>;
 
 class AbstractSyntaxTree
 {
@@ -55,15 +58,13 @@ public:
 	[[nodiscard]] virtual constexpr const ObjectASTNode* GetObject() const noexcept { return nullptr; }
 	[[nodiscard]] virtual constexpr const TernaryASTNode* GetTernary() const noexcept { return nullptr; }
 
-	template<typename T>
+	template<Pointer T>
 	[[nodiscard]] inline constexpr T As() const noexcept {
-		static_assert(std::is_pointer_v<T> || std::is_reference_v<T>, "T must either be a pointer or a reference");
 		return dynamic_cast<T>(this); 
 	}
 
-	template<typename T>
+	template<Pointer T>
 	[[nodiscard]] inline constexpr T As() noexcept {
-		static_assert(std::is_pointer_v<T> || std::is_reference_v<T>, "T must either be a pointer or a reference");
 		return dynamic_cast<T>(this);
 	}
 

@@ -39,6 +39,8 @@ Success CLinterOperatorParser::ParseOperator(std::optional<PairMatcher>& eoe,
 
 	auto& iterPos = *m_iterPos;
 	const auto& asPunctuation = dynamic_cast<CPunctuationToken&>(*iterPos);
+
+
 	m_pToken = &asPunctuation;
 
 	if ((*m_iterPos)->IsOperator(p_comma)) {
@@ -56,9 +58,7 @@ Success CLinterOperatorParser::ParseOperator(std::optional<PairMatcher>& eoe,
 		return failure;
 	}
 
-	m_pToken = &asPunctuation;
 	std::advance(m_iterPos, 1);
-
 	return success;
 }
 
