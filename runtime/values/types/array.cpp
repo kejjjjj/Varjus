@@ -22,51 +22,40 @@ VectorOf<ElementIndex>& runtime::__internal::GetAggregateArrayData()
 	return elems;
 }
 
-
-CArrayValue::CArrayValue(VectorOf<IValue*>&& v) :
-	CValue(std::make_shared<CInternalArrayValue>(std::move(v))){
-}
 CArrayValue::~CArrayValue() = default;
-
-
-void CArrayValue::CreateOwnership()
-{
-	m_oValue = std::make_shared<CInternalArrayValue>();
-}
 
 void CArrayValue::Release(){
 
-	if(m_oValue.use_count() == 1)
-		m_oValue->Release();
+	if (SharedRefCount() == 1) {
+		Get().Release();
+		ReleaseShared();
+	}
 
 	ReleaseInternal();
 	CProgramRuntime::FreeValue<CArrayValue>(this);
-	m_oValue.reset();
 }
-CArrayValue* CArrayValue::MakeShared() const
-{
-	CArrayValue* ptr = CProgramRuntime::AcquireNewValue<CArrayValue>();
-	ptr->Get() = m_oValue;
-	return ptr;
-}
+
 IValue* CArrayValue::Copy(){
 
-	return MakeShared();
+	CArrayValue* ptr = CProgramRuntime::AcquireNewValue<CArrayValue>();
+	ptr->MakeShared();
+	ptr->GetShared() = GetShared();
+	return ptr;
 }
 
 CArrayValue* CArrayValue::ToArray(){
 	return this;
 }
 CInternalArrayValue* CArrayValue::Internal() {
-	return m_oValue.get();
+	return GetShared().get();
 }
 CInternalArrayValue* CArrayValue::Internal() const {
-	return m_oValue.get();
+	return GetShared().get();
 }
 
 IValue* CArrayValue::Index(std::int64_t index)
 {
-	auto& vec = m_oValue->GetVariables();
+	auto& vec = GetShared()->GetVariables();
 
 	if (index < 0 || static_cast<size_t>(index) >= vec.size())
 		throw CRuntimeError("array index out of bounds");

@@ -7,36 +7,32 @@
 
 #include <sstream>
 
-CObjectValue::CObjectValue(ObjectInitializer&& v)
-	: CValue(std::make_shared<CInternalObjectValue>(std::move(v))) {}
+
 CObjectValue::~CObjectValue() = default;
 
-void CObjectValue::CreateOwnership() {
-	m_oValue = std::make_shared<CInternalObjectValue>();
-}
 void CObjectValue::Release() {
 
-	if (m_oValue.use_count() == 1)
-		m_oValue->Release();
-
+	if (SharedRefCount() == 1) {
+		Get().Release();
+		ReleaseShared();
+	}
+	
 	ReleaseInternal();
 	CProgramRuntime::FreeValue<CObjectValue>(this);
-	m_oValue.reset();
 }
 
-CObjectValue* CObjectValue::MakeShared() const {
+CObjectValue* CObjectValue::Copy() {
 	CObjectValue* ptr = CProgramRuntime::AcquireNewValue<CObjectValue>();
-	ptr->Get() = m_oValue;
+	ptr->MakeShared();
+	ptr->GetShared() = GetShared();
 	return ptr;
 }
-CObjectValue* CObjectValue::Copy() {
-	return MakeShared();
-}
+
 CInternalObjectValue* CObjectValue::Internal() {
-	return m_oValue.get();
+	return GetShared().get();
 }
 CInternalObjectValue* CObjectValue::Internal() const {
-	return m_oValue.get();
+	return GetShared().get();
 }
 IValue* CObjectValue::GetAggregate(std::size_t memberIdx) {
 	return Internal()->GetAggregateValue().ElementLookup(memberIdx);
@@ -46,7 +42,7 @@ std::string CObjectValue::ValueAsString() const
 {
 	std::stringstream ss;
 
-	for (const auto& [key, value] : m_oValue->GetAggregateValue().Iterator()) {
+	for (const auto& [key, value] : GetShared()->GetAggregateValue().Iterator()) {
 		ss << CProgramRuntime::GetContext()->m_oAllMembers.At(key);
 		ss << ": " << value->GetValue()->ValueAsString() << ", ";
 	}
@@ -63,9 +59,6 @@ std::string CObjectValue::ValueAsString() const
 /***********************************************************************
  > 
 ***********************************************************************/
-CInternalObjectValue::CInternalObjectValue(ObjectInitializer&& v) {
-	Set(std::move(v));
-}
 CInternalObjectValue::~CInternalObjectValue() = default;
 
 void CInternalObjectValue::Release()

@@ -2,6 +2,7 @@
 #include <vector>
 #include <memory>
 #include <string>
+#include <unordered_map>
 #include "globalDefinitions.hpp"
 
 /***********************************************************************
@@ -26,14 +27,19 @@ class MemberAccessASTNode;
 class SubscriptASTNode;
 class FunctionCallASTNode;
 class TernaryASTNode;
+class CVariable;
 
 struct CFunctionBlock;
 
 template<typename T>
 using VectorOf = std::vector<T>;
+using ArgumentIndex = std::size_t;
+using VariableIndex = std::size_t;
+using VariableCaptures = std::unordered_map<VariableIndex, CVariable*>;
 
 #pragma pack(push)
 #pragma warning(disable : 4266)
+
 
 class IRuntimeStructure
 {
@@ -45,7 +51,9 @@ public:
 	[[nodiscard]] virtual constexpr EStructureType Type() const noexcept = 0;
 	[[nodiscard]] virtual IValue* Execute([[maybe_unused]] CFunction* const thisFunction) { return nullptr; };
 	[[nodiscard]] virtual IValue* Execute(
-		[[maybe_unused]] CFunction* const thisFunction, [[maybe_unused]] VectorOf<IValue*>& args) { return nullptr; };
+		[[maybe_unused]] CFunction* const thisFunction, 
+		[[maybe_unused]] VectorOf<IValue*>& args,
+		[[maybe_unused]] const VariableCaptures& captures) { return nullptr; };
 
 protected:
 };
@@ -83,8 +91,7 @@ public:
 protected:
 	InstructionSequence m_oInstructions;
 };
-using ArgumentIndex = std::size_t;
-using VariableIndex = std::size_t;
+
 class CRuntimeFunction final : public IRuntimeStructureSequence
 {
 	friend class CFunction;
@@ -93,12 +100,12 @@ class CRuntimeFunction final : public IRuntimeStructureSequence
 public:
 	CRuntimeFunction(CFunctionBlock& linterFunction,
 		VectorOf<VariableIndex>&& args,
-		VectorOf<VariableIndex>&& variableIndices,
-		VectorOf<VariableIndex>&& sharedOwnershipIndices);
+		VectorOf<VariableIndex>&& variableIndices);
 	~CRuntimeFunction();
 
 	[[nodiscard]] constexpr auto& GetName() const noexcept { return m_sName; }
-	[[maybe_unused]] IValue* Execute(CFunction* const thisFunction, VectorOf<IValue*>& args) override;
+	[[maybe_unused]] IValue* Execute(CFunction* const thisFunction, VectorOf<IValue*>& args, 
+		const VariableCaptures& captures) override;
 protected:
 
 	[[nodiscard]] constexpr EStructureType Type() const noexcept { return st_function; };
@@ -109,7 +116,6 @@ protected:
 
 	VectorOf<VariableIndex> m_oArgumentIndices;
 	VectorOf<VariableIndex> m_oVariableIndices;
-	VectorOf<VariableIndex> m_oSharedOwnershipVariables;
 };
 
 

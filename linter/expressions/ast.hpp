@@ -33,6 +33,7 @@ class OperatorASTNode;
 template<typename T>
 concept Pointer = std::is_pointer_v<T> || std::is_reference_v<T>;
 using RuntimeFunction = std::unique_ptr<CRuntimeFunction>;
+using ElementIndex = std::size_t;
 
 class AbstractSyntaxTree
 {
@@ -199,7 +200,7 @@ class LambdaASTNode final : public AbstractSyntaxTree
 
 public:
 
-	LambdaASTNode(RuntimeFunction&& operand);
+	LambdaASTNode(RuntimeFunction&& operand, VectorOf<ElementIndex>&& captures);
 	~LambdaASTNode();
 
 	[[nodiscard]] constexpr bool IsLeaf() const noexcept override { return true; }
@@ -208,6 +209,7 @@ public:
 	[[nodiscard]] constexpr const LambdaASTNode* GetLambda() const noexcept override { return this; }
 
 	RuntimeFunction m_pLambda;
+	VectorOf<ElementIndex> m_oVariableCaptures;
 };
 
 

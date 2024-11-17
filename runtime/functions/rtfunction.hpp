@@ -17,13 +17,14 @@ using KeyValue = std::pair<A, B>;
 using VariableIndex = std::size_t;
 
 using IndexToVariable = KeyValue<VariableIndex, CVariable*>;
+using VariableCaptures = std::unordered_map<VariableIndex, CVariable*>;
 
 class CFunction
 {
 	NONCOPYABLE(CFunction);
 	friend class CRuntimeFunction;
 public:
-	CFunction(VectorOf<IValue*>& args, const CRuntimeFunction& func);
+	CFunction(VectorOf<IValue*>& args, const VariableCaptures& captures, const CRuntimeFunction& func);
 
 	[[nodiscard]] CVariable* GetVariableByIndex(std::size_t index) const;
 

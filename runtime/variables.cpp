@@ -27,11 +27,18 @@ void CVariable::SetValue(IValue* v)
 
 void CVariable::Release()
 {
+	assert(m_uRefCount > 0);
+	if (m_uRefCount-- != 1) {
+		return;
+	}
+
 	auto& v = GetValue();
-	assert(v->HasOwner());
-	v->Release();
-	v = nullptr;
-	CProgramRuntime::FreeVariable(this); 
+	if (v) {
+		assert(v->HasOwner());
+		v->Release();
+		v = nullptr;
+		CProgramRuntime::FreeVariable(this);
+	}
 }
 
 
@@ -41,7 +48,8 @@ CVariable* CProgramRuntime::AcquireNewVariable(){
 VectorOf<CVariable*> CProgramRuntime::AcquireNewVariables(std::size_t count){
 	return GetPool<CVariable>().Acquire(count);
 }
-void CProgramRuntime::FreeVariable(CVariable* var)
-{
+void CProgramRuntime::FreeVariable(CVariable* var){
+	assert(var->RefCount() == 0);
+	var->RefCount() = 1;
 	GetPool<CVariable>().Release(var);
 }

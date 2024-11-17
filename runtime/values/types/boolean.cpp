@@ -3,10 +3,20 @@
 
 IValue* CBooleanValue::Copy()
 {
-	return CProgramRuntime::AcquireNewValue<CBooleanValue>(m_oValue);
+	if (IsShared()) {
+		auto ptr = CProgramRuntime::AcquireNewValue<CBooleanValue>();
+		ptr->MakeShared();
+		ptr->GetShared() = GetShared();
+		return ptr;
+	}
+
+	return CProgramRuntime::AcquireNewValue<CBooleanValue>(Get());
 }
 void CBooleanValue::Release()
 {
+	if (IsShared())
+		ReleaseShared();
+	
 	ReleaseInternal();
 	CProgramRuntime::FreeValue<CBooleanValue>(this);
 }

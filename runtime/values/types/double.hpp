@@ -6,7 +6,6 @@ class CDoubleValue : public CValue<double>
 {
 public:
 	CDoubleValue() = default;
-	CDoubleValue(double value) : CValue(value) {}
 	[[nodiscard]] EValueType Type() const noexcept override { return t_double; };
 	
 	[[nodiscard]] IValue* Copy() override;

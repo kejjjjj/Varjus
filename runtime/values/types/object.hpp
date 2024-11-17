@@ -17,22 +17,38 @@ class CInternalObjectValue;
 
 using ObjectInitializer = VectorOf<KeyValue<ElementIndex, IValue*>>;
 
-class CObjectValue final : public CValue<std::shared_ptr<CInternalObjectValue>>
+class CInternalObjectValue final
+{
+public:
+	CInternalObjectValue() = default;
+	~CInternalObjectValue();
+
+	void Release();
+
+	void Set(ObjectInitializer&& v);
+	constexpr auto& Get() noexcept { return m_oValue; }
+	constexpr auto& Get() const noexcept { return m_oValue; }
+
+	[[nodiscard]] constexpr auto& GetAggregateValue() const noexcept { return Get(); }
+	[[nodiscard]] constexpr auto& GetAggregateValue() noexcept { return Get(); }
+
+protected:
+	CAggregate m_oValue;
+};
+
+class CObjectValue final : public CValue<CInternalObjectValue>
 {
 public:
 	CObjectValue() = default;
-	CObjectValue(ObjectInitializer&& v);
 	~CObjectValue();
 
 	//copy constructor
 	[[nodiscard]] EValueType Type() const noexcept override { return t_object; };
 
-	void CreateOwnership();
 	void Release() override;
 
 	[[nodiscard]] constexpr bool IsAggregate() const noexcept override { return true; }
 
-	[[nodiscard]] CObjectValue* MakeShared() const;
 	[[nodiscard]] CObjectValue* Copy() override;
 	[[nodiscard]] CInternalObjectValue* Internal();
 	[[nodiscard]] CInternalObjectValue* Internal() const;
@@ -47,17 +63,3 @@ private:
 
 };
 
-class CInternalObjectValue final : public CValue<CAggregate>
-{
-public:
-	CInternalObjectValue() = default;
-	CInternalObjectValue(ObjectInitializer&& v);
-	~CInternalObjectValue();
-
-	void Release() override;
-
-	void Set(ObjectInitializer&& v);
-
-	[[nodiscard]] constexpr auto& GetAggregateValue() const noexcept { return Get(); }
-	[[nodiscard]] constexpr auto& GetAggregateValue() noexcept { return Get(); }
-};

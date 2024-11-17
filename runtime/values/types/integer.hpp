@@ -5,7 +5,6 @@ class CIntValue : public CValue<std::int64_t>
 {
 public:
 	CIntValue() = default;
-	CIntValue(std::int64_t value) : CValue(value) {}
 	[[nodiscard]] EValueType Type() const noexcept override { return t_int; };
 
 	[[nodiscard]] IValue* Copy() override;

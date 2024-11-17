@@ -86,6 +86,7 @@ public:
 		if constexpr (std::is_same_v<IValue, T>)
 			return v;
 		else {
+			v->MakeUnique();
 			v->SetStorageValue(std::forward<const Ctor&>(ctor));
 			return v;
 		}
@@ -95,11 +96,13 @@ public:
 	[[nodiscard]] static constexpr T* AcquireNewValue(Ctor&& ctor) {
 		auto v = GetPool<T>().Acquire();
 		v->SetOwner(nullptr);
+
 		assert(!v->HasOwner());
 
 		if constexpr (std::is_same_v<IValue, T>)
 			return v;
 		else {
+			v->MakeUnique();
 			v->SetStorageValue(std::forward<Ctor&&>(ctor));
 			return v;
 		}

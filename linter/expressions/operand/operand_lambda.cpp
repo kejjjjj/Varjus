@@ -33,12 +33,14 @@ std::unique_ptr<IOperand> CLinterOperand::ParseLambda()
 	fnLinter.m_oFunctionName = "lambda";
 	fnLinter.m_pThisStack->m_pFunction = fnLinter.ToFunction();
 
-	return std::make_unique<CLambdaOperand>(fnLinter.ToRuntimeFunction());
+	return std::make_unique<CLambdaOperand>(fnLinter.ToRuntimeFunction(), 
+		fnLinter.GetSharedOwnershipVariables(fnLinter.m_pThisStack->GetGlobalFunction()));
 }
 
-CLambdaOperand::CLambdaOperand(RuntimeFunction&& ptr) : m_pLambda(std::move(ptr)){}
+CLambdaOperand::CLambdaOperand(RuntimeFunction&& ptr, VectorOf<ElementIndex>&& captures)
+	: m_pLambda(std::move(ptr)), m_oVariableCaptures(std::move(captures)){}
 CLambdaOperand::~CLambdaOperand() = default;
 
 UniqueAST CLambdaOperand::ToAST() {
-	return std::make_unique<LambdaASTNode>(std::move(m_pLambda));
+	return std::make_unique<LambdaASTNode>(std::move(m_pLambda), std::move(m_oVariableCaptures));
 }

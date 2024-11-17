@@ -24,7 +24,7 @@ IValue* OP_ASSIGNMENT(IValue* lhs, IValue* rhs)
 			variable->SetValue(CProgramRuntime::AcquireNewValue<IValue>());
 			break;
 		case t_boolean:
-			variable->SetValue(CProgramRuntime::AcquireNewValue<CBooleanValue>(rhs->AsBoolean()));
+			variable->SetValue(CProgramRuntime::AcquireNewValue<CIntValue>(rhs->AsInt()));
 			break;
 		case t_int:
 			variable->SetValue(CProgramRuntime::AcquireNewValue<CIntValue>(rhs->AsInt()));
@@ -36,15 +36,16 @@ IValue* OP_ASSIGNMENT(IValue* lhs, IValue* rhs)
 			variable->SetValue(CProgramRuntime::AcquireNewValue<CStringValue>(rhs->AsString()));
 			break;
 		case t_callable:
-			variable->SetValue(CProgramRuntime::AcquireNewValue<CCallableValue>(rhs->AsCallable()));
+			assert(rhs->ToCallable());
+			variable->SetValue(rhs->ToCallable()->Copy());
 			break;
 		case t_array:
 			assert(rhs->ToArray());
-			variable->SetValue(rhs->ToArray()->MakeShared());
+			variable->SetValue(rhs->ToArray()->Copy());
 			break;
 		case t_object:
 			assert(rhs->ToObject());
-			variable->SetValue(rhs->ToObject()->MakeShared());
+			variable->SetValue(rhs->ToObject()->Copy());
 			break;
 	}
 

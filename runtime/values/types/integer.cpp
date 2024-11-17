@@ -3,10 +3,20 @@
 
 IValue* CIntValue::Copy()
 {
-	return CProgramRuntime::AcquireNewValue<CIntValue>(m_oValue);
+	if (IsShared()) {
+		auto ptr = CProgramRuntime::AcquireNewValue<CIntValue>();
+		ptr->MakeShared();
+		ptr->GetShared() = GetShared();
+		return ptr;
+	}
+
+	return CProgramRuntime::AcquireNewValue<CIntValue>(Get());
 }
 void CIntValue::Release()
 {
+	if (IsShared())
+		ReleaseShared();
+
 	ReleaseInternal();
 	CProgramRuntime::FreeValue<CIntValue>(this);
 }

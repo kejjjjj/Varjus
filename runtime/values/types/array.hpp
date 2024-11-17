@@ -18,22 +18,51 @@ namespace runtime::__internal {
 	VectorOf<ElementIndex>& GetAggregateArrayData();
 }
 
-class CArrayValue final : public CValue<std::shared_ptr<CInternalArrayValue>>
+struct CArrayContent final
+{
+	CAggregate m_oAggregate;
+	VectorOf<CVariable*> m_oVariables;
+};
+
+class CInternalArrayValue final
+{
+public:
+	CInternalArrayValue() = default;
+	CInternalArrayValue(VectorOf<IValue*>&& v);
+	~CInternalArrayValue();
+
+	void Release();
+
+	void Set(VectorOf<IValue*>&& v);
+	constexpr auto& Get() noexcept { return m_oValue; }
+	constexpr auto& Get() const noexcept { return m_oValue; }
+
+	[[nodiscard]] constexpr auto& GetVariables() noexcept { return Get().m_oVariables; }
+	[[nodiscard]] constexpr auto& GetVariables() const noexcept { return Get().m_oVariables; }
+
+	[[nodiscard]] constexpr auto& GetAggregateValue() const noexcept { return Get().m_oAggregate; }
+	[[nodiscard]] constexpr auto& GetAggregateValue() noexcept { return Get().m_oAggregate; }
+
+	[[nodiscard]] std::size_t Length() const noexcept;
+
+protected:
+	CArrayContent m_oValue;
+};
+
+
+class CArrayValue final : public CValue<CInternalArrayValue>
 {
 public:
 	CArrayValue() = default;
-	CArrayValue(VectorOf<IValue*>&& v);
 	~CArrayValue();
 	//copy constructor
 	[[nodiscard]] EValueType Type() const noexcept override { return t_array; };
 
-	void CreateOwnership();
 	void Release() override;
 
 	[[nodiscard]] constexpr bool IsIndexable() const noexcept override { return true; }
 	[[nodiscard]] constexpr bool IsAggregate() const noexcept override { return true; }
 
-	[[nodiscard]] CArrayValue* MakeShared() const;
 	[[nodiscard]] IValue* Copy() override;
 	[[nodiscard]] CArrayValue* ToArray() override;
 	[[nodiscard]] CInternalArrayValue* Internal();
@@ -48,28 +77,3 @@ private:
 
 };
 
-struct CArrayContent final
-{
-	CAggregate m_oAggregate;
-	VectorOf<CVariable*> m_oVariables;
-};
-
-class CInternalArrayValue final : public CValue<CArrayContent>
-{
-public:
-	CInternalArrayValue() = default;
-	CInternalArrayValue(VectorOf<IValue*>&& v);
-	~CInternalArrayValue();
-
-	void Release() override;
-
-	void Set(VectorOf<IValue*>&& v);
-
-	[[nodiscard]] constexpr auto& GetVariables() noexcept { return Get().m_oVariables; }
-	[[nodiscard]] constexpr auto& GetVariables() const noexcept { return Get().m_oVariables; }
-
-	[[nodiscard]] constexpr auto& GetAggregateValue() const noexcept { return Get().m_oAggregate; }
-	[[nodiscard]] constexpr auto& GetAggregateValue() noexcept { return Get().m_oAggregate; }
-
-	[[nodiscard]] std::size_t Length() const noexcept;
-};

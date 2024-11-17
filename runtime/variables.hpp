@@ -16,11 +16,12 @@ public:
 	~CVariable();
 
 	void SetValue(IValue* v);
-
-	[[nodiscard]] auto& GetValue() noexcept { return m_pValue; }
-
 	void Release();
 
+	[[nodiscard]] auto& GetValue() noexcept { return m_pValue; }
+	[[nodiscard]] CVariable* Copy() noexcept { m_uRefCount++; return this; }
+	[[nodiscard]] std::size_t& RefCount() noexcept { return m_uRefCount; }
 protected:
 	IValue* m_pValue{};
+	std::size_t m_uRefCount{std::size_t(1)};
 };

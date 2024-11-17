@@ -4,6 +4,8 @@
 #include <cstdint>
 #include <memory>
 #include <string>
+#include <variant>
+#include <cassert>
 
 using namespace std::string_literals;
 
@@ -12,6 +14,7 @@ class CRuntimeFunction;
 class IValue;
 class CInternalArrayValue;
 class CArrayValue;
+class CCallableValue;
 class CObjectValue;
 
 inline std::string emptyString;
@@ -77,6 +80,7 @@ public:
 	[[nodiscard]] virtual double ToDouble() const { return 0.0; }
 	[[nodiscard]] virtual const std::string& ToString() const { return emptyString; }
 
+	[[nodiscard]] virtual CCallableValue* ToCallable() { return nullptr; }
 	[[nodiscard]] virtual CArrayValue* ToArray() { return nullptr; }
 	[[nodiscard]] virtual CObjectValue* ToObject() { return nullptr; }
 
@@ -89,65 +93,64 @@ protected:
 };
 
 template <typename Value>
-struct DirectStorage {
-	using StorageType = Value;
-	StorageType m_oValue;
-
-	DirectStorage() = default;
-	explicit DirectStorage(const Value& value) : m_oValue(value) {}
-	explicit DirectStorage(Value&& value) : m_oValue(std::move(value)) {}
-
-	constexpr Value& Get() { return m_oValue; }
-	constexpr const Value& Get() const { return m_oValue; }
-
-	void SetStorageValue(Value&& v) { m_oValue = std::move(v); }
-	void SetStorageValue(const Value& v) { m_oValue = v; }
-
-};
-
-template <typename Value>
-struct SharedStorage {
-	using StorageType = std::shared_ptr<Value>;
-	StorageType m_oValue;
-
-	SharedStorage() : m_oValue(std::make_shared<Value>()) {}
-	explicit SharedStorage(const Value& value) : m_oValue(std::make_shared<Value>(value)) {}
-	explicit SharedStorage(Value&& value) : m_oValue(std::make_shared<Value>(std::move(value))) {}
-
-	Value& Get() { return m_oValue; }
-	const Value& Get() const { return m_oValue; }
-
-	void SetStorageValue(Value&& v) { m_oValue = std::move(v); }
-	void SetStorageValue(const Value& v) { m_oValue = v; }
-};
-
-template <typename Value, template <typename> class StoragePolicy = DirectStorage>
-class CValue : public IValue, public StoragePolicy<Value> {
-protected:
-	using StoragePolicy<Value>::m_oValue;
-
+class CValue : public IValue {
+	static_assert(std::is_default_constructible_v<Value>, "T must be default constructible");
 public:
+	// no reason to have other constructors as these objects are created before their actually needed use!
 	CValue() = default;
-	explicit CValue(const Value& value) : StoragePolicy<Value>(value) {}
-	explicit CValue(Value&& value) : StoragePolicy<Value>(std::move(value)) {}
+	
 	virtual ~CValue() = default;
-};
 
-// Generic wrapper for shared ownership
-template <typename Derived, typename Value>
-class CSharedValue : public Derived {
-public:
-	using Base = Derived;
-	using StorageType = SharedStorage<Value>;
+	constexpr void MakeShared() {
+		if (m_bShared)
+			return;
 
-	CSharedValue() = default;
-	explicit CSharedValue(const Value& value) : Base(value) {
-		static_assert(std::is_base_of_v<CValue<Value, SharedStorage>, Derived>,
-			"Derived must inherit from CValue<Value, SharedStorage>");
+		m_bShared = true;
+		m_oValue = std::make_shared<Value>();
 	}
-	explicit CSharedValue(Value&& value) : Base(std::move(value)) {}
+	constexpr void MakeUnique() {
+		if (!m_bShared)
+			return;
+
+		m_bShared = false;
+		m_oValue = Value{};
+	}
+	[[nodiscard]] constexpr std::shared_ptr<Value>& GetShared() {
+		assert(m_bShared);
+		return std::get<1>(m_oValue);
+	}
+	[[nodiscard]] constexpr const std::shared_ptr<Value>& GetShared() const {
+		assert(m_bShared);
+		return std::get<1>(m_oValue);
+	}
+
+	[[nodiscard]] constexpr Value& Get() {
+		if (m_bShared)
+			return *std::get<1>(m_oValue);
+		return std::get<0>(m_oValue);
+	}
+	[[nodiscard]] constexpr const Value& Get() const {
+		if (m_bShared)
+			return *std::get<1>(m_oValue);
+		return std::get<0>(m_oValue);
+	}
+
+	void SetStorageValue(Value&& v) { m_oValue = std::move(v); }
+	void SetStorageValue(const Value& v) { m_oValue = v; }
+
+	[[nodiscard]] constexpr auto IsShared() const noexcept { return m_bShared; }
+
+protected:
+	std::variant<Value, std::shared_ptr<Value>> m_oValue{};
+	bool m_bShared{ false };
+
+	[[nodiscard]] constexpr auto SharedRefCount() const noexcept { return GetShared().use_count(); }
+
+	[[maybe_unused]] void ReleaseShared() {
+		assert(m_bShared);
+		GetShared().reset();
+	}
+
+private:
+
 };
-
-template<typename T>
-using SharedCValue = CValue<T, SharedStorage>;
-

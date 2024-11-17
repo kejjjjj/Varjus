@@ -5,7 +5,6 @@ class CBooleanValue : public CValue<bool>
 {
 public:
 	CBooleanValue() = default;
-	CBooleanValue(bool value) : CValue(value) {}
 	[[nodiscard]] EValueType Type() const noexcept override { return t_boolean; };
 
 	[[nodiscard]] IValue* Copy() override;

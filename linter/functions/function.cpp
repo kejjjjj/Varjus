@@ -184,8 +184,7 @@ std::unique_ptr<CRuntimeFunction> CFunctionLinter::ToRuntimeFunction() const
 	return std::make_unique<CRuntimeFunction>(
 		*stack->m_pFunction, 
 		GetParameterIndices(stack),
-		GetVariableIndices(stack),
-		GetSharedOwnershipVariables(stack));
+		GetVariableIndices(stack));
 }
 VectorOf<std::size_t> CFunctionLinter::GetParameterIndices(CStack* stack) const
 {
@@ -208,7 +207,7 @@ VectorOf<std::size_t> CFunctionLinter::GetVariableIndices(CStack* stack) const
 		if (var.m_bIsParameter)
 			continue;
 
-		if (!var.m_bRequiresSharedOwnership)
+		//if(!var.m_bRequiresSharedOwnership)
 			indices.emplace_back(var.m_uIndex);
 	}
 

@@ -95,19 +95,25 @@ IValue* CRuntimeExpression::EvaluateLeaf(CFunction* const thisFunction, const Ab
 		const auto var = node->GetFunction();
 		auto v = CProgramRuntime::AcquireNewValue<CCallableValue>(CProgramRuntime::GetFunctionByIndex(var->m_uIndex));
 		v->MakeImmutable();
+		v->MakeUnique();
 		return v;
 	}
 
 	if (node->IsLambda()) {
 		const auto var = node->GetLambda();
 		auto v = CProgramRuntime::AcquireNewValue<CCallableValue>(var->m_pLambda.get());
+
+		if (var->m_oVariableCaptures.size())
+			v->SetCaptures(thisFunction, var->m_oVariableCaptures);
+
+		v->MakeUnique();
 		return v;
 	}
 
 	if (node->IsArray()) {
 		const auto var = node->GetArray();
 		auto ptr = CProgramRuntime::AcquireNewValue<CArrayValue>();
-		ptr->CreateOwnership();
+		ptr->MakeShared();
 		auto internal = ptr->Internal();
 		internal->Set(EvaluateList(thisFunction, var->m_oExpressions));
 		internal->GetAggregateValue().Setup(runtime::__internal::GetAggregateArrayData());
@@ -115,11 +121,10 @@ IValue* CRuntimeExpression::EvaluateLeaf(CFunction* const thisFunction, const Ab
 	}
 
 	if (node->IsObject()) {
-		const auto var = node->GetObject();
 		auto ptr = CProgramRuntime::AcquireNewValue<CObjectValue>();
-		ptr->CreateOwnership();
+		ptr->MakeShared();
 		auto internal = ptr->Internal();
-		internal->Set(EvaluateObject(thisFunction, var->m_oAttributes));
+		internal->Set(EvaluateObject(thisFunction, node->GetObject()->m_oAttributes));
 		return ptr;
 	}
 

@@ -5,7 +5,6 @@ class CStringValue : public CValue<std::string>
 {
 public:
 	CStringValue() = default;
-	CStringValue(const std::string& value) : CValue(value) {}
 	[[nodiscard]] EValueType Type() const noexcept override { return t_string; };
 
 	[[nodiscard]] IValue* Copy() override;

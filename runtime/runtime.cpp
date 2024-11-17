@@ -45,7 +45,7 @@ void CProgramRuntime::Execute()
 	std::chrono::time_point<std::chrono::steady_clock> old = std::chrono::steady_clock::now();
 
 	std::vector<IValue*> args;
-	if (auto v = (*iMainFunction)->Execute(nullptr, args)) {
+	if (auto v = (*iMainFunction)->Execute(nullptr, args, {})) {
 		v->Release();
 	}
 
@@ -61,7 +61,8 @@ void CProgramRuntime::Execute()
 	std::cout << std::format("string:    {}\n",   GetPool<CStringValue>().GetInUseCount());
 	std::cout << std::format("callable:  {}\n",   GetPool<CCallableValue>().GetInUseCount());
 	std::cout << std::format("array:     {}\n",   GetPool<CArrayValue>().GetInUseCount());
-	std::cout << std::format("object:    {}\n\n", GetPool<CObjectValue>().GetInUseCount());
+	std::cout << std::format("object:    {}\n",   GetPool<CObjectValue>().GetInUseCount());
+	std::cout << std::format("variable:  {}\n\n", GetPool<CVariable>().GetInUseCount());
 
 	return;
 

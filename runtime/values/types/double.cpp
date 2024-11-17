@@ -1,16 +1,21 @@
 #include "runtime/runtime.hpp"
 #include "double.hpp"
 
-#include "internal/reference.hpp"
-
 IValue* CDoubleValue::Copy()
 {
-	return CProgramRuntime::AcquireNewValue<CDoubleValue>(m_oValue);
+	if (IsShared()) {
+		auto ptr = CProgramRuntime::AcquireNewValue<CDoubleValue>();
+		ptr->MakeShared();
+		ptr->GetShared() = GetShared();
+		return ptr;
+	}
+
+	return CProgramRuntime::AcquireNewValue<CDoubleValue>(Get());
 }
 void CDoubleValue::Release()
 {
-	CReferenceValue<CDoubleValue> dbl;
-
+	if (IsShared())
+		ReleaseShared();
 	ReleaseInternal();
 	CProgramRuntime::FreeValue<CDoubleValue>(this);
 }

@@ -155,5 +155,6 @@ TernaryASTNode::TernaryASTNode(CTernaryOperand* operand)
 	m_pFalse(std::move(operand->m_pFalse)){ }
 TernaryASTNode::~TernaryASTNode() = default;
 
-LambdaASTNode::LambdaASTNode(RuntimeFunction&& operand) : m_pLambda(std::move(operand)){}
+LambdaASTNode::LambdaASTNode(RuntimeFunction&& operand, VectorOf<ElementIndex>&& captures) 
+	: m_pLambda(std::move(operand)), m_oVariableCaptures(std::move(captures)){}
 LambdaASTNode::~LambdaASTNode() = default;

@@ -255,9 +255,6 @@
     <ClCompile Include="linter\expressions\operand\operand_expression.cpp">
       <Filter>Source Files\linter\expressions\operand</Filter>
     </ClCompile>
-    <ClCompile Include="runtime\values\types\lambda.cpp">
-      <Filter>Source Files\runtime\values\types</Filter>
-    </ClCompile>
     <ClCompile Include="linter\expressions\operand\operand_lambda.cpp">
       <Filter>Source Files\linter\expressions\operand</Filter>
     </ClCompile>
@@ -445,9 +442,6 @@
     </ClInclude>
     <ClInclude Include="linter\expressions\operand\operand_includes.hpp">
       <Filter>Source Files\linter\expressions\operand</Filter>
-    </ClInclude>
-    <ClInclude Include="runtime\values\types\lambda.hpp">
-      <Filter>Source Files\runtime\values\types</Filter>
     </ClInclude>
     <ClInclude Include="linter\expressions\operand\operand_lambda.hpp">
       <Filter>Source Files\linter\expressions\operand</Filter>
