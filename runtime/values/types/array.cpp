@@ -28,11 +28,12 @@ void CArrayValue::Release(){
 
 	if (SharedRefCount() == 1) {
 		Get().Release();
-		ReleaseShared();
 	}
 
 	ReleaseInternal();
 	CProgramRuntime::FreeValue<CArrayValue>(this);
+	ReleaseShared();
+
 }
 
 IValue* CArrayValue::Copy(){

@@ -14,11 +14,11 @@ void CObjectValue::Release() {
 
 	if (SharedRefCount() == 1) {
 		Get().Release();
-		ReleaseShared();
 	}
 	
 	ReleaseInternal();
 	CProgramRuntime::FreeValue<CObjectValue>(this);
+	ReleaseShared();
 }
 
 CObjectValue* CObjectValue::Copy() {
