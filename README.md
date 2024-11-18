@@ -3,62 +3,46 @@
 Example code
 
 ```js
-fn addArrays(a, b, target)
+fn ass()
 {
-	let i = 0;
-	while(i < a.length){
-		target[i] = a[i] + b[i];
-		i = i + 1;
-	}
-
-	return true;
+	return 5;
 }
 
-fn getMap()
+fn testFunc(val)
 {
-	return { 
-		data: { 
-			addFunc: addArrays,
-			keys: [
-				{ a: 0 },
-				{ a: 1 },
-				{ a: 2 }
-			],
-			keys2: { 
-				data: [ 
-					{ a: 4 },
-					{ a: 5 },
-					{ a: 6 } 
-				]
-			}	
-		},
-		result: [undefined, undefined, undefined]
+	let assWrapper = fn() { return ass(); };
+
+	let test = val;
+	return {  
+		data: 
+			fn(callable, a, b) { 
+				return callable(a, b) + test;  
+			},
+		wrapper:
+			(test < 5) ? assWrapper : fn() { return test + 7; }
 	};
 }
-fn replaceKeys(keyArray, targetValues)
+
+fn handleFunc(value)
 {
-	let i = 0;
-	while(i < keyArray.length){
-		keyArray[i] = targetValues[i];
-		i = i + 1;
-	}
+	let obj = testFunc(value);
+
+	let part1 = obj.data(fn(a, b) { return a + b; }, 7, 5);
+	let part2 = obj.wrapper();
+
+	return part1 + part2;
 }
+
 fn main() {
 
-	let map = getMap();
-	
-	replaceKeys(map.data.keys, [10, 20, 30]);
-	replaceKeys(map.data.keys2.data, [40, 50, 60]);
-
-	let target = map.result;
-	let addedData = map.data.addFunc(map.data.keys, map.data.keys2.data, target);
+	let a = handleFunc(4);
+	let b = handleFunc(5);
 }
 ```
 Output:
 
 ```
-{ data: { addFunc: 11cc84ea0320, keys: [ 10, 20, 30 ], keys2: { data: [ 40, 50, 60 ] } }, result: [ 50, 70, 90 ] }: object
-[ 50, 70, 90 ]: array
-true: boolean
+21: int
+29: int
 ```
 
