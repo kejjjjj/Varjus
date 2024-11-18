@@ -19,6 +19,7 @@ using VariableIndex = std::size_t;
 using IndexToVariable = KeyValue<VariableIndex, CVariable*>;
 using VariableCaptures = std::unordered_map<VariableIndex, CVariable*>;
 
+
 class CFunction
 {
 	NONCOPYABLE(CFunction);

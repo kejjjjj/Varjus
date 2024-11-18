@@ -5,38 +5,52 @@
 
 IValue* CCallableValue::Copy()
 {
-	if (IsShared()) {
-		auto ptr = CProgramRuntime::AcquireNewValue<CCallableValue>();
-		ptr->MakeShared();
-		ptr->GetShared() = GetShared();
-		return ptr;
-	}
+	auto ptr = CProgramRuntime::AcquireNewValue<CCallableValue>();
+	ptr->MakeShared();
+	auto& var = (ptr->GetShared() = GetShared());
 
-	auto v = CProgramRuntime::AcquireNewValue<CCallableValue>(Get());
-	v->GetCaptures() = m_oCaptures;
+	for (auto& [k, va] : var->GetCaptures())
+		va->RefCount()++; //increase ref count so that these don't get destroyed
 
-	for (auto& [k, va] : v->GetCaptures())
-		va->RefCount()++;
+	return ptr;
 
-	return v;
 }
 void CCallableValue::Release()
 {
-	if (IsShared())
-		ReleaseShared();
+	if (SharedRefCount() == 1) {
+		Get().Release();
+	}
 
 	ReleaseInternal();
-
-	for (auto& [id, var] : m_oCaptures)
-		var->Release();
-
 	CProgramRuntime::FreeValue<CCallableValue>(this);
+	ReleaseShared();
+}
+bool CCallableValue::AlwaysCopy() const noexcept
+{
+	return !GetShared()->GetCaptures().empty();
+}
+CInternalCallableValue* CCallableValue::Internal() {
+	return GetShared().get();
+}
+CInternalCallableValue* CCallableValue::Internal() const {
+	return GetShared().get();
 }
 
-void CCallableValue::SetCaptures(CFunction* const thisFunction, const VectorOf<VariableIndex>& captures)
+void CInternalCallableValue::SetCaptures(CFunction* const thisFunction, const VectorOf<VariableIndex>& captures)
 {
 
 	for (auto& varIndex : captures)
 		m_oCaptures[varIndex] = thisFunction->GetVariableByIndex(varIndex)->Copy();
 
+}
+void CInternalCallableValue::Release()
+{
+	for (auto it = m_oCaptures.begin(); it != m_oCaptures.end(); ) {
+
+		if (!it->second->GetValue() || it->second->Release()) {
+			it = m_oCaptures.erase(it);
+		} else {
+			++it; 
+		}
+	}
 }

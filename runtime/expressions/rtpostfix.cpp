@@ -43,6 +43,8 @@ IValue* CRuntimeExpression::EvaluatePostfix(CFunction* const thisFunction, const
 	if (!operand->HasOwner()) 
 		operand->Release();
 	
+	assert(returnVal);
+
 	return returnVal;
 }
 IValue* CRuntimeExpression::EvaluateMemberAccess(IValue* operand, const MemberAccessASTNode* node)
@@ -69,6 +71,8 @@ IValue* CRuntimeExpression::EvaluateSubscript(CFunction* const thisFunction, IVa
 	if (!accessor->HasOwner())
 		accessor->Release();
 
+	assert(index);
+
 	return index;
 }
 IValue* CRuntimeExpression::EvaluateFunctionCall(CFunction* const thisFunction, IValue* operand, const FunctionCallASTNode* node)
@@ -80,10 +84,13 @@ IValue* CRuntimeExpression::EvaluateFunctionCall(CFunction* const thisFunction, 
 	// the callee will take ownership of temp-value args
 	auto args = EvaluateList(thisFunction, node->m_oArguments);
 
-	auto callable = dynamic_cast<CCallableValue*>(operand);
+	auto callable = dynamic_cast<CCallableValue*>(operand)->Internal();
+	auto function = callable->GetCallable();
+	//std::cout << "calling: " << function->GetName() << " with " << callable->GetCaptures().size() << '\n';
 
-	auto& function = callable->Get();
 	auto ret = function->Execute(thisFunction, args, callable->GetCaptures());
+
+	assert(ret);
 
 	return ret;
 }

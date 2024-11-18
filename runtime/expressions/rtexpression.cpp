@@ -77,6 +77,8 @@ IValue* CRuntimeExpression::Evaluate(CFunction* const thisFunction, const Abstra
 	if (!lhs->HasOwner()) lhs->Release();
 	if (!rhs->HasOwner()) rhs->Release();
 
+	assert(result != nullptr);
+
 	return result;
 }
 #pragma pack(pop)
@@ -87,26 +89,32 @@ IValue* CRuntimeExpression::EvaluateLeaf(CFunction* const thisFunction, const Ab
 	if (node->IsVariable()) {
 		const auto var = node->GetVariable();
 		auto v = thisFunction->GetVariableByIndex(var->m_uIndex)->GetValue();
+		assert(v);
 		assert(v->HasOwner());
 		return v;
 	}
 
 	if (node->IsFunction()) {
 		const auto var = node->GetFunction();
-		auto v = CProgramRuntime::AcquireNewValue<CCallableValue>(CProgramRuntime::GetFunctionByIndex(var->m_uIndex));
+		auto v = CProgramRuntime::AcquireNewValue<CCallableValue>();
+		v->MakeShared();
+
+		v->Internal()->GetCallable() = CProgramRuntime::GetFunctionByIndex(var->m_uIndex);
+
 		v->MakeImmutable();
-		v->MakeUnique();
 		return v;
 	}
 
 	if (node->IsLambda()) {
 		const auto var = node->GetLambda();
-		auto v = CProgramRuntime::AcquireNewValue<CCallableValue>(var->m_pLambda.get());
+		auto v = CProgramRuntime::AcquireNewValue<CCallableValue>();
+		v->MakeShared();
 
+		auto internal = v->Internal();
+		internal->GetCallable() = var->m_pLambda.get();
 		if (var->m_oVariableCaptures.size())
-			v->SetCaptures(thisFunction, var->m_oVariableCaptures);
+			internal->SetCaptures(thisFunction, var->m_oVariableCaptures);
 
-		v->MakeUnique();
 		return v;
 	}
 

@@ -17,13 +17,11 @@ std::unique_ptr<IOperand> CLinterOperand::ParseLambda()
 	std::advance(m_iterPos, 1); // skip fn
 
 	CFunctionLinter fnLinter(m_iterPos, m_iterEnd, m_pScope, m_pOwner);
-	fnLinter.m_pThisStack->m_pLowerFunction = dynamic_cast<CStack*>(m_pOwner)->GetGlobalFunction();
+	fnLinter.m_pThisStack->m_pLowerFunction = m_pOwner->ToStack()->GetGlobalFunction();
 
 	if (!fnLinter.ParseFunctionParameters())
 		return nullptr;
 	
-
-
 	if (!fnLinter.ParseFunctionScope()) {
 		return nullptr;
 	}
@@ -34,7 +32,7 @@ std::unique_ptr<IOperand> CLinterOperand::ParseLambda()
 	fnLinter.m_pThisStack->m_pFunction = fnLinter.ToFunction();
 
 	return std::make_unique<CLambdaOperand>(fnLinter.ToRuntimeFunction(), 
-		fnLinter.GetSharedOwnershipVariables(fnLinter.m_pThisStack->GetGlobalFunction()));
+		fnLinter.GetSharedOwnershipVariables(fnLinter.m_pThisStack.get()));
 }
 
 CLambdaOperand::CLambdaOperand(RuntimeFunction&& ptr, VectorOf<ElementIndex>&& captures)

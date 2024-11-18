@@ -16,7 +16,7 @@ public:
 	~CVariable();
 
 	void SetValue(IValue* v);
-	void Release();
+	[[maybe_unused]] bool Release();
 
 	[[nodiscard]] auto& GetValue() noexcept { return m_pValue; }
 	[[nodiscard]] CVariable* Copy() noexcept { m_uRefCount++; return this; }

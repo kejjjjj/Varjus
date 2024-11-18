@@ -56,7 +56,10 @@ Success LintAddInstruction(LinterIterator& start, LinterIterator& end, const Wea
 	if (!linter.Parse())
 		return failure;
 
-	return AddInstruction(start, linter.ToRuntimeObject(), scope);
+	if constexpr (std::is_same_v<CFunctionLinter, Linter>)
+		return success;
+	else
+		return AddInstruction(start, linter.ToRuntimeObject(), scope);
 }
 
 Success CFileLinter::LintOperator(LinterIterator& start, LinterIterator& end, const WeakScope& scope, CMemory* const memory)

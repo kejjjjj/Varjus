@@ -16,6 +16,9 @@ class CFileRuntimeData;
 struct CFunctionBlock;
 struct CProgramContext;
 
+template<typename T>
+using VectorOf = std::vector<T>;
+
 enum EMemoryIdentifierType
 {
 	mi_variable,
@@ -44,8 +47,6 @@ struct CLinterVariable final : public CMemoryIdentifier
 	[[nodiscard]] virtual constexpr EMemoryIdentifierType Type() const noexcept override { return mi_variable; }
 
 	const CMemory* m_pOwner{};
-	bool m_bIsParameter{ false };
-	bool m_bRequiresSharedOwnership{ false };
 };
 struct CLinterFunction final : public CMemoryIdentifier
 {
@@ -97,17 +98,24 @@ using RuntimeBlock = std::unique_ptr<IRuntimeStructure>;
 class CStack final : public CMemory
 {
 	NONCOPYABLE(CStack);
+	friend class CFunctionLinter;
 public:
 	CStack(CFileRuntimeData* const file, CProgramContext* const context);
 	CStack(std::unique_ptr<CFunctionBlock>&& func, CFileRuntimeData* const file, CProgramContext* const context);
 	~CStack();
 
-	CStack* GetGlobalFunction();
+	[[nodiscard]] bool IsStack() const noexcept override { return true; }
+	[[nodiscard]] CStack* GetGlobalFunction();
 
 	void AddFunctionInstruction(RuntimeBlock&& block) const;
 
-	[[nodiscard]] bool IsStack() const noexcept override { return true; }
-	std::unique_ptr<CFunctionBlock> m_pFunction;
+	void AddSharedOwnershipVariable(std::size_t varIndex) { m_oIndicesWhichRequireSharedOwnership.push_back(varIndex); }
+	void AddArgumentVariable(std::size_t varIndex) { m_oArgumentIndices.push_back(varIndex); }
 
+	std::unique_ptr<CFunctionBlock> m_pFunction;
 	CStack* m_pLowerFunction{ nullptr };
+
+private:
+	VectorOf<std::size_t> m_oIndicesWhichRequireSharedOwnership;
+	VectorOf<std::size_t> m_oArgumentIndices;
 };

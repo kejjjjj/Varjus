@@ -34,10 +34,16 @@ void CAggregate::AddAttribute(ElementIndex elem, IValue* value){
 }
 void CAggregate::Release()
 {
-	for (auto& [idx, v] : m_oIndexLookup) {
-		v->Release();
-	}
 
+	for (auto it = m_oIndexLookup.begin(); it != m_oIndexLookup.end(); ) {
+
+		if (!it->second->GetValue() || it->second->Release()) {
+			it = m_oIndexLookup.erase(it);
+		}
+		else {
+			++it;
+		}
+	}
 }
 IValue* CAggregate::ElementLookup(GlobalMemberIndex index) const
 {

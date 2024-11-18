@@ -52,21 +52,25 @@ Success CIdentifierLinter::ParseIdentifier()
 			if (!m_pIdentifier) {
 
 				assert(m_pOwner->IsStack());
-				const auto globalFunc = m_pOwner->ToStack()->GetGlobalFunction();
+				auto stack = m_pOwner->ToStack();
+				const auto globalFunc = stack->GetGlobalFunction();
 				assert(globalFunc);
 				auto var = globalFunc->GetVariable(str);
 				assert(var);
 
 				// this variable is being accessed in a lambda function
-				var->m_bRequiresSharedOwnership = true;
+				stack->AddSharedOwnershipVariable(var->m_uIndex);
 				m_pIdentifier = var;
 			}
 
-		}
-		else if (func) {
-			m_pIdentifier = m_pOwner->ContainsFunction(str) 
-				? m_pOwner->GetFunction(str) 
-				: m_pOwner->DeclareFunction(str);
+		} else if (func) {
+
+			auto lowest = m_pOwner->ToStack()->GetGlobalFunction();
+
+
+			m_pIdentifier = lowest->ContainsFunction(str)
+				? lowest->GetFunction(str)
+				: lowest->DeclareFunction(str);
 		}
 
 		if (!m_pIdentifier) {

@@ -11,6 +11,7 @@
 #include "globalEnums.hpp"
 
 #include "runtime/structure.hpp"
+#include <iostream>
 
 CFunctionLinter::CFunctionLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack)
 	: CLinterSingle(pos, end), m_pScope(scope), m_pOwner(stack),
@@ -114,7 +115,7 @@ Success CFunctionLinter::ParseFunctionParametersRecursively()
 	}
 
 	auto var = m_pThisStack->DeclareVariable((*m_iterPos)->Source());
-	var->m_bIsParameter = true;
+	m_pThisStack->AddArgumentVariable(var->m_uIndex);
 	m_oParameters.push_back((*m_iterPos)->Source());
 
 	std::advance(m_iterPos, 1); //skip identifier
@@ -178,25 +179,23 @@ std::unique_ptr<CRuntimeFunction> CFunctionLinter::ToRuntimeFunction() const
 	assert(m_pThisStack != nullptr && m_pThisStack->IsStack());
 
 	const auto stack = m_pThisStack->ToStack();
+	//std::cout << std::format("declaring: {} with ({}, {})\n", 
+	//	stack->m_pFunction->m_sName, stack->m_oArgumentIndices.size(), stack->m_oIndicesWhichRequireSharedOwnership.size());
+
 	assert(stack->m_pFunction != nullptr);
 	stack->m_pFunction->m_oInstructions = std::move(m_pThisScope->MoveInstructions());
 
-	return std::make_unique<CRuntimeFunction>(
+	auto&& ret = std::make_unique<CRuntimeFunction>(
 		*stack->m_pFunction, 
 		GetParameterIndices(stack),
 		GetVariableIndices(stack));
+
+	m_pThisStack->m_pFunction = nullptr;
+
+	return ret;
 }
-VectorOf<std::size_t> CFunctionLinter::GetParameterIndices(CStack* stack) const
-{
-	VectorOf<std::size_t> indices;
-
-	for (auto& [name, var] : stack->GetVariableIterator()) {
-
-		if (var.m_bIsParameter)
-			indices.emplace_back(var.m_uIndex);
-	}
-
-	return indices;
+VectorOf<std::size_t> CFunctionLinter::GetParameterIndices(CStack* stack) const{
+	return stack->m_oArgumentIndices;
 }
 VectorOf<std::size_t> CFunctionLinter::GetVariableIndices(CStack* stack) const
 {
@@ -204,27 +203,19 @@ VectorOf<std::size_t> CFunctionLinter::GetVariableIndices(CStack* stack) const
 
 	for (auto& [name, var] : stack->GetVariableIterator()) {
 
-		if (var.m_bIsParameter)
+		if (std::ranges::find(stack->m_oArgumentIndices, var.m_uIndex) != stack->m_oArgumentIndices.end())
 			continue;
 
-		//if(!var.m_bRequiresSharedOwnership)
-			indices.emplace_back(var.m_uIndex);
+		if (std::ranges::find(stack->m_oIndicesWhichRequireSharedOwnership, var.m_uIndex) 
+			!= stack->m_oIndicesWhichRequireSharedOwnership.end())
+			continue;
+
+		indices.emplace_back(var.m_uIndex);
 	}
 
 	return indices;
 }
 VectorOf<std::size_t> CFunctionLinter::GetSharedOwnershipVariables(CStack* stack) const
 {
-	VectorOf<std::size_t> indices;
-
-	for (auto& [name, var] : stack->GetVariableIterator()) {
-
-		if (var.m_bIsParameter)
-			continue;
-
-		if (var.m_bRequiresSharedOwnership)
-			indices.emplace_back(var.m_uIndex);
-	}
-
-	return indices;
+	return stack->m_oIndicesWhichRequireSharedOwnership;
 }

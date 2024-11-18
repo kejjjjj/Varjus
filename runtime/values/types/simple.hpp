@@ -64,6 +64,7 @@ public:
 	[[nodiscard]] constexpr virtual bool IsCallable() const noexcept { return false; }
 	[[nodiscard]] constexpr virtual bool IsAggregate() const noexcept { return false; }
 	[[nodiscard]] constexpr virtual bool IsBooleanConvertible() const noexcept { return false; }
+	[[nodiscard]] virtual bool AlwaysCopy() const noexcept { return false; }
 
 	[[nodiscard]] virtual IValue* Index(std::int64_t index);
 	[[nodiscard]] virtual IValue* GetAggregate([[maybe_unused]]std::size_t memberIdx) { return nullptr; }
@@ -102,16 +103,10 @@ public:
 	virtual ~CValue() = default;
 
 	constexpr void MakeShared() {
-		if (m_bShared)
-			return;
-
 		m_bShared = true;
 		m_oValue = std::make_shared<Value>();
 	}
 	constexpr void MakeUnique() {
-		if (!m_bShared)
-			return;
-
 		m_bShared = false;
 		m_oValue = Value{};
 	}
