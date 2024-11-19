@@ -12,6 +12,7 @@
 
 #include <cassert>
 #include <sstream>
+#include <iostream>
 
 AbstractSyntaxTree::AbstractSyntaxTree() = default;
 AbstractSyntaxTree::~AbstractSyntaxTree() = default;
@@ -54,14 +55,14 @@ void AbstractSyntaxTree::CreateRecursively(VectorOf<CLinterOperand*>& operands, 
 
 	assert(!operands.empty() && !operators.empty());
 
+
 	const OperatorIterator itr1 = FindLowestPriorityOperator(operators);
-	
+
 	const OperatorIterator opLhs = itr1;
 	const OperatorIterator opRhs = std::next(opLhs);
 
 	const auto operandLhs = operands.begin() + std::distance(operators.begin(), itr1) + 1;
 	const auto operandRhs = operands.begin() + std::distance(operators.begin(), itr1) + 1;
-
 
 	auto lhsOperands = VectorOf<CLinterOperand*>(operands.begin(), operandLhs);
 	auto rhsOperands = VectorOf<CLinterOperand*>(operandRhs, operands.end());
@@ -69,27 +70,36 @@ void AbstractSyntaxTree::CreateRecursively(VectorOf<CLinterOperand*>& operands, 
 	auto lhsOperators = VectorOf<CLinterOperator*>(operators.begin(), opLhs);
 	auto rhsOperators = VectorOf<CLinterOperator*>(opRhs, operators.end());
 
+
 	assert(IsOperator());
 
 	//check size to avoid unnecessary allocations
 	if (lhsOperands.size()) {
 		if (left = GetLeaf(lhsOperands, lhsOperators), !left) {
+
+			//if (lhsOperands.front()->IsTernary())
+			//	std::cout << "yoo\n";
+
 			const OperatorIterator l = FindLowestPriorityOperator(lhsOperators);
 			left = std::make_shared<OperatorASTNode>((*l)->GetPunctuation());
 			left->CreateRecursively(lhsOperands, lhsOperators);
-		}
+
+
+		} 
 	}
 	if (rhsOperands.size()) {
 		if (right = GetLeaf(rhsOperands, rhsOperators), !right) {
+			//if (rhsOperands.front()->IsTernary())
+			//	std::cout << "yoo\n";
 
 			const OperatorIterator l = FindLowestPriorityOperator(rhsOperators);
 			right = std::make_shared<OperatorASTNode>((*l)->GetPunctuation());
 			right->CreateRecursively(rhsOperands, rhsOperators);
+
 		}
 	}
 
 }
-
 OperatorIterator AbstractSyntaxTree::FindLowestPriorityOperator(VectorOf<CLinterOperator*>& operators)
 {
 	assert(!operators.empty());

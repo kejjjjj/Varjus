@@ -49,6 +49,10 @@ public:
 	[[nodiscard]] Success ParseOperand(std::optional<PairMatcher>& eoe);
 	[[nodiscard]] UniqueAST ToAST();
 
+
+	[[nodiscard]] constexpr bool IsTernary() const noexcept { 
+		return m_pOperand && m_pOperand->Type() == ot_ternary; }
+
 private:
 	[[nodiscard]] std::unique_ptr<IOperand> ParseImmediate();
 	[[nodiscard]] std::unique_ptr<IOperand> ParseParentheses();

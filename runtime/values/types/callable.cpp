@@ -47,7 +47,7 @@ void CInternalCallableValue::Release()
 {
 	for (auto it = m_oCaptures.begin(); it != m_oCaptures.end(); ) {
 
-		if (!it->second->GetValue() || it->second->Release()) {
+		if (it->second->RefCount() == 1 || !it->second->GetValue() || it->second->Release()) {
 			it = m_oCaptures.erase(it);
 		} else {
 			++it; 

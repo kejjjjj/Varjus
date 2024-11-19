@@ -16,6 +16,7 @@ IValue* OP_ASSIGNMENT(IValue* lhs, IValue* rhs)
 	if (!variable)
 		throw CRuntimeError("cannot assign to a temporary value");
 
+	assert(lhs != rhs);
 	if (lhs == rhs)
 		return lhs;
 
@@ -24,7 +25,7 @@ IValue* OP_ASSIGNMENT(IValue* lhs, IValue* rhs)
 			variable->SetValue(CProgramRuntime::AcquireNewValue<IValue>());
 			break;
 		case t_boolean:
-			variable->SetValue(CProgramRuntime::AcquireNewValue<CIntValue>(rhs->AsInt()));
+			variable->SetValue(CProgramRuntime::AcquireNewValue<CBooleanValue>(rhs->AsBoolean()));
 			break;
 		case t_int:
 			variable->SetValue(CProgramRuntime::AcquireNewValue<CIntValue>(rhs->AsInt()));

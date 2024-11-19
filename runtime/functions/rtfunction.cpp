@@ -52,8 +52,11 @@ IValue* CRuntimeFunction::Execute([[maybe_unused]] CFunction* const thisFunction
 	}
 
 	for (auto& [index, value] : func.m_oStack) {
-		if (!thisFunction)
+
+		if (!thisFunction) {
+			assert(value->GetValue());
 			std::cout << value->GetValue()->ToPrintableString() << '\n';
+		}
 		value->Release();
 	}
 
