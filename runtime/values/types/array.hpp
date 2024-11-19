@@ -28,7 +28,6 @@ class CInternalArrayValue final
 {
 public:
 	CInternalArrayValue() = default;
-	CInternalArrayValue(VectorOf<IValue*>&& v);
 	~CInternalArrayValue();
 
 	void Release();

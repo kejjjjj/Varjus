@@ -12,6 +12,7 @@ using namespace std::string_literals;
 class CVariable;
 class CRuntimeFunction;
 class IValue;
+class CStringValue;
 class CInternalArrayValue;
 class CArrayValue;
 class CCallableValue;
@@ -81,6 +82,7 @@ public:
 	[[nodiscard]] virtual double ToDouble() const { return 0.0; }
 	[[nodiscard]] virtual const std::string& ToString() const { return emptyString; }
 
+	[[nodiscard]] virtual CStringValue* ToCString() { return nullptr; }
 	[[nodiscard]] virtual CCallableValue* ToCallable() { return nullptr; }
 	[[nodiscard]] virtual CArrayValue* ToArray() { return nullptr; }
 	[[nodiscard]] virtual CObjectValue* ToObject() { return nullptr; }

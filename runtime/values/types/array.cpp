@@ -74,9 +74,6 @@ IValue* CArrayValue::GetAggregate(std::size_t memberIdx)
 
 	return value;
 }
-CInternalArrayValue::CInternalArrayValue(VectorOf<IValue*>&& v){
-	Set(std::move(v));
-}
 CInternalArrayValue::~CInternalArrayValue() = default;
 
 void CInternalArrayValue::Release()

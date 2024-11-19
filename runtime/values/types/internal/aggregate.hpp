@@ -21,7 +21,7 @@ public:
 	CAggregate() = default;
 
 	void Release();
-	void Setup(const std::vector<ElementIndex>& elements);
+	void Setup(const std::vector<ElementIndex>& elements, bool isArray=false);
 
 	[[maybe_unused]] CVariable* AddAttribute(ElementIndex elem);
 	void AddAttribute(ElementIndex elem, IValue* value);
@@ -32,4 +32,5 @@ public:
 
 protected:
 	std::unordered_map<ElementIndex, CVariable*> m_oIndexLookup;
+	bool m_bIsArray{ false };
 };

@@ -34,7 +34,7 @@ IValue* OP_ASSIGNMENT(IValue* lhs, IValue* rhs)
 			variable->SetValue(CProgramRuntime::AcquireNewValue<CDoubleValue>(rhs->AsDouble()));
 			break;
 		case t_string:
-			variable->SetValue(CProgramRuntime::AcquireNewValue<CStringValue>(rhs->AsString()));
+			variable->SetValue(CStringValue::Construct(rhs->AsString()));
 			break;
 		case t_callable:
 			assert(rhs->ToCallable());
@@ -82,7 +82,7 @@ IValue* OP_ADDITION(IValue* _lhs, IValue* _rhs)
 		result = CProgramRuntime::AcquireNewValue<CDoubleValue>(lhs->ToDouble() + rhs->ToDouble());
 		break;
 	case t_string:
-		result = CProgramRuntime::AcquireNewValue<CStringValue>(lhs->ToString() + rhs->ToString());
+		result = CStringValue::Construct(lhs->ToString() + rhs->ToString());
 		break;
 	case t_callable:
 	case t_array:

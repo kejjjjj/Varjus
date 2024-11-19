@@ -27,7 +27,7 @@ double& IValue::AsDouble() {
 	return dynamic_cast<CDoubleValue*>(this)->Get();
 }
 std::string& IValue::AsString(){
-	return dynamic_cast<CStringValue*>(this)->Get();
+	return dynamic_cast<CStringValue*>(this)->Internal()->GetString();
 }
 CRuntimeFunction* IValue::AsCallable(){
 	return dynamic_cast<CCallableValue*>(this)->GetShared()->GetCallable();

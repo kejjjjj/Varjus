@@ -1,6 +1,7 @@
 #include "aggregate.hpp"
 
 #include "linter/expressions/ast.hpp"
+#include "linter/context.hpp"
 
 #include "runtime/runtime.hpp"
 #include "runtime/structure.hpp"
@@ -11,7 +12,8 @@
 #include <cassert>
 #include <stdexcept>
 
-void CAggregate::Setup(const std::vector<ElementIndex>& elements){
+void CAggregate::Setup(const std::vector<ElementIndex>& elements, bool isArray){
+	m_bIsArray = isArray;
 	for (auto& l : elements) {
 		AddAttribute(l);
 	}
@@ -20,7 +22,7 @@ CVariable* CAggregate::AddAttribute(ElementIndex elem)
 {
 	auto& var = m_oIndexLookup[elem] = CProgramRuntime::AcquireNewVariable();
 
-	if (elem == ARRAY_LENGTH) {
+	if (m_bIsArray && elem == ARRAY_LENGTH) {
 		var->SetValue(CProgramRuntime::AcquireNewValue<CIntValue>(0));
 		var->GetValue()->MakeImmutable();
 	} else {
@@ -52,7 +54,10 @@ IValue* CAggregate::ElementLookup(GlobalMemberIndex index) const
 		return m_oIndexLookup.at(index)->GetValue();
 	}
 	catch ([[maybe_unused]]std::out_of_range& ex) {
-		throw CRuntimeError("this aggregate type doesn't contain this member");
+
+		throw CRuntimeError(std::format("this aggregate doesn't have the attribute \"{}\"",
+			CProgramRuntime::GetContext()->m_oAllMembers.At(index)
+		));
 	}
 
 }

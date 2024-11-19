@@ -124,7 +124,7 @@ IValue* CRuntimeExpression::EvaluateLeaf(CFunction* const thisFunction, const Ab
 		ptr->MakeShared();
 		auto internal = ptr->Internal();
 		internal->Set(EvaluateList(thisFunction, var->m_oExpressions));
-		internal->GetAggregateValue().Setup(runtime::__internal::GetAggregateArrayData());
+		internal->GetAggregateValue().Setup(runtime::__internal::GetAggregateArrayData(), true);
 		return ptr;
 	}
 
@@ -148,7 +148,7 @@ IValue* CRuntimeExpression::EvaluateLeaf(CFunction* const thisFunction, const Ab
 			case t_double:
 				return CProgramRuntime::AcquireNewValue<CDoubleValue>(*reinterpret_cast<double*>((char*)constant->m_pConstant.data()));
 			case t_string:
-				return CProgramRuntime::AcquireNewValue<CStringValue>(constant->m_pConstant);
+				return CStringValue::Construct(constant->m_pConstant);
 		}
 	}
 
