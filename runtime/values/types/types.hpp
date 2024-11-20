@@ -8,15 +8,4 @@
 #include "callable.hpp"
 #include "array.hpp"
 #include "object.hpp"
-
-#define IVALUE_UNION \
-union { \
-IValue* undefinedValue; \
-CBooleanValue* booleanValue; \
-CIntValue* intValue; \
-CDoubleValue* doubleValue; \
-CStringValue* stringValue; \
-CCallableValue* callableValue; \
-CArrayValue* arrayValue; \
-CObjectValue* objectValue; \
-}
+#include "builtin_callable.hpp"

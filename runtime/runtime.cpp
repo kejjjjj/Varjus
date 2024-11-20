@@ -1,5 +1,6 @@
 #include "runtime.hpp"
 #include "structure.hpp"
+#include "values/types/array_internal/array_builtin.hpp"
 #include "values/types/types.hpp"
 #include "variables.hpp"
 
@@ -11,15 +12,16 @@
 
 //CNonOwningObjectPool<CVariable>                  CProgramRuntime::m_oVariablePool                  (VALUEPOOL_INIT_SIZE);
 
-template<> COwningObjectPool<CVariable>          CProgramRuntime::m_oValuePool<CVariable>          (VALUEPOOL_INIT_SIZE);
-template<> COwningObjectPool<IValue>             CProgramRuntime::m_oValuePool<IValue>             (VALUEPOOL_INIT_SIZE);
-template<> COwningObjectPool<CBooleanValue>      CProgramRuntime::m_oValuePool<CBooleanValue>      (VALUEPOOL_INIT_SIZE);
-template<> COwningObjectPool<CIntValue>          CProgramRuntime::m_oValuePool<CIntValue>          (VALUEPOOL_INIT_SIZE);
-template<> COwningObjectPool<CDoubleValue>       CProgramRuntime::m_oValuePool<CDoubleValue>       (VALUEPOOL_INIT_SIZE);
-template<> COwningObjectPool<CStringValue>       CProgramRuntime::m_oValuePool<CStringValue>       (VALUEPOOL_INIT_SIZE);
-template<> COwningObjectPool<CCallableValue>     CProgramRuntime::m_oValuePool<CCallableValue>     (VALUEPOOL_INIT_SIZE);
-template<> COwningObjectPool<CArrayValue>        CProgramRuntime::m_oValuePool<CArrayValue>        (VALUEPOOL_INIT_SIZE);
-template<> COwningObjectPool<CObjectValue>       CProgramRuntime::m_oValuePool<CObjectValue>       (VALUEPOOL_INIT_SIZE);
+template<> COwningObjectPool<CVariable>           CProgramRuntime::m_oValuePool<CVariable>           (VALUEPOOL_INIT_SIZE);
+template<> COwningObjectPool<IValue>              CProgramRuntime::m_oValuePool<IValue>              (VALUEPOOL_INIT_SIZE);
+template<> COwningObjectPool<CBooleanValue>       CProgramRuntime::m_oValuePool<CBooleanValue>       (VALUEPOOL_INIT_SIZE);
+template<> COwningObjectPool<CIntValue>           CProgramRuntime::m_oValuePool<CIntValue>           (VALUEPOOL_INIT_SIZE);
+template<> COwningObjectPool<CDoubleValue>        CProgramRuntime::m_oValuePool<CDoubleValue>        (VALUEPOOL_INIT_SIZE);
+template<> COwningObjectPool<CStringValue>        CProgramRuntime::m_oValuePool<CStringValue>        (VALUEPOOL_INIT_SIZE);
+template<> COwningObjectPool<CCallableValue>      CProgramRuntime::m_oValuePool<CCallableValue>      (VALUEPOOL_INIT_SIZE);
+template<> COwningObjectPool<CArrayValue>         CProgramRuntime::m_oValuePool<CArrayValue>         (VALUEPOOL_INIT_SIZE);
+template<> COwningObjectPool<CObjectValue>        CProgramRuntime::m_oValuePool<CObjectValue>        (VALUEPOOL_INIT_SIZE);
+template<> COwningObjectPool<CMemberCallableValue>CProgramRuntime::m_oValuePool<CMemberCallableValue>(VALUEPOOL_INIT_SIZE);
 
 std::vector<RuntimeFunction> CProgramRuntime::m_oFunctions;
 CProgramContext* CProgramRuntime::m_pContext{ nullptr };
@@ -41,6 +43,8 @@ void CProgramRuntime::Execute()
 	if (iMainFunction == m_oFunctions.end()) {
 		return;
 	}
+
+	CStaticArrayBuiltInMethods::Initialize(GetContext());
 
 	std::chrono::time_point<std::chrono::steady_clock> old = std::chrono::steady_clock::now();
 

@@ -1,4 +1,5 @@
 #include "array.hpp"
+#include "array_internal/array_builtin.hpp"
 #include "runtime/runtime.hpp"
 #include "runtime/variables.hpp"
 #include "runtime/exceptions/exception.hpp"

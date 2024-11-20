@@ -5,6 +5,7 @@
 #include <memory>
 #include <string>
 #include <variant>
+#include <vector>
 #include <cassert>
 
 using namespace std::string_literals;
@@ -16,7 +17,12 @@ class CStringValue;
 class CInternalArrayValue;
 class CArrayValue;
 class CCallableValue;
+class CMemberCallableValue;
 class CObjectValue;
+
+template<typename T>
+using VectorOf = std::vector<T>;
+using IValues = VectorOf<IValue*>;
 
 inline std::string emptyString;
 
@@ -84,6 +90,8 @@ public:
 
 	[[nodiscard]] virtual CStringValue* ToCString() { return nullptr; }
 	[[nodiscard]] virtual CCallableValue* ToCallable() { return nullptr; }
+	[[nodiscard]] virtual CMemberCallableValue* ToMemberCallable() { return nullptr; }
+
 	[[nodiscard]] virtual CArrayValue* ToArray() { return nullptr; }
 	[[nodiscard]] virtual CObjectValue* ToObject() { return nullptr; }
 

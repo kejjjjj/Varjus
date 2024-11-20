@@ -88,6 +88,9 @@
     <Filter Include="Source Files\linter\expressions\operand">
       <UniqueIdentifier>{6490f639-38ae-449d-aa3e-2dd1fe8d5a5c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\runtime\values\types\array_internal">
+      <UniqueIdentifier>{fbadf844-911b-4c9e-aab0-b036758eb133}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -257,6 +260,15 @@
     </ClCompile>
     <ClCompile Include="linter\expressions\operand\operand_lambda.cpp">
       <Filter>Source Files\linter\expressions\operand</Filter>
+    </ClCompile>
+    <ClCompile Include="runtime\values\types\array_internal\array_push.cpp">
+      <Filter>Source Files\runtime\values\types\array_internal</Filter>
+    </ClCompile>
+    <ClCompile Include="runtime\values\types\array_internal\array_builtin.cpp">
+      <Filter>Source Files\runtime\values\types\array_internal</Filter>
+    </ClCompile>
+    <ClCompile Include="runtime\values\types\builtin_callable.cpp">
+      <Filter>Source Files\runtime\values\types</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -442,6 +454,12 @@
     </ClInclude>
     <ClInclude Include="linter\expressions\operand\operand_lambda.hpp">
       <Filter>Source Files\linter\expressions\operand</Filter>
+    </ClInclude>
+    <ClInclude Include="runtime\values\types\array_internal\array_builtin.hpp">
+      <Filter>Source Files\runtime\values\types\array_internal</Filter>
+    </ClInclude>
+    <ClInclude Include="runtime\values\types\builtin_callable.hpp">
+      <Filter>Source Files\runtime\values\types</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

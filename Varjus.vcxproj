@@ -87,7 +87,7 @@
       <DisableAnalyzeExternal>true</DisableAnalyzeExternal>
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
       <AdditionalIncludeDirectories>$(ProjectDir)</AdditionalIncludeDirectories>
-      <DisableSpecificWarnings>4514;4626;4820;5267;5045</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4514;4626;4820;5267;5045;4371</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -106,7 +106,7 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <DisableAnalyzeExternal>true</DisableAnalyzeExternal>
       <AdditionalIncludeDirectories>$(ProjectDir)</AdditionalIncludeDirectories>
-      <DisableSpecificWarnings>4514;4626;4820;5267</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4514;4626;4820;5267;4371</DisableSpecificWarnings>
       <Optimization>Full</Optimization>
     </ClCompile>
     <Link>
@@ -127,7 +127,7 @@
       <DisableAnalyzeExternal>true</DisableAnalyzeExternal>
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
       <AdditionalIncludeDirectories>$(ProjectDir)</AdditionalIncludeDirectories>
-      <DisableSpecificWarnings>4514;4626;4820;5267;5045</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4514;4626;4820;5267;5045;4371</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -203,7 +203,10 @@
     <ClCompile Include="runtime\values\coercion.cpp" />
     <ClCompile Include="runtime\values\simple_operators.cpp" />
     <ClCompile Include="runtime\values\types\array.cpp" />
+    <ClCompile Include="runtime\values\types\array_internal\array_builtin.cpp" />
+    <ClCompile Include="runtime\values\types\array_internal\array_push.cpp" />
     <ClCompile Include="runtime\values\types\boolean.cpp" />
+    <ClCompile Include="runtime\values\types\builtin_callable.cpp" />
     <ClCompile Include="runtime\values\types\callable.cpp" />
     <ClCompile Include="runtime\values\types\double.cpp" />
     <ClCompile Include="runtime\values\types\integer.cpp" />
@@ -265,7 +268,9 @@
     <ClInclude Include="runtime\values\coercion.hpp" />
     <ClInclude Include="runtime\values\simple_operators.hpp" />
     <ClInclude Include="runtime\values\types\array.hpp" />
+    <ClInclude Include="runtime\values\types\array_internal\array_builtin.hpp" />
     <ClInclude Include="runtime\values\types\boolean.hpp" />
+    <ClInclude Include="runtime\values\types\builtin_callable.hpp" />
     <ClInclude Include="runtime\values\types\callable.hpp" />
     <ClInclude Include="runtime\values\types\double.hpp" />
     <ClInclude Include="runtime\values\types\integer.hpp" />

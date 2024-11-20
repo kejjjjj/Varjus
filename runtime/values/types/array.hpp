@@ -51,6 +51,7 @@ protected:
 
 class CArrayValue final : public CValue<CInternalArrayValue>
 {
+	friend struct CStaticArrayBuiltInMethods;
 public:
 	CArrayValue() = default;
 	~CArrayValue();
@@ -73,6 +74,8 @@ public:
 private:
 	[[nodiscard]] std::string TypeAsString() const override { return "array"s; }
 	[[nodiscard]] std::string ValueAsString() const override;
+
+	IValue* Push(const IValues& newValue);
 
 };
 
