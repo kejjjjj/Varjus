@@ -4,7 +4,7 @@
 
 struct CStringContent final
 {
-	CAggregate m_oAggregate;
+	CArrayAggregate m_oAggregate;
 	std::string m_sString;
 };
 

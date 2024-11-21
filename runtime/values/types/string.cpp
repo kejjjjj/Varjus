@@ -10,7 +10,7 @@ CStringValue* CStringValue::Construct(const std::string& v)
 	auto internal = str->Internal();
 	str->MakeUnique();
 	internal->Set(v);
-	internal->GetAggregateValue().Setup({ ARRAY_LENGTH }, true);
+	internal->GetAggregateValue().AddAttribute(ARRAY_LENGTH);
 	return str;
 }
 

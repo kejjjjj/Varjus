@@ -17,7 +17,7 @@ class CStringValue;
 class CInternalArrayValue;
 class CArrayValue;
 class CCallableValue;
-class CMemberCallableValue;
+class CBuiltInMemberCallableValue;
 class CObjectValue;
 
 template<typename T>
@@ -52,6 +52,8 @@ public:
 	[[nodiscard]] constexpr auto GetOwner() const noexcept { return m_pOwner; }
 	[[nodiscard]] constexpr auto HasOwner() const noexcept { return !!m_pOwner; }
 
+	[[nodiscard]] virtual constexpr bool IsHanging() const noexcept { return !HasOwner(); }
+
 	virtual void Release() override;
 	[[nodiscard]] virtual IValue* Copy() override;
 
@@ -71,7 +73,7 @@ public:
 	[[nodiscard]] constexpr virtual bool IsCallable() const noexcept { return false; }
 	[[nodiscard]] constexpr virtual bool IsAggregate() const noexcept { return false; }
 	[[nodiscard]] constexpr virtual bool IsBooleanConvertible() const noexcept { return false; }
-	[[nodiscard]] virtual bool AlwaysCopy() const noexcept { return false; }
+	[[nodiscard]] constexpr virtual bool IsBuiltInMemberCallable() const noexcept { return false; }
 
 	[[nodiscard]] virtual IValue* Index(std::int64_t index);
 	[[nodiscard]] virtual IValue* GetAggregate([[maybe_unused]]std::size_t memberIdx) { return nullptr; }
@@ -90,7 +92,7 @@ public:
 
 	[[nodiscard]] virtual CStringValue* ToCString() { return nullptr; }
 	[[nodiscard]] virtual CCallableValue* ToCallable() { return nullptr; }
-	[[nodiscard]] virtual CMemberCallableValue* ToMemberCallable() { return nullptr; }
+	[[nodiscard]] virtual CBuiltInMemberCallableValue* ToBuiltInMemberCallable() { return nullptr; }
 
 	[[nodiscard]] virtual CArrayValue* ToArray() { return nullptr; }
 	[[nodiscard]] virtual CObjectValue* ToObject() { return nullptr; }
@@ -144,6 +146,13 @@ public:
 	void SetStorageValue(const Value& v) { m_oValue = v; }
 
 	[[nodiscard]] constexpr auto IsShared() const noexcept { return m_bShared; }
+	[[nodiscard]] constexpr bool IsHanging() const noexcept override { 
+
+		if (!IValue::HasOwner() && !IsShared())
+			return true;
+
+		return !IValue::HasOwner() && SharedRefCount() == 1;
+	}
 
 protected:
 	std::variant<Value, std::shared_ptr<Value>> m_oValue{};

@@ -1,9 +1,12 @@
 #include "builtin_callable.hpp"
 #include "runtime/runtime.hpp"
 
-IValue* CMemberCallableValue::Copy() {
+IValue* CBuiltInMemberCallableValue::Copy() {
 
-	auto ptr = CProgramRuntime::AcquireNewValue<CMemberCallableValue>();
+	std::cout << "CBuiltInMemberCallableValue: COPY" << '\n';
+
+
+	auto ptr = CProgramRuntime::AcquireNewValue<CBuiltInMemberCallableValue>();
 	ptr->MakeShared();
 	ptr->GetShared() = GetShared();
 
@@ -11,19 +14,27 @@ IValue* CMemberCallableValue::Copy() {
 
 }
 
-void CMemberCallableValue::Release() {
+void CBuiltInMemberCallableValue::Release() {
+
+	std::cout << "CBuiltInMemberCallableValue: " << SharedRefCount() << '\n';
 
 	if (SharedRefCount() == 1) {
 		Get().Release();
 	}
 
 	ReleaseInternal();
-	CProgramRuntime::FreeValue<CMemberCallableValue>(this);
+	CProgramRuntime::FreeValue<CBuiltInMemberCallableValue>(this);
 	ReleaseShared();
 
 }
 
 
-void CMemberFunctionContent::Release() {
-	m_pThis->Release();
+void CBuiltInMemberFunctionContent::Release() {
+	
+	if (!m_pThis || m_pThis->HasOwner())
+		return;
+
+	auto temp = m_pThis;
+	m_pThis = nullptr;
+	temp->Release();
 }

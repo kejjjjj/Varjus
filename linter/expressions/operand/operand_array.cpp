@@ -9,8 +9,13 @@ std::unique_ptr<IOperand> CLinterOperand::ParseArray()
 {
 	std::advance(m_iterPos, 1); // skip [
 
-	if (IsEndOfBuffer() || (*m_iterPos)->IsOperator(p_bracket_close))
+	if (IsEndOfBuffer())
 		return std::make_unique<CArrayOperand>();
+
+	if ((*m_iterPos)->IsOperator(p_bracket_close)) {
+		std::advance(m_iterPos, 1); // skip ]
+		return std::make_unique<CArrayOperand>();
+	}
 
 	CLinterExpression expr(m_iterPos, m_iterEnd, m_pScope, m_pOwner);
 	if (!expr.Parse(PairMatcher(p_bracket_open)))

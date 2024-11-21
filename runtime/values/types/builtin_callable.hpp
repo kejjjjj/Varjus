@@ -10,7 +10,7 @@ class CVariable;
 
 using ElementIndex = std::size_t;
 
-struct CMemberFunctionContent
+struct CBuiltInMemberFunctionContent
 {
 	void Release();
 
@@ -18,11 +18,11 @@ struct CMemberFunctionContent
 	const struct CArrayBuiltInMethod* m_pMethod{ nullptr };
 };
 
-class CMemberCallableValue : public CValue<CMemberFunctionContent>
+class CBuiltInMemberCallableValue : public CValue<CBuiltInMemberFunctionContent>
 {
 public:
-	CMemberCallableValue() = default;
-	[[nodiscard]] EValueType Type() const noexcept override { return t_member_callable; };
+	CBuiltInMemberCallableValue() = default;
+	[[nodiscard]] EValueType Type() const noexcept override { return t_builtin_member_callable; };
 
 	[[nodiscard]] IValue* Copy() override;
 
@@ -33,10 +33,12 @@ public:
 	[[nodiscard]] double ToDouble() const override { return static_cast<double>(ToBoolean()); }
 
 	[[nodiscard]] constexpr bool IsCallable() const noexcept override { return true; }
-	[[nodiscard]] CMemberCallableValue* ToMemberCallable() override { return this; }
+	[[nodiscard]] constexpr bool IsBuiltInMemberCallable() const noexcept override { return true; }
+
+	[[nodiscard]] CBuiltInMemberCallableValue* ToBuiltInMemberCallable() override { return this; }
 
 private:
-	[[nodiscard]] std::string TypeAsString() const override { return "member callable"s; }
+	[[nodiscard]] std::string TypeAsString() const override { return "method"s; }
 	[[nodiscard]] std::string ValueAsString() const override {
 		return std::format("{:x}", (std::size_t)Get().m_pThis);
 	}

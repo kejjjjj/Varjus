@@ -49,7 +49,6 @@ public:
 
 	[[nodiscard]] constexpr bool IsCallable() const noexcept override { return true; }
 	[[nodiscard]] CCallableValue* ToCallable() override { return this; }
-	[[nodiscard]] bool AlwaysCopy() const noexcept override;
 
 	[[nodiscard]] CInternalCallableValue* Internal();
 	[[nodiscard]] CInternalCallableValue* Internal() const;

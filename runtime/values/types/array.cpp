@@ -16,8 +16,14 @@ VectorOf<ElementIndex>& runtime::__internal::GetAggregateArrayData()
 	if (!once)
 		return elems;
 
-	const auto context = CProgramRuntime::GetContext();
-	elems.push_back(context->m_oAllMembers["length"]);
+	auto& m = CProgramRuntime::GetContext()->m_oAllMembers;
+
+	elems.push_back(m["length"]);
+
+	for (auto& [id, method] : CStaticArrayBuiltInMethods::GetIterator()) {
+		elems.push_back(id);
+
+	}
 
 	once = false;
 	return elems;
@@ -27,6 +33,7 @@ CArrayValue::~CArrayValue() = default;
 
 void CArrayValue::Release(){
 
+	std::cout << "CArrayValue: " << SharedRefCount() << '\n';
 	if (SharedRefCount() == 1) {
 		Get().Release();
 	}
@@ -42,6 +49,7 @@ IValue* CArrayValue::Copy(){
 	CArrayValue* ptr = CProgramRuntime::AcquireNewValue<CArrayValue>();
 	ptr->MakeShared();
 	ptr->GetShared() = GetShared();
+
 	return ptr;
 }
 
@@ -66,12 +74,23 @@ IValue* CArrayValue::Index(std::int64_t index)
 }
 IValue* CArrayValue::GetAggregate(std::size_t memberIdx)
 {
+
 	auto value = Internal()->GetAggregateValue().ElementLookup(memberIdx);
+
+	if (value->IsBuiltInMemberCallable()) {
+
+		auto ptr = value->ToBuiltInMemberCallable();
+		ptr->SetOwner(GetOwner());
+		ptr->GetShared()->m_pThis = this->Copy();
+
+		return ptr;
+	}
 
 	if (memberIdx == ARRAY_LENGTH) {
 		assert(value->IsIntegral());
 		value->AsInt() = static_cast<std::int64_t>(Internal()->Length());
 	}
+
 
 	return value;
 }

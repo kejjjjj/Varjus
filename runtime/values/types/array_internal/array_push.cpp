@@ -6,7 +6,8 @@
 IValue* CArrayValue::Push(const IValues& newValues)
 {
 	assert(newValues.size() == 1);
-	auto& newVar = GetShared()->GetVariables().emplace_back(CProgramRuntime::AcquireNewVariable());
+	auto& vars = GetShared()->GetVariables();
+	auto& newVar = vars.emplace_back(CProgramRuntime::AcquireNewVariable());
 	newVar->SetValue(newValues.front());
 	return newVar->GetValue();
 }

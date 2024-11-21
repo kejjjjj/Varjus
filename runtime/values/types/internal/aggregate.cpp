@@ -7,13 +7,14 @@
 #include "runtime/structure.hpp"
 #include "runtime/variables.hpp"
 #include "runtime/values/types/simple.hpp"
+#include "runtime/values/types/array_internal/array_builtin.hpp"
 #include "runtime/exceptions/exception.hpp"
+
 
 #include <cassert>
 #include <stdexcept>
 
-void CAggregate::Setup(const std::vector<ElementIndex>& elements, bool isArray){
-	m_bIsArray = isArray;
+void CAggregate::Setup(const std::vector<ElementIndex>& elements){
 	for (auto& l : elements) {
 		AddAttribute(l);
 	}
@@ -21,14 +22,7 @@ void CAggregate::Setup(const std::vector<ElementIndex>& elements, bool isArray){
 CVariable* CAggregate::AddAttribute(ElementIndex elem)
 {
 	auto& var = m_oIndexLookup[elem] = CProgramRuntime::AcquireNewVariable();
-
-	if (m_bIsArray && elem == ARRAY_LENGTH) {
-		var->SetValue(CProgramRuntime::AcquireNewValue<CIntValue>(0));
-		var->GetValue()->MakeImmutable();
-	} else {
-		var->SetValue(CProgramRuntime::AcquireNewValue<IValue>());
-	}
-
+	var->SetValue(CProgramRuntime::AcquireNewValue<IValue>());
 	return var;
 }
 void CAggregate::AddAttribute(ElementIndex elem, IValue* value){
@@ -41,8 +35,7 @@ void CAggregate::Release()
 
 		if (!it->second->GetValue() || it->second->Release()) {
 			it = m_oIndexLookup.erase(it);
-		}
-		else {
+		} else {
 			++it;
 		}
 	}
@@ -61,3 +54,32 @@ IValue* CAggregate::ElementLookup(GlobalMemberIndex index) const
 	}
 
 }
+
+/***********************************************************************
+ > 
+***********************************************************************/
+
+CVariable* CArrayAggregate::AddAttribute(ElementIndex elem)
+{
+	auto& var = m_oIndexLookup[elem] = CProgramRuntime::AcquireNewVariable();
+
+	if (const auto method = CStaticArrayBuiltInMethods::LookupMethod(elem)) {
+
+		auto value = CProgramRuntime::AcquireNewValue<CBuiltInMemberCallableValue>();
+		var->SetValue(value);
+
+		value->MakeShared();
+		value->MakeImmutable();
+		value->GetShared()->m_pMethod = method;
+
+	} else if (elem == ARRAY_LENGTH) {
+		var->SetValue(CProgramRuntime::AcquireNewValue<CIntValue>(0));
+		var->GetValue()->MakeImmutable();
+	} else {
+		var->SetValue(CProgramRuntime::AcquireNewValue<IValue>());
+	}
+
+	return var;
+}
+
+

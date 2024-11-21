@@ -4,6 +4,8 @@
 #include "runtime/structure.hpp"
 #include "runtime/functions/rtfunction.hpp"
 #include "runtime/values/types/types.hpp"
+#include "runtime/values/types/array_internal/array_builtin.hpp"
+
 #include "runtime/values/simple_operators.hpp"
 
 #include "runtime/variables.hpp"
@@ -24,7 +26,7 @@ IValue* CRuntimeExpression::EvaluatePostfix(CFunction* const thisFunction, const
 	if (node->IsSubscript()) {
 		returnVal = EvaluateSubscript(thisFunction, operand, node->As<const SubscriptASTNode*>());
 		
-		if (!operand->HasOwner()) {
+		if (operand->IsHanging()) {
 			//accessing a temporary e.g. [[1, 2, 3]][0]
 			returnVal = returnVal->Copy();
 		}
@@ -34,7 +36,7 @@ IValue* CRuntimeExpression::EvaluatePostfix(CFunction* const thisFunction, const
 	} else if (node->IsMemberAccess()) {
 		returnVal = EvaluateMemberAccess(operand, node->As<const MemberAccessASTNode*>());
 
-		if (!operand->HasOwner()) {
+		if (operand->IsHanging()) {
 			//accessing a temporary e.g. [1, 2, 3].length
 			returnVal = returnVal->Copy();
 		}
@@ -84,7 +86,15 @@ IValue* CRuntimeExpression::EvaluateFunctionCall(CFunction* const thisFunction, 
 	// the callee will take ownership of temp-value args
 	auto args = EvaluateList(thisFunction, node->m_oArguments);
 
-	auto callable = dynamic_cast<CCallableValue*>(operand)->Internal();
+	if (operand->IsBuiltInMemberCallable()) {
+
+		auto callable = operand->ToBuiltInMemberCallable();
+		auto& internals = callable->Get();
+
+		return CStaticArrayBuiltInMethods::CallMethod(internals.m_pThis->ToArray(), args, internals.m_pMethod);
+	}
+
+	auto callable = operand->ToCallable()->Internal();
 	auto function = callable->GetCallable();
 	//std::cout << "calling: " << function->GetName() << " with " << callable->GetCaptures().size() << '\n';
 

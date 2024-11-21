@@ -124,7 +124,7 @@ IValue* CRuntimeExpression::EvaluateLeaf(CFunction* const thisFunction, const Ab
 		ptr->MakeShared();
 		auto internal = ptr->Internal();
 		internal->Set(EvaluateList(thisFunction, var->m_oExpressions));
-		internal->GetAggregateValue().Setup(runtime::__internal::GetAggregateArrayData(), true);
+		internal->GetAggregateValue().Setup(runtime::__internal::GetAggregateArrayData());
 		return ptr;
 	}
 

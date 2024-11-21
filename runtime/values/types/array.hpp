@@ -9,18 +9,21 @@
 #include <memory>
 #include <string>
 
-template<typename T>
-using VectorOf = std::vector<T>;
-
 class CInternalArrayValue;
+
+template<typename K, typename V>
+using KeyValue = std::pair<K, V>;
 
 namespace runtime::__internal {
 	VectorOf<ElementIndex>& GetAggregateArrayData();
+
+	VectorOf<KeyValue<ElementIndex, IValue*>> GetBuiltinMethods();
+
 }
 
 struct CArrayContent final
 {
-	CAggregate m_oAggregate;
+	CArrayAggregate m_oAggregate;
 	VectorOf<CVariable*> m_oVariables;
 };
 

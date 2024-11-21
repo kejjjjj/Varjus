@@ -35,11 +35,12 @@ bool CVariable::Release()
 
 
 	auto& v = GetValue();
-	assert(v && v->HasOwner());
-	v->Release();
-	v = nullptr;
-	CProgramRuntime::FreeVariable(this);
 	
+	if (v) {
+		v->Release();
+		v = nullptr;
+		CProgramRuntime::FreeVariable(this);
+	}
 	return true;
 }
 

@@ -25,10 +25,6 @@ void CCallableValue::Release()
 	CProgramRuntime::FreeValue<CCallableValue>(this);
 	ReleaseShared();
 }
-bool CCallableValue::AlwaysCopy() const noexcept
-{
-	return !GetShared()->GetCaptures().empty();
-}
 CInternalCallableValue* CCallableValue::Internal() {
 	return GetShared().get();
 }
