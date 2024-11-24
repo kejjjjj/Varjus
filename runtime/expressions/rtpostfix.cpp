@@ -86,21 +86,23 @@ IValue* CRuntimeExpression::EvaluateFunctionCall(CFunction* const thisFunction, 
 	// the callee will take ownership of temp-value args
 	auto args = EvaluateList(thisFunction, node->m_oArguments);
 
-	if (operand->IsBuiltInMemberCallable()) {
+	return operand->Call(thisFunction, args);
 
-		auto callable = operand->ToBuiltInMemberCallable();
-		auto& internals = callable->Get();
+	//if (operand->IsBuiltInMemberCallable()) {
 
-		return CStaticArrayBuiltInMethods::CallMethod(internals.m_pThis->ToArray(), args, internals.m_pMethod);
-	}
+	//	auto callable = operand->ToBuiltInMemberCallable();
+	//	auto& mem_fn = callable->Get();
 
-	auto callable = operand->ToCallable()->Internal();
-	auto function = callable->GetCallable();
-	//std::cout << "calling: " << function->GetName() << " with " << callable->GetCaptures().size() << '\n';
+	//	return CStaticArrayBuiltInMethods::CallMethod(mem_fn.m_pThis->ToArray(), args, mem_fn.m_pMethod);
+	//}
 
-	auto ret = function->Execute(thisFunction, args, callable->GetCaptures());
+	//auto callable = operand->ToCallable()->Internal();
+	//auto function = callable->GetCallable();
+	////std::cout << "calling: " << function->GetName() << " with " << callable->GetCaptures().size() << '\n';
 
-	assert(ret);
+	//auto ret = function->Execute(thisFunction, args, callable->GetCaptures());
 
-	return ret;
+	//assert(ret);
+
+	//return ret;
 }

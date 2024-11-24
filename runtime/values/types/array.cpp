@@ -18,12 +18,7 @@ VectorOf<ElementIndex>& runtime::__internal::GetAggregateArrayData()
 
 	auto& m = CProgramRuntime::GetContext()->m_oAllMembers;
 
-	elems.push_back(m["length"]);
-
-	for (auto& [id, method] : CStaticArrayBuiltInMethods::GetIterator()) {
-		elems.push_back(id);
-
-	}
+	elems.push_back(m.At("length"));
 
 	once = false;
 	return elems;
@@ -33,8 +28,8 @@ CArrayValue::~CArrayValue() = default;
 
 void CArrayValue::Release(){
 
-	std::cout << "CArrayValue: " << SharedRefCount() << '\n';
 	if (SharedRefCount() == 1) {
+		m_pMethod = nullptr;
 		Get().Release();
 	}
 
@@ -45,6 +40,9 @@ void CArrayValue::Release(){
 }
 
 IValue* CArrayValue::Copy(){
+
+	if (IsCallable()) //array method such as array.push -> can't be copied
+		return CProgramRuntime::AcquireNewValue<IValue>();
 
 	CArrayValue* ptr = CProgramRuntime::AcquireNewValue<CArrayValue>();
 	ptr->MakeShared();
@@ -74,17 +72,13 @@ IValue* CArrayValue::Index(std::int64_t index)
 }
 IValue* CArrayValue::GetAggregate(std::size_t memberIdx)
 {
-
-	auto value = Internal()->GetAggregateValue().ElementLookup(memberIdx);
-
-	if (value->IsBuiltInMemberCallable()) {
-
-		auto ptr = value->ToBuiltInMemberCallable();
-		ptr->SetOwner(GetOwner());
-		ptr->GetShared()->m_pThis = this->Copy();
-
+	if (auto func = CStaticArrayBuiltInMethods::LookupMethod(memberIdx)) {
+		auto ptr = HasOwner() ? this : this->Copy()->ToArray();
+		ptr->m_pMethod = func;
 		return ptr;
 	}
+
+	auto value = Internal()->GetAggregateValue().ElementLookup(memberIdx);
 
 	if (memberIdx == ARRAY_LENGTH) {
 		assert(value->IsIntegral());
@@ -94,6 +88,15 @@ IValue* CArrayValue::GetAggregate(std::size_t memberIdx)
 
 	return value;
 }
+
+IValue* CArrayValue::Call([[maybe_unused]]CFunction* const thisFunction, const IValues& args)
+{
+	assert(IsCallable());
+	auto ret = CStaticArrayBuiltInMethods::CallMethod(this, args, m_pMethod);
+	m_pMethod = nullptr;
+	return ret;
+}
+
 CInternalArrayValue::~CInternalArrayValue() = default;
 
 void CInternalArrayValue::Release()

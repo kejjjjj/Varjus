@@ -18,7 +18,9 @@ bool CStringIntegerHashMap::Contains(const std::string& key) const{
 const std::string& CStringIntegerHashMap::At(const GlobalMemberIndex key) const{
 	return m_oIdToString.at(key);
 }
-
+GlobalMemberIndex CStringIntegerHashMap::At(const std::string& key) const{
+	return m_oStringToId.at(key);
+}
 std::size_t CStringIntegerHashMap::GetCurrentIndex() const
 {
 	 return m_oStringToId.size();

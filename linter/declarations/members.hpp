@@ -15,6 +15,7 @@ public:
 
 	[[nodiscard]] bool Contains(const std::string& key) const;
 	[[nodiscard]] const std::string& At(const GlobalMemberIndex key) const;
+	[[nodiscard]] GlobalMemberIndex At(const std::string& key) const;
 
 	[[nodiscard]] auto& StringToIntIterator() const noexcept { return m_oStringToId; }
 

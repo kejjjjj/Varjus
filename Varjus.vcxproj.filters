@@ -261,14 +261,11 @@
     <ClCompile Include="linter\expressions\operand\operand_lambda.cpp">
       <Filter>Source Files\linter\expressions\operand</Filter>
     </ClCompile>
-    <ClCompile Include="runtime\values\types\array_internal\array_push.cpp">
+    <ClCompile Include="runtime\values\types\array_internal\array_methods.cpp">
       <Filter>Source Files\runtime\values\types\array_internal</Filter>
     </ClCompile>
     <ClCompile Include="runtime\values\types\array_internal\array_builtin.cpp">
       <Filter>Source Files\runtime\values\types\array_internal</Filter>
-    </ClCompile>
-    <ClCompile Include="runtime\values\types\builtin_callable.cpp">
-      <Filter>Source Files\runtime\values\types</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -457,9 +454,6 @@
     </ClInclude>
     <ClInclude Include="runtime\values\types\array_internal\array_builtin.hpp">
       <Filter>Source Files\runtime\values\types\array_internal</Filter>
-    </ClInclude>
-    <ClInclude Include="runtime\values\types\builtin_callable.hpp">
-      <Filter>Source Files\runtime\values\types</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

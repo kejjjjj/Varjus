@@ -25,6 +25,7 @@ CObjectValue* CObjectValue::Copy() {
 	CObjectValue* ptr = CProgramRuntime::AcquireNewValue<CObjectValue>();
 	ptr->MakeShared();
 	ptr->GetShared() = GetShared();
+
 	return ptr;
 }
 

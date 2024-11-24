@@ -63,16 +63,7 @@ CVariable* CArrayAggregate::AddAttribute(ElementIndex elem)
 {
 	auto& var = m_oIndexLookup[elem] = CProgramRuntime::AcquireNewVariable();
 
-	if (const auto method = CStaticArrayBuiltInMethods::LookupMethod(elem)) {
-
-		auto value = CProgramRuntime::AcquireNewValue<CBuiltInMemberCallableValue>();
-		var->SetValue(value);
-
-		value->MakeShared();
-		value->MakeImmutable();
-		value->GetShared()->m_pMethod = method;
-
-	} else if (elem == ARRAY_LENGTH) {
+	if (elem == ARRAY_LENGTH) {
 		var->SetValue(CProgramRuntime::AcquireNewValue<CIntValue>(0));
 		var->GetValue()->MakeImmutable();
 	} else {

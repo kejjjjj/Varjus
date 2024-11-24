@@ -21,7 +21,6 @@ template<> COwningObjectPool<CStringValue>        CProgramRuntime::m_oValuePool<
 template<> COwningObjectPool<CCallableValue>      CProgramRuntime::m_oValuePool<CCallableValue>      (VALUEPOOL_INIT_SIZE);
 template<> COwningObjectPool<CArrayValue>         CProgramRuntime::m_oValuePool<CArrayValue>         (VALUEPOOL_INIT_SIZE);
 template<> COwningObjectPool<CObjectValue>        CProgramRuntime::m_oValuePool<CObjectValue>        (VALUEPOOL_INIT_SIZE);
-template<> COwningObjectPool<CBuiltInMemberCallableValue>CProgramRuntime::m_oValuePool<CBuiltInMemberCallableValue>(VALUEPOOL_INIT_SIZE);
 
 std::vector<RuntimeFunction> CProgramRuntime::m_oFunctions;
 CProgramContext* CProgramRuntime::m_pContext{ nullptr };

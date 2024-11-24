@@ -17,5 +17,4 @@ enum EValueType : unsigned char
 	t_callable,
 	t_array,
 	t_object,
-	t_builtin_member_callable,
 };

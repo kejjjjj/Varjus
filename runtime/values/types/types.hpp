@@ -8,4 +8,3 @@
 #include "callable.hpp"
 #include "array.hpp"
 #include "object.hpp"
-#include "builtin_callable.hpp"

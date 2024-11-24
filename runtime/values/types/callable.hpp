@@ -29,6 +29,7 @@ public:
 	void Release();
 
 private:
+	
 	CRuntimeFunction* m_pCallable{ nullptr };
 	std::unordered_map<VariableIndex, CVariable*> m_oCaptures;
 };
@@ -52,6 +53,8 @@ public:
 
 	[[nodiscard]] CInternalCallableValue* Internal();
 	[[nodiscard]] CInternalCallableValue* Internal() const;
+
+	[[nodiscard]] IValue* Call(CFunction* const thisFunction, const IValues& args) override;
 
 private:
 	[[nodiscard]] std::string TypeAsString() const override { return "callable"s; }

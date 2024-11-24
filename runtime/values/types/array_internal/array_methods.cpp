@@ -9,5 +9,5 @@ IValue* CArrayValue::Push(const IValues& newValues)
 	auto& vars = GetShared()->GetVariables();
 	auto& newVar = vars.emplace_back(CProgramRuntime::AcquireNewVariable());
 	newVar->SetValue(newValues.front());
-	return newVar->GetValue();
+	return newVar->GetValue()->Copy();
 }

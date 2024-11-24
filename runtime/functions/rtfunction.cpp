@@ -57,7 +57,10 @@ IValue* CRuntimeFunction::Execute([[maybe_unused]] CFunction* const thisFunction
 			assert(value->GetValue());
 			std::cout << value->GetValue()->ToPrintableString() << '\n';
 		}
-		value->Release();
+
+		//don't free captured values or they get destroyed and the next calls to this function fail
+		if(!captures.contains(index)) 
+			value->Release();
 	}
 
 	return copy;

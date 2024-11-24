@@ -48,10 +48,6 @@ IValue* OP_ASSIGNMENT(IValue* lhs, IValue* rhs)
 			assert(rhs->ToObject());
 			variable->SetValue(rhs->ToObject()->Copy());
 			break;
-		case t_builtin_member_callable:
-			assert(rhs->ToBuiltInMemberCallable());
-			variable->SetValue(rhs->ToBuiltInMemberCallable()->Copy());
-			break;
 	}
 
 	lhs->SetOwner(variable);
@@ -91,7 +87,6 @@ IValue* OP_ADDITION(IValue* _lhs, IValue* _rhs)
 	case t_callable:
 	case t_array:
 	case t_object:
-	case t_builtin_member_callable:
 		assert(false);
 		break;
 	}
@@ -132,7 +127,6 @@ IValue* OP_LESS_THAN(IValue* _lhs, IValue* _rhs)
 	case t_callable:
 	case t_array:
 	case t_object:
-	case t_builtin_member_callable:
 		assert(false);
 		break;
 	}

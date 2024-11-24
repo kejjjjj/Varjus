@@ -19,6 +19,7 @@ enum AggregateType
 	at_array
 };
 
+
 class CAggregate
 {
 public:

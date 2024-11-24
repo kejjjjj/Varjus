@@ -1,7 +1,10 @@
 #include "array_builtin.hpp"
 #include "linter/context.hpp"
+#include "runtime/exceptions/exception.hpp"
+
 #include <stdexcept>
 #include <functional>
+#include <format>
 std::unordered_map<ElementIndex, const CArrayBuiltInMethod*> CStaticArrayBuiltInMethods::m_oMethodLookup;
 std::unordered_map<std::string, CArrayBuiltInMethod> CStaticArrayBuiltInMethods::m_oStaticMethods = {
 
@@ -28,5 +31,10 @@ const CArrayBuiltInMethod* CStaticArrayBuiltInMethods::LookupMethod(ElementIndex
 }
 
 IValue* CStaticArrayBuiltInMethods::CallMethod(CArrayValue* _this, const IValues& args, const CArrayBuiltInMethod* method){
+	
+	if (method->m_uNumArguments != args.size())
+		throw CRuntimeError(std::format("the method expected {} arguments instead of {}", method->m_uNumArguments, args.size()));
+
+	
 	return std::mem_fn(method->memFn)(_this, args);
 }

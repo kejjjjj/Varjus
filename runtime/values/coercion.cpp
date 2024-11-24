@@ -43,7 +43,6 @@ CCoercionOperands CoerceInternal(IValue* weaker, IValue* stronger, bool lhsIsWea
 	case t_callable:
 	case t_array:
 	case t_object:
-	case t_builtin_member_callable:
 		break;
 	}
 

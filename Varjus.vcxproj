@@ -204,9 +204,8 @@
     <ClCompile Include="runtime\values\simple_operators.cpp" />
     <ClCompile Include="runtime\values\types\array.cpp" />
     <ClCompile Include="runtime\values\types\array_internal\array_builtin.cpp" />
-    <ClCompile Include="runtime\values\types\array_internal\array_push.cpp" />
+    <ClCompile Include="runtime\values\types\array_internal\array_methods.cpp" />
     <ClCompile Include="runtime\values\types\boolean.cpp" />
-    <ClCompile Include="runtime\values\types\builtin_callable.cpp" />
     <ClCompile Include="runtime\values\types\callable.cpp" />
     <ClCompile Include="runtime\values\types\double.cpp" />
     <ClCompile Include="runtime\values\types\integer.cpp" />
@@ -270,7 +269,6 @@
     <ClInclude Include="runtime\values\types\array.hpp" />
     <ClInclude Include="runtime\values\types\array_internal\array_builtin.hpp" />
     <ClInclude Include="runtime\values\types\boolean.hpp" />
-    <ClInclude Include="runtime\values\types\builtin_callable.hpp" />
     <ClInclude Include="runtime\values\types\callable.hpp" />
     <ClInclude Include="runtime\values\types\double.hpp" />
     <ClInclude Include="runtime\values\types\integer.hpp" />

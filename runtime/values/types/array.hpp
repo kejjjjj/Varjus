@@ -65,6 +65,7 @@ public:
 
 	[[nodiscard]] constexpr bool IsIndexable() const noexcept override { return true; }
 	[[nodiscard]] constexpr bool IsAggregate() const noexcept override { return true; }
+	[[nodiscard]] constexpr bool IsCallable() const noexcept override { return !!m_pMethod; }
 
 	[[nodiscard]] IValue* Copy() override;
 	[[nodiscard]] CArrayValue* ToArray() override;
@@ -74,11 +75,14 @@ public:
 	[[nodiscard]] IValue* Index(std::int64_t index) override;
 	[[nodiscard]] IValue* GetAggregate(std::size_t memberIdx) override;
 
+	[[nodiscard]] IValue* Call(CFunction* const thisFunction, const IValues& args) override;
+
 private:
 	[[nodiscard]] std::string TypeAsString() const override { return "array"s; }
 	[[nodiscard]] std::string ValueAsString() const override;
 
-	IValue* Push(const IValues& newValue);
-
+	[[nodiscard]] IValue* Push(const IValues& newValue);
+	
+	const struct CArrayBuiltInMethod* m_pMethod{ nullptr };
 };
 
