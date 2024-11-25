@@ -10,6 +10,7 @@
 std::unique_ptr<IOperand> CLinterOperand::ParseTernary(std::optional<PairMatcher>& eoe)
 {
 	assert((*m_iterPos)->IsOperator(p_question_mark));
+	auto& oldIter = m_iterPos;
 	std::advance(m_iterPos, 1); // skip ?
 
 	auto ifTrue = CLinterExpression(m_iterPos, m_iterEnd, m_pScope, m_pOwner);
@@ -32,11 +33,13 @@ std::unique_ptr<IOperand> CLinterOperand::ParseTernary(std::optional<PairMatcher
 	if (hadEoe)
 		std::advance(m_iterPos, -1);
 
-	return std::make_unique<CTernaryOperand>(ToAST(), ifTrue.ToMergedAST(), ifFalse.ToMergedAST());
+	auto&& ptr = std::make_unique<CTernaryOperand>(ToAST(), ifTrue.ToMergedAST(), ifFalse.ToMergedAST());
+	ptr->m_oCodePosition = (*oldIter)->m_oSourcePosition;
+	return ptr;
 }
 
 UniqueAST CTernaryOperand::ToAST() {
-	return std::make_unique<TernaryASTNode>(this);
+	return std::make_unique<TernaryASTNode>(m_oCodePosition, this);
 }
 
 CTernaryOperand::CTernaryOperand(UniqueAST&& value, UniqueAST&& m_true, UniqueAST&& m_false)

@@ -31,7 +31,7 @@ std::unique_ptr<AbstractSyntaxTree> CExpressionList::ToMergedAST()
 	if (!m_pNext)
 		return std::move(m_pAST);
 
-	auto newRoot = std::make_unique<OperatorASTNode>(p_comma);
+	auto newRoot = std::make_unique<OperatorASTNode>(m_pAST->GetCodePosition(), p_comma);
 	newRoot->left = std::move(m_pAST);
 	newRoot->right = m_pNext->ToMergedAST();
 	return newRoot;

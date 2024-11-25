@@ -17,15 +17,19 @@ std::unique_ptr<IOperand> CLinterOperand::ParseArray()
 		return std::make_unique<CArrayOperand>();
 	}
 
+	auto& pos  = (*m_iterPos)->m_oSourcePosition;
+
 	CLinterExpression expr(m_iterPos, m_iterEnd, m_pScope, m_pOwner);
 	if (!expr.Parse(PairMatcher(p_bracket_open)))
 		return nullptr;
 
-	return std::make_unique<CArrayOperand>(expr.ToExpressionList());
+	auto&& ptr = std::make_unique<CArrayOperand>(expr.ToExpressionList());
+	ptr->m_oCodePosition = pos;
+	return ptr;
 }
 
 UniqueAST CArrayOperand::ToAST() {
-	return std::make_unique<ArrayASTNode>(std::move(m_oExpressions));
+	return std::make_unique<ArrayASTNode>(m_oCodePosition, std::move(m_oExpressions));
 }
 
 CArrayOperand::CArrayOperand(ExpressionList&& ptr) : m_oExpressions(std::move(ptr)) {}

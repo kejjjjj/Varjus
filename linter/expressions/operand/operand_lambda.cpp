@@ -14,6 +14,8 @@ std::unique_ptr<IOperand> CLinterOperand::ParseLambda()
 {
 	assert(!IsEndOfBuffer() && (*m_iterPos)->Type() == tt_fn);
 
+	auto& oldIter = m_iterPos;
+
 	std::advance(m_iterPos, 1); // skip fn
 
 	CFunctionLinter fnLinter(m_iterPos, m_iterEnd, m_pScope, m_pOwner);
@@ -31,8 +33,10 @@ std::unique_ptr<IOperand> CLinterOperand::ParseLambda()
 	fnLinter.m_oFunctionName = "lambda";
 	fnLinter.m_pThisStack->m_pFunction = fnLinter.ToFunction();
 
-	return std::make_unique<CLambdaOperand>(fnLinter.ToRuntimeFunction(), 
+	auto&& ptr = std::make_unique<CLambdaOperand>(fnLinter.ToRuntimeFunction(), 
 		fnLinter.GetSharedOwnershipVariables(fnLinter.m_pThisStack.get()));
+	ptr->m_oCodePosition = (*oldIter)->m_oSourcePosition;
+	return ptr;
 }
 
 CLambdaOperand::CLambdaOperand(RuntimeFunction&& ptr, VectorOf<ElementIndex>&& captures)
@@ -40,5 +44,5 @@ CLambdaOperand::CLambdaOperand(RuntimeFunction&& ptr, VectorOf<ElementIndex>&& c
 CLambdaOperand::~CLambdaOperand() = default;
 
 UniqueAST CLambdaOperand::ToAST() {
-	return std::make_unique<LambdaASTNode>(std::move(m_pLambda), std::move(m_oVariableCaptures));
+	return std::make_unique<LambdaASTNode>(m_oCodePosition, std::move(m_pLambda), std::move(m_oVariableCaptures));
 }

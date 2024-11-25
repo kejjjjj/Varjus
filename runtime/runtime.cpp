@@ -24,6 +24,8 @@ template<> COwningObjectPool<CObjectValue>        CProgramRuntime::m_oValuePool<
 
 std::vector<RuntimeFunction> CProgramRuntime::m_oFunctions;
 CProgramContext* CProgramRuntime::m_pContext{ nullptr };
+const CodePosition* CProgramRuntime::m_pCodePosition{ nullptr };
+
 CProgramRuntime::CProgramRuntime(CFileRuntimeData* const file, CProgramContext* const context)
 {
 	m_pContext = context;
@@ -78,4 +80,11 @@ CRuntimeFunction* CProgramRuntime::GetFunctionByIndex(std::size_t index)
 {
 	assert(index < m_oFunctions.size());
 	return m_oFunctions[index].get();
+}
+void CProgramRuntime::SetExecutionPosition(const CodePosition* pos) noexcept{
+	m_pCodePosition = pos;
+}
+const CodePosition* CProgramRuntime::GetExecutionPosition() noexcept{
+	assert(m_pCodePosition);
+	return m_pCodePosition;
 }

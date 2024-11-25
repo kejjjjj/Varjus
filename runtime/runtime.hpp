@@ -14,6 +14,7 @@ class CRuntimeFunction;
 class CFileRuntimeData;
 struct CProgramContext;
 using RuntimeFunction = std::unique_ptr<CRuntimeFunction>;
+using CodePosition = std::tuple<size_t, size_t>;
 
 
 template<typename T>
@@ -39,6 +40,10 @@ public:
 
 	[[nodiscard]] static CProgramContext* GetContext();
 	[[nodiscard]] static CRuntimeFunction* GetFunctionByIndex(std::size_t index);
+
+	static void SetExecutionPosition(const CodePosition* pos) noexcept;
+	[[nodiscard]] static const CodePosition* GetExecutionPosition() noexcept;
+
 
 private:
 
@@ -117,4 +122,5 @@ public:
 private:
 	static std::vector<RuntimeFunction> m_oFunctions;
 	static CProgramContext* m_pContext;
+	static const CodePosition* m_pCodePosition;
 };

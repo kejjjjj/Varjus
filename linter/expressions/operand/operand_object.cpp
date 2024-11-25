@@ -54,6 +54,8 @@ std::unique_ptr<IOperand> CLinterOperand::ParseObject()
 {
 	std::advance(m_iterPos, 1); // skip {
 
+	auto& oldIter = m_iterPos;
+
 	if (IsEndOfBuffer() || (*m_iterPos)->IsOperator(p_curlybracket_close))
 		return std::make_unique<CObjectOperand>();
 
@@ -65,12 +67,13 @@ std::unique_ptr<IOperand> CLinterOperand::ParseObject()
 	assert(!IsEndOfBuffer() && (*m_iterPos)->IsOperator(p_curlybracket_close));
 	std::advance(m_iterPos, 1); //skip }
 
+	object->m_oCodePosition = (*oldIter)->m_oSourcePosition;
 	return object;
 
 }
 
 UniqueAST CObjectOperand::ToAST() {
-	return std::make_unique<ObjectASTNode>(std::move(m_oAttributes));
+	return std::make_unique<ObjectASTNode>(m_oCodePosition, std::move(m_oAttributes));
 }
 
 CObjectOperand::CObjectOperand(VectorOf<KeyValue<std::size_t, UniqueAST>>&& ptr) : m_oAttributes(std::move(ptr)) {}

@@ -46,6 +46,9 @@ Success CPostfixLinter::ParsePostfix()
 			assert(false);
 		}
 
+		if (m_oPostfixes.size())
+			m_oPostfixes.back()->m_oCodePosition = asPunctuation.m_oSourcePosition;
+
 		m_oTokens.emplace_back(&asPunctuation);
 	}
 
@@ -116,14 +119,14 @@ std::unique_ptr<CPostfixFunctionCall> CPostfixLinter::ParseFunctionCall()
 }
 
 std::unique_ptr<AbstractSyntaxTree> CPostfixMemberAccess::ToAST(){
-	return std::make_unique<MemberAccessASTNode>(m_uGlobalMemberIndex);
+	return std::make_unique<MemberAccessASTNode>(m_oCodePosition, m_uGlobalMemberIndex);
 }
 
 CPostfixSubscript::CPostfixSubscript(std::unique_ptr<AbstractSyntaxTree>&& ast) : m_pAST(std::move(ast)){}
 CPostfixSubscript::~CPostfixSubscript() = default;
 
 std::unique_ptr<AbstractSyntaxTree> CPostfixSubscript::ToAST(){
-	return std::make_unique<SubscriptASTNode>(std::move(m_pAST));
+	return std::make_unique<SubscriptASTNode>(m_oCodePosition, std::move(m_pAST));
 }
 
 /***********************************************************************
@@ -135,5 +138,5 @@ CPostfixFunctionCall::CPostfixFunctionCall(ExpressionList&& args)
 CPostfixFunctionCall::~CPostfixFunctionCall() = default;
 
 std::unique_ptr<AbstractSyntaxTree> CPostfixFunctionCall::ToAST(){
-	return std::make_unique<FunctionCallASTNode>(std::move(m_pArgs));
+	return std::make_unique<FunctionCallASTNode>(m_oCodePosition, std::move(m_pArgs));
 }

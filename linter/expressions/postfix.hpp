@@ -53,6 +53,8 @@ public:
 
 	[[nodiscard]] virtual constexpr EPostfixType Type() const noexcept = 0;
 	[[nodiscard]] virtual std::unique_ptr<AbstractSyntaxTree> ToAST() = 0;
+
+	CodePosition m_oCodePosition;
 };
 
 class CPostfixMemberAccess final : public IPostfixBase

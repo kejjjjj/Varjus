@@ -27,6 +27,9 @@ using LinterIterator = VectorOf<CToken*>::iterator;
 using OperatorIterator = VectorOf<CLinterOperator*>::iterator;
 using COperatorIterator = VectorOf<CLinterOperator*>::const_iterator;
 
+using CodePosition = std::tuple<size_t, size_t>;
+
+
 template<class ContainerType>
 class CLinter
 {

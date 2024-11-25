@@ -190,6 +190,7 @@
     <ClCompile Include="linter\token.cpp" />
     <ClCompile Include="linter\tokenizer.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="runtime\exceptions\exception.cpp" />
     <ClCompile Include="runtime\expressions\rtexpression.cpp" />
     <ClCompile Include="runtime\expressions\rtlist.cpp" />
     <ClCompile Include="runtime\expressions\rtobject.cpp" />

@@ -8,13 +8,15 @@
 #include <cassert>
 
 std::unique_ptr<IOperand> CLinterOperand::ParseImmediate(){
-	auto v = std::make_unique<CImmediateOperand>(*m_iterPos);
+	auto& oldIter = m_iterPos;
+	auto&& v = std::make_unique<CImmediateOperand>(*m_iterPos);
+	v->m_oCodePosition = (*oldIter)->m_oSourcePosition;
 	std::advance(m_iterPos, 1);
 	return v;
 }
 
 UniqueAST CImmediateOperand::ToAST(){
-	return std::make_unique<ConstantASTNode>(ToData(), GetImmediateType());
+	return std::make_unique<ConstantASTNode>(m_oCodePosition, ToData(), GetImmediateType());
 }
 
 #pragma pack(push)

@@ -35,6 +35,8 @@ struct IOperand
 	
 	[[nodiscard]] virtual EOperandBaseType Type() const noexcept = 0;
 	[[nodiscard]] virtual UniqueAST ToAST() = 0;
+
+	CodePosition m_oCodePosition;
 };
 
 class CLinterOperand final : public CLinterSingle<CToken>

@@ -14,7 +14,6 @@
 #include <sstream>
 #include <iostream>
 
-AbstractSyntaxTree::AbstractSyntaxTree() = default;
 AbstractSyntaxTree::~AbstractSyntaxTree() = default;
 
 std::unique_ptr<AbstractSyntaxTree> AbstractSyntaxTree::CreateAST(VectorOf<CLinterOperand*>& operands, VectorOf<CLinterOperator*>& operators)
@@ -23,9 +22,10 @@ std::unique_ptr<AbstractSyntaxTree> AbstractSyntaxTree::CreateAST(VectorOf<CLint
 
 	auto root = GetLeaf(operands, operators);
 
-	if (!root)
-		root = std::make_unique<OperatorASTNode>((*FindLowestPriorityOperator(operators))->GetPunctuation());
-
+	if (!root) {
+		auto&& itr = FindLowestPriorityOperator(operators);
+		root = std::make_unique<OperatorASTNode>((*itr)->GetToken()->m_oSourcePosition, (*itr)->GetPunctuation());
+	}
 	root->CreateRecursively(operands, operators);
 	return root;
 }
@@ -76,12 +76,8 @@ void AbstractSyntaxTree::CreateRecursively(VectorOf<CLinterOperand*>& operands, 
 	//check size to avoid unnecessary allocations
 	if (lhsOperands.size()) {
 		if (left = GetLeaf(lhsOperands, lhsOperators), !left) {
-
-			//if (lhsOperands.front()->IsTernary())
-			//	std::cout << "yoo\n";
-
 			const OperatorIterator l = FindLowestPriorityOperator(lhsOperators);
-			left = std::make_shared<OperatorASTNode>((*l)->GetPunctuation());
+			left = std::make_shared<OperatorASTNode>((*l)->GetToken()->m_oSourcePosition, (*l)->GetPunctuation());
 			left->CreateRecursively(lhsOperands, lhsOperators);
 
 
@@ -89,11 +85,8 @@ void AbstractSyntaxTree::CreateRecursively(VectorOf<CLinterOperand*>& operands, 
 	}
 	if (rhsOperands.size()) {
 		if (right = GetLeaf(rhsOperands, rhsOperators), !right) {
-			//if (rhsOperands.front()->IsTernary())
-			//	std::cout << "yoo\n";
-
 			const OperatorIterator l = FindLowestPriorityOperator(rhsOperators);
-			right = std::make_shared<OperatorASTNode>((*l)->GetPunctuation());
+			right = std::make_shared<OperatorASTNode>((*l)->GetToken()->m_oSourcePosition, (*l)->GetPunctuation());
 			right->CreateRecursively(rhsOperands, rhsOperators);
 
 		}
@@ -147,24 +140,26 @@ std::size_t AbstractSyntaxTree::GetLeftBranchDepth() const noexcept
  > 
 ***********************************************************************/
 
-ConstantASTNode::ConstantASTNode(const std::string& data, EValueType datatype)
-	: m_pConstant(data), m_eDataType(datatype) {}
+ConstantASTNode::ConstantASTNode(const CodePosition& pos, const std::string& data, EValueType datatype)
+	: AbstractSyntaxTree(pos), m_pConstant(data), m_eDataType(datatype) {}
 ConstantASTNode::~ConstantASTNode() = default;
 
-ArrayASTNode::ArrayASTNode(ExpressionList&& expressions) 
-	: m_oExpressions(std::move(expressions)) {}
+ArrayASTNode::ArrayASTNode(const CodePosition& pos, ExpressionList&& expressions)
+	: AbstractSyntaxTree(pos), m_oExpressions(std::move(expressions)) {}
 ArrayASTNode::~ArrayASTNode() = default;
 
-ObjectASTNode::ObjectASTNode(VectorOf<KeyValue<std::size_t, UniqueAST>>&& expressions) 
-	: m_oAttributes(std::move(expressions)){}
+ObjectASTNode::ObjectASTNode(const CodePosition& pos, VectorOf<KeyValue<std::size_t, UniqueAST>>&& expressions)
+	: AbstractSyntaxTree(pos), m_oAttributes(std::move(expressions)){}
 ObjectASTNode::~ObjectASTNode() = default;
 
-TernaryASTNode::TernaryASTNode(CTernaryOperand* operand)
-	: m_pOperand(std::move(operand->m_pValue)), 
+TernaryASTNode::TernaryASTNode(const CodePosition& pos, CTernaryOperand* operand)
+	: AbstractSyntaxTree(pos),
+	m_pOperand(std::move(operand->m_pValue)), 
 	m_pTrue(std::move(operand->m_pTrue)),
 	m_pFalse(std::move(operand->m_pFalse)){ }
 TernaryASTNode::~TernaryASTNode() = default;
 
-LambdaASTNode::LambdaASTNode(RuntimeFunction&& operand, VectorOf<ElementIndex>&& captures) 
-	: m_pLambda(std::move(operand)), m_oVariableCaptures(std::move(captures)){}
+LambdaASTNode::LambdaASTNode(const CodePosition& pos, RuntimeFunction&& operand, VectorOf<ElementIndex>&& captures)
+	: AbstractSyntaxTree(pos),
+	m_pLambda(std::move(operand)), m_oVariableCaptures(std::move(captures)){}
 LambdaASTNode::~LambdaASTNode() = default;

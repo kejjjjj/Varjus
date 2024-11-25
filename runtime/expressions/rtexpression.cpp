@@ -18,6 +18,8 @@ CRuntimeExpression::~CRuntimeExpression() = default;
 
 IValue* CRuntimeExpression::Execute([[maybe_unused]]CFunction* const thisFunction)
 {
+	assert(m_pAST);
+	CProgramRuntime::SetExecutionPosition(&m_pAST->GetCodePosition());
 
 	[[maybe_unused]] const auto result = Evaluate(thisFunction);
 	
@@ -37,7 +39,6 @@ IValue* CRuntimeExpression::Evaluate(CFunction* const thisFunction)
 #pragma warning(disable : 4062)
 IValue* CRuntimeExpression::Evaluate(CFunction* const thisFunction, const AbstractSyntaxTree* node)
 {
-
 	assert(node != nullptr);
 
 	if (node->IsPostfix()) 

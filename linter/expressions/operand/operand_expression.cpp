@@ -9,11 +9,16 @@ std::unique_ptr<IOperand> CLinterOperand::ParseParentheses()
 {
 	std::advance(m_iterPos, 1); // skip (
 
+
+	const auto& oldIter = m_iterPos;
+
 	CLinterExpression expr(m_iterPos, m_iterEnd, m_pScope, m_pOwner);
 	if (!expr.Parse(PairMatcher(p_par_open)))
 		return nullptr;
 
-	return std::make_unique<CASTOperand>(expr.ToMergedAST());
+	auto&& ptr = std::make_unique<CASTOperand>(expr.ToMergedAST());
+	ptr->m_oCodePosition = (*oldIter)->m_oSourcePosition;
+	return ptr;
 }
 
 UniqueAST CASTOperand::ToAST(){
