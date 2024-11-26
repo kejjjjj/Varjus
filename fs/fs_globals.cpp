@@ -1,10 +1,12 @@
+
+#include <filesystem>
+#include <fstream>
 #include "fs_globals.hpp"
 
 #include <Windows.h>
 #include <direct.h>
 
 namespace _fs = std::filesystem;
-
 
 std::string fs::exe_file_name()
 {
@@ -128,3 +130,5 @@ bool fs::valid_file_name(const std::string& name)
 	}
 	return true;
 }
+bool fs::directory_exists(const std::string& d) { return std::filesystem::exists(d); }
+bool fs::file_exists(const std::string& f) { return std::filesystem::exists(f); }

@@ -1,11 +1,7 @@
 #pragma once
 
-#include <filesystem>
 #include <string>
 #include <vector>
-#include <fstream>
-#include <list>
-
 
 namespace fs
 {
@@ -26,8 +22,8 @@ namespace fs
 
 	std::string get_last_error();
 
-	inline bool directory_exists(const std::string& d) { return std::filesystem::exists(d); }
-	inline bool file_exists(const std::string& f) { return std::filesystem::exists(f); }
+	bool directory_exists(const std::string& d);
+	bool file_exists(const std::string& f);
 
 	bool valid_file_name(const std::string& name);
 

@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include <string>
 #include <memory>
+#include <set>
 
 #include "globalDefinitions.hpp"
 
@@ -109,13 +110,13 @@ public:
 
 	void AddFunctionInstruction(RuntimeBlock&& block) const;
 
-	void AddSharedOwnershipVariable(std::size_t varIndex) { m_oIndicesWhichRequireSharedOwnership.push_back(varIndex); }
-	void AddArgumentVariable(std::size_t varIndex) { m_oArgumentIndices.push_back(varIndex); }
+	void AddSharedOwnershipVariable(std::size_t varIndex) { m_oIndicesWhichRequireSharedOwnership.insert(varIndex); }
+	void AddArgumentVariable(std::size_t varIndex) { m_oArgumentIndices.insert(varIndex); }
 
 	std::unique_ptr<CFunctionBlock> m_pFunction;
 	CStack* m_pLowerFunction{ nullptr };
 
 private:
-	VectorOf<std::size_t> m_oIndicesWhichRequireSharedOwnership;
-	VectorOf<std::size_t> m_oArgumentIndices;
+	std::set<std::size_t> m_oIndicesWhichRequireSharedOwnership;
+	std::set<std::size_t> m_oArgumentIndices;
 };

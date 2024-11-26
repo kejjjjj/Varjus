@@ -25,7 +25,6 @@ IValue* CRuntimeExpression::Execute([[maybe_unused]]CFunction* const thisFunctio
 	
 	if (result && !result->HasOwner())
 		result->Release();
-	//TODO: make sure that all objects from the pool get released
 
 	return nullptr;
 }

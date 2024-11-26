@@ -18,6 +18,7 @@ public:
 	~CFileLinter();
 	[[nodiscard]] static Success LintToken(LinterIterator& start, LinterIterator& end, const WeakScope& scope, CMemory* const stack);
 	[[nodiscard]] static Success LintOperator(LinterIterator& start, LinterIterator& end, const WeakScope& scope, CMemory* const stack);
+	[[nodiscard]] static Success LintFunctionAmbiguity(LinterIterator& start, LinterIterator& end, const WeakScope& scope, CMemory* const stack);
 
 	[[nodiscard]] Success ParseFile();
 

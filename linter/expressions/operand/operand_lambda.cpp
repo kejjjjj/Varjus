@@ -5,6 +5,7 @@
 #include "linter/token.hpp"
 #include "linter/functions/function.hpp"
 #include "linter/scopes/scope.hpp"
+#include "linter/error.hpp"
 
 #include "runtime/structure.hpp"
 
@@ -15,6 +16,11 @@ std::unique_ptr<IOperand> CLinterOperand::ParseLambda()
 	assert(!IsEndOfBuffer() && (*m_iterPos)->Type() == tt_fn);
 
 	auto& oldIter = m_iterPos;
+
+	if (m_pOwner->ToStack()->m_pLowerFunction) {
+		CLinterErrors::PushError("nested lambdas are not supported", GetIteratorSafe()->m_oSourcePosition);
+		return nullptr;
+	}
 
 	std::advance(m_iterPos, 1); // skip fn
 

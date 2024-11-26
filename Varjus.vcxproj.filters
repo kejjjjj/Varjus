@@ -91,6 +91,12 @@
     <Filter Include="Source Files\runtime\values\types\array_internal">
       <UniqueIdentifier>{fbadf844-911b-4c9e-aab0-b036758eb133}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\tests">
+      <UniqueIdentifier>{6ed232c2-f729-4c18-8556-9b01c5253dd0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\tests\linter">
+      <UniqueIdentifier>{227087ee-98d5-441b-a218-5bb714ffe366}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">

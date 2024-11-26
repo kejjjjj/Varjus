@@ -73,7 +73,15 @@ Success CFileLinter::LintOperator(LinterIterator& start, LinterIterator& end, co
 	// otherwise a normal expression
 	return LintAddInstruction<CLinterExpression>(start, end, scope, memory);
 }
+Success CFileLinter::LintFunctionAmbiguity(LinterIterator& start, LinterIterator& end, const WeakScope& scope, CMemory* const memory)
+{
+	// a new function
+	if(!memory->IsStack())
+		return LintAddInstruction<CFunctionLinter>(start, end, scope, memory);
 
+	// otherwise a lambda
+	return LintAddInstruction<CLinterExpression>(start, end, scope, memory);
+}
 Success CFileLinter::LintToken(LinterIterator& m_iterPos, LinterIterator& m_iterEnd, const WeakScope& scope, CMemory* const memory)
 {
 	if (m_iterPos == m_iterEnd)
@@ -93,7 +101,7 @@ Success CFileLinter::LintToken(LinterIterator& m_iterPos, LinterIterator& m_iter
 	case tt_operator:
 		return LintOperator(m_iterPos, m_iterEnd, scope, memory);
 	case tt_fn:
-		return LintAddInstruction<CFunctionLinter>(m_iterPos, m_iterEnd, scope, memory);
+		return LintFunctionAmbiguity(m_iterPos, m_iterEnd, scope, memory);
 	case tt_if:
 		return LintAddInstruction<CIfStatementLinter>(m_iterPos, m_iterEnd, scope, memory);
 	case tt_else:
