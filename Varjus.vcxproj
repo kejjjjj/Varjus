@@ -81,8 +81,14 @@
     <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(ProjectDir)tests\$(Platform)\include\boost-1_86;$(IncludePath)</IncludePath>
-    <LibraryPath>$(ProjectDir)tests\$(Platform)\lib\;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -223,6 +229,8 @@
     <ClCompile Include="runtime\values\types\simple.cpp" />
     <ClCompile Include="runtime\values\types\string.cpp" />
     <ClCompile Include="runtime\variables.cpp" />
+    <ClCompile Include="tests\linter\test_functions.cpp" />
+    <ClCompile Include="tests\linter\test_tokenizer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="fs\fs_globals.hpp" />
@@ -287,11 +295,22 @@
     <ClInclude Include="runtime\values\types\string.hpp" />
     <ClInclude Include="runtime\values\types\types.hpp" />
     <ClInclude Include="runtime\variables.hpp" />
+    <ClInclude Include="tests\test.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="packages.config" />
     <None Include="x64\Debug\scripts\script.var" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
+    <Import Project="packages\boost.1.86.0\build\boost.targets" Condition="Exists('packages\boost.1.86.0\build\boost.targets')" />
+    <Import Project="packages\boost_unit_test_framework-vc143.1.86.0\build\boost_unit_test_framework-vc143.targets" Condition="Exists('packages\boost_unit_test_framework-vc143.1.86.0\build\boost_unit_test_framework-vc143.targets')" />
   </ImportGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('packages\boost.1.86.0\build\boost.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\boost.1.86.0\build\boost.targets'))" />
+    <Error Condition="!Exists('packages\boost_unit_test_framework-vc143.1.86.0\build\boost_unit_test_framework-vc143.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\boost_unit_test_framework-vc143.1.86.0\build\boost_unit_test_framework-vc143.targets'))" />
+  </Target>
 </Project>

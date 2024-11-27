@@ -14,7 +14,7 @@ class CBufferTokenizer final
 public:
 	CBufferTokenizer(const std::string_view& buffer);
 	~CBufferTokenizer();
-	[[nodiscard]] Success Tokenize();
+	[[maybe_unused]] Success Tokenize();
 
 	[[nodiscard]] std::vector<CToken*> GetTokens();
 

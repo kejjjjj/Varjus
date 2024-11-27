@@ -87,7 +87,13 @@ public:
 	~IRuntimeStructureSequence();
 
 	[[nodiscard]] IValue* ExecuteBlock([[maybe_unused]] CFunction* const thisFunction);
-
+	
+	[[nodiscard]] auto NumInstructions() const noexcept {
+		return m_oInstructions.size();
+	}
+	[[nodiscard]] auto& GetInstruction(std::size_t idx) const noexcept {
+		return m_oInstructions[idx];
+	}
 protected:
 	InstructionSequence m_oInstructions;
 };

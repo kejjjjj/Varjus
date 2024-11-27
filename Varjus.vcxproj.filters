@@ -92,10 +92,10 @@
       <UniqueIdentifier>{fbadf844-911b-4c9e-aab0-b036758eb133}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\tests">
-      <UniqueIdentifier>{6ed232c2-f729-4c18-8556-9b01c5253dd0}</UniqueIdentifier>
+      <UniqueIdentifier>{bef6001e-b59b-4045-8cbe-1e9ab1ec1524}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\tests\linter">
-      <UniqueIdentifier>{227087ee-98d5-441b-a218-5bb714ffe366}</UniqueIdentifier>
+      <UniqueIdentifier>{d51edbbc-f7a2-4185-be30-6ce85166a82f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -275,6 +275,12 @@
     </ClCompile>
     <ClCompile Include="runtime\exceptions\exception.cpp">
       <Filter>Source Files\runtime\exceptions</Filter>
+    </ClCompile>
+    <ClCompile Include="tests\linter\test_tokenizer.cpp">
+      <Filter>Source Files\tests\linter</Filter>
+    </ClCompile>
+    <ClCompile Include="tests\linter\test_functions.cpp">
+      <Filter>Source Files\tests\linter</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -464,10 +470,14 @@
     <ClInclude Include="runtime\values\types\array_internal\array_builtin.hpp">
       <Filter>Source Files\runtime\values\types\array_internal</Filter>
     </ClInclude>
+    <ClInclude Include="tests\test.hpp">
+      <Filter>Source Files\tests</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="x64\Debug\scripts\script.var">
       <Filter>Source Files\scripts</Filter>
     </None>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>

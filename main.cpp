@@ -1,8 +1,6 @@
 #include <iostream>
 
 
-#include "fs/fs_io.hpp"
-
 #include "linter/tokenizer.hpp"
 #include "linter/error.hpp"
 #include "linter/linter.hpp"
@@ -10,15 +8,23 @@
 
 #include "runtime/runtime.hpp"
 
-int Failure(const std::string_view& msg)
-{
-    std::cerr << msg << "\n";
-    std::cin.get();
-    return 1;
-}
+#include "fs/fs_io.hpp"
 
-int main()
+#define BOOST_TEST_MODULE MyTest
+#include <boost/test/included/unit_test.hpp>
+
+int _main();
+
+struct AllocatorSetup {
+    AllocatorSetup() {  }
+    ~AllocatorSetup() { _main(); }
+};
+
+BOOST_GLOBAL_FIXTURE(AllocatorSetup);
+
+int _main()
 {
+
     try {
 
         const auto reader = VarjusIOReader("\\scripts\\script.var");
@@ -59,6 +65,8 @@ int main()
 
 	std::cout << "Press ENTER to exit\n";
     std::cin.get();
+
+    return 0;
 }
 
 
