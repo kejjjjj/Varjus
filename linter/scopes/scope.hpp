@@ -32,12 +32,16 @@ public:
 	CScope() = delete;
 	CScope(CMemory* const owner);
 
+
 	[[nodiscard]] constexpr bool IsGlobalScope() const noexcept { return !m_pLowerScope; }
 	[[nodiscard]] std::shared_ptr<CScope> CreateScope();
 
 	[[nodiscard]] static CScope* DeleteScope(CScope* scope);
 
 	[[nodiscard]] Success DeclareVariable(const std::string& var);
+
+	constexpr void MakeLoopScope() noexcept { m_bIsWithinLoop = true; }
+	[[nodiscard]] bool IsLoopScope() const noexcept;
 
 	void AddInstruction(RuntimeBlock&& block);
 	VectorOf<RuntimeBlock>&& MoveInstructions();
@@ -52,4 +56,5 @@ private:
 	CMemory* const m_pOwner;
 	CScope* m_pLowerScope{};
 	std::unordered_set<std::string> m_oLocalVariables;
+	bool m_bIsWithinLoop{ false };
 };

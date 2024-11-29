@@ -196,6 +196,7 @@
     <ClCompile Include="linter\functions\stack.cpp" />
     <ClCompile Include="linter\linter.cpp" />
     <ClCompile Include="linter\scopes\scope.cpp" />
+    <ClCompile Include="linter\statements\control\control.cpp" />
     <ClCompile Include="linter\statements\if\else.cpp" />
     <ClCompile Include="linter\statements\if\if.cpp" />
     <ClCompile Include="linter\statements\return\return.cpp" />
@@ -212,6 +213,7 @@
     <ClCompile Include="runtime\functions\rtfunction.cpp" />
     <ClCompile Include="runtime\runtime.cpp" />
     <ClCompile Include="runtime\statements\conditional\rtconditional.cpp" />
+    <ClCompile Include="runtime\statements\control\rtcontrol.cpp" />
     <ClCompile Include="runtime\statements\return\rtreturn.cpp" />
     <ClCompile Include="runtime\statements\while\rtwhile.cpp" />
     <ClCompile Include="runtime\structure.cpp" />
@@ -264,6 +266,7 @@
     <ClInclude Include="linter\linter.hpp" />
     <ClInclude Include="linter\punctuation.hpp" />
     <ClInclude Include="linter\scopes\scope.hpp" />
+    <ClInclude Include="linter\statements\control\control.hpp" />
     <ClInclude Include="linter\statements\if\else.hpp" />
     <ClInclude Include="linter\statements\if\if.hpp" />
     <ClInclude Include="linter\statements\return\return.hpp" />

@@ -35,8 +35,19 @@ IValue* CRuntimeWhileStatement::Execute([[maybe_unused]] CFunction* const thisFu
 			break;
 		}
 
-		if (auto v = ExecuteBlock(thisFunction))
+		if (auto v = ExecuteBlock(thisFunction)) {
+			
+			const auto lc = static_cast<ELoopControl>(reinterpret_cast<std::size_t>(v));
+		
+			assert(lc != lc_null);
+			
+			if (lc == lc_break)
+				break;
+			if (lc == lc_continue)
+				continue;
+
 			return v;
+		}
 	}
 
 	return nullptr;

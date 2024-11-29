@@ -13,6 +13,7 @@
 #include "statements/if/if.hpp"
 #include "statements/if/else.hpp"
 #include "statements/return/return.hpp"
+#include "statements/control/control.hpp"
 
 #include <cassert>
 
@@ -110,6 +111,9 @@ Success CFileLinter::LintToken(LinterIterator& m_iterPos, LinterIterator& m_iter
 		return LintAddInstruction<CWhileStatementLinter>(m_iterPos, m_iterEnd, scope, memory);
 	case tt_return:
 		return LintAddInstruction<CReturnStatementLinter>(m_iterPos, m_iterEnd, scope, memory);
+	case tt_break:
+	case tt_continue:
+		return LintAddInstruction<CLoopControlStatement>(m_iterPos, m_iterEnd, scope, memory);
 	case tt_error:
 	default:
 		CLinterErrors::PushError("unexpected token: " + (*m_iterPos)->Source(), (*m_iterPos)->m_oSourcePosition);

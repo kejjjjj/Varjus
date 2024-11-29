@@ -17,6 +17,7 @@ enum EStructureType
 	st_conditional,
 	st_while,
 	st_return,
+	st_loop_control
 };
 
 class CRuntimeFunction;
@@ -209,6 +210,26 @@ protected:
 private:
 	std::unique_ptr<AbstractSyntaxTree> m_pAST;
 };
+
+enum ELoopControl : char
+{
+	lc_null,
+	lc_break,
+	lc_continue,
+};
+
+class CRuntimeLoopControlStatement final : public IRuntimeStructure {
+public:
+	CRuntimeLoopControlStatement(ELoopControl c) : m_eCtrl(c){}
+	
+	[[maybe_unused]] IValue* Execute(CFunction* const thisFunction) override;
+
+protected:
+	[[nodiscard]] constexpr EStructureType Type() const noexcept { return st_loop_control; };
+private:
+	ELoopControl m_eCtrl{ lc_null };
+};
+
 class IRuntimeBlock
 {
 public:

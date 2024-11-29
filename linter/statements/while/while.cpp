@@ -20,6 +20,7 @@ CWhileStatementLinter::~CWhileStatementLinter() = default;
 
 Success CWhileStatementLinter::Parse()
 {
+	m_pThisScope->MakeLoopScope();
 
 	if (!ParseIdentifier(TokenType::tt_while))
 		return failure;

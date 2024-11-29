@@ -40,6 +40,10 @@ std::shared_ptr<CScope> CScope::CreateScope()
 {
 	auto scope = std::make_shared<CScope>(m_pOwner);
 	scope->m_pLowerScope = this;
+	
+	if (m_bIsWithinLoop)
+		scope->MakeLoopScope();
+
 	return scope;
 }
 
@@ -76,6 +80,16 @@ bool CScope::VariableExists(const std::string& var) const
 	return m_pLowerScope->VariableExists(var);
 }
 
+bool CScope::IsLoopScope() const noexcept
+{
+	if (m_bIsWithinLoop)
+		return true;
+
+	if (IsGlobalScope())
+		return false;
+
+	return m_pLowerScope->IsLoopScope();
+}
 void CScope::AddInstruction(RuntimeBlock&& block)
 {
 	m_oInstructions.emplace_back(std::move(block));

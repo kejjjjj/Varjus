@@ -97,6 +97,12 @@
     <Filter Include="Source Files\tests\linter">
       <UniqueIdentifier>{d51edbbc-f7a2-4185-be30-6ce85166a82f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\linter\statements\control">
+      <UniqueIdentifier>{ba2cdded-d92f-456f-8aad-b78180de9e07}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\runtime\statements\control">
+      <UniqueIdentifier>{2a9c4357-0a62-493b-8723-709c648a661d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -281,6 +287,12 @@
     </ClCompile>
     <ClCompile Include="tests\linter\test_functions.cpp">
       <Filter>Source Files\tests\linter</Filter>
+    </ClCompile>
+    <ClCompile Include="linter\statements\control\control.cpp">
+      <Filter>Source Files\linter\statements\control</Filter>
+    </ClCompile>
+    <ClCompile Include="runtime\statements\control\rtcontrol.cpp">
+      <Filter>Source Files\runtime\statements\control</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -472,6 +484,9 @@
     </ClInclude>
     <ClInclude Include="tests\test.hpp">
       <Filter>Source Files\tests</Filter>
+    </ClInclude>
+    <ClInclude Include="linter\statements\control\control.hpp">
+      <Filter>Source Files\linter\statements\control</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
