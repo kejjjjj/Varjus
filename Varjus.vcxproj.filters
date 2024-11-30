@@ -103,6 +103,12 @@
     <Filter Include="Source Files\runtime\statements\control">
       <UniqueIdentifier>{2a9c4357-0a62-493b-8723-709c648a661d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\linter\statements\for">
+      <UniqueIdentifier>{75f83dd8-b5ae-4905-8b74-d8f48319685b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\runtime\statements\for">
+      <UniqueIdentifier>{dcffba24-a711-4524-98f1-1857dff4ba69}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -293,6 +299,12 @@
     </ClCompile>
     <ClCompile Include="runtime\statements\control\rtcontrol.cpp">
       <Filter>Source Files\runtime\statements\control</Filter>
+    </ClCompile>
+    <ClCompile Include="linter\statements\for\for.cpp">
+      <Filter>Source Files\linter\statements\for</Filter>
+    </ClCompile>
+    <ClCompile Include="runtime\statements\for\rtfor.cpp">
+      <Filter>Source Files\runtime\statements\for</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -487,6 +499,9 @@
     </ClInclude>
     <ClInclude Include="linter\statements\control\control.hpp">
       <Filter>Source Files\linter\statements\control</Filter>
+    </ClInclude>
+    <ClInclude Include="linter\statements\for\for.hpp">
+      <Filter>Source Files\linter\statements\for</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

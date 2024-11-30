@@ -53,10 +53,10 @@ IValue* CRuntimeFunction::Execute([[maybe_unused]] CFunction* const thisFunction
 
 	for (auto& [index, value] : func.m_oStack) {
 
-		if (!thisFunction) {
-			assert(value->GetValue());
-			std::cout << value->GetValue()->ToPrintableString() << '\n';
-		}
+		//if (!thisFunction) {
+		//	assert(value->GetValue());
+		//	std::cout << value->GetValue()->ToPrintableString() << '\n';
+		//}
 
 		//don't free captured values or they get destroyed and the next calls to this function fail
 		if(!captures.contains(index)) 

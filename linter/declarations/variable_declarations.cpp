@@ -97,3 +97,6 @@ RuntimeBlock CVariableDeclarationLinter::ToRuntimeObject() const
 	decltype(auto) tempAST = const_cast<std::unique_ptr<AbstractSyntaxTree>&&>(std::move(m_pInitializerAST));
 	return tempAST ? std::make_unique<CRuntimeExpression>(std::move(tempAST)) : nullptr;
 }
+std::unique_ptr<AbstractSyntaxTree>&& CVariableDeclarationLinter::MoveInitializer() {
+	return std::move(m_pInitializerAST);
+}

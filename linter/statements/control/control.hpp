@@ -11,6 +11,7 @@ struct CFunctionBlock;
 
 class CLoopControlStatement : public CStatementLinter, protected IRuntimeBlock 
 {
+	NONCOPYABLE(CLoopControlStatement);
 public:
 	explicit CLoopControlStatement(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const owner);
 	~CLoopControlStatement();

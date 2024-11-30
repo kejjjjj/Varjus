@@ -26,6 +26,7 @@ std::unique_ptr<IOperand> CLinterOperand::ParseLambda()
 
 	CFunctionLinter fnLinter(m_iterPos, m_iterEnd, m_pScope, m_pOwner);
 	fnLinter.m_pThisStack->m_pLowerFunction = m_pOwner->ToStack()->GetGlobalFunction();
+	fnLinter.m_pThisScope->MakeLoopScope(false);
 
 	if (!fnLinter.ParseFunctionParameters())
 		return nullptr;

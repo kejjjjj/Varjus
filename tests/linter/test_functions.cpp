@@ -1,4 +1,6 @@
 
+#ifndef _DEBUG
+
 #pragma warning(push, 0)
 #include <boost/test/unit_test.hpp>
 
@@ -49,3 +51,5 @@ BOOST_AUTO_TEST_CASE(FunctionHasTwoInstructionsAndOneNested)
 
 	BOOST_REQUIRE_EQUAL(if_->NumInstructions(), 1);
 }
+
+#endif

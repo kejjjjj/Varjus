@@ -9,6 +9,7 @@
 #include "functions/stack.hpp"
 #include "functions/function.hpp"
 #include "scopes/scope.hpp"
+#include "statements/for/for.hpp"
 #include "statements/while/while.hpp"
 #include "statements/if/if.hpp"
 #include "statements/if/else.hpp"
@@ -107,6 +108,8 @@ Success CFileLinter::LintToken(LinterIterator& m_iterPos, LinterIterator& m_iter
 		return LintAddInstruction<CIfStatementLinter>(m_iterPos, m_iterEnd, scope, memory);
 	case tt_else:
 		return Lint<CElseStatementLinter>(m_iterPos, m_iterEnd, scope, memory);
+	case tt_for:
+		return LintAddInstruction<CForStatementLinter>(m_iterPos, m_iterEnd, scope, memory);
 	case tt_while:
 		return LintAddInstruction<CWhileStatementLinter>(m_iterPos, m_iterEnd, scope, memory);
 	case tt_return:

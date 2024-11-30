@@ -82,13 +82,7 @@ bool CScope::VariableExists(const std::string& var) const
 
 bool CScope::IsLoopScope() const noexcept
 {
-	if (m_bIsWithinLoop)
-		return true;
-
-	if (IsGlobalScope())
-		return false;
-
-	return m_pLowerScope->IsLoopScope();
+	return m_bIsWithinLoop;
 }
 void CScope::AddInstruction(RuntimeBlock&& block)
 {

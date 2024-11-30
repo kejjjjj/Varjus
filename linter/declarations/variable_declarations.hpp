@@ -22,6 +22,9 @@ public:
 	[[nodiscard]] bool IsGlobalVariable() const noexcept;
 
 	[[nodiscard]] RuntimeBlock ToRuntimeObject() const override;
+
+	[[nodiscard]] std::unique_ptr<AbstractSyntaxTree>&& MoveInitializer();
+
 private:
 	[[nodiscard]] bool IsDeclaration(const CToken* token) const noexcept;
 	[[nodiscard]] bool IsIdentifier(const CToken* token) const noexcept;

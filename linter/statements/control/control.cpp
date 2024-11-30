@@ -32,7 +32,7 @@ Success CLoopControlStatement::Parse()
 		return failure;
 	}
 
-	constexpr std::array<const char*, 3> quick_lookup = { "null", "break" };
+	constexpr std::array<const char*, 3> quick_lookup = {{ "null", "break", "continue"}};
 
 	if (const auto scope = m_pScope.lock()) {
 		if (!scope->IsLoopScope()) {

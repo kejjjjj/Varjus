@@ -40,7 +40,7 @@ public:
 
 	[[nodiscard]] Success DeclareVariable(const std::string& var);
 
-	constexpr void MakeLoopScope() noexcept { m_bIsWithinLoop = true; }
+	constexpr void MakeLoopScope(bool s = true) noexcept { m_bIsWithinLoop = s; }
 	[[nodiscard]] bool IsLoopScope() const noexcept;
 
 	void AddInstruction(RuntimeBlock&& block);

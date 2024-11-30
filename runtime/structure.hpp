@@ -15,6 +15,7 @@ enum EStructureType
 	st_function,
 	st_expression,
 	st_conditional,
+	st_for,
 	st_while,
 	st_return,
 	st_loop_control
@@ -137,7 +138,7 @@ public:
 
 	[[maybe_unused]] IValue* Execute(CFunction* const thisFunction) override;
 	[[nodiscard]] IValue* Evaluate(CFunction* const thisFunction);
-
+	[[nodiscard]] constexpr bool HasAST() { return !!m_pAST.get(); }
 protected:
 	[[nodiscard]] constexpr EStructureType Type() const noexcept { return st_expression;};
 
@@ -180,6 +181,27 @@ private:
 	std::unique_ptr<CRuntimeConditionalStatement> m_pNext; //else (if)
 };
 
+class CRuntimeForStatement final : public IRuntimeStructureSequence
+{
+	NONCOPYABLE(CRuntimeForStatement);
+public:
+	CRuntimeForStatement(
+		std::unique_ptr<AbstractSyntaxTree>&& init,
+		std::unique_ptr<AbstractSyntaxTree>&& cond,
+		std::unique_ptr<AbstractSyntaxTree>&& endExpr, InstructionSequence&& insns);
+	~CRuntimeForStatement();
+
+	[[maybe_unused]] IValue* Execute(CFunction* const thisFunction) override;
+
+protected:
+	[[nodiscard]] constexpr EStructureType Type() const noexcept { return st_for; };
+
+private:
+	std::unique_ptr<CRuntimeExpression> m_pInitializer;
+	std::unique_ptr<CRuntimeExpression> m_pCondition;
+	std::unique_ptr<CRuntimeExpression> m_pOnEnd;
+};
+
 class CRuntimeWhileStatement final : public IRuntimeStructureSequence
 {
 	NONCOPYABLE(CRuntimeWhileStatement);
@@ -219,6 +241,7 @@ enum ELoopControl : char
 };
 
 class CRuntimeLoopControlStatement final : public IRuntimeStructure {
+	NONCOPYABLE(CRuntimeLoopControlStatement);
 public:
 	CRuntimeLoopControlStatement(ELoopControl c) : m_eCtrl(c){}
 	

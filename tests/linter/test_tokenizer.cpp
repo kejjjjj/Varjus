@@ -1,4 +1,6 @@
 
+#ifndef _DEBUG
+
 #pragma warning(push, 0)
 #include <boost/test/unit_test.hpp>
 #pragma warning(pop)
@@ -31,3 +33,5 @@ BOOST_AUTO_TEST_CASE(TokenizerProducesCorrectTokens)
     }
 
 }
+
+#endif

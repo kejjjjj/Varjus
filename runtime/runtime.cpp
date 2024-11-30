@@ -7,6 +7,7 @@
 #include <ranges>
 #include <iostream>
 #include <chrono>
+#include "exceptions/exception.hpp"
 
 #define VALUEPOOL_INIT_SIZE size_t(100)
 
@@ -42,21 +43,26 @@ void CProgramRuntime::Execute()
 
 
 	if (iMainFunction == m_oFunctions.end()) {
-		return;
+		throw CRuntimeError("couldn't find the \"main\" function");
 	}
 
 	CStaticArrayBuiltInMethods::Initialize(GetContext());
 
 	std::chrono::time_point<std::chrono::steady_clock> old = std::chrono::steady_clock::now();
+	std::chrono::time_point<std::chrono::steady_clock> now;
 
 	std::vector<IValue*> args;
 	if (auto v = (*iMainFunction)->Execute(nullptr, args, {})) {
+		now = std::chrono::steady_clock::now();
+		std::cout << v->ToPrintableString() << '\n';
 		v->Release();
+
+	} else {
+		now = std::chrono::steady_clock::now();
 	}
 
-	std::chrono::time_point<std::chrono::steady_clock> now = std::chrono::steady_clock::now();
 	std::chrono::duration<float> difference = now - old;
-	//printf("\ntime taken: %.6f\n", difference.count());
+	printf("\ntime taken: %.6f\n", difference.count());
 
 	std::cout << "\n\n--------------LEAKS--------------\n\n";
 	std::cout << std::format("undefined: {}\n",   GetPool<IValue>().GetInUseCount());

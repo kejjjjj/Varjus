@@ -10,19 +10,14 @@
 
 #include "fs/fs_io.hpp"
 
+#ifndef _DEBUG
 #define BOOST_TEST_MODULE MyTest
 #include <boost/test/included/unit_test.hpp>
 
-int _main();
-
-struct AllocatorSetup {
-    AllocatorSetup() {  }
-    ~AllocatorSetup() { _main(); }
-};
-
-BOOST_GLOBAL_FIXTURE(AllocatorSetup);
-
 int _main()
+#else
+int main()
+#endif
 {
 
     try {
@@ -69,4 +64,13 @@ int _main()
     return 0;
 }
 
+#ifndef _DEBUG
 
+struct AllocatorSetup {
+    AllocatorSetup() {}
+    ~AllocatorSetup() { _main(); }
+};
+
+BOOST_GLOBAL_FIXTURE(AllocatorSetup);
+
+#endif
