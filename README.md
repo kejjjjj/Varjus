@@ -1,48 +1,117 @@
 ## A scripting language
 
-Example code
+## Implemented
+of course there's a LOT more happening behind the scenes, but here's a quick summary
+- built-in types
+  - undefined
+  - boolean
+  - int
+  - double
+  - string
+  - callable
+  - array
+  - object
+  - lambda
+- statements
+  - if
+  - else if
+  - else
+  - while
+  - for
+  - continue
+  - break
+  - return
+- global variables
+- local variables
+- aggregate types
+- variable declarations
+  - let
+- functions
+  - closures
+- methods and members
+  - array (.length and  e.g. .push(value))
+- postfix
+  - subscript []
+  - member access .
+  - function calls ()
+- value types
+  - copy
+  - reference
 
+
+### Types
 ```js
-fn ass()
+let undefinedValue = undefined;
+let booleanValue = true;
+let intValue = 1;
+let doubleValue = 1.5;
+let stringValue = "asdasd";
+let arrayValue = [ 1, 2, 3 ];
+let objectValue = { a: 1, b: 2, c: 3 };
+let lambdaValue = fn(a, b) { return a + b; };
+```
+
+### Functions
+```js
+fn add(param1, param2)
 {
-	return 5;
+     return param1 + param2;
 }
 
-fn testFunc(val)
+// entry point
+fn main()
 {
-	let assWrapper = fn() { return ass(); };
-
-	let test = val;
-	return {  
-		data: 
-			fn(callable, a, b) { 
-				return callable(a, b) + test;  
-			},
-		wrapper:
-			(test < 5) ? assWrapper : fn() { return test + 7; }
-	};
-}
-
-fn handleFunc(value)
-{
-	let obj = testFunc(value);
-
-	let part1 = obj.data(fn(a, b) { return a + b; }, 7, 5);
-	let part2 = obj.wrapper();
-
-	return part1 + part2;
-}
-
-fn main() {
-
-	let a = handleFunc(4);
-	let b = handleFunc(5);
+    let sum = add(3, 7);
+    let concat = add("hello ", "world!");
+    return [sum, concat];
 }
 ```
-Output:
 
+### Arrays
+Arrays are treated as references
+```js
+let array = [ 1, 2, 3 ];
+let length = array.length; // 3
+array.push(4); // array is now [ 1, 2, 3, 4 ]
+
+let arrayReference = array; // arrayReference shares ownership with array
+arrayReference[0] = 1; // this will also update the value of array[0] to 1
 ```
-21: int
-29: int
+
+### Objects
+Objects are treated as references
+```js
+let object = { key: "value", key2: 2 };
+let key = object.key; // "value"
+let key2 = object.key2; // 2
 ```
+
+### Lambdas
+Lambdas are treated as references
+```js
+let lambda = fn(arg1, arg2) {
+  return arg1 + arg2;
+};
+
+let result = lambda(1, 2); // 3
+```
+
+  - #### Closures
+    ```js
+	fn closureTest()
+	{
+	  let capturedVariable = 5;
+   	  //this lambda will capture the state of capturedVariable, 
+	  //so that it doesn't get freed when this function ends
+      return fn() {
+        return capturedVariable; 
+      }
+    }
+
+	let getLambda = closureTest(); // get the lambda
+	let result = getLambda(); // this will return 5
+    ```
+
+	
+
 
