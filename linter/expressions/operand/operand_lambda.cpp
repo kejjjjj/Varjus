@@ -17,7 +17,7 @@ std::unique_ptr<IOperand> CLinterOperand::ParseLambda()
 
 	auto& oldIter = m_iterPos;
 
-	if (m_pOwner->ToStack()->m_pLowerFunction) {
+	if (m_pOwner->IsLambda()) {
 		CLinterErrors::PushError("nested lambdas are not supported", GetIteratorSafe()->m_oSourcePosition);
 		return nullptr;
 	}
@@ -25,8 +25,12 @@ std::unique_ptr<IOperand> CLinterOperand::ParseLambda()
 	std::advance(m_iterPos, 1); // skip fn
 
 	CFunctionLinter fnLinter(m_iterPos, m_iterEnd, m_pScope, m_pOwner);
-	fnLinter.m_pThisStack->m_pLowerFunction = m_pOwner->ToStack()->GetGlobalFunction();
+	fnLinter.m_pThisStack->m_pLowerFunction = m_pOwner->IsGlobalMemory() 
+		? nullptr 
+		: m_pOwner->ToStack()->GetGlobalFunction();
+
 	fnLinter.m_pThisScope->MakeLoopScope(false);
+	fnLinter.m_pThisStack->MakeLambda();
 
 	if (!fnLinter.ParseFunctionParameters())
 		return nullptr;

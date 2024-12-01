@@ -88,7 +88,14 @@ IValue* CRuntimeExpression::EvaluateLeaf(CFunction* const thisFunction, const Ab
 
 	if (node->IsVariable()) {
 		const auto var = node->GetVariable();
-		auto v = thisFunction->GetVariableByIndex(var->m_uIndex)->GetValue();
+
+		IValue* v = nullptr;
+
+		if (var->m_bGlobalVariable)
+			v = CProgramRuntime::GetGlobalVariableByIndex(var->m_uIndex)->GetValue();
+		else
+			v = thisFunction->GetVariableByIndex(var->m_uIndex)->GetValue();
+
 		assert(v);
 		assert(v->HasOwner());
 		return v;
@@ -98,9 +105,7 @@ IValue* CRuntimeExpression::EvaluateLeaf(CFunction* const thisFunction, const Ab
 		const auto var = node->GetFunction();
 		auto v = CProgramRuntime::AcquireNewValue<CCallableValue>();
 		v->MakeShared();
-
 		v->Internal()->GetCallable() = CProgramRuntime::GetFunctionByIndex(var->m_uIndex);
-
 		v->MakeImmutable();
 		return v;
 	}

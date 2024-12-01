@@ -28,7 +28,9 @@ IValue* IRuntimeStructureSequence::ExecuteBlock([[maybe_unused]] CFunction* cons
 
 	return nullptr;
 }
-
+void CFileRuntimeData::AddGlobalInstructions(VectorOf<RuntimeBlock>&& insns){
+	m_oGlobalScopeInstructions = std::move(insns);
+}
 CRuntimeFunction* CFileRuntimeData::FindFunction(const std::string& v) const
 {
 	const auto it = std::ranges::find(m_oFunctions, v, [](const RuntimeFunction& v) { return v->GetName(); });

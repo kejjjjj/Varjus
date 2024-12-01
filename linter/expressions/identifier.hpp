@@ -6,6 +6,8 @@
 class CMemory;
 class CScope;
 struct CMemoryIdentifier;
+struct CLinterVariable;
+struct CLinterFunction;
 
 class CIdentifierLinter final : public CLinterSingle<CToken>
 {
@@ -16,12 +18,12 @@ public:
 	~CIdentifierLinter();
 
 	[[nodiscard]] Success ParseIdentifier();
-	[[nodiscard]] auto GetToken() const { return m_pToken; }
-
-
 
 private:
 	[[nodiscard]] bool CheckIdentifier(const CToken* token) const noexcept;
+	[[nodiscard]] CLinterVariable* GetVariableByIdentifier(const std::string& str) const noexcept;
+	[[nodiscard]] CLinterFunction* GetFunctionByIdentifier(const std::string& str) const noexcept;
+
 
 	WeakScope m_pScope;
 	CMemory* const m_pOwner;

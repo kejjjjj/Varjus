@@ -29,58 +29,62 @@ Success CIdentifierLinter::ParseIdentifier()
 
 	m_pToken = iterPos;
 
-	if (m_pToken->Type() == TokenType::tt_name){
-
-		auto scope = m_pScope.lock();
-
-		if (!scope)
-			return failure;
-
-		auto& str = m_pToken->Source();
-
-		const auto varExists = scope->VariableExists(str);
-		const auto func = m_pOwner->ContainsFunctionGlobally(str);
-
-		if (!varExists && !func) {
-			CLinterErrors::PushError("Use of an undefined identifier: " + str, m_pToken->m_oSourcePosition);
-			return failure;
-		}
-
-		if (varExists) {
-			m_pIdentifier = m_pOwner->GetVariable(str);
-
-			if (!m_pIdentifier) {
-
-				assert(m_pOwner->IsStack());
-				auto stack = m_pOwner->ToStack();
-				const auto globalFunc = stack->GetGlobalFunction();
-				assert(globalFunc);
-				auto var = globalFunc->GetVariable(str);
-				assert(var);
-
-				// this variable is being accessed in a lambda function
-				stack->AddSharedOwnershipVariable(var->m_uIndex);
-				m_pIdentifier = var;
-			}
-
-		} else if (func) {
-
-			auto lowest = m_pOwner->ToStack()->GetGlobalFunction();
-
-
-			m_pIdentifier = lowest->ContainsFunction(str)
-				? lowest->GetFunction(str)
-				: lowest->DeclareFunction(str);
-		}
-
-		if (!m_pIdentifier) {
-			CLinterErrors::PushError("Use of an undefined identifier: " + str, m_pToken->m_oSourcePosition);
-			return failure;
-		}
+	if (m_pToken->Type() != TokenType::tt_name) {
+		std::advance(m_iterPos, 1);
+		return success;
 	}
 
+	auto scope = m_pScope.lock();
+
+	if (!scope)
+		return failure;
+
+	auto& str = m_pToken->Source();
+	if(scope->VariableExists(str))
+		m_pIdentifier = GetVariableByIdentifier(str);
+	else if(m_pOwner->m_FunctionManager->ContainsFunctionGlobally(str))
+		m_pIdentifier = GetFunctionByIdentifier(str);
+
+	if (!m_pIdentifier) {
+		CLinterErrors::PushError("Use of an undefined identifier: " + str, m_pToken->m_oSourcePosition);
+		return failure;
+	}
+	
 	std::advance(m_iterPos, 1);
 	return success;
+}
+CLinterVariable* CIdentifierLinter::GetVariableByIdentifier(const std::string& str) const noexcept
+{
+	//find the global variable first... unlike some languages :)
+	auto var = m_pOwner->GetGlobalMemory()->m_VariableManager->GetVariable(str);
+
+	if (var)
+		return var;
+
+	var = m_pOwner->m_VariableManager->GetVariable(str);
+	if (!var) {
+
+		assert(m_pOwner->IsStack());
+		auto stack = m_pOwner->ToStack();
+		const auto globalFunc = stack->GetGlobalFunction();
+		assert(globalFunc);
+		var = globalFunc->m_VariableManager->GetVariable(str);
+		assert(var);
+
+		// this variable is being accessed in a lambda function
+		stack->AddSharedOwnershipVariable(var->m_uIndex);
+	}
+
+	return var;
+}
+CLinterFunction* CIdentifierLinter::GetFunctionByIdentifier(const std::string& str) const noexcept
+{
+	auto lowest = m_pOwner->GetGlobalMemory();
+	auto& manager = lowest->m_FunctionManager;
+
+	return manager->ContainsFunction(str)
+		? manager->GetFunction(str)
+		: manager->DeclareFunction(str);
 }
 
 bool CIdentifierLinter::CheckIdentifier(const CToken* token) const noexcept

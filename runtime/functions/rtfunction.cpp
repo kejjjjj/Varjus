@@ -19,7 +19,7 @@ CRuntimeFunction::CRuntimeFunction(CFunctionBlock& linterFunction,
 	IRuntimeStructureSequence(std::move(linterFunction.m_oInstructions)),
 	m_sName(linterFunction.m_sName),
 	m_uNumParameters(linterFunction.m_uNumParameters),
-	m_uNumVariables(linterFunction.m_pStack->GetVariableCount()),
+	m_uNumVariables(linterFunction.m_pStack->m_VariableManager->GetVariableCount()),
 	m_oArgumentIndices(std::move(args)),
 	m_oVariableIndices(std::move(variableIndices))
 {

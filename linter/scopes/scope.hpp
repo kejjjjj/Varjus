@@ -44,6 +44,8 @@ public:
 	[[nodiscard]] bool IsLoopScope() const noexcept;
 
 	void AddInstruction(RuntimeBlock&& block);
+	void AddInstructions(VectorOf<RuntimeBlock>&& block);
+
 	VectorOf<RuntimeBlock>&& MoveInstructions();
 
 	IRuntimeStructure* GetLatestInstruction() const noexcept;

@@ -193,6 +193,8 @@
     <ClCompile Include="linter\expressions\sub_expression.cpp" />
     <ClCompile Include="linter\expressions\unary.cpp" />
     <ClCompile Include="linter\functions\function.cpp" />
+    <ClCompile Include="linter\functions\memory\manager_function.cpp" />
+    <ClCompile Include="linter\functions\memory\manager_variable.cpp" />
     <ClCompile Include="linter\functions\stack.cpp" />
     <ClCompile Include="linter\linter.cpp" />
     <ClCompile Include="linter\scopes\scope.cpp" />
@@ -264,6 +266,9 @@
     <ClInclude Include="linter\expressions\sub_expression.hpp" />
     <ClInclude Include="linter\expressions\unary.hpp" />
     <ClInclude Include="linter\functions\function.hpp" />
+    <ClInclude Include="linter\functions\memory\manager.hpp" />
+    <ClInclude Include="linter\functions\memory\manager_function.hpp" />
+    <ClInclude Include="linter\functions\memory\manager_variable.hpp" />
     <ClInclude Include="linter\functions\stack.hpp" />
     <ClInclude Include="linter\linter.hpp" />
     <ClInclude Include="linter\punctuation.hpp" />

@@ -22,6 +22,9 @@ Success CScopeLinter::Parse()
 	assert(!IsEndOfBuffer() && (*m_iterPos)->IsOperator(p_curlybracket_open));
 	std::advance(m_iterPos, 1);
 
+	if(!IsEndOfBuffer() && (*m_iterPos)->IsOperator(p_curlybracket_close))
+		CLinterErrors::PushError("empty scopes are not allowed", GetIteratorSafe()->m_oSourcePosition);
+
 	do {
 		if (!CFileLinter::LintToken(m_iterPos, m_iterEnd, m_pScope, m_pOwner))
 			break;
@@ -87,6 +90,11 @@ bool CScope::IsLoopScope() const noexcept
 void CScope::AddInstruction(RuntimeBlock&& block)
 {
 	m_oInstructions.emplace_back(std::move(block));
+}
+void CScope::AddInstructions(VectorOf<RuntimeBlock>&& block){
+	m_oInstructions.insert(m_oInstructions.end(), 
+		std::make_move_iterator(block.begin()),
+		std::make_move_iterator(block.end()));
 }
 VectorOf<RuntimeBlock>&& CScope::MoveInstructions()
 {

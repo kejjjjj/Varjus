@@ -55,7 +55,7 @@ IValue* OP_ASSIGNMENT(IValue* lhs, IValue* rhs)
 	if (!lhs->GetOwner())
 		throw CRuntimeError("lhs lost owner");
 
-	return lhs;
+	return variable->GetValue();
 }
 
 IValue* OP_ADDITION(IValue* _lhs, IValue* _rhs)

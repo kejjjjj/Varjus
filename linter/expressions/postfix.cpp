@@ -96,6 +96,12 @@ std::unique_ptr<CPostfixSubscript> CPostfixLinter::ParseSubscript()
 std::unique_ptr<CPostfixFunctionCall> CPostfixLinter::ParseFunctionCall()
 {
 
+	if (m_pOwner == m_pOwner->GetGlobalMemory()) {
+		CLinterErrors::PushError("don't call functions in the global scope", GetIteratorSafe()->m_oSourcePosition);
+		return nullptr;
+	}
+
+
 	assert((*m_iterPos)->IsOperator(p_par_open));
 
 	std::advance(m_iterPos, 1); // skip (

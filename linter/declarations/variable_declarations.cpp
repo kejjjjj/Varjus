@@ -41,7 +41,11 @@ Success CVariableDeclarationLinter::Parse()
 			return failure;
 		}
 
-		m_pOwner->DeclareVariable((*m_iterPos)->Source());
+		if(scope->IsGlobalScope())
+			m_pOwner->GetGlobalMemory()->m_VariableManager->DeclareVariable((*m_iterPos)->Source());
+		else
+			m_pOwner->m_VariableManager->DeclareVariable((*m_iterPos)->Source());
+
 	} else {
 		CLinterErrors::PushError("!(const auto scope = currentScope.lock())", (*m_iterPos)->m_oSourcePosition);
 		return failure;

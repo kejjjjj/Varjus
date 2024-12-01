@@ -68,12 +68,34 @@ Success CFileLinter::LintOperator(LinterIterator& start, LinterIterator& end, co
 {
 	// a new scope
 	if ((*start)->IsOperator(p_curlybracket_open)) {
-		CScopeLinter scopeLinter(start, end, scope, memory);
-		return scopeLinter.Parse();
+		return LintScope(start, end, scope, memory);
 	}
 
 	// otherwise a normal expression
 	return LintAddInstruction<CLinterExpression>(start, end, scope, memory);
+}
+Success CFileLinter::LintScope(LinterIterator& start, LinterIterator& end, const WeakScope& scope, CMemory* const memory)
+{
+
+	if (memory->IsGlobalMemory()) {
+		CLinterErrors::PushError("unnamed scopes are not allowed in the global scope", (*start)->m_oSourcePosition);
+		return failure;
+	}
+	auto s = scope.lock();
+	if (!s) {
+		CLinterErrors::PushError("!(const auto scope = m_pScope.lock())", (*start)->m_oSourcePosition);
+		return failure;
+	}
+
+	std::shared_ptr<CScope> thisScope = s->CreateScope();
+
+	CScopeLinter scopeLinter(start, end, thisScope, memory);
+	if (!scopeLinter.Parse())
+		return failure;
+
+	s->AddInstructions(thisScope->MoveInstructions());
+	return success;
+
 }
 Success CFileLinter::LintFunctionAmbiguity(LinterIterator& start, LinterIterator& end, const WeakScope& scope, CMemory* const memory)
 {
@@ -128,7 +150,7 @@ Success CFileLinter::ParseFile()
 {
 
 	m_pFile = std::make_unique<CFileRuntimeData>();
-	CMemory globalMemory(m_pFile.get(), m_pContext);
+	CMemory globalMemory(nullptr, m_pFile.get(), m_pContext);
 	auto globalScope = std::make_shared<CScope>(&globalMemory);
 
 	while (!IsEndOfBuffer()) {
@@ -140,6 +162,9 @@ Success CFileLinter::ParseFile()
 
 		std::advance(m_iterPos, 1);
 	}
+
+	m_pFile->AddGlobalInstructions(globalScope->MoveInstructions());
+	m_pFile->SetGlobalVariableCount(globalMemory.m_VariableManager->GetVariableCount());
 
 	return success;
 }

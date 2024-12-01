@@ -31,8 +31,8 @@ CLinterFunction* CIdentifierOperand::GetFunction() {
 {
 	assert(m_pIdentifier);
 
-	if(m_pIdentifier->Type() == mi_variable)
-		return std::make_unique<VariableASTNode>(m_oCodePosition, GetVariable()->m_uIndex);
+	if (m_pIdentifier->Type() == mi_variable) 
+		return std::make_unique<VariableASTNode>(m_oCodePosition, GetVariable()->m_uIndex, GetVariable()->IsGlobal());
 	if(m_pIdentifier->Type() == mi_function)
 		return std::make_unique<FunctionASTNode>(m_oCodePosition, GetFunction()->m_uIndex);
 

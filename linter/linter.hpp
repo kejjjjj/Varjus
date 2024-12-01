@@ -18,6 +18,8 @@ public:
 	~CFileLinter();
 	[[nodiscard]] static Success LintToken(LinterIterator& start, LinterIterator& end, const WeakScope& scope, CMemory* const stack);
 	[[nodiscard]] static Success LintOperator(LinterIterator& start, LinterIterator& end, const WeakScope& scope, CMemory* const stack);
+	[[nodiscard]] static Success LintScope(LinterIterator& start, LinterIterator& end, const WeakScope& scope, CMemory* const stack);
+
 	[[nodiscard]] static Success LintFunctionAmbiguity(LinterIterator& start, LinterIterator& end, const WeakScope& scope, CMemory* const stack);
 
 	[[nodiscard]] Success ParseFile();
@@ -26,6 +28,7 @@ public:
 
 private:
 	std::unique_ptr<CFileRuntimeData> m_pFile;
+
 	CProgramContext* const m_pContext;
 };
 

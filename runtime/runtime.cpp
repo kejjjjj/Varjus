@@ -23,7 +23,8 @@ template<> COwningObjectPool<CCallableValue>      CProgramRuntime::m_oValuePool<
 template<> COwningObjectPool<CArrayValue>         CProgramRuntime::m_oValuePool<CArrayValue>         (VALUEPOOL_INIT_SIZE);
 template<> COwningObjectPool<CObjectValue>        CProgramRuntime::m_oValuePool<CObjectValue>        (VALUEPOOL_INIT_SIZE);
 
-std::vector<RuntimeFunction> CProgramRuntime::m_oFunctions;
+VectorOf<RuntimeFunction> CProgramRuntime::m_oFunctions;
+VectorOf<CVariable*> CProgramRuntime::m_oGlobalVariables;
 CProgramContext* CProgramRuntime::m_pContext{ nullptr };
 const CodePosition* CProgramRuntime::m_pCodePosition{ nullptr };
 
@@ -31,10 +32,15 @@ CProgramRuntime::CProgramRuntime(CFileRuntimeData* const file, CProgramContext* 
 {
 	m_pContext = context;
 	m_oFunctions = (std::move(file->m_oFunctions));
+	m_oGlobalScopeInstructions = std::move(file->m_oGlobalScopeInstructions);
+	m_uNumGlobalVariables = file->m_uNumGlobalVariables;
+	m_oGlobalVariables.clear();
 
 	assert(m_pContext);
 }
 CProgramRuntime::~CProgramRuntime() { m_oFunctions.clear(); };
+
+using steady_clock = std::chrono::time_point<std::chrono::steady_clock>;
 
 void CProgramRuntime::Execute()
 {
@@ -48,8 +54,20 @@ void CProgramRuntime::Execute()
 
 	CStaticArrayBuiltInMethods::Initialize(GetContext());
 
-	std::chrono::time_point<std::chrono::steady_clock> old = std::chrono::steady_clock::now();
-	std::chrono::time_point<std::chrono::steady_clock> now;
+	//create global variables
+	m_oGlobalVariables = CProgramRuntime::AcquireNewVariables(m_uNumGlobalVariables);
+
+	for (auto& var : m_oGlobalVariables) {
+		var->SetValue(AcquireNewValue<IValue>());
+	}
+
+	for (auto& insn : m_oGlobalScopeInstructions) {
+		if (insn->Execute(nullptr))
+			break;
+	}
+
+	steady_clock old = std::chrono::steady_clock::now();
+	steady_clock now;
 
 	std::vector<IValue*> args;
 	if (auto v = (*iMainFunction)->Execute(nullptr, args, {})) {
@@ -64,6 +82,9 @@ void CProgramRuntime::Execute()
 	std::chrono::duration<float> difference = now - old;
 	printf("\ntime taken: %.6f\n", difference.count());
 
+	for (auto& variable : m_oGlobalVariables)
+		variable->Release();
+
 	std::cout << "\n\n--------------LEAKS--------------\n\n";
 	std::cout << std::format("undefined: {}\n",   GetPool<IValue>().GetInUseCount());
 	std::cout << std::format("boolean:   {}\n",   GetPool<CBooleanValue>().GetInUseCount());
@@ -75,8 +96,6 @@ void CProgramRuntime::Execute()
 	std::cout << std::format("object:    {}\n",   GetPool<CObjectValue>().GetInUseCount());
 	std::cout << std::format("variable:  {}\n\n", GetPool<CVariable>().GetInUseCount());
 
-	return;
-
 }
 CProgramContext* CProgramRuntime::GetContext()
 {
@@ -86,6 +105,11 @@ CRuntimeFunction* CProgramRuntime::GetFunctionByIndex(std::size_t index)
 {
 	assert(index < m_oFunctions.size());
 	return m_oFunctions[index].get();
+}
+CVariable* CProgramRuntime::GetGlobalVariableByIndex(std::size_t index)
+{
+	assert(index < m_oGlobalVariables.size());
+	return m_oGlobalVariables[index];
 }
 void CProgramRuntime::SetExecutionPosition(const CodePosition* pos) noexcept{
 	m_pCodePosition = pos;

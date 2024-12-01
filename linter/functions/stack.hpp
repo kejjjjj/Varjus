@@ -1,15 +1,14 @@
 #pragma once
 
 #include <vector>
-#include <unordered_map>
-#include <string>
 #include <memory>
 #include <set>
 
 #include "globalDefinitions.hpp"
 
-class CVariableDeclarationLinter;
-class CMemory;
+#include "memory/manager_variable.hpp"
+#include "memory/manager_function.hpp"
+
 class CStack;
 class IRuntimeStructure;
 class CFileRuntimeData;
@@ -19,79 +18,50 @@ struct CProgramContext;
 
 template<typename T>
 using VectorOf = std::vector<T>;
+using RuntimeBlock = std::unique_ptr<IRuntimeStructure>;
 
-enum EMemoryIdentifierType
-{
-	mi_variable,
-	mi_function
-};
 
-struct CMemoryIdentifier
-{
-	CMemoryIdentifier() = default;
-	CMemoryIdentifier(const std::string& name, std::size_t index) 
-		: m_sName(name), m_uIndex(index) {}
-	virtual ~CMemoryIdentifier() = default;
-
-	[[nodiscard]] virtual constexpr EMemoryIdentifierType Type() const noexcept = 0;
-
-	std::string m_sName;
-	std::size_t m_uIndex{};
-};
-
-struct CLinterVariable final : public CMemoryIdentifier
-{
-	CLinterVariable() = default;
-	CLinterVariable(const CMemory* owner, const std::string& name, std::size_t index) 
-		: CMemoryIdentifier(name, index), m_pOwner(owner) {}
-
-	[[nodiscard]] virtual constexpr EMemoryIdentifierType Type() const noexcept override { return mi_variable; }
-
-	const CMemory* m_pOwner{};
-};
-struct CLinterFunction final : public CMemoryIdentifier
-{
-	CLinterFunction() = default;
-	CLinterFunction(const std::string& name, std::size_t index) 
-		: CMemoryIdentifier(name, index) {}
-
-	[[nodiscard]] virtual constexpr EMemoryIdentifierType Type() const noexcept override { return mi_function; }
-};
 class CMemory
 {
+	NONCOPYABLE(CMemory);
+
 	friend class CFunctionLinter;
 	friend class CIdentifierLinter;
+	friend class CFunctionManager;
+	friend class CVariableDeclarationLinter;
+
 public:
-	CMemory(CFileRuntimeData* const file, CProgramContext* const context);
+	CMemory(CMemory* globalMemory, CFileRuntimeData* const file, CProgramContext* const context);
 	virtual ~CMemory();
 
 	[[nodiscard]] virtual bool IsStack() const noexcept { return false; }
-
-	[[maybe_unused]] CLinterVariable* DeclareVariable(const std::string& var);
-	[[nodiscard]] CLinterVariable* GetVariable(const std::string& var);
-	[[nodiscard]] bool ContainsVariable(const std::string& name) const;
-	[[nodiscard]] std::size_t GetVariableCount() const noexcept;
-	[[nodiscard]] auto& GetVariableIterator() { return m_oVariables; }
-
-	[[maybe_unused]] CLinterFunction* DeclareFunction(const std::string& var);
-	[[nodiscard]] CLinterFunction* GetFunction(const std::string& var);
-	[[nodiscard]] std::size_t GetFunctionIndex(const std::string& var);
-	[[nodiscard]] bool ContainsFunction(const std::string& name) const;
-	[[nodiscard]] bool ContainsFunctionGlobally(const std::string& name) const;
-
-	[[nodiscard]] std::size_t GetFunctionCount() const noexcept;
 
 	[[nodiscard]] CStack* ToStack();
 	[[nodiscard]] auto ToStack() const;
 
 	[[nodiscard]] constexpr CProgramContext* GetContext() const { return m_pContext; }
-protected:
+	[[nodiscard]] auto& GetGlobalMemory() noexcept { return m_pGlobal; }
+	[[nodiscard]] auto& GetGlobalMemory() const noexcept { return m_pGlobal; }
 
-	std::unordered_map<std::string, CLinterVariable> m_oVariables;
-	std::unordered_map<std::string, CLinterFunction> m_oFunctions;
+	[[nodiscard]] bool IsGlobalMemory() const noexcept { return this == m_pGlobal; }
+	[[nodiscard]] auto& GetLowerMemoryRegion() const noexcept { return m_pLowerRegion; }
+
+	void MakeLambda() noexcept { m_bIsLambda = true; }
+	[[nodiscard]] bool IsLambda() const noexcept { return m_bIsLambda; }
+
+	std::unique_ptr<CVariableManager> m_VariableManager;
+	std::unique_ptr<CFunctionManager> m_FunctionManager;
+
+protected:
 
 	CFileRuntimeData* const m_pFile{};
 	CProgramContext* const m_pContext{};
+	CMemory* m_pGlobal{ nullptr };
+	CMemory* m_pLowerRegion{ nullptr };
+
+private:
+	VectorOf<RuntimeBlock> m_oInstructions;
+	bool m_bIsLambda{ false };
 };
 
 using RuntimeBlock = std::unique_ptr<IRuntimeStructure>;
@@ -100,9 +70,11 @@ class CStack final : public CMemory
 {
 	NONCOPYABLE(CStack);
 	friend class CFunctionLinter;
+	friend class CIdentifierLinter;
+
 public:
-	CStack(CFileRuntimeData* const file, CProgramContext* const context);
-	CStack(std::unique_ptr<CFunctionBlock>&& func, CFileRuntimeData* const file, CProgramContext* const context);
+	CStack(CMemory* globalMemory, CFileRuntimeData* const file, CProgramContext* const context);
+	CStack(CMemory* globalMemory, std::unique_ptr<CFunctionBlock>&& func, CFileRuntimeData* const file, CProgramContext* const context);
 	~CStack();
 
 	[[nodiscard]] bool IsStack() const noexcept override { return true; }

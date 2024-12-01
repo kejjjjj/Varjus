@@ -99,8 +99,8 @@ class VariableASTNode final : public AbstractSyntaxTree
 	friend class AstToInstructionConverter;
 	NONCOPYABLE(VariableASTNode);
 public:
-	VariableASTNode(const CodePosition& pos, std::size_t variableIndex) 
-		: AbstractSyntaxTree(pos), m_uIndex(variableIndex) {}
+	VariableASTNode(const CodePosition& pos, std::size_t variableIndex, bool isGlobalVariable) 
+		: AbstractSyntaxTree(pos), m_uIndex(variableIndex), m_bGlobalVariable(isGlobalVariable) {}
 
 	[[nodiscard]] constexpr bool IsLeaf() const noexcept override { return true; }
 	[[nodiscard]] constexpr bool IsVariable() const noexcept override { return true; }
@@ -108,7 +108,7 @@ public:
 	[[nodiscard]] constexpr const VariableASTNode* GetVariable() const noexcept override { return this; }
 
 	std::size_t m_uIndex{};
-
+	bool m_bGlobalVariable{ false };
 private:
 
 };

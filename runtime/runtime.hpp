@@ -12,9 +12,12 @@
 class CVariable;
 class CRuntimeFunction;
 class CFileRuntimeData;
+class IRuntimeStructure;
 struct CProgramContext;
+
 using RuntimeFunction = std::unique_ptr<CRuntimeFunction>;
 using CodePosition = std::tuple<size_t, size_t>;
+using RuntimeBlock = std::unique_ptr<IRuntimeStructure>;
 
 
 template<typename T>
@@ -40,6 +43,7 @@ public:
 
 	[[nodiscard]] static CProgramContext* GetContext();
 	[[nodiscard]] static CRuntimeFunction* GetFunctionByIndex(std::size_t index);
+	[[nodiscard]] static CVariable* GetGlobalVariableByIndex(std::size_t index);
 
 	static void SetExecutionPosition(const CodePosition* pos) noexcept;
 	[[nodiscard]] static const CodePosition* GetExecutionPosition() noexcept;
@@ -49,8 +53,6 @@ private:
 
 	template <IValueChild T>
 	static COwningObjectPool<T> m_oValuePool;
-
-
 public:
 
 	template <IValueChild T>
@@ -120,7 +122,11 @@ public:
 	}
 
 private:
-	static std::vector<RuntimeFunction> m_oFunctions;
+	VectorOf<RuntimeBlock> m_oGlobalScopeInstructions;
+	std::size_t m_uNumGlobalVariables{};
+
+	static VectorOf<RuntimeFunction> m_oFunctions;
 	static CProgramContext* m_pContext;
 	static const CodePosition* m_pCodePosition;
+	static VectorOf<CVariable*> m_oGlobalVariables;
 };

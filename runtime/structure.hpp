@@ -273,7 +273,12 @@ public:
 	[[nodiscard]] CRuntimeFunction* FindFunction(const std::string& v) const;
 	[[nodiscard]] size_t FindFunctionIndex(const std::string& v) const;
 
+	void AddGlobalInstructions(VectorOf<RuntimeBlock>&& insns);
+	void SetGlobalVariableCount(std::size_t v) { m_uNumGlobalVariables = v; }
+
 private:
+	std::size_t m_uNumGlobalVariables{};
+	VectorOf<RuntimeBlock> m_oGlobalScopeInstructions;
 	VectorOf<RuntimeFunction> m_oFunctions;
 };
 

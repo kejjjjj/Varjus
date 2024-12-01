@@ -6,4 +6,5 @@ struct CProgramContext
 {
 	CStringIntegerHashMap m_oAllMembers;
 	CStringIntegerHashMap m_oAllVariables;
+	CStringIntegerHashMap m_oAllGlobalVariables;
 };

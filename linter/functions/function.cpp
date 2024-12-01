@@ -15,7 +15,7 @@
 
 CFunctionLinter::CFunctionLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack)
 	: CLinterSingle(pos, end), m_pScope(scope), m_pOwner(stack),
-	m_pThisStack(std::make_unique<CStack>(m_pOwner->m_pFile, m_pOwner->m_pContext))
+	m_pThisStack(std::make_unique<CStack>(m_pOwner->GetGlobalMemory(), m_pOwner->m_pFile, m_pOwner->m_pContext))
 {
 
 	if (const auto s = m_pScope.lock()) {
@@ -25,6 +25,7 @@ CFunctionLinter::CFunctionLinter(LinterIterator& pos, LinterIterator& end, const
 		CLinterErrors::PushError("!(const auto s = m_pScope.lock())", (*m_iterPos)->m_oSourcePosition);
 	}
 
+	m_pThisStack->m_pLowerRegion = m_pOwner;
 	assert(m_iterPos != m_iterEnd);
 }
 
@@ -40,9 +41,8 @@ Success CFunctionLinter::Parse()
 
 	assert(m_pOwner && m_pOwner->m_pFile);
 
-	//base -> derived conversion 
 	m_pOwner->m_pFile->AddFunction(ToRuntimeFunction());
-	m_pOwner->DeclareFunction(m_oFunctionName);
+	m_pOwner->m_FunctionManager->DeclareFunction(m_oFunctionName);
 
 	return success;
 }
@@ -114,7 +114,7 @@ Success CFunctionLinter::ParseFunctionParametersRecursively()
 		return failure;
 	}
 
-	auto var = m_pThisStack->DeclareVariable((*m_iterPos)->Source());
+	auto var = m_pThisStack->m_VariableManager->DeclareVariable((*m_iterPos)->Source());
 	m_pThisStack->AddArgumentVariable(var->m_uIndex);
 	m_oParameters.push_back((*m_iterPos)->Source());
 
@@ -201,7 +201,7 @@ VectorOf<std::size_t> CFunctionLinter::GetVariableIndices(CStack* stack) const
 {
 	VectorOf<std::size_t> indices;
 
-	for (auto& [name, var] : stack->GetVariableIterator()) {
+	for (auto& [name, var] : stack->m_VariableManager->GetVariableIterator()) {
 
 		if (std::ranges::find(stack->m_oArgumentIndices, var.m_uIndex) != stack->m_oArgumentIndices.end())
 			continue;
