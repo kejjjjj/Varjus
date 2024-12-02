@@ -19,6 +19,8 @@ public:
 
 	[[nodiscard]] auto& StringToIntIterator() const noexcept { return m_oStringToId; }
 
+	void Clear() { m_oStringToId.clear(); m_oIdToString.clear(); }
+
 private:
 	[[nodiscard]] GlobalMemberIndex GetCurrentIndex() const;
 

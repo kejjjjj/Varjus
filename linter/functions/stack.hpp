@@ -12,6 +12,7 @@
 class CStack;
 class IRuntimeStructure;
 class CFileRuntimeData;
+class CHoister;
 
 struct CFunctionBlock;
 struct CProgramContext;
@@ -29,6 +30,7 @@ class CMemory
 	friend class CIdentifierLinter;
 	friend class CFunctionManager;
 	friend class CVariableDeclarationLinter;
+	friend class CFileLinter;
 
 public:
 	CMemory(CMemory* globalMemory, CFileRuntimeData* const file, CProgramContext* const context);
@@ -46,6 +48,11 @@ public:
 	[[nodiscard]] bool IsGlobalMemory() const noexcept { return this == m_pGlobal; }
 	[[nodiscard]] auto& GetLowerMemoryRegion() const noexcept { return m_pLowerRegion; }
 
+
+	[[nodiscard]] bool IsHoisting() const noexcept { return !m_pGlobal->m_pHoister; }
+	[[nodiscard]] bool HasHoistedData() const noexcept { return !!m_pGlobal->m_pHoister; }
+	[[nodiscard]] auto& GetHoister() const noexcept { return m_pGlobal->m_pHoister; }
+
 	void MakeLambda() noexcept { m_bIsLambda = true; }
 	[[nodiscard]] bool IsLambda() const noexcept { return m_bIsLambda; }
 
@@ -62,6 +69,7 @@ protected:
 private:
 	VectorOf<RuntimeBlock> m_oInstructions;
 	bool m_bIsLambda{ false };
+	CHoister* m_pHoister{ nullptr };
 };
 
 using RuntimeBlock = std::unique_ptr<IRuntimeStructure>;

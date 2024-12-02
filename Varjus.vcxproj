@@ -196,6 +196,7 @@
     <ClCompile Include="linter\functions\memory\manager_function.cpp" />
     <ClCompile Include="linter\functions\memory\manager_variable.cpp" />
     <ClCompile Include="linter\functions\stack.cpp" />
+    <ClCompile Include="linter\hoisting\hoisting.cpp" />
     <ClCompile Include="linter\linter.cpp" />
     <ClCompile Include="linter\scopes\scope.cpp" />
     <ClCompile Include="linter\statements\control\control.cpp" />
@@ -270,6 +271,7 @@
     <ClInclude Include="linter\functions\memory\manager_function.hpp" />
     <ClInclude Include="linter\functions\memory\manager_variable.hpp" />
     <ClInclude Include="linter\functions\stack.hpp" />
+    <ClInclude Include="linter\hoisting\hoisting.hpp" />
     <ClInclude Include="linter\linter.hpp" />
     <ClInclude Include="linter\punctuation.hpp" />
     <ClInclude Include="linter\scopes\scope.hpp" />

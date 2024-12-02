@@ -29,7 +29,7 @@ Success CIdentifierLinter::ParseIdentifier()
 
 	m_pToken = iterPos;
 
-	if (m_pToken->Type() != TokenType::tt_name) {
+	if (m_pOwner->IsHoisting() || m_pToken->Type() != TokenType::tt_name) {
 		std::advance(m_iterPos, 1);
 		return success;
 	}

@@ -96,7 +96,10 @@ Success CLinterExpression::ParseInternal(std::optional<PairMatcher>& m_oEndOfExp
 		m_oEndOfExpression = std::nullopt;
 	}
 
-	actualExpression->m_pAST = ToAST();
+	// no need to create the ASTs when hoisting
+	if(!m_pOwner->IsHoisting())
+		actualExpression->m_pAST = ToAST();
+
 	return success;
 }
 
@@ -139,5 +142,6 @@ ExpressionList CLinterExpression::ToExpressionList() const
 }
 RuntimeBlock CLinterExpression::ToRuntimeObject() const
 {
+	assert(!m_pOwner->IsHoisting());
 	return std::make_unique<CRuntimeExpression>(ToMergedAST());
 }

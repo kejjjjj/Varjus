@@ -72,7 +72,7 @@ public:
 	[[nodiscard]] constexpr virtual bool IsIndexable() const noexcept { return false; }
 	[[nodiscard]] constexpr virtual bool IsCallable() const noexcept { return false; }
 	[[nodiscard]] constexpr virtual bool IsAggregate() const noexcept { return false; }
-	[[nodiscard]] constexpr virtual bool IsBooleanConvertible() const noexcept { return false; }
+	[[nodiscard]] constexpr virtual bool IsBooleanConvertible() const noexcept { return true; }
 	[[nodiscard]] constexpr virtual bool IsBuiltInMemberCallable() const noexcept { return false; }
 
 	[[nodiscard]] virtual IValue* Index(std::int64_t index);

@@ -4,6 +4,7 @@
 #include "globalEnums.hpp"
 #include "context.hpp"
 
+#include "hoisting/hoisting.hpp"
 #include "expressions/expression.hpp"
 #include "declarations/variable_declarations.hpp"
 #include "functions/stack.hpp"
@@ -19,7 +20,7 @@
 #include <cassert>
 
 CFileLinter::CFileLinter(LinterIterator& start, LinterIterator& end, CProgramContext* const context) 
-	: CLinter(start, end), m_pContext(context)
+	: CLinter(start, end), m_pContext(context), m_oInitialPosition(start)
 {
 	assert(m_pContext);
 }
@@ -146,11 +147,50 @@ Success CFileLinter::LintToken(LinterIterator& m_iterPos, LinterIterator& m_iter
 	}
 
 }
+
 Success CFileLinter::ParseFile()
 {
+	if (!HoistFile())
+		return failure;
 
+	m_iterPos = m_oInitialPosition;
+	m_pContext->Reset();
+	m_pFile.reset();
+
+
+	return LintFile();
+}
+
+Success CFileLinter::HoistFile()
+{
+	m_pHoister = std::make_unique<CHoister>();
+	m_pFile = std::make_unique<CFileRuntimeData>();
+
+	CMemory globalMemory(nullptr, m_pFile.get(), m_pContext);
+	auto globalScope = std::make_shared<CScope>(&globalMemory);
+
+	while (!IsEndOfBuffer()) {
+		if (!LintToken(m_iterPos, m_iterEnd, globalScope, &globalMemory))
+			break;
+
+		if (IsEndOfBuffer())
+			break;
+
+		std::advance(m_iterPos, 1);
+	}
+
+	for (const auto& func : m_pFile->m_oFunctions) {
+		m_pHoister->DeclareFunction(func->GetName());
+	}
+
+	return success;
+}
+Success CFileLinter::LintFile()
+{
 	m_pFile = std::make_unique<CFileRuntimeData>();
 	CMemory globalMemory(nullptr, m_pFile.get(), m_pContext);
+	globalMemory.m_pHoister = m_pHoister.get();
+
 	auto globalScope = std::make_shared<CScope>(&globalMemory);
 
 	while (!IsEndOfBuffer()) {

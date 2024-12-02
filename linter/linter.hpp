@@ -6,6 +6,8 @@
 class CMemory;
 class IRuntimeStructure;
 class CFileRuntimeData;
+class CHoister;
+
 struct CProgramContext;
 
 using RuntimeBlock = std::unique_ptr<IRuntimeStructure>;
@@ -27,9 +29,15 @@ public:
 	CFileRuntimeData* GetRuntimeInformation() const noexcept;
 
 private:
-	std::unique_ptr<CFileRuntimeData> m_pFile;
+	[[nodiscard]] Success HoistFile();
+	[[nodiscard]] Success LintFile();
 
+
+	std::unique_ptr<CFileRuntimeData> m_pFile;
 	CProgramContext* const m_pContext;
+	LinterIterator m_oInitialPosition;
+	std::unique_ptr<CHoister> m_pHoister;
+
 };
 
 

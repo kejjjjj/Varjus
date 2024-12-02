@@ -8,6 +8,7 @@
 #include "linter/scopes/scope.hpp"
 #include "linter/linter.hpp"
 #include "linter/functions/stack.hpp"
+#include "linter/context.hpp"
 #include "globalEnums.hpp"
 
 #include "runtime/structure.hpp"
@@ -73,7 +74,6 @@ Success CFunctionLinter::ParseFunctionDeclaration()
 	}
 
 	m_oFunctionName = (*m_iterPos)->Source();
-
 	std::advance(m_iterPos, 1); //skip identifier
 
 	if (!ParseFunctionParameters())

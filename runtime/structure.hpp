@@ -265,6 +265,7 @@ protected:
 class CFileRuntimeData final
 {
 	friend class CProgramRuntime;
+	friend class CFileLinter;
 	NONCOPYABLE(CFileRuntimeData)
 public:
 	CFileRuntimeData() = default;
