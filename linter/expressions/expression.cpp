@@ -132,6 +132,9 @@ std::unique_ptr<AbstractSyntaxTree> CLinterExpression::ToAST() const
 }
 std::unique_ptr<AbstractSyntaxTree> CLinterExpression::ToMergedAST() const
 {
+	if (m_pOwner->IsHoisting())
+		return nullptr;
+
 	assert(m_pEvaluatedExpressions);
 	return m_pEvaluatedExpressions->ToMergedAST();
 }

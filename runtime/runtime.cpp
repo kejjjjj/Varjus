@@ -42,6 +42,15 @@ CProgramRuntime::~CProgramRuntime() { m_oFunctions.clear(); };
 
 using steady_clock = std::chrono::time_point<std::chrono::steady_clock>;
 
+template<typename T>
+concept PrintableValue = VariableT<T> || IValueChild<T>;
+
+template<PrintableValue T>
+void PrintLeaks(const char* name) {
+	if(const auto count = CProgramRuntime::GetPool<T>().GetInUseCount())
+		std::cout << std::format("{}: {}\n", name, count);
+}
+
 void CProgramRuntime::Execute()
 {
 
@@ -72,7 +81,7 @@ void CProgramRuntime::Execute()
 	std::vector<IValue*> args;
 	if (auto v = (*iMainFunction)->Execute(nullptr, args, {})) {
 		now = std::chrono::steady_clock::now();
-		std::cout << v->ToPrintableString() << '\n';
+		std::cout << "The program returned: " << v->ToPrintableString() << '\n';
 		v->Release();
 
 	} else {
@@ -85,16 +94,16 @@ void CProgramRuntime::Execute()
 	for (auto& variable : m_oGlobalVariables)
 		variable->Release();
 
-	std::cout << "\n\n--------------LEAKS--------------\n\n";
-	std::cout << std::format("undefined: {}\n",   GetPool<IValue>().GetInUseCount());
-	std::cout << std::format("boolean:   {}\n",   GetPool<CBooleanValue>().GetInUseCount());
-	std::cout << std::format("int:       {}\n",   GetPool<CIntValue>().GetInUseCount());
-	std::cout << std::format("double:    {}\n",   GetPool<CDoubleValue>().GetInUseCount());
-	std::cout << std::format("string:    {}\n",   GetPool<CStringValue>().GetInUseCount());
-	std::cout << std::format("callable:  {}\n",   GetPool<CCallableValue>().GetInUseCount());
-	std::cout << std::format("array:     {}\n",   GetPool<CArrayValue>().GetInUseCount());
-	std::cout << std::format("object:    {}\n",   GetPool<CObjectValue>().GetInUseCount());
-	std::cout << std::format("variable:  {}\n\n", GetPool<CVariable>().GetInUseCount());
+	//std::cout << "\n\n--------------LEAKS--------------\n\n";
+	PrintLeaks<IValue>        ("undefined");
+	PrintLeaks<CBooleanValue> ("boolean");
+	PrintLeaks<CIntValue>     ("int");
+	PrintLeaks<CDoubleValue>  ("double");
+	PrintLeaks<CStringValue>  ("string");
+	PrintLeaks<CCallableValue>("callable");
+	PrintLeaks<CArrayValue>   ("array");
+	PrintLeaks<CObjectValue>  ("object");
+	PrintLeaks<CVariable>     ("variable");
 
 }
 CProgramContext* CProgramRuntime::GetContext()
