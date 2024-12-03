@@ -43,8 +43,7 @@ Success CFunctionLinter::Parse()
 	assert(m_pOwner && m_pOwner->m_pFile);
 
 	m_pOwner->m_pFile->AddFunction(ToRuntimeFunction());
-	m_pOwner->m_FunctionManager->DeclareFunction(m_oFunctionName);
-
+	m_pOwner->m_FunctionManager->DeclareFunction(m_oFunctionName, m_pOwner->m_pFile->GetFunctionCount());
 	return success;
 }
 

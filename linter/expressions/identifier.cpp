@@ -5,6 +5,7 @@
 #include "linter/functions/stack.hpp"
 #include "linter/scopes/scope.hpp"
 #include "linter/context.hpp"
+#include "linter/hoisting/hoisting.hpp"
 
 #include "globalEnums.hpp"
 
@@ -42,10 +43,11 @@ Success CIdentifierLinter::ParseIdentifier()
 	auto& str = m_pToken->Source();
 	if(scope->VariableExists(str))
 		m_pIdentifier = GetVariableByIdentifier(str);
-	else if(m_pOwner->m_FunctionManager->ContainsFunctionGlobally(str))
+	else if(ContainsFunction(str))
 		m_pIdentifier = GetFunctionByIdentifier(str);
 
-	if (!m_pIdentifier) {
+	//ignore when hoisting
+	if (!m_pOwner->IsHoisting() && !m_pIdentifier) {
 		CLinterErrors::PushError("Use of an undefined identifier: " + str, m_pToken->m_oSourcePosition);
 		return failure;
 	}
@@ -77,14 +79,37 @@ CLinterVariable* CIdentifierLinter::GetVariableByIdentifier(const std::string& s
 
 	return var;
 }
+
+bool CIdentifierLinter::ContainsFunction(const std::string& str) const noexcept
+{
+	if (m_pOwner->m_FunctionManager->ContainsFunctionGlobally(str))
+		return true;
+
+	if (m_pOwner->HasHoistedData()) {
+		auto& hoister = m_pOwner->GetHoister();
+		return hoister->ContainsFunction(str);
+	}
+	
+	return false;
+}
+
 CLinterFunction* CIdentifierLinter::GetFunctionByIdentifier(const std::string& str) const noexcept
 {
+	//yeaaaaahhhh this is fine
+	if (m_pOwner->IsHoisting())
+		return nullptr; //something is going terribly wrong if this return value is being used
+
 	auto lowest = m_pOwner->GetGlobalMemory();
 	auto& manager = lowest->m_FunctionManager;
 
-	return manager->ContainsFunction(str)
-		? manager->GetFunction(str)
-		: manager->DeclareFunction(str);
+	//try seeing if this function exists in the hoisted data
+
+	auto& hoister = m_pOwner->GetHoister();
+
+	if (hoister->ContainsFunction(str))
+		return manager->DeclareFunction(str, hoister->GetFunctionIndexByName(str));
+	
+	return nullptr;
 }
 
 bool CIdentifierLinter::CheckIdentifier(const CToken* token) const noexcept

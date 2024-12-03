@@ -115,6 +115,5 @@ void CProgramRuntime::SetExecutionPosition(const CodePosition* pos) noexcept{
 	m_pCodePosition = pos;
 }
 const CodePosition* CProgramRuntime::GetExecutionPosition() noexcept{
-	assert(m_pCodePosition);
 	return m_pCodePosition;
 }

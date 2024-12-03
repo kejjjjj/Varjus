@@ -63,10 +63,17 @@ Success CStatementLinter::ParseScope()
 		return failure;
 	}
 
+	CLinterContext ctx{
+		.m_iterPos = m_iterPos,
+		.m_iterEnd = m_iterEnd,
+		.scope = m_pThisScope,
+		.memory = m_pOwner,
+		.m_bAddInstructions = !m_pOwner->IsHoisting()
+	};
 
 	// no curlybracket? only add one instruction :)
 	if (!(*m_iterPos)->IsOperator(p_curlybracket_open)) {
-		return CFileLinter::LintToken(m_iterPos, m_iterEnd, m_pThisScope, m_pOwner);
+		return CFileLinter::LintToken(ctx);
 	}
 
 	auto scope = CScopeLinter(m_iterPos, m_iterEnd, m_pThisScope, m_pOwner);

@@ -41,56 +41,50 @@ static Success AddInstruction(LinterIterator& pos, RuntimeBlock&& block, const W
 	return success;
 }
 
-template<typename Linter> Success Lint(LinterIterator& start, LinterIterator& end, const WeakScope& scope, CMemory* const memory)
+template<typename Linter> Success Lint(const CLinterContext& ctx)
 {
 
-	Linter linter(start, end, scope, memory);
+	Linter linter(ctx.m_iterPos, ctx.m_iterEnd, ctx.scope, ctx.memory);
 	if (!linter.Parse())
 		return failure;
 
-	return success;
-}
-
-template<typename Linter> 
-Success LintAddInstruction(LinterIterator& start, LinterIterator& end, const WeakScope& scope, CMemory* const memory)
-{
-
-	Linter linter(start, end, scope, memory);
-	if (!linter.Parse())
-		return failure;
-
-	if constexpr (std::is_same_v<CFunctionLinter, Linter>)
+	if constexpr (
+		std::is_same_v<CFunctionLinter, Linter> || 
+		std::is_same_v<CElseStatementLinter, Linter>)
 		return success;
+
+	else if(ctx.m_bAddInstructions)
+		return AddInstruction(ctx.m_iterPos, linter.ToRuntimeObject(), ctx.scope);
 	else
-		return AddInstruction(start, linter.ToRuntimeObject(), scope);
+		return success;
 }
 
-Success CFileLinter::LintOperator(LinterIterator& start, LinterIterator& end, const WeakScope& scope, CMemory* const memory)
+Success CFileLinter::LintOperator(const CLinterContext& ctx)
 {
 	// a new scope
-	if ((*start)->IsOperator(p_curlybracket_open)) {
-		return LintScope(start, end, scope, memory);
+	if ((*ctx.m_iterPos)->IsOperator(p_curlybracket_open)) {
+		return LintScope(ctx);
 	}
 
 	// otherwise a normal expression
-	return LintAddInstruction<CLinterExpression>(start, end, scope, memory);
+	return Lint<CLinterExpression>(ctx);
 }
-Success CFileLinter::LintScope(LinterIterator& start, LinterIterator& end, const WeakScope& scope, CMemory* const memory)
+Success CFileLinter::LintScope(const CLinterContext& ctx)
 {
 
-	if (memory->IsGlobalMemory()) {
-		CLinterErrors::PushError("unnamed scopes are not allowed in the global scope", (*start)->m_oSourcePosition);
+	if (ctx.memory->IsGlobalMemory()) {
+		CLinterErrors::PushError("unnamed scopes are not allowed in the global scope", (*ctx.m_iterPos)->m_oSourcePosition);
 		return failure;
 	}
-	auto s = scope.lock();
+	auto s = ctx.scope.lock();
 	if (!s) {
-		CLinterErrors::PushError("!(const auto scope = m_pScope.lock())", (*start)->m_oSourcePosition);
+		CLinterErrors::PushError("!(const auto scope = m_pScope.lock())", (*ctx.m_iterPos)->m_oSourcePosition);
 		return failure;
 	}
 
 	std::shared_ptr<CScope> thisScope = s->CreateScope();
 
-	CScopeLinter scopeLinter(start, end, thisScope, memory);
+	CScopeLinter scopeLinter(ctx.m_iterPos, ctx.m_iterEnd, thisScope, ctx.memory);
 	if (!scopeLinter.Parse())
 		return failure;
 
@@ -98,23 +92,23 @@ Success CFileLinter::LintScope(LinterIterator& start, LinterIterator& end, const
 	return success;
 
 }
-Success CFileLinter::LintFunctionAmbiguity(LinterIterator& start, LinterIterator& end, const WeakScope& scope, CMemory* const memory)
+Success CFileLinter::LintFunctionAmbiguity(const CLinterContext& ctx)
 {
 	// a new function
-	if(!memory->IsStack())
-		return LintAddInstruction<CFunctionLinter>(start, end, scope, memory);
+	if(!ctx.memory->IsStack())
+		return Lint<CFunctionLinter>(ctx);
 
 	// otherwise a lambda
-	return LintAddInstruction<CLinterExpression>(start, end, scope, memory);
+	return Lint<CLinterExpression>(ctx);
 }
-Success CFileLinter::LintToken(LinterIterator& m_iterPos, LinterIterator& m_iterEnd, const WeakScope& scope, CMemory* const memory)
+Success CFileLinter::LintToken(const CLinterContext& ctx)
 {
-	if (m_iterPos == m_iterEnd)
+	if (ctx.m_iterPos == ctx.m_iterEnd)
 		return failure;
 
-	switch ((*m_iterPos)->Type()) {
+	switch ((*ctx.m_iterPos)->Type()) {
 	case tt_declaration:
-		return LintAddInstruction<CVariableDeclarationLinter>(m_iterPos, m_iterEnd, scope, memory);
+		return Lint<CVariableDeclarationLinter>(ctx);
 	case tt_undefined:
 	case tt_false:
 	case tt_true:
@@ -122,27 +116,27 @@ Success CFileLinter::LintToken(LinterIterator& m_iterPos, LinterIterator& m_iter
 	case tt_double:
 	case tt_string:
 	case tt_name:
-		return LintAddInstruction<CLinterExpression>(m_iterPos, m_iterEnd, scope, memory);
+		return Lint<CLinterExpression>(ctx);
 	case tt_operator:
-		return LintOperator(m_iterPos, m_iterEnd, scope, memory);
+		return LintOperator(ctx);
 	case tt_fn:
-		return LintFunctionAmbiguity(m_iterPos, m_iterEnd, scope, memory);
+		return LintFunctionAmbiguity(ctx);
 	case tt_if:
-		return LintAddInstruction<CIfStatementLinter>(m_iterPos, m_iterEnd, scope, memory);
+		return Lint<CIfStatementLinter>(ctx);
 	case tt_else:
-		return Lint<CElseStatementLinter>(m_iterPos, m_iterEnd, scope, memory);
+		return Lint<CElseStatementLinter>(ctx);
 	case tt_for:
-		return LintAddInstruction<CForStatementLinter>(m_iterPos, m_iterEnd, scope, memory);
+		return Lint<CForStatementLinter>(ctx);
 	case tt_while:
-		return LintAddInstruction<CWhileStatementLinter>(m_iterPos, m_iterEnd, scope, memory);
+		return Lint<CWhileStatementLinter>(ctx);
 	case tt_return:
-		return LintAddInstruction<CReturnStatementLinter>(m_iterPos, m_iterEnd, scope, memory);
+		return Lint<CReturnStatementLinter>(ctx);
 	case tt_break:
 	case tt_continue:
-		return LintAddInstruction<CLoopControlStatement>(m_iterPos, m_iterEnd, scope, memory);
+		return Lint<CLoopControlStatement>(ctx);
 	case tt_error:
 	default:
-		CLinterErrors::PushError("unexpected token: " + (*m_iterPos)->Source(), (*m_iterPos)->m_oSourcePosition);
+		CLinterErrors::PushError("unexpected token: " + (*ctx.m_iterPos)->Source(), (*ctx.m_iterPos)->m_oSourcePosition);
 		return failure;
 	}
 
@@ -156,8 +150,7 @@ Success CFileLinter::ParseFile()
 	m_iterPos = m_oInitialPosition;
 	m_pContext->Reset();
 	m_pFile.reset();
-
-
+	m_pContext->m_oAllMembers["length"];
 	return LintFile();
 }
 
@@ -169,8 +162,16 @@ Success CFileLinter::HoistFile()
 	CMemory globalMemory(nullptr, m_pFile.get(), m_pContext);
 	auto globalScope = std::make_shared<CScope>(&globalMemory);
 
+	CLinterContext ctx{
+		.m_iterPos = m_iterPos,
+		.m_iterEnd = m_iterEnd,
+		.scope = globalScope,
+		.memory = &globalMemory,
+		.m_bAddInstructions = false
+	};
+
 	while (!IsEndOfBuffer()) {
-		if (!LintToken(m_iterPos, m_iterEnd, globalScope, &globalMemory))
+		if (!LintToken(ctx))
 			break;
 
 		if (IsEndOfBuffer())
@@ -193,8 +194,16 @@ Success CFileLinter::LintFile()
 
 	auto globalScope = std::make_shared<CScope>(&globalMemory);
 
+	CLinterContext ctx{
+		.m_iterPos = m_iterPos,
+		.m_iterEnd = m_iterEnd,
+		.scope = globalScope,
+		.memory = &globalMemory,
+		.m_bAddInstructions = true
+	};
+
 	while (!IsEndOfBuffer()) {
-		if (!LintToken(m_iterPos, m_iterEnd, globalScope, &globalMemory))
+		if (!LintToken(ctx))
 			break;
 
 		if (IsEndOfBuffer())

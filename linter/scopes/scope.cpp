@@ -25,8 +25,16 @@ Success CScopeLinter::Parse()
 	if(!IsEndOfBuffer() && (*m_iterPos)->IsOperator(p_curlybracket_close))
 		CLinterErrors::PushError("empty scopes are not allowed", GetIteratorSafe()->m_oSourcePosition);
 
+	CLinterContext ctx{
+	.m_iterPos = m_iterPos,
+	.m_iterEnd = m_iterEnd,
+	.scope = m_pScope,
+	.memory = m_pOwner,
+	.m_bAddInstructions = !m_pOwner->IsHoisting()
+	};
+
 	do {
-		if (!CFileLinter::LintToken(m_iterPos, m_iterEnd, m_pScope, m_pOwner))
+		if (!CFileLinter::LintToken(ctx))
 			break;
 
 		std::advance(m_iterPos, 1);

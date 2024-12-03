@@ -21,6 +21,9 @@ public:
 
 private:
 	[[nodiscard]] bool CheckIdentifier(const CToken* token) const noexcept;
+
+	[[nodiscard]] bool ContainsFunction(const std::string& str) const noexcept;
+
 	[[nodiscard]] CLinterVariable* GetVariableByIdentifier(const std::string& str) const noexcept;
 	[[nodiscard]] CLinterFunction* GetFunctionByIdentifier(const std::string& str) const noexcept;
 
