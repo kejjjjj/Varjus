@@ -43,8 +43,11 @@ IValue* CRuntimeExpression::Evaluate(CFunction* const thisFunction, const Abstra
 	CProgramRuntime::SetExecutionPosition(&node->GetCodePosition());
 
 	if (node->IsPostfix()) 
-		return EvaluatePostfix(thisFunction, node->GetOperator());
+		return EvaluatePostfix(thisFunction, node->GetOperator()->GetPostfix());
 	
+	if (node->IsUnary())
+		return EvaluateUnary(thisFunction, node->GetOperator()->GetUnary());
+
 	if (node->IsSequence())
 		return EvaluateSequence(thisFunction, node);
 

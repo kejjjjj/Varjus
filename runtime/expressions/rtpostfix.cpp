@@ -1,6 +1,3 @@
-#include "rtpostfix.hpp"
-#include "rtexpression.hpp"
-
 #include "runtime/structure.hpp"
 #include "runtime/functions/rtfunction.hpp"
 #include "runtime/values/types/types.hpp"
@@ -17,7 +14,7 @@
 #include <cassert>
 #include <format>
 
-IValue* CRuntimeExpression::EvaluatePostfix(CFunction* const thisFunction, const OperatorASTNode* node)
+IValue* CRuntimeExpression::EvaluatePostfix(CFunction* const thisFunction, const PostfixASTNode* node)
 {
 	auto operand = Evaluate(thisFunction, node->left.get());
 

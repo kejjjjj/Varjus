@@ -23,7 +23,7 @@ CLinterOperand::~CLinterOperand() = default;
 Success CLinterOperand::ParseOperand(std::optional<PairMatcher>& eoe)
 {
 	// Parse unary
-	CUnaryLinter unaryLinter(m_iterPos, m_iterEnd);
+	CUnaryLinter unaryLinter(m_iterPos, m_iterEnd, m_pScope, m_pOwner);
 	if (!unaryLinter.ParseUnary())
 		return failure;
 
@@ -48,13 +48,13 @@ Success CLinterOperand::ParseOperand(std::optional<PairMatcher>& eoe)
 		return failure;
 
 	// Save results
-	m_oUnaryTokens = unaryLinter.GetTokens();
+	m_oUnaryOperators = unaryLinter.Move();
 	m_oPostfixes = postfix.Move();
 
 	if (!IsEndOfBuffer() && (*m_iterPos)->IsOperator(p_question_mark)) {
 		m_pOperand = ParseTernary(eoe);
 		m_oPostfixes.clear();
-		m_oUnaryTokens.clear();
+		m_oUnaryOperators.clear();
 	}
 
 	return success;
@@ -64,18 +64,35 @@ std::unique_ptr<AbstractSyntaxTree> CLinterOperand::OperandToAST() const noexcep
 	return m_pOperand->ToAST();
 }
 
+static AbstractSyntaxTree* SeekASTLeftBranch(AbstractSyntaxTree* src) {
+	auto end = src;
+	while (end->left)
+		end = end->left.get();
+
+	return end;
+}
+
 std::unique_ptr<AbstractSyntaxTree> CLinterOperand::ToAST()
 {
-	if (auto pfs = PostfixesToAST()) {
-		auto end = pfs.get();
-		while (end->left)
-			end = end->left.get();
+	UniqueAST m_pEntry{ nullptr };
 
-		end->left = OperandToAST();
-		return pfs;
+	if (auto unaries = UnariesToAST()) {
+		m_pEntry = std::move(unaries);
 	}
 
-	return OperandToAST();
+	if (auto pfs = PostfixesToAST()) {
+		if (!m_pEntry)
+			m_pEntry = std::move(pfs);
+		else
+			SeekASTLeftBranch(m_pEntry.get())->left = std::move(pfs);
+
+	}
+
+	if(!m_pEntry)
+		return OperandToAST();
+
+	SeekASTLeftBranch(m_pEntry.get())->left = OperandToAST();
+	return m_pEntry;
 }
 
 std::unique_ptr<AbstractSyntaxTree> CLinterOperand::PostfixesToAST() const noexcept
@@ -102,7 +119,30 @@ std::unique_ptr<AbstractSyntaxTree> CLinterOperand::PostfixesToAST() const noexc
 
 	return root;
 }
+UniqueAST CLinterOperand::UnariesToAST() const noexcept
+{
+	if (!m_oUnaryOperators.size())
+		return nullptr;
 
+	std::unique_ptr<AbstractSyntaxTree> root;
+	AbstractSyntaxTree* position{ nullptr };
+
+	for (auto& unary : m_oUnaryOperators) {
+
+		if (!root) {
+			root = unary->ToAST();
+			position = root.get();
+			continue;
+		}
+
+		assert(position);
+
+		position->left = unary->ToAST();
+		position = position->left.get();
+	}
+
+	return root;
+}
 bool CLinterOperand::EndOfExpression(const std::optional<PairMatcher>& eoe, LinterIterator& pos) const noexcept
 {
 

@@ -36,9 +36,3 @@ CRuntimeFunction* CFileRuntimeData::FindFunction(const std::string& v) const
 	const auto it = std::ranges::find(m_oFunctions, v, [](const RuntimeFunction& v) { return v->GetName(); });
 	return it != m_oFunctions.end() ? it->get() : nullptr;
 }
-size_t CFileRuntimeData::FindFunctionIndex(const std::string& v) const
-{
-	const auto it = std::ranges::find(m_oFunctions, v, [](const RuntimeFunction& v) { return v->GetName(); });
-	assert(it != m_oFunctions.end());
-	return static_cast<std::size_t>(std::distance(m_oFunctions.begin(), it));
-}

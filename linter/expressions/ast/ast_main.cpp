@@ -1,4 +1,4 @@
-#include "ast.hpp"
+#include "ast_main.hpp"
 
 
 #include "linter/punctuation.hpp"
@@ -12,7 +12,6 @@
 
 #include <cassert>
 #include <sstream>
-#include <iostream>
 
 AbstractSyntaxTree::~AbstractSyntaxTree() = default;
 
@@ -38,11 +37,11 @@ std::unique_ptr<AbstractSyntaxTree> AbstractSyntaxTree::GetLeaf(VectorOf<CLinter
 	if (operands.size() == 1u) {
 		assert(operators.empty());
 		node = operands.front()->ToAST();
-		operands.clear(); 
+		operands.clear();
 
 		assert(node != nullptr);
 	}
-	
+
 	return node;
 }
 
@@ -81,7 +80,7 @@ void AbstractSyntaxTree::CreateRecursively(VectorOf<CLinterOperand*>& operands, 
 			left->CreateRecursively(lhsOperands, lhsOperators);
 
 
-		} 
+		}
 	}
 	if (rhsOperands.size()) {
 		if (right = GetLeaf(rhsOperands, rhsOperators), !right) {
@@ -137,29 +136,34 @@ std::size_t AbstractSyntaxTree::GetLeftBranchDepth() const noexcept
 }
 
 /***********************************************************************
- > 
+ >
 ***********************************************************************/
 
 ConstantASTNode::ConstantASTNode(const CodePosition& pos, const std::string& data, EValueType datatype)
-	: AbstractSyntaxTree(pos), m_pConstant(data), m_eDataType(datatype) {}
+	: AbstractSyntaxTree(pos), m_pConstant(data), m_eDataType(datatype) {
+}
 ConstantASTNode::~ConstantASTNode() = default;
 
 ArrayASTNode::ArrayASTNode(const CodePosition& pos, ExpressionList&& expressions)
-	: AbstractSyntaxTree(pos), m_oExpressions(std::move(expressions)) {}
+	: AbstractSyntaxTree(pos), m_oExpressions(std::move(expressions)) {
+}
 ArrayASTNode::~ArrayASTNode() = default;
 
 ObjectASTNode::ObjectASTNode(const CodePosition& pos, VectorOf<KeyValue<std::size_t, UniqueAST>>&& expressions)
-	: AbstractSyntaxTree(pos), m_oAttributes(std::move(expressions)){}
+	: AbstractSyntaxTree(pos), m_oAttributes(std::move(expressions)) {
+}
 ObjectASTNode::~ObjectASTNode() = default;
 
 TernaryASTNode::TernaryASTNode(const CodePosition& pos, CTernaryOperand* operand)
 	: AbstractSyntaxTree(pos),
-	m_pOperand(std::move(operand->m_pValue)), 
+	m_pOperand(std::move(operand->m_pValue)),
 	m_pTrue(std::move(operand->m_pTrue)),
-	m_pFalse(std::move(operand->m_pFalse)){ }
+	m_pFalse(std::move(operand->m_pFalse)) {
+}
 TernaryASTNode::~TernaryASTNode() = default;
 
 LambdaASTNode::LambdaASTNode(const CodePosition& pos, RuntimeFunction&& operand, VectorOf<ElementIndex>&& captures)
 	: AbstractSyntaxTree(pos),
-	m_pLambda(std::move(operand)), m_oVariableCaptures(std::move(captures)){}
+	m_pLambda(std::move(operand)), m_oVariableCaptures(std::move(captures)) {
+}
 LambdaASTNode::~LambdaASTNode() = default;

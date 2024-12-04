@@ -25,6 +25,8 @@ class CRuntimeFunction;
 class CFunction;
 class IValue;
 class OperatorASTNode;
+class PostfixASTNode;
+class UnaryASTNode;
 class MemberAccessASTNode;
 class SubscriptASTNode;
 class FunctionCallASTNode;
@@ -145,7 +147,9 @@ protected:
 private:
 	[[nodiscard]] static IValue* Evaluate(CFunction* const thisFunction, const AbstractSyntaxTree* node);
 	[[nodiscard]] static IValue* EvaluateLeaf(CFunction* const thisFunction, const AbstractSyntaxTree* node);
-	[[nodiscard]] static IValue* EvaluatePostfix(CFunction* const thisFunction, const OperatorASTNode* node);
+	[[nodiscard]] static IValue* EvaluatePostfix(CFunction* const thisFunction, const PostfixASTNode* node);
+	[[nodiscard]] static IValue* EvaluateUnary(CFunction* const thisFunction, const UnaryASTNode* node);
+
 	[[nodiscard]] static IValue* EvaluateSequence(CFunction* const thisFunction, const AbstractSyntaxTree* node);
 	[[nodiscard]] static IValue* EvaluateTernary(CFunction* const thisFunction, const TernaryASTNode* node);
 
@@ -272,13 +276,13 @@ public:
 	constexpr void AddFunction(RuntimeFunction&& func) { m_oFunctions.emplace_back(std::move(func)); }
 
 	[[nodiscard]] CRuntimeFunction* FindFunction(const std::string& v) const;
-	[[nodiscard]] size_t FindFunctionIndex(const std::string& v) const;
 	[[nodiscard]] size_t GetFunctionCount() const noexcept { return m_oFunctions.size(); };
 
 	void AddGlobalInstructions(VectorOf<RuntimeBlock>&& insns);
 	void SetGlobalVariableCount(std::size_t v) { m_uNumGlobalVariables = v; }
 
 private:
+
 	std::size_t m_uNumGlobalVariables{};
 	VectorOf<RuntimeBlock> m_oGlobalScopeInstructions;
 	VectorOf<RuntimeFunction> m_oFunctions;

@@ -2,6 +2,7 @@
 
 #include <string>
 #include <iostream>
+#include <chrono>
 
 #include "globalDefinitions.hpp"
 #include "pools/object_pool_non_owning.hpp"
@@ -18,6 +19,7 @@ struct CProgramContext;
 using RuntimeFunction = std::unique_ptr<CRuntimeFunction>;
 using CodePosition = std::tuple<size_t, size_t>;
 using RuntimeBlock = std::unique_ptr<IRuntimeStructure>;
+using steady_clock = std::chrono::time_point<std::chrono::steady_clock>;
 
 
 template<typename T>
@@ -122,6 +124,12 @@ public:
 	}
 
 private:
+	void SetupGlobalVariables();
+	void EvaluateGlobalExpressions();
+	void FreeGlobalVariables();
+
+	steady_clock BeginExecution(CRuntimeFunction* entryFunc);
+
 	VectorOf<RuntimeBlock> m_oGlobalScopeInstructions;
 	std::size_t m_uNumGlobalVariables{};
 

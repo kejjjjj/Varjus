@@ -115,6 +115,9 @@
     <Filter Include="Source Files\linter\hoisting">
       <UniqueIdentifier>{067dd3c9-2287-41bb-91ce-98feafeeb58a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\linter\expressions\ast">
+      <UniqueIdentifier>{c1200973-f25c-4bd4-a484-86d0bcad1f71}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -142,9 +145,6 @@
       <Filter>Source Files\linter\expressions</Filter>
     </ClCompile>
     <ClCompile Include="linter\expressions\sub_expression.cpp">
-      <Filter>Source Files\linter\expressions</Filter>
-    </ClCompile>
-    <ClCompile Include="linter\expressions\ast.cpp">
       <Filter>Source Files\linter\expressions</Filter>
     </ClCompile>
     <ClCompile Include="linter\declarations\variable_declarations.cpp">
@@ -321,6 +321,18 @@
     <ClCompile Include="linter\hoisting\hoisting.cpp">
       <Filter>Source Files\linter\hoisting</Filter>
     </ClCompile>
+    <ClCompile Include="linter\expressions\ast\ast_unary.cpp">
+      <Filter>Source Files\linter\expressions\ast</Filter>
+    </ClCompile>
+    <ClCompile Include="linter\expressions\ast\ast_main.cpp">
+      <Filter>Source Files\linter\expressions\ast</Filter>
+    </ClCompile>
+    <ClCompile Include="linter\expressions\ast\ast_postfix.cpp">
+      <Filter>Source Files\linter\expressions\ast</Filter>
+    </ClCompile>
+    <ClCompile Include="runtime\expressions\rtunary.cpp">
+      <Filter>Source Files\runtime\expressions</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="fs\fs_io.hpp">
@@ -386,9 +398,6 @@
     <ClInclude Include="runtime\pools\object_pool_non_owning.hpp">
       <Filter>Source Files\runtime\pools</Filter>
     </ClInclude>
-    <ClInclude Include="runtime\expressions\rtexpression.hpp">
-      <Filter>Source Files\runtime\expressions</Filter>
-    </ClInclude>
     <ClInclude Include="linter\error.hpp">
       <Filter>Source Files\linter\global</Filter>
     </ClInclude>
@@ -451,9 +460,6 @@
     </ClInclude>
     <ClInclude Include="runtime\exceptions\exception.hpp">
       <Filter>Source Files\runtime\exceptions</Filter>
-    </ClInclude>
-    <ClInclude Include="runtime\expressions\rtpostfix.hpp">
-      <Filter>Source Files\runtime\expressions</Filter>
     </ClInclude>
     <ClInclude Include="runtime\values\types\callable.hpp">
       <Filter>Source Files\runtime\values\types</Filter>
@@ -529,6 +535,15 @@
     </ClInclude>
     <ClInclude Include="linter\hoisting\hoisting.hpp">
       <Filter>Source Files\linter\hoisting</Filter>
+    </ClInclude>
+    <ClInclude Include="linter\expressions\ast\ast_postfix.hpp">
+      <Filter>Source Files\linter\expressions\ast</Filter>
+    </ClInclude>
+    <ClInclude Include="linter\expressions\ast\ast_unary.hpp">
+      <Filter>Source Files\linter\expressions\ast</Filter>
+    </ClInclude>
+    <ClInclude Include="linter\expressions\ast\ast_main.hpp">
+      <Filter>Source Files\linter\expressions\ast</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

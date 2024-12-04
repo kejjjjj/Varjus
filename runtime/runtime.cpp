@@ -11,17 +11,15 @@
 
 #define VALUEPOOL_INIT_SIZE size_t(100)
 
-//CNonOwningObjectPool<CVariable>                  CProgramRuntime::m_oVariablePool                  (VALUEPOOL_INIT_SIZE);
-
-template<> COwningObjectPool<CVariable>           CProgramRuntime::m_oValuePool<CVariable>           (VALUEPOOL_INIT_SIZE);
-template<> COwningObjectPool<IValue>              CProgramRuntime::m_oValuePool<IValue>              (VALUEPOOL_INIT_SIZE);
-template<> COwningObjectPool<CBooleanValue>       CProgramRuntime::m_oValuePool<CBooleanValue>       (VALUEPOOL_INIT_SIZE);
-template<> COwningObjectPool<CIntValue>           CProgramRuntime::m_oValuePool<CIntValue>           (VALUEPOOL_INIT_SIZE);
-template<> COwningObjectPool<CDoubleValue>        CProgramRuntime::m_oValuePool<CDoubleValue>        (VALUEPOOL_INIT_SIZE);
-template<> COwningObjectPool<CStringValue>        CProgramRuntime::m_oValuePool<CStringValue>        (VALUEPOOL_INIT_SIZE);
-template<> COwningObjectPool<CCallableValue>      CProgramRuntime::m_oValuePool<CCallableValue>      (VALUEPOOL_INIT_SIZE);
-template<> COwningObjectPool<CArrayValue>         CProgramRuntime::m_oValuePool<CArrayValue>         (VALUEPOOL_INIT_SIZE);
-template<> COwningObjectPool<CObjectValue>        CProgramRuntime::m_oValuePool<CObjectValue>        (VALUEPOOL_INIT_SIZE);
+template<> COwningObjectPool<CVariable>           CProgramRuntime::m_oValuePool<CVariable>     (VALUEPOOL_INIT_SIZE);
+template<> COwningObjectPool<IValue>              CProgramRuntime::m_oValuePool<IValue>        (VALUEPOOL_INIT_SIZE);
+template<> COwningObjectPool<CBooleanValue>       CProgramRuntime::m_oValuePool<CBooleanValue> (VALUEPOOL_INIT_SIZE);
+template<> COwningObjectPool<CIntValue>           CProgramRuntime::m_oValuePool<CIntValue>     (VALUEPOOL_INIT_SIZE);
+template<> COwningObjectPool<CDoubleValue>        CProgramRuntime::m_oValuePool<CDoubleValue>  (VALUEPOOL_INIT_SIZE);
+template<> COwningObjectPool<CStringValue>        CProgramRuntime::m_oValuePool<CStringValue>  (VALUEPOOL_INIT_SIZE);
+template<> COwningObjectPool<CCallableValue>      CProgramRuntime::m_oValuePool<CCallableValue>(VALUEPOOL_INIT_SIZE);
+template<> COwningObjectPool<CArrayValue>         CProgramRuntime::m_oValuePool<CArrayValue>   (VALUEPOOL_INIT_SIZE);
+template<> COwningObjectPool<CObjectValue>        CProgramRuntime::m_oValuePool<CObjectValue>  (VALUEPOOL_INIT_SIZE);
 
 VectorOf<RuntimeFunction> CProgramRuntime::m_oFunctions;
 VectorOf<CVariable*> CProgramRuntime::m_oGlobalVariables;
@@ -56,45 +54,23 @@ void CProgramRuntime::Execute()
 
 	const auto iMainFunction = std::ranges::find(m_oFunctions, "main", [](const RuntimeFunction& rf) { return rf->GetName(); });
 
-
 	if (iMainFunction == m_oFunctions.end()) {
 		throw CRuntimeError("couldn't find the \"main\" function");
 	}
 
 	CStaticArrayBuiltInMethods::Initialize(GetContext());
 
-	//create global variables
-	m_oGlobalVariables = CProgramRuntime::AcquireNewVariables(m_uNumGlobalVariables);
+	SetupGlobalVariables();
+	EvaluateGlobalExpressions();
 
-	for (auto& var : m_oGlobalVariables) {
-		var->SetValue(AcquireNewValue<IValue>());
-	}
+	const steady_clock old = std::chrono::steady_clock::now();
+	const steady_clock now = BeginExecution(iMainFunction->get());
 
-	for (auto& insn : m_oGlobalScopeInstructions) {
-		if (insn->Execute(nullptr))
-			break;
-	}
+	const std::chrono::duration<float> difference = now - old;
+	std::print(std::cout, "\ntime taken: {:.6f}s\n", difference.count());
 
-	steady_clock old = std::chrono::steady_clock::now();
-	steady_clock now;
+	FreeGlobalVariables();
 
-	std::vector<IValue*> args;
-	if (auto v = (*iMainFunction)->Execute(nullptr, args, {})) {
-		now = std::chrono::steady_clock::now();
-		std::cout << "The program returned: " << v->ToPrintableString() << '\n';
-		v->Release();
-
-	} else {
-		now = std::chrono::steady_clock::now();
-	}
-
-	std::chrono::duration<float> difference = now - old;
-	printf("\ntime taken: %.6f\n", difference.count());
-
-	for (auto& variable : m_oGlobalVariables)
-		variable->Release();
-
-	//std::cout << "\n\n--------------LEAKS--------------\n\n";
 	PrintLeaks<IValue>        ("undefined");
 	PrintLeaks<CBooleanValue> ("boolean");
 	PrintLeaks<CIntValue>     ("int");
@@ -105,6 +81,40 @@ void CProgramRuntime::Execute()
 	PrintLeaks<CObjectValue>  ("object");
 	PrintLeaks<CVariable>     ("variable");
 
+}
+void CProgramRuntime::SetupGlobalVariables() {
+
+	//create global variables
+	m_oGlobalVariables = CProgramRuntime::AcquireNewVariables(m_uNumGlobalVariables);
+
+	for (auto& var : m_oGlobalVariables) {
+		var->SetValue(AcquireNewValue<IValue>());
+	}
+}
+void CProgramRuntime::EvaluateGlobalExpressions() {
+	for (auto& insn : m_oGlobalScopeInstructions) {
+		if (insn->Execute(nullptr))
+			break;
+	}
+}
+void CProgramRuntime::FreeGlobalVariables(){
+	for (auto& variable : m_oGlobalVariables)
+		variable->Release();
+}
+steady_clock CProgramRuntime::BeginExecution(CRuntimeFunction* entryFunc)
+{
+	assert(entryFunc);
+
+	std::vector<IValue*> args;
+	if (auto returnValue = entryFunc->Execute(nullptr, args, {})) {
+		steady_clock now = std::chrono::steady_clock::now();
+		std::print(std::cout, "The program returned: {}\n", returnValue->ToPrintableString());
+		returnValue->Release();
+		return now;
+	}
+	
+	return std::chrono::steady_clock::now();
+	
 }
 CProgramContext* CProgramRuntime::GetContext()
 {

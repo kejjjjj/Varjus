@@ -12,6 +12,7 @@ class CMemory;
 class CScope;
 class AbstractSyntaxTree;
 class IPostfixBase;
+class CUnaryBase;
 struct CKeyValue;
 
 using UniqueAST = std::unique_ptr<AbstractSyntaxTree>;
@@ -69,11 +70,13 @@ private:
 	[[nodiscard]] bool EndOfExpression(const std::optional<PairMatcher>& eoe, LinterIterator& pos) const noexcept;
 
 	[[nodiscard]] UniqueAST PostfixesToAST() const noexcept;
+	[[nodiscard]] UniqueAST UnariesToAST() const noexcept;
+
 	[[nodiscard]] UniqueAST OperandToAST() const noexcept;
 
-	VectorOf<const CPunctuationToken*> m_oUnaryTokens;
 	std::unique_ptr<IOperand> m_pOperand;
 	VectorOf<std::unique_ptr<IPostfixBase>> m_oPostfixes;
+	VectorOf<std::unique_ptr<CUnaryBase>> m_oUnaryOperators;
 
 	std::weak_ptr<CScope> m_pScope;
 	CMemory* const m_pOwner;
