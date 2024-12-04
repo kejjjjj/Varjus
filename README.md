@@ -28,6 +28,7 @@ of course there's a LOT more happening behind the scenes, but here's a quick sum
   - let
 - functions
   - closures
+  - hoisting
 - methods and members
   - array (.length and  e.g. .push(value))
 - postfix
@@ -113,5 +114,29 @@ let result = lambda(1, 2); // 3
     ```
 
 	
+### Function hoisting
+The order in which functions are declared does not matter
+
+```js
+fn main(){
+   return functionBelowMain();
+}
+
+fn functionBelowMain(){
+   return "hello";
+}
+```
+Though it should be noted that this is ONLY for functions
+```js
+fn main(){
+   return variableBelowMain; //the interpreter does not know what variableBelowMain is at this point
+}
+
+let variableBelowMain = "hello";
+
+```
+
+
+
 
 
