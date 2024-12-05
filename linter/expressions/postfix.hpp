@@ -6,9 +6,6 @@
 
 class AbstractSyntaxTree;
 class IPostfixBase;
-class CPostfixMemberAccess;
-class CPostfixSubscript;
-class CPostfixFunctionCall;
 class CMemory;
 
 class CPostfixLinter final : public CVectorLinter<CPunctuationToken>
@@ -24,10 +21,11 @@ public:
 	[[nodiscard]] VectorOf<std::unique_ptr<IPostfixBase>> Move() noexcept;
 private:
 
-	[[nodiscard]] std::unique_ptr<CPostfixMemberAccess> ParseMemberAccess();
-	[[nodiscard]] std::unique_ptr<CPostfixSubscript> ParseSubscript();
-	[[nodiscard]] std::unique_ptr<CPostfixFunctionCall> ParseFunctionCall();
-
+	[[nodiscard]] std::unique_ptr<IPostfixBase> ParseMemberAccess();
+	[[nodiscard]] std::unique_ptr<IPostfixBase> ParseSubscript();
+	[[nodiscard]] std::unique_ptr<IPostfixBase> ParseFunctionCall();
+	[[nodiscard]] std::unique_ptr<IPostfixBase> ParseIncrement();
+	[[nodiscard]] std::unique_ptr<IPostfixBase> ParseDecrement();
 	[[nodiscard]] bool IsPostfixOperator(const CPunctuationToken& token) const noexcept;
 
 	WeakScope m_pScope;
@@ -100,4 +98,23 @@ public:
 
 private:
 	ExpressionList m_pArgs;
+};
+
+class CPostfixIncrement final : public IPostfixBase
+{
+	NONCOPYABLE(CPostfixIncrement);
+public:
+	CPostfixIncrement() = default;
+	[[nodiscard]] constexpr EPostfixType Type() const noexcept override { return pf_increment; }
+
+	[[nodiscard]] std::unique_ptr<AbstractSyntaxTree> ToAST() override;
+};
+class CPostfixDecrement final : public IPostfixBase
+{
+	NONCOPYABLE(CPostfixDecrement);
+public:
+	CPostfixDecrement() = default;
+	[[nodiscard]] constexpr EPostfixType Type() const noexcept override { return pf_decrement; }
+
+	[[nodiscard]] std::unique_ptr<AbstractSyntaxTree> ToAST() override;
 };

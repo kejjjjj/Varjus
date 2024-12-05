@@ -42,6 +42,12 @@ Success CPostfixLinter::ParsePostfix()
 		case p_par_open:
 			m_oPostfixes.emplace_back(ParseFunctionCall());
 			break;
+		case p_increment:
+			m_oPostfixes.emplace_back(ParseIncrement());
+			break;
+		case p_decrement:
+			m_oPostfixes.emplace_back(ParseDecrement());
+			break;
 		default:
 			assert(false);
 		}
@@ -59,10 +65,13 @@ Success CPostfixLinter::ParsePostfix()
 
 bool CPostfixLinter::IsPostfixOperator(const CPunctuationToken& token) const noexcept
 {
-	return token.m_ePriority == op_postfix;
+	return 
+		token.m_ePriority == op_postfix || 
+		token.m_ePunctuation == p_increment ||
+		token.m_ePunctuation == p_decrement;
 }
 
-std::unique_ptr<CPostfixMemberAccess> CPostfixLinter::ParseMemberAccess()
+std::unique_ptr<IPostfixBase> CPostfixLinter::ParseMemberAccess()
 {
 	assert((*m_iterPos)->IsOperator(p_period));
 	std::advance(m_iterPos, 1); // skip .
@@ -80,7 +89,7 @@ std::unique_ptr<CPostfixMemberAccess> CPostfixLinter::ParseMemberAccess()
 	return std::make_unique<CPostfixMemberAccess>(members[string]);
 }
 
-std::unique_ptr<CPostfixSubscript> CPostfixLinter::ParseSubscript()
+std::unique_ptr<IPostfixBase> CPostfixLinter::ParseSubscript()
 {
 	assert((*m_iterPos)->IsOperator(p_bracket_open));
 
@@ -93,17 +102,14 @@ std::unique_ptr<CPostfixSubscript> CPostfixLinter::ParseSubscript()
 	return std::make_unique<CPostfixSubscript>(expr.ToMergedAST());
 }
 
-std::unique_ptr<CPostfixFunctionCall> CPostfixLinter::ParseFunctionCall()
+std::unique_ptr<IPostfixBase> CPostfixLinter::ParseFunctionCall()
 {
 
 	if (m_pOwner == m_pOwner->GetGlobalMemory()) {
 		CLinterErrors::PushError("don't call functions in the global scope", GetIteratorSafe()->m_oSourcePosition);
 		return nullptr;
 	}
-
-
 	assert((*m_iterPos)->IsOperator(p_par_open));
-
 	std::advance(m_iterPos, 1); // skip (
 	
 	//no args
@@ -113,11 +119,21 @@ std::unique_ptr<CPostfixFunctionCall> CPostfixLinter::ParseFunctionCall()
 	}
 
 	CLinterExpression expr(m_iterPos, m_iterEnd, m_pScope, m_pOwner);
-
 	if (!expr.Parse(PairMatcher(p_par_open)))
 		return nullptr;
-
 	return std::make_unique<CPostfixFunctionCall>(expr.ToExpressionList());
+}
+
+std::unique_ptr<IPostfixBase> CPostfixLinter::ParseIncrement() {
+	assert(!IsEndOfBuffer() && (*m_iterPos)->IsOperator(p_increment));
+	std::advance(m_iterPos, 1);
+	return std::make_unique<CPostfixIncrement>();
+}
+
+std::unique_ptr<IPostfixBase> CPostfixLinter::ParseDecrement() {
+	assert(!IsEndOfBuffer() && (*m_iterPos)->IsOperator(p_decrement));
+	std::advance(m_iterPos, 1);
+	return std::make_unique<CPostfixDecrement>();
 }
 
 [[nodiscard]] VectorOf<std::unique_ptr<IPostfixBase>> CPostfixLinter::Move() noexcept{
@@ -132,6 +148,12 @@ std::unique_ptr<AbstractSyntaxTree> CPostfixSubscript::ToAST() {
 }
 std::unique_ptr<AbstractSyntaxTree> CPostfixFunctionCall::ToAST() {
 	return std::make_unique<FunctionCallASTNode>(m_oCodePosition, std::move(m_pArgs));
+}
+std::unique_ptr<AbstractSyntaxTree> CPostfixIncrement::ToAST() {
+	return std::make_unique<PostfixIncrementAST>(m_oCodePosition);
+}
+std::unique_ptr<AbstractSyntaxTree> CPostfixDecrement::ToAST() {
+	return std::make_unique<PostfixDecrementAST>(m_oCodePosition);
 }
 
 CPostfixSubscript::CPostfixSubscript(std::unique_ptr<AbstractSyntaxTree>&& ast) : m_pAST(std::move(ast)){}

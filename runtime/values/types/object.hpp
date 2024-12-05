@@ -48,6 +48,7 @@ public:
 	void Release() override;
 
 	[[nodiscard]] constexpr bool IsAggregate() const noexcept override { return true; }
+	[[nodiscard]] constexpr bool IsBooleanConvertible() const noexcept override { return false; }
 
 	[[nodiscard]] CObjectValue* Copy() override;
 	[[nodiscard]] CInternalObjectValue* Internal();

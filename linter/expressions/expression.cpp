@@ -118,6 +118,9 @@ bool CLinterExpression::EndOfExpression(const std::optional<PairMatcher>& eoe) c
 
 std::unique_ptr<AbstractSyntaxTree> CLinterExpression::ToAST() const
 {
+	if (m_pOwner->IsHoisting())
+		return nullptr;
+
 	std::vector<CLinterOperand*> operands;
 	std::vector<CLinterOperator*> operators;
 

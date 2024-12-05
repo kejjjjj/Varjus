@@ -14,20 +14,70 @@
 #include <cassert>
 #include <format>
 
+static IValue* EvaluateNegation(IValue* operand);
+static IValue* EvaluateIncrement(IValue* operand);
+static IValue* EvaluateDecrement(IValue* operand);
+static IValue* EvaluateLogicalNot(IValue* operand);
+
 IValue* CRuntimeExpression::EvaluateUnary(CFunction* const thisFunction, const UnaryASTNode* node)
 {
 	auto operand = Evaluate(thisFunction, node->left.get());
-	
-	if (!operand->HasOwner())
-		throw CRuntimeError("the unary operand is not a variable");
+	IValue* returnVal{ nullptr };
 
-	if (node->IsIncrement()) {
-
-		if(operand->Type() != t_int)
-			throw CRuntimeError("the ++ operand must have an int type");
-
-		++operand->AsInt();
+	if (node->IsNegation()) {
+		returnVal = EvaluateNegation(operand);
+	} else if (node->IsIncrement()) {
+		returnVal = EvaluateIncrement(operand);
+	} else if (node->IsDecrement()) {
+		returnVal = EvaluateDecrement(operand);
+	} else if (node->IsLogicalNot()) {
+		returnVal = EvaluateLogicalNot(operand);
 	}
 	
+	assert(returnVal);
+
+	if (!operand->HasOwner())
+		operand->Release();
+
+	return returnVal;
+}
+IValue* EvaluateNegation(IValue* operand)
+{
+	if (operand->Type() == t_int) {
+		return CProgramRuntime::AcquireNewValue<CIntValue>(-operand->AsInt());
+	}
+	
+	if (operand->Type() == t_double) {
+		return CProgramRuntime::AcquireNewValue<CDoubleValue>(-operand->AsDouble());
+	}
+
+	throw CRuntimeError(std::format("cannot negate a value of type \"{}\"", operand->TypeAsString()));
+}
+IValue* EvaluateIncrement(IValue* operand)
+{
+	if (!operand->HasOwner())
+		throw CRuntimeError("cannot increment a temporary value");
+
+	if (operand->Type() != t_int)
+		throw CRuntimeError("the increment operand must have an int type");
+
+	++operand->AsInt();
 	return operand;
+}
+IValue* EvaluateDecrement(IValue* operand)
+{
+	if (!operand->HasOwner())
+		throw CRuntimeError("cannot decrement a temporary value");
+
+	if (operand->Type() != t_int)
+		throw CRuntimeError("the decrement operand must have an int type");
+	--operand->AsInt();
+	return operand;
+}
+IValue* EvaluateLogicalNot(IValue* operand)
+{
+	if (!operand->IsBooleanConvertible())
+		throw CRuntimeError(std::format("a value of type \"{}\" is not convertible to a boolean", operand->TypeAsString()));
+
+	return CProgramRuntime::AcquireNewValue<CBooleanValue>(!operand->ToBoolean());
 }

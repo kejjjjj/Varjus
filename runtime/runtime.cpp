@@ -46,7 +46,7 @@ concept PrintableValue = VariableT<T> || IValueChild<T>;
 template<PrintableValue T>
 void PrintLeaks(const char* name) {
 	if(const auto count = CProgramRuntime::GetPool<T>().GetInUseCount())
-		std::cout << std::format("{}: {}\n", name, count);
+		std::cout << std::format("LEAK -> {}: {}\n", name, count);
 }
 
 void CProgramRuntime::Execute()
@@ -82,7 +82,7 @@ void CProgramRuntime::Execute()
 	PrintLeaks<CVariable>     ("variable");
 
 }
-void CProgramRuntime::SetupGlobalVariables() {
+void CProgramRuntime::SetupGlobalVariables() const {
 
 	//create global variables
 	m_oGlobalVariables = CProgramRuntime::AcquireNewVariables(m_uNumGlobalVariables);

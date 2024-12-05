@@ -56,8 +56,10 @@ std::unique_ptr<IOperand> CLinterOperand::ParseObject()
 
 	auto& oldIter = m_iterPos;
 
-	if (IsEndOfBuffer() || (*m_iterPos)->IsOperator(p_curlybracket_close))
+	if (IsEndOfBuffer() || (*m_iterPos)->IsOperator(p_curlybracket_close)) {
+		std::advance(m_iterPos, 1); // skip }
 		return std::make_unique<CObjectOperand>();
+	}
 
 	auto object = std::make_unique<CObjectOperand>();
 

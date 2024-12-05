@@ -5,7 +5,6 @@
 class CUnaryBase;
 class CMemory;
 class AbstractSyntaxTree;
-class CUnaryIncrement;
 
 class CUnaryLinter final : public CVectorLinter<CPunctuationToken>
 {
@@ -18,8 +17,10 @@ public:
 
 	[[nodiscard]] VectorOf<std::unique_ptr<CUnaryBase>> Move() noexcept;
 private:
-
-	[[nodiscard]] std::unique_ptr<CUnaryIncrement> ParseIncrement();
+	[[nodiscard]] std::unique_ptr<CUnaryBase> ParseNegation();
+	[[nodiscard]] std::unique_ptr<CUnaryBase> ParseIncrement();
+	[[nodiscard]] std::unique_ptr<CUnaryBase> ParseDecrement();
+	[[nodiscard]] std::unique_ptr<CUnaryBase> ParseLogicalNot();
 
 	[[nodiscard]] bool IsUnaryOperator(const CPunctuationToken& token) const noexcept;
 
@@ -30,7 +31,10 @@ private:
 };
 
 enum EUnaryType{
+	un_negation,
 	un_increment,
+	un_decrement,
+	un_logical_not
 };
 
 class CUnaryBase
@@ -45,13 +49,39 @@ public:
 
 	CodePosition m_oCodePosition;
 };
+class CUnaryNegation final : public CUnaryBase
+{
+	NONCOPYABLE(CUnaryNegation);
+public:
+	CUnaryNegation() = default;
+	[[nodiscard]] constexpr EUnaryType Type() const noexcept override { return un_negation; }
 
+	[[nodiscard]] std::unique_ptr<AbstractSyntaxTree> ToAST() override;
+};
 class CUnaryIncrement final : public CUnaryBase
 {
 	NONCOPYABLE(CUnaryIncrement);
 public:
 	CUnaryIncrement() = default;
 	[[nodiscard]] constexpr EUnaryType Type() const noexcept override { return un_increment; }
+
+	[[nodiscard]] std::unique_ptr<AbstractSyntaxTree> ToAST() override;
+};
+class CUnaryDecrement final : public CUnaryBase
+{
+	NONCOPYABLE(CUnaryDecrement);
+public:
+	CUnaryDecrement() = default;
+	[[nodiscard]] constexpr EUnaryType Type() const noexcept override { return un_decrement; }
+
+	[[nodiscard]] std::unique_ptr<AbstractSyntaxTree> ToAST() override;
+};
+class CUnaryLogicalNot final : public CUnaryBase
+{
+	NONCOPYABLE(CUnaryLogicalNot);
+public:
+	CUnaryLogicalNot() = default;
+	[[nodiscard]] constexpr EUnaryType Type() const noexcept override { return un_logical_not; }
 
 	[[nodiscard]] std::unique_ptr<AbstractSyntaxTree> ToAST() override;
 };

@@ -16,6 +16,10 @@ public:
 	[[nodiscard]] virtual constexpr bool IsMemberAccess() const noexcept { return false; }
 	[[nodiscard]] virtual constexpr bool IsSubscript() const noexcept { return false; }
 	[[nodiscard]] virtual constexpr bool IsFunctionCall() const noexcept { return false; }
+
+	[[nodiscard]] virtual constexpr bool IsIncrement() const noexcept { return false; }
+	[[nodiscard]] virtual constexpr bool IsDecrement() const noexcept { return false; }
+
 };
 
 class MemberAccessASTNode : public PostfixASTNode
@@ -53,4 +57,25 @@ public:
 	[[nodiscard]] constexpr bool IsFunctionCall() const noexcept override { return true; }
 
 	VectorOf<std::unique_ptr<AbstractSyntaxTree>> m_oArguments;
+};
+
+class PostfixIncrementAST : public PostfixASTNode
+{
+	NONCOPYABLE(PostfixIncrementAST);
+public:
+	PostfixIncrementAST(const CodePosition& pos)
+		: PostfixASTNode(pos) {
+	}
+
+	[[nodiscard]] constexpr bool IsIncrement() const noexcept override { return true; }
+};
+class PostfixDecrementAST : public PostfixASTNode
+{
+	NONCOPYABLE(PostfixDecrementAST);
+public:
+	PostfixDecrementAST(const CodePosition& pos)
+		: PostfixASTNode(pos) {
+	}
+
+	[[nodiscard]] constexpr bool IsDecrement() const noexcept override { return true; }
 };

@@ -14,6 +14,9 @@
 #include <cassert>
 #include <format>
 
+static IValue* EvaluateIncrement(IValue* operand);
+static IValue* EvaluateDecrement(IValue* operand);
+
 IValue* CRuntimeExpression::EvaluatePostfix(CFunction* const thisFunction, const PostfixASTNode* node)
 {
 	auto operand = Evaluate(thisFunction, node->left.get());
@@ -22,28 +25,27 @@ IValue* CRuntimeExpression::EvaluatePostfix(CFunction* const thisFunction, const
 
 	if (node->IsSubscript()) {
 		returnVal = EvaluateSubscript(thisFunction, operand, node->As<const SubscriptASTNode*>());
-		
 		if (operand->IsHanging()) {
-			//accessing a temporary e.g. [[1, 2, 3]][0]
-			returnVal = returnVal->Copy();
+			returnVal = returnVal->Copy(); //accessing a temporary e.g. [[1, 2, 3]][0]
 		}
 
 	} else if (node->IsFunctionCall()) {
 		returnVal = EvaluateFunctionCall(thisFunction, operand, node->As<const FunctionCallASTNode*>());
 	} else if (node->IsMemberAccess()) {
 		returnVal = EvaluateMemberAccess(operand, node->As<const MemberAccessASTNode*>());
-
 		if (operand->IsHanging()) {
-			//accessing a temporary e.g. [1, 2, 3].length
-			returnVal = returnVal->Copy();
+			returnVal = returnVal->Copy(); //accessing a temporary e.g. [1, 2, 3].length
 		}
+	} else if (node->IsIncrement()) {
+		returnVal = EvaluateIncrement(operand);
+	} else if (node->IsDecrement()) {
+		returnVal = EvaluateDecrement(operand);
 	}
 
 	if (!operand->HasOwner()) 
 		operand->Release();
 	
 	assert(returnVal);
-
 	return returnVal;
 }
 IValue* CRuntimeExpression::EvaluateMemberAccess(IValue* operand, const MemberAccessASTNode* node)
@@ -82,24 +84,31 @@ IValue* CRuntimeExpression::EvaluateFunctionCall(CFunction* const thisFunction, 
 
 	// the callee will take ownership of temp-value args
 	auto args = EvaluateList(thisFunction, node->m_oArguments);
-
 	return operand->Call(thisFunction, args);
+}
 
-	//if (operand->IsBuiltInMemberCallable()) {
+IValue* EvaluateIncrement(IValue* operand)
+{
+	if (!operand->HasOwner())
+		throw CRuntimeError("cannot increment a temporary value");
 
-	//	auto callable = operand->ToBuiltInMemberCallable();
-	//	auto& mem_fn = callable->Get();
+	if (operand->Type() != t_int)
+		throw CRuntimeError("the increment operand must have an int type");
 
-	//	return CStaticArrayBuiltInMethods::CallMethod(mem_fn.m_pThis->ToArray(), args, mem_fn.m_pMethod);
-	//}
+	auto v = CProgramRuntime::AcquireNewValue<CIntValue>(operand->AsInt()); //create temp old value
+	++operand->AsInt(); //but increment this value
 
-	//auto callable = operand->ToCallable()->Internal();
-	//auto function = callable->GetCallable();
-	////std::cout << "calling: " << function->GetName() << " with " << callable->GetCaptures().size() << '\n';
+	return v;
+}
+IValue* EvaluateDecrement(IValue* operand)
+{
+	if (!operand->HasOwner())
+		throw CRuntimeError("cannot decrement a temporary value");
 
-	//auto ret = function->Execute(thisFunction, args, callable->GetCaptures());
+	if (operand->Type() != t_int)
+		throw CRuntimeError("the decrement operand must have an int type");
 
-	//assert(ret);
-
-	//return ret;
+	auto v = CProgramRuntime::AcquireNewValue<CIntValue>(operand->AsInt()); //create temp old value
+	--operand->AsInt(); //but decrement this value
+	return v;
 }

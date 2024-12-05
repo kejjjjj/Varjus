@@ -66,6 +66,7 @@ public:
 	[[nodiscard]] constexpr bool IsIndexable() const noexcept override { return true; }
 	[[nodiscard]] constexpr bool IsAggregate() const noexcept override { return true; }
 	[[nodiscard]] constexpr bool IsCallable() const noexcept override { return !!m_pMethod; }
+	[[nodiscard]] constexpr bool IsBooleanConvertible() const noexcept override { return false; }
 
 	[[nodiscard]] IValue* Copy() override;
 	[[nodiscard]] CArrayValue* ToArray() override;

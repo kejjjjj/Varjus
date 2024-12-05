@@ -124,7 +124,7 @@ public:
 	}
 
 private:
-	void SetupGlobalVariables();
+	void SetupGlobalVariables() const;
 	void EvaluateGlobalExpressions();
 	void FreeGlobalVariables();
 
