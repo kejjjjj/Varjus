@@ -35,6 +35,13 @@ of course there's a LOT more happening behind the scenes, but here's a quick sum
   - subscript []
   - member access .
   - function calls ()
+  - increment ++
+  - decrement --
+- unary
+  - negation -
+  - increment ++
+  - decrement --
+  - logical not !
 - value types
   - copy
   - reference
@@ -135,6 +142,28 @@ fn main(){
 let variableBelowMain = "hello";
 
 ```
+
+## Examples
+
+- array negation
+```js
+fn negateArray(src){
+   let r = [];  
+   for(let i = 0; i < src.length; ++i) {
+     if(!src[i])
+	continue;
+
+     r.push(-src[i]);
+   }
+
+    return r;
+}
+
+fn main() {
+   return negateArray([ 1, 2, undefined ,3 ]); // returns: [ -1, -2, -3 ]: array
+}
+```
+
 
 
 
