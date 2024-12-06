@@ -23,6 +23,10 @@ of course there's a LOT more happening behind the scenes, but here's a quick sum
   - return
 - global variables
 - local variables
+- exceptions
+  - try
+  - catch
+  - throw
 - aggregate types
 - variable declarations
   - let
@@ -143,29 +147,29 @@ let variableBelowMain = "hello";
 
 ```
 
-## Examples
+### Exceptions
 
-- array negation
 ```js
-fn negateArray(src){
-   let r = [];  
-   for(let i = 0; i < src.length; ++i) {
-     if(!src[i])
-	continue;
+fn expectShortString(inputString)
+{
 
-     r.push(-src[i]);
-   }
+	try{
+		if(inputString.length < 6)
+			throw "expected > 5 characters";
 
-    return r;
+		return "success";
+
+	} catch(error){
+		return error;
+	}
 }
 
 fn main() {
-   return negateArray([ 1, 2, undefined ,3 ]); // returns: [ -1, -2, -3 ]: array
+	return {
+		a: expectShortString("hello world"), // "success"
+		b: expectShortString("hello"), // "expected > 5 characters"
+	};
 }
 ```
-
-
-
-
 
 
