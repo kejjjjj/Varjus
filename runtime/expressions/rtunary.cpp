@@ -59,7 +59,7 @@ IValue* EvaluateIncrement(IValue* operand)
 		throw CRuntimeError("cannot increment a temporary value");
 
 	if (operand->Type() != t_int)
-		throw CRuntimeError("the increment operand must have an int type");
+		throw CRuntimeError(std::format("the increment operand must have an int type, but is \"{}\"", operand->TypeAsString()));
 
 	++operand->AsInt();
 	return operand;
@@ -70,7 +70,7 @@ IValue* EvaluateDecrement(IValue* operand)
 		throw CRuntimeError("cannot decrement a temporary value");
 
 	if (operand->Type() != t_int)
-		throw CRuntimeError("the decrement operand must have an int type");
+		throw CRuntimeError(std::format("the decrement operand must have an int type, but is \"{}\"", operand->TypeAsString()));
 	--operand->AsInt();
 	return operand;
 }

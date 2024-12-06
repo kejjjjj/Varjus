@@ -39,8 +39,14 @@ IValue* CRuntimeFunction::Execute([[maybe_unused]] CFunction* const thisFunction
 
 	for (const auto& insn : m_oInstructions) {
 		if (returnVal = insn->Execute(&func), returnVal) {
+
+			if (!thisFunction && CProgramRuntime::ExceptionThrown())
+				throw CRuntimeError(std::format("an uncaught exception: {}", returnVal->ToPrintableString()));
+
 			break;
 		}
+
+		assert(!CProgramRuntime::ExceptionThrown());
 	}
 
 	IValue* copy = nullptr;
@@ -52,12 +58,6 @@ IValue* CRuntimeFunction::Execute([[maybe_unused]] CFunction* const thisFunction
 	}
 
 	for (auto& [index, value] : func.m_oStack) {
-
-		//if (!thisFunction) {
-		//	assert(value->GetValue());
-		//	std::cout << value->GetValue()->ToPrintableString() << '\n';
-		//}
-
 		//don't free captured values or they get destroyed and the next calls to this function fail
 		if(!captures.contains(index)) 
 			value->Release();

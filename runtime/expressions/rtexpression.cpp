@@ -23,6 +23,9 @@ IValue* CRuntimeExpression::Execute([[maybe_unused]]CFunction* const thisFunctio
 
 	[[maybe_unused]] const auto result = Evaluate(thisFunction);
 	
+	if (CProgramRuntime::ExceptionThrown())
+		return result; //we don't want the exception to get destroyed
+	
 	if (result && !result->HasOwner())
 		result->Release();
 

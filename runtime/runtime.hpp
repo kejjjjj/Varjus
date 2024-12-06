@@ -50,6 +50,9 @@ public:
 	static void SetExecutionPosition(const CodePosition* pos) noexcept;
 	[[nodiscard]] static const CodePosition* GetExecutionPosition() noexcept;
 
+	static inline void ThrowException() noexcept { m_bExceptionThrown = true; }
+	static inline void CatchException() noexcept { m_bExceptionThrown = false; }
+	[[nodiscard]] static inline bool ExceptionThrown() noexcept { return m_bExceptionThrown; }
 
 private:
 
@@ -137,4 +140,5 @@ private:
 	static CProgramContext* m_pContext;
 	static const CodePosition* m_pCodePosition;
 	static VectorOf<CVariable*> m_oGlobalVariables;
+	static bool m_bExceptionThrown;
 };

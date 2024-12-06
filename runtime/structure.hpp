@@ -18,9 +18,16 @@ enum EStructureType
 	st_for,
 	st_while,
 	st_return,
-	st_loop_control
+	st_loop_control,
+	st_try_catch,
+	st_throw
 };
-
+enum EExecutionControl : char
+{
+	lc_null,
+	lc_break,
+	lc_continue,
+};
 class CRuntimeFunction;
 class CFunction;
 class IValue;
@@ -58,6 +65,9 @@ public:
 		[[maybe_unused]] CFunction* const thisFunction, 
 		[[maybe_unused]] VectorOf<IValue*>& args,
 		[[maybe_unused]] const VariableCaptures& captures) { return nullptr; };
+
+	[[nodiscard]] static EExecutionControl ToControlStatement(const IValue* rv);
+
 
 protected:
 };
@@ -133,6 +143,7 @@ class CRuntimeExpression final : public IRuntimeStructure
 {
 	NONCOPYABLE(CRuntimeExpression);
 	friend class CRuntimeReturnStatement;
+	friend class CRuntimeThrowStatement;
 
 public:
 	CRuntimeExpression(std::unique_ptr<AbstractSyntaxTree>&& ast);
@@ -237,24 +248,52 @@ private:
 	std::unique_ptr<AbstractSyntaxTree> m_pAST;
 };
 
-enum ELoopControl : char
+class CRuntimeTryCatchStatement final : public IRuntimeStructure
 {
-	lc_null,
-	lc_break,
-	lc_continue,
+	NONCOPYABLE(CRuntimeTryCatchStatement);
+public:
+	CRuntimeTryCatchStatement(VariableIndex catchVariable, InstructionSequence&& tryBlock, InstructionSequence&& catchBlock);
+	~CRuntimeTryCatchStatement();
+
+	[[maybe_unused]] IValue* Execute(CFunction* const thisFunction) override;
+
+protected:
+	[[nodiscard]] constexpr EStructureType Type() const noexcept { return st_try_catch; };
+private:
+	[[maybe_unused]] IValue* ExecuteCatchBlock(CFunction* const thisFunction, IValue* ex);
+
+	VariableIndex m_uCatchVariableIndex{};
+	InstructionSequence m_oTryInstructions;
+	InstructionSequence m_oCatchInstructions;
+};
+
+class CRuntimeThrowStatement final : public IRuntimeStructure
+{
+	NONCOPYABLE(CRuntimeThrowStatement);
+public:
+	CRuntimeThrowStatement(std::unique_ptr<AbstractSyntaxTree>&& condition);
+	~CRuntimeThrowStatement();
+
+	[[maybe_unused]] IValue* Execute(CFunction* const thisFunction) override;
+
+protected:
+	[[nodiscard]] constexpr EStructureType Type() const noexcept { return st_throw; };
+
+private:
+	std::unique_ptr<AbstractSyntaxTree> m_pAST;
 };
 
 class CRuntimeLoopControlStatement final : public IRuntimeStructure {
 	NONCOPYABLE(CRuntimeLoopControlStatement);
 public:
-	CRuntimeLoopControlStatement(ELoopControl c) : m_eCtrl(c){}
+	CRuntimeLoopControlStatement(EExecutionControl c) : m_eCtrl(c){}
 	
 	[[maybe_unused]] IValue* Execute(CFunction* const thisFunction) override;
 
 protected:
 	[[nodiscard]] constexpr EStructureType Type() const noexcept { return st_loop_control; };
 private:
-	ELoopControl m_eCtrl{ lc_null };
+	EExecutionControl m_eCtrl{ lc_null };
 };
 
 class IRuntimeBlock

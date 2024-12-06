@@ -14,7 +14,10 @@ CStatementLinter::CStatementLinter(LinterIterator& pos, LinterIterator& end, con
 	: CLinterSingle(pos, end), m_pScope(scope), m_pOwner(stack) {
 
 	assert(m_iterPos != m_iterEnd);
-
+	CreateThisScope();
+}
+void CStatementLinter::CreateThisScope()
+{
 	if (const auto s = m_pScope.lock()) {
 		m_pThisScope = s->CreateScope();
 	} else {
@@ -22,11 +25,11 @@ CStatementLinter::CStatementLinter(LinterIterator& pos, LinterIterator& end, con
 		return;
 	}
 }
-
 Success CStatementLinter::ParseIdentifier(TokenType tt)
 {
 	if (IsEndOfBuffer() || (*m_iterPos)->Type() != tt) {
-		CLinterErrors::PushError("expected a statement", GetIteratorSafe()->m_oSourcePosition);
+		CLinterErrors::PushError(std::format("expected \"{}\"", tokenTypeStrings[tt]), 
+			GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 

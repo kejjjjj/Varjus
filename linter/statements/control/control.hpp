@@ -21,5 +21,5 @@ public:
 	[[nodiscard]] RuntimeBlock ToRuntimeObject() const override;
 private:
 
-	ELoopControl m_eType{lc_null};
+	EExecutionControl m_eType{lc_null};
 };

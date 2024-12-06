@@ -17,11 +17,12 @@ public:
 	explicit CStatementLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const owner);
 
 protected:
+	void CreateThisScope();
 
 	[[nodiscard]] Success ParseIdentifier(TokenType tt);
 	[[nodiscard]] virtual std::unique_ptr<AbstractSyntaxTree> ParseExpression();
 	[[nodiscard]] virtual Success ParseScope();
-	
+
 	WeakScope m_pScope;
 	CMemory* const m_pOwner;
 

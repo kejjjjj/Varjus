@@ -207,6 +207,8 @@
     <ClCompile Include="linter\statements\if\if.cpp" />
     <ClCompile Include="linter\statements\return\return.cpp" />
     <ClCompile Include="linter\statements\statement.cpp" />
+    <ClCompile Include="linter\statements\throw\throw.cpp" />
+    <ClCompile Include="linter\statements\try_catch\try_catch.cpp" />
     <ClCompile Include="linter\statements\while\while.cpp" />
     <ClCompile Include="linter\token.cpp" />
     <ClCompile Include="linter\tokenizer.cpp" />
@@ -223,6 +225,8 @@
     <ClCompile Include="runtime\statements\control\rtcontrol.cpp" />
     <ClCompile Include="runtime\statements\for\rtfor.cpp" />
     <ClCompile Include="runtime\statements\return\rtreturn.cpp" />
+    <ClCompile Include="runtime\statements\throw\rtthrow.cpp" />
+    <ClCompile Include="runtime\statements\try_catch\rttry_catch.cpp" />
     <ClCompile Include="runtime\statements\while\rtwhile.cpp" />
     <ClCompile Include="runtime\structure.cpp" />
     <ClCompile Include="runtime\values\coercion.cpp" />
@@ -287,6 +291,8 @@
     <ClInclude Include="linter\statements\if\if.hpp" />
     <ClInclude Include="linter\statements\return\return.hpp" />
     <ClInclude Include="linter\statements\statement.hpp" />
+    <ClInclude Include="linter\statements\throw\throw.hpp" />
+    <ClInclude Include="linter\statements\try_catch\try_catch.hpp" />
     <ClInclude Include="linter\statements\while\while.hpp" />
     <ClInclude Include="linter\token.hpp" />
     <ClInclude Include="linter\tokenizer.hpp" />

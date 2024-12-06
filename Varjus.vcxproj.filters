@@ -118,6 +118,18 @@
     <Filter Include="Source Files\linter\expressions\ast">
       <UniqueIdentifier>{c1200973-f25c-4bd4-a484-86d0bcad1f71}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\linter\statements\try_catch">
+      <UniqueIdentifier>{b7c33fbe-0b73-421f-aa2f-ccfae41c931c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\runtime\statements\try_catch">
+      <UniqueIdentifier>{84290321-be9a-4eca-99e8-730acb3a86ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\linter\statements\throw">
+      <UniqueIdentifier>{f93b327e-6659-45b1-98d2-9643426700f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\runtime\statements\throw">
+      <UniqueIdentifier>{dc072605-cba7-4e4b-9414-80c275e283b1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -333,6 +345,18 @@
     <ClCompile Include="runtime\expressions\rtunary.cpp">
       <Filter>Source Files\runtime\expressions</Filter>
     </ClCompile>
+    <ClCompile Include="linter\statements\try_catch\try_catch.cpp">
+      <Filter>Source Files\linter\statements\try_catch</Filter>
+    </ClCompile>
+    <ClCompile Include="runtime\statements\try_catch\rttry_catch.cpp">
+      <Filter>Source Files\runtime\statements\try_catch</Filter>
+    </ClCompile>
+    <ClCompile Include="linter\statements\throw\throw.cpp">
+      <Filter>Source Files\linter\statements\throw</Filter>
+    </ClCompile>
+    <ClCompile Include="runtime\statements\throw\rtthrow.cpp">
+      <Filter>Source Files\runtime\statements\throw</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="fs\fs_io.hpp">
@@ -544,6 +568,12 @@
     </ClInclude>
     <ClInclude Include="linter\expressions\ast\ast_main.hpp">
       <Filter>Source Files\linter\expressions\ast</Filter>
+    </ClInclude>
+    <ClInclude Include="linter\statements\try_catch\try_catch.hpp">
+      <Filter>Source Files\linter\statements\try_catch</Filter>
+    </ClInclude>
+    <ClInclude Include="linter\statements\throw\throw.hpp">
+      <Filter>Source Files\linter\statements\throw</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

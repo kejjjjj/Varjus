@@ -25,6 +25,7 @@ VectorOf<RuntimeFunction> CProgramRuntime::m_oFunctions;
 VectorOf<CVariable*> CProgramRuntime::m_oGlobalVariables;
 CProgramContext* CProgramRuntime::m_pContext{ nullptr };
 const CodePosition* CProgramRuntime::m_pCodePosition{ nullptr };
+bool CProgramRuntime::m_bExceptionThrown{ false };
 
 CProgramRuntime::CProgramRuntime(CFileRuntimeData* const file, CProgramContext* const context)
 {
@@ -33,6 +34,7 @@ CProgramRuntime::CProgramRuntime(CFileRuntimeData* const file, CProgramContext* 
 	m_oGlobalScopeInstructions = std::move(file->m_oGlobalScopeInstructions);
 	m_uNumGlobalVariables = file->m_uNumGlobalVariables;
 	m_oGlobalVariables.clear();
+	m_bExceptionThrown = false;
 
 	assert(m_pContext);
 }

@@ -2,6 +2,7 @@
 
 #include <string>
 #include <tuple>
+#include <array>
 
 enum TokenType : signed char
 {
@@ -23,7 +24,35 @@ enum TokenType : signed char
 	tt_return,
 	tt_break,
 	tt_continue,
+	tt_try,
+	tt_catch,
+	tt_throw,
+	tt_unused_count
 };
+
+constexpr std::array<const char*, tt_unused_count> tokenTypeStrings = {{
+	"error",
+	"undefined",
+	"false",
+	"true",
+	"int",
+	"double",
+	"string",
+	"name",
+	"operator",
+	"declaration",
+	"fn",
+	"if",
+	"else",
+	"for",
+	"while",
+	"return",
+	"break",
+	"continue",
+	"try",
+	"catch",
+	"throw"
+}};
 
 enum Punctuation : char;
 enum OperatorPriority : char;

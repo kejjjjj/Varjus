@@ -36,3 +36,13 @@ CRuntimeFunction* CFileRuntimeData::FindFunction(const std::string& v) const
 	const auto it = std::ranges::find(m_oFunctions, v, [](const RuntimeFunction& v) { return v->GetName(); });
 	return it != m_oFunctions.end() ? it->get() : nullptr;
 }
+
+EExecutionControl IRuntimeStructure::ToControlStatement(const IValue* rv) {
+
+	const auto v = reinterpret_cast<std::size_t>(rv);
+
+	if (v > static_cast<std::size_t>(lc_continue))
+		return lc_null;
+
+	return static_cast<EExecutionControl>(v);
+}

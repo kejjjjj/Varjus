@@ -16,6 +16,8 @@
 #include "statements/if/else.hpp"
 #include "statements/return/return.hpp"
 #include "statements/control/control.hpp"
+#include "statements/try_catch/try_catch.hpp"
+#include "statements/throw/throw.hpp"
 
 #include <cassert>
 
@@ -134,7 +136,13 @@ Success CFileLinter::LintToken(const CLinterContext& ctx)
 	case tt_break:
 	case tt_continue:
 		return Lint<CLoopControlStatement>(ctx);
+	case tt_try:
+		return Lint<CTryCatchStatementLinter>(ctx);
+	case tt_throw:
+		return Lint<CThrowStatementLinter>(ctx);
+	case tt_catch:
 	case tt_error:
+	case tt_unused_count:
 	default:
 		CLinterErrors::PushError("unexpected token: " + (*ctx.m_iterPos)->Source(), (*ctx.m_iterPos)->m_oSourcePosition);
 		return failure;
