@@ -27,7 +27,7 @@ CElseStatementLinter::~CElseStatementLinter() = default;
 
 Success CElseStatementLinter::Parse()
 {
-	if (!IsInConditionalContext()) {
+	if (!m_pOwner->IsHoisting() && !IsInConditionalContext()) {
 		CLinterErrors::PushError("an else block must be after an if block", 
 			GetIteratorSafe()->m_oSourcePosition);
 		return failure;
@@ -51,6 +51,9 @@ Success CElseStatementLinter::Parse()
 		if (!ifStatement.Parse())
 			return failure;
 
+		if (m_pOwner->IsHoisting())
+			return success;
+
 		//else if
 		lastBlock->m_pNext = ifStatement.ToConditionalObject();
 		return success;
@@ -58,6 +61,9 @@ Success CElseStatementLinter::Parse()
 
 	if (!ParseScope())
 		return failure;
+
+	if (m_pOwner->IsHoisting())
+		return success;
 
 	//else block
 	lastBlock->m_pNext = std::make_unique<CRuntimeConditionalStatement>(nullptr, m_pThisScope->MoveInstructions());

@@ -25,8 +25,10 @@ IValue* CRuntimeExpression::EvaluatePostfix(CFunction* const thisFunction, const
 
 	if (node->IsSubscript()) {
 		returnVal = EvaluateSubscript(thisFunction, operand, node->As<const SubscriptASTNode*>());
-		if (operand->IsHanging()) {
+
+		if (operand->IsHanging() && operand->Type() != t_string) {
 			returnVal = returnVal->Copy(); //accessing a temporary e.g. [[1, 2, 3]][0]
+			//doesn't include strings as they are copies instead of references
 		}
 
 	} else if (node->IsFunctionCall()) {

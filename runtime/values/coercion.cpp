@@ -9,8 +9,9 @@
 
 std::tuple<IValue*, IValue*, IValue*> Coerce(IValue* lhs, IValue* rhs)
 {
-	if (lhs->Type() == rhs->Type())
+	if (lhs->Type() == rhs->Type()) {
 		return { lhs, rhs, nullptr };
+	}
 
 	if (lhs->Type() < rhs->Type()) {
 		auto data = CoerceInternal(lhs, rhs, true);

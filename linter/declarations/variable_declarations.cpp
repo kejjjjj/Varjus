@@ -9,7 +9,6 @@
 
 #include <cassert>
 
-
 CVariableDeclarationLinter::CVariableDeclarationLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack) :
 	CLinterSingle(pos, end), m_pScope(scope), m_pOwner(stack)
 {

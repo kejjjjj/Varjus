@@ -202,6 +202,9 @@ constexpr Success CBufferTokenizer::ReadString(CToken& token) noexcept
 		if (EndOfBuffer())
 			return failure;
 
+		if (*m_oScriptPos == '\"')
+			break;
+
 		if (*m_oScriptPos == '\n') {
 			line++;
 			column = 1ull;

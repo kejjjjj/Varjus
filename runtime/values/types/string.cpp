@@ -19,9 +19,6 @@ IValue* CStringValue::Copy(){
 }
 void CStringValue::Release()
 {
-	if (IsShared())
-		ReleaseShared();
-
 	Internal()->Release();
 
 	ReleaseInternal();
@@ -37,6 +34,7 @@ IValue* CStringValue::Index(std::int64_t index)
 {
 	if (index < 0 || static_cast<size_t>(index) >= Internal()->Length())
 		throw CRuntimeError("string index out of bounds");
+
 
 	auto newStr = std::string(size_t(1), Internal()->GetString()[static_cast<size_t>(index)]);
 	auto v = Construct(newStr);

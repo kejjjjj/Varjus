@@ -66,21 +66,12 @@ IValue* CRuntimeExpression::Evaluate(CFunction* const thisFunction, const Abstra
 
 	assert(node->IsOperator());
 
-	IValue* result{ nullptr };
+	auto& func = m_oOperatorTable[static_cast<std::size_t>(node->GetOperator()->m_ePunctuation)];
 
-	switch (node->GetOperator()->m_ePunctuation) {
-	case p_assign:
-		result = OP_ASSIGNMENT(lhs, rhs);
-		break;
-	case p_add:
-		result = OP_ADDITION(lhs, rhs);
-		break;
-	case p_less_than:
-		result = OP_LESS_THAN(lhs, rhs);
-		break;
-	default:
-		throw std::exception("bad operator");
-	}
+	if (!func)
+		throw CRuntimeError("this operator isn't supported yet");
+
+	IValue* result = func(lhs, rhs);
 
 	if (!lhs->HasOwner()) lhs->Release();
 	if (!rhs->HasOwner()) rhs->Release();

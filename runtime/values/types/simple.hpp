@@ -92,6 +92,8 @@ public:
 	[[nodiscard]] virtual double ToDouble() const { return 0.0; }
 	[[nodiscard]] virtual const std::string& ToString() const { return emptyString; }
 
+	[[nodiscard]] virtual std::size_t AddressOf() const noexcept { return reinterpret_cast<std::size_t>(this); }
+
 	[[nodiscard]] virtual CStringValue* ToCString() { return nullptr; }
 	[[nodiscard]] virtual CCallableValue* ToCallable() { return nullptr; }
 	[[nodiscard]] virtual CBuiltInMemberCallableValue* ToBuiltInMemberCallable() { return nullptr; }

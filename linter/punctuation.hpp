@@ -14,7 +14,7 @@ enum OperatorPriority : char
 	op_bitwise_xor,		//	^
 	op_bitwise_and,		//  & 
 	op_equality,		//	< <= > >=
-	op_relational,		//	== !=
+	op_relational,		//	== != === !==
 	op_shift,			//  <<>>
 	op_additive,		//	+-
 	op_multiplicative,	//	* / %
@@ -28,19 +28,44 @@ enum Punctuation : char
 
 	p_add,
 	p_sub,
+	p_multiplication,
+	p_division,
+	p_modulo,
 
 	p_less_than,
+	p_less_equal,
 	p_greater_than,
+	p_greater_equal,
 
 	p_assign,
 
 	p_equality,
 	p_unequality,
-	p_modulo,
-	p_multiplication,
-	p_division,
-
+	p_strict_equality,
+	p_strict_unequality,
+	
 	p_logical_and,
+	p_logical_or,
+
+	p_left_shift,
+	p_right_shift,
+
+	p_bitwise_or,
+	p_bitwise_xor,
+	p_bitwise_and,
+
+	p_assignment_addition,
+	p_assignment_subtraction,
+	p_assignment_multiplication,
+	p_assignment_division,
+	p_assignment_modulo,
+
+	p_assignment_left_shift,
+	p_assignment_right_shift,
+
+	p_assignment_bitwise_or,
+	p_assignment_bitwise_xor,
+	p_assignment_bitwise_and,
 
 	p_increment,
 	p_decrement,
@@ -69,12 +94,34 @@ struct CPunctuation final
 	OperatorPriority m_ePriority{};
 };
 
-constexpr std::array<CPunctuation, 25u> punctuations
+constexpr std::array<CPunctuation, 45u> punctuations
 {
+	CPunctuation{"===", p_strict_equality, op_relational},
+	CPunctuation{"!==", p_strict_unequality, op_relational},
+
+	CPunctuation{"<<=", p_assignment_left_shift, op_assignment},
+	CPunctuation{">>=", p_assignment_right_shift, op_assignment},
+
+	CPunctuation{"+=", p_assignment_addition, op_assignment},
+	CPunctuation{"-=", p_assignment_subtraction, op_assignment},
+	CPunctuation{"*=", p_assignment_multiplication, op_assignment},
+	CPunctuation{"/=", p_assignment_division, op_assignment},
+	CPunctuation{"%=", p_assignment_modulo, op_assignment},
+	CPunctuation{"|=", p_assignment_bitwise_or, op_assignment},
+	CPunctuation{"^=", p_assignment_bitwise_xor, op_assignment},
+	CPunctuation{"&=", p_assignment_bitwise_and, op_assignment},
+
 	CPunctuation{"==", p_equality, op_relational},
 	CPunctuation{"!=", p_unequality, op_relational},
 
+	CPunctuation{"<=", p_less_equal, op_equality},
+	CPunctuation{">=", p_greater_equal, op_equality},
+
 	CPunctuation{"&&", p_logical_and, op_logical_and},
+	CPunctuation{"||", p_logical_or, op_logical_or},
+
+	CPunctuation{"<<", p_left_shift, op_shift},
+	CPunctuation{">>", p_right_shift, op_shift},
 
 	CPunctuation{"++", p_increment, op_unary},
 	CPunctuation{"--", p_decrement, op_unary},
@@ -90,6 +137,10 @@ constexpr std::array<CPunctuation, 25u> punctuations
 	CPunctuation{"/", p_division, op_multiplicative},
 
 	CPunctuation{"=", p_assign, op_assignment},
+
+	CPunctuation{"|", p_bitwise_or, op_bitwise_or},
+	CPunctuation{"^", p_bitwise_xor, op_bitwise_xor},
+	CPunctuation{"&", p_bitwise_and, op_bitwise_and},
 
 	CPunctuation{"(", p_par_open, op_postfix},
 	CPunctuation{")", p_par_close, op_failure},

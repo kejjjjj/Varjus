@@ -58,6 +58,10 @@ public:
 
 	[[nodiscard]] CObjectValue* ToObject() override { return this; }
 
+	[[nodiscard]] std::size_t AddressOf() const noexcept override {
+		return reinterpret_cast<std::size_t>(GetShared().get());
+	}
+
 private:
 	[[nodiscard]] std::string TypeAsString() const override { return "object"s; }
 	[[nodiscard]] std::string ValueAsString() const override;
