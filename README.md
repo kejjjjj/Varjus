@@ -21,6 +21,7 @@ of course there's a LOT more happening behind the scenes, but here's a quick sum
   - continue
   - break
   - return
+- 31 operators
 - global variables
 - local variables
 - exceptions
@@ -88,6 +89,10 @@ array.push(4); // array is now [ 1, 2, 3, 4 ]
 
 let arrayReference = array; // arrayReference shares ownership with array
 arrayReference[0] = 1; // this will also update the value of array[0] to 1
+
+//find even values
+array.filter( fn(value) { return value % 2 == 0; } );  //returns [2, 4]
+
 ```
 
 ### Objects
