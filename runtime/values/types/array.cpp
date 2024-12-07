@@ -23,6 +23,15 @@ VectorOf<ElementIndex>& runtime::__internal::GetAggregateArrayData()
 	once = false;
 	return elems;
 }
+CArrayValue* CArrayValue::Construct(IValues&& values)
+{
+	auto ptr = CProgramRuntime::AcquireNewValue<CArrayValue>();
+	ptr->MakeShared();
+	auto internal = ptr->Internal();
+	internal->Set(std::move(values));
+	internal->GetAggregateValue().Setup(runtime::__internal::GetAggregateArrayData());
+	return ptr;
+}
 
 CArrayValue::~CArrayValue() = default;
 
@@ -89,10 +98,10 @@ IValue* CArrayValue::GetAggregate(std::size_t memberIdx)
 	return value;
 }
 
-IValue* CArrayValue::Call([[maybe_unused]]CFunction* const thisFunction, const IValues& args)
+IValue* CArrayValue::Call(CFunction* const thisFunction, const IValues& args)
 {
 	assert(IsCallable());
-	auto ret = CStaticArrayBuiltInMethods::CallMethod(this, args, m_pMethod);
+	auto ret = CStaticArrayBuiltInMethods::CallMethod(thisFunction, this, args, m_pMethod);
 	m_pMethod = nullptr;
 	return ret;
 }

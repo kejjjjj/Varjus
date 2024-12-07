@@ -49,6 +49,8 @@ public:
 	[[nodiscard]] double ToDouble() const override { return static_cast<double>(ToBoolean()); }
 
 	[[nodiscard]] constexpr bool IsCallable() const noexcept override { return true; }
+	[[nodiscard]] constexpr bool IsBooleanConvertible() const noexcept override { return false; }
+
 	[[nodiscard]] CCallableValue* ToCallable() override { return this; }
 
 	[[nodiscard]] CInternalCallableValue* Internal();

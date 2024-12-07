@@ -16,7 +16,7 @@ enum OperatorPriority : char
 	op_equality,		//	< <= > >=
 	op_relational,		//	== != === !==
 	op_shift,			//  <<>>
-	op_additive,		//	+-
+	op_additive,		//	+ -
 	op_multiplicative,	//	* / %
 	op_unary,			//  + - ! ~ ++ - - (type)* & sizeof	
 	op_postfix,			//  () [] -> . ++ --	

@@ -7,13 +7,14 @@
 #include <string>
 
 struct CProgramContext;
+class CFunction;
 
 using ElementIndex = std::size_t;
 
 struct CArrayBuiltInMethod
 {
 	std::size_t m_uNumArguments;
-	IValue* (CArrayValue::* memFn)(const IValues& values);
+	IValue* (CArrayValue::* memFn)(CFunction* const, const IValues&);
 };
 
 
@@ -23,7 +24,8 @@ struct CStaticArrayBuiltInMethods
 
 	[[nodiscard]] static const CArrayBuiltInMethod* LookupMethod(ElementIndex index);
 
-	[[nodiscard]] static IValue* CallMethod(CArrayValue* _this, const IValues& args, const CArrayBuiltInMethod* method);
+	[[nodiscard]] static IValue* CallMethod(CFunction* const thisFunction, 
+		CArrayValue* _this, const IValues& args, const CArrayBuiltInMethod* method);
 
 	[[nodiscard]] static auto& GetIterator() noexcept { return m_oMethodLookup; }
 

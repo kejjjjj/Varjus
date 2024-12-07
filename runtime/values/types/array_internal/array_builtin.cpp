@@ -8,7 +8,14 @@
 std::unordered_map<ElementIndex, const CArrayBuiltInMethod*> CStaticArrayBuiltInMethods::m_oMethodLookup;
 std::unordered_map<std::string, CArrayBuiltInMethod> CStaticArrayBuiltInMethods::m_oStaticMethods = {
 
-	{"push", {1u, &CArrayValue::Push}}
+	{"push",       {1u, &CArrayValue::Push}},
+	{"push_front", {1u, &CArrayValue::PushFront}},
+	{"pop",        {0u, &CArrayValue::Pop}},
+	{"pop_front",  {0u, &CArrayValue::PopFront}},
+	{"map",        {1u, &CArrayValue::Map}},
+	{"find",       {1u, &CArrayValue::Find}},
+	{"filter",     {1u, &CArrayValue::Filter}},
+	{"contains",   {1u, &CArrayValue::Contains}},
 
 };
 
@@ -30,11 +37,12 @@ const CArrayBuiltInMethod* CStaticArrayBuiltInMethods::LookupMethod(ElementIndex
 	}
 }
 
-IValue* CStaticArrayBuiltInMethods::CallMethod(CArrayValue* _this, const IValues& args, const CArrayBuiltInMethod* method){
+IValue* CStaticArrayBuiltInMethods::CallMethod(CFunction* const thisFunction,
+	CArrayValue* _this, const IValues& args, const CArrayBuiltInMethod* method){
 	
 	if (method->m_uNumArguments != args.size())
 		throw CRuntimeError(std::format("the method expected {} arguments instead of {}", method->m_uNumArguments, args.size()));
 
 	
-	return std::mem_fn(method->memFn)(_this, args);
+	return std::mem_fn(method->memFn)(_this, thisFunction, args);
 }

@@ -58,7 +58,9 @@ class CArrayValue final : public CValue<CInternalArrayValue>
 public:
 	CArrayValue() = default;
 	~CArrayValue();
-	//copy constructor
+	
+	static CArrayValue* Construct(IValues&& values);
+	
 	[[nodiscard]] EValueType Type() const noexcept override { return t_array; };
 
 	void Release() override;
@@ -83,12 +85,22 @@ public:
 	}
 
 
+
 private:
 	[[nodiscard]] std::string TypeAsString() const override { return "array"s; }
 	[[nodiscard]] std::string ValueAsString() const override;
 
-	[[nodiscard]] IValue* Push(const IValues& newValue);
-	
+	[[nodiscard]] IValue* Push(CFunction* const thisFunction, const IValues& newValue);
+	[[nodiscard]] IValue* PushFront(CFunction* const thisFunction, const IValues& newValue);
+	[[nodiscard]] IValue* Pop(CFunction* const thisFunction, const IValues& newValue);
+	[[nodiscard]] IValue* PopFront(CFunction* const thisFunction, const IValues& newValue);
+
+	[[nodiscard]] IValue* Map(CFunction* const thisFunction, const IValues& newValue);
+	[[nodiscard]] IValue* Find(CFunction* const thisFunction, const IValues& newValue);
+	[[nodiscard]] IValue* Filter(CFunction* const thisFunction, const IValues& newValue);
+
+	[[nodiscard]] IValue* Contains(CFunction* const thisFunction, const IValues& newValue);
+
 	const struct CArrayBuiltInMethod* m_pMethod{ nullptr };
 };
 

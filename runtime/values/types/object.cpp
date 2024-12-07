@@ -44,8 +44,8 @@ std::string CObjectValue::ValueAsString() const
 	std::stringstream ss;
 
 	for (const auto& [key, value] : GetShared()->GetAggregateValue().Iterator()) {
-		ss << CProgramRuntime::GetContext()->m_oAllMembers.At(key);
-		ss << ": " << value->GetValue()->ValueAsString() << ", ";
+		ss << "    " << CProgramRuntime::GetContext()->m_oAllMembers.At(key);
+		ss << ": " << value->GetValue()->ValueAsString() << ",\n";
 	}
 
 	auto result = ss.str();
@@ -55,7 +55,7 @@ std::string CObjectValue::ValueAsString() const
 
 	result.erase(result.size() - 2, 2);
 
-	return "{ " + result + " }";
+	return "{\n" + result + "\n}";
 }
 /***********************************************************************
  > 

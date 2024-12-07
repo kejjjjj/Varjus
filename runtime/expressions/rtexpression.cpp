@@ -124,12 +124,7 @@ IValue* CRuntimeExpression::EvaluateLeaf(CFunction* const thisFunction, const Ab
 
 	if (node->IsArray()) {
 		const auto var = node->GetArray();
-		auto ptr = CProgramRuntime::AcquireNewValue<CArrayValue>();
-		ptr->MakeShared();
-		auto internal = ptr->Internal();
-		internal->Set(EvaluateList(thisFunction, var->m_oExpressions));
-		internal->GetAggregateValue().Setup(runtime::__internal::GetAggregateArrayData());
-		return ptr;
+		return CArrayValue::Construct(EvaluateList(thisFunction, var->m_oExpressions));
 	}
 
 	if (node->IsObject()) {
