@@ -1,6 +1,10 @@
 #pragma once
 #include "ast_main.hpp"
 
+class SubscriptASTNode;
+class MemberAccessASTNode;
+class FunctionCallASTNode;
+
 class PostfixASTNode : public OperatorASTNode
 {
 public:
@@ -20,6 +24,10 @@ public:
 	[[nodiscard]] virtual constexpr bool IsIncrement() const noexcept { return false; }
 	[[nodiscard]] virtual constexpr bool IsDecrement() const noexcept { return false; }
 
+	[[nodiscard]] virtual constexpr const SubscriptASTNode* GetSubscript() const noexcept { return nullptr; }
+	[[nodiscard]] virtual constexpr const MemberAccessASTNode* GetMemberAccess() const noexcept { return nullptr; }
+	[[nodiscard]] virtual constexpr const FunctionCallASTNode* GetFunctionCall() const noexcept { return nullptr; }
+
 };
 
 class MemberAccessASTNode : public PostfixASTNode
@@ -31,6 +39,8 @@ public:
 	}
 
 	[[nodiscard]] constexpr bool IsMemberAccess() const noexcept override { return true; }
+	[[nodiscard]] constexpr const MemberAccessASTNode* GetMemberAccess() const noexcept override { return this; }
+
 	std::size_t m_uGlobalMemberIndex;
 };
 
@@ -43,6 +53,7 @@ public:
 	}
 	
 	[[nodiscard]] constexpr bool IsSubscript() const noexcept override { return true; }
+	[[nodiscard]] constexpr const SubscriptASTNode* GetSubscript() const noexcept override { return this; }
 
 	std::unique_ptr<AbstractSyntaxTree> m_pAST;
 };
@@ -55,6 +66,7 @@ public:
 		: PostfixASTNode(pos), m_oArguments(std::move(args)) {
 	}
 	[[nodiscard]] constexpr bool IsFunctionCall() const noexcept override { return true; }
+	[[nodiscard]] constexpr const FunctionCallASTNode* GetFunctionCall() const noexcept override { return this; }
 
 	VectorOf<std::unique_ptr<AbstractSyntaxTree>> m_oArguments;
 };

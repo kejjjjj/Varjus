@@ -2,6 +2,7 @@
 
 #include "internal/aggregate.hpp"
 #include "runtime/values/types/simple.hpp"
+#include "runtime/values/types/internal/builtin_methods.hpp"
 
 
 
@@ -16,9 +17,6 @@ using KeyValue = std::pair<K, V>;
 
 namespace runtime::__internal {
 	VectorOf<ElementIndex>& GetAggregateArrayData();
-
-	VectorOf<KeyValue<ElementIndex, IValue*>> GetBuiltinMethods();
-
 }
 
 struct CArrayContent final
@@ -54,13 +52,14 @@ protected:
 
 class CArrayValue final : public CValue<CInternalArrayValue>
 {
-	friend struct CStaticArrayBuiltInMethods;
+	using ArrayMethods = CBuiltInMethods<CArrayValue>::InputType;
 public:
 	CArrayValue() = default;
 	~CArrayValue();
 	
 	static CArrayValue* Construct(IValues&& values);
-	
+	static ArrayMethods ConstructMethods();
+
 	[[nodiscard]] EValueType Type() const noexcept override { return t_array; };
 
 	void Release() override;
@@ -101,6 +100,6 @@ private:
 
 	[[nodiscard]] IValue* Contains(CFunction* const thisFunction, const IValues& newValue);
 
-	const struct CArrayBuiltInMethod* m_pMethod{ nullptr };
+	const CBuiltInMethod<CArrayValue>* m_pMethod{ nullptr };
 };
 

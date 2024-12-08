@@ -7,13 +7,11 @@ namespace _fs = std::filesystem;
 
 std::string fs::exe_file_name()
 {
-	
 	return std::filesystem::current_path().string();
 }
 std::string fs::exe_path()
 {
-	std::string f = exe_file_name();
-	return f.substr(0, f.find_last_of("\\/"));
+	return std::filesystem::current_path().string();
 }
 std::string fs::get_extension(const std::string& file)
 {

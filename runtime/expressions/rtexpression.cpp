@@ -10,7 +10,6 @@
 #include "linter/expressions/ast.hpp"
 
 #include <cassert>
-#include <format>
 
 CRuntimeExpression::CRuntimeExpression(std::unique_ptr<AbstractSyntaxTree>&& ast) :
 	m_pAST(std::move(ast)) {}

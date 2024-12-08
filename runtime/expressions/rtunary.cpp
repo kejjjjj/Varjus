@@ -1,7 +1,6 @@
 #include "runtime/structure.hpp"
 #include "runtime/functions/rtfunction.hpp"
 #include "runtime/values/types/types.hpp"
-#include "runtime/values/types/array_internal/array_builtin.hpp"
 
 #include "runtime/values/simple_operators.hpp"
 
@@ -12,7 +11,6 @@
 #include "linter/expressions/ast.hpp"
 
 #include <cassert>
-#include <format>
 
 static IValue* EvaluateNegation(IValue* operand);
 static IValue* EvaluateIncrement(IValue* operand);

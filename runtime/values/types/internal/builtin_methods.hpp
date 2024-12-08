@@ -1,0 +1,72 @@
+#pragma once
+
+#include "runtime/values/types/simple.hpp"
+#include "runtime/exceptions/exception.hpp"
+
+#include "linter/context.hpp"
+
+#include <unordered_map>
+#include <string>
+#include <stdexcept>
+#include <functional>
+#include <format>
+
+class CFunction;
+using ElementIndex = std::size_t;
+
+
+namespace BuiltInMethods
+{
+	void Setup(const CProgramContext* context);
+}
+
+template<typename Type>
+struct CBuiltInMethod
+{
+	std::size_t m_uNumArguments;
+	IValue* (Type::* memFn)(CFunction* const, const IValues&);
+};
+
+template<class Type>
+class CBuiltInMethods
+{
+public:
+	using MethodType = CBuiltInMethod<Type>;
+	using InputType = std::unordered_map<std::string, MethodType>;
+	using LookupType = std::unordered_map<ElementIndex, const MethodType*>;
+
+	friend void BuiltInMethods::Setup(const CProgramContext* context);
+
+private:
+	static LookupType m_oMethodLookup;
+
+public:
+
+	static inline void Initialize(const CProgramContext* context, const InputType& methods) {
+		for (auto& [name, id] : context->m_oAllMembers.StringToIntIterator()) {
+			if (methods.contains(name)) {
+				const auto& [_, method] = *methods.find(name);
+				m_oMethodLookup[id] = &method;
+			}
+		}
+	}
+
+	[[nodiscard]] static inline const MethodType* LookupMethod(ElementIndex index) {
+		try { return m_oMethodLookup.at(index); }
+		catch ([[maybe_unused]] std::out_of_range& ex) { return nullptr; }
+	}
+
+	[[nodiscard]] static inline IValue* CallMethod(CFunction* const thisFunction,
+		Type* _this, const IValues& args, const MethodType* method) {
+
+		if (method->m_uNumArguments != args.size())
+			throw CRuntimeError(std::format("the method expected {} arguments instead of {}", method->m_uNumArguments, args.size()));
+
+		return std::mem_fn(method->memFn)(_this, thisFunction, args);
+	}
+
+	[[nodiscard]] static inline auto& GetIterator() noexcept { return m_oMethodLookup; }
+
+private:
+};
+

@@ -1,8 +1,8 @@
 #pragma once
 
 #include <string>
-#include <format>
 #include <vector>
+#include <sstream>
 
 using CodePosition = std::tuple<size_t, size_t>;
 
@@ -20,7 +20,10 @@ public:
 
 private:
     std::string GetStringFormatted() const noexcept {
-        return std::format("Error: {}\nAt: {}:{}", m_oErrorMessage, std::get<0>(m_oSourcePosition), std::get<1>(m_oSourcePosition));
+
+        std::stringstream ss;
+        ss << "Error: " << m_oErrorMessage << "\nAt: " << std::get<0>(m_oSourcePosition) << ':' << std::get<1>(m_oSourcePosition);
+        return ss.str();
     }
 
 	std::string m_oErrorMessage;

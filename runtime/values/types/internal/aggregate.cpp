@@ -7,7 +7,6 @@
 #include "runtime/structure.hpp"
 #include "runtime/variables.hpp"
 #include "runtime/values/types/simple.hpp"
-#include "runtime/values/types/array_internal/array_builtin.hpp"
 #include "runtime/exceptions/exception.hpp"
 
 

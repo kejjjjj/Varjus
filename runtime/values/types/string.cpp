@@ -43,6 +43,13 @@ IValue* CStringValue::Index(std::int64_t index)
 }
 IValue* CStringValue::GetAggregate(std::size_t memberIdx)
 {
+
+	if (auto func = CBuiltInMethods<CStringValue>::LookupMethod(memberIdx)) {
+		auto ptr = HasOwner() ? this : this->Copy()->ToCString();
+		ptr->m_pMethod = func;
+		return ptr;
+	}
+
 	auto value = Internal()->GetAggregateValue().ElementLookup(memberIdx);
 
 	if (memberIdx == ARRAY_LENGTH) {
@@ -53,7 +60,13 @@ IValue* CStringValue::GetAggregate(std::size_t memberIdx)
 	return value;
 
 }
-
+IValue* CStringValue::Call(CFunction* const thisFunction, const IValues& args)
+{
+	assert(IsCallable());
+	auto ret = CBuiltInMethods<CStringValue>::CallMethod(thisFunction, this, args, m_pMethod);
+	m_pMethod = nullptr;
+	return ret;
+}
 CInternalStringValue::~CInternalStringValue() = default;
 
 void CInternalStringValue::Release()
@@ -67,4 +80,13 @@ void CInternalStringValue::Set(const std::string& value) {
 std::size_t CInternalStringValue::Length() const noexcept
 {
 	return m_oValue.m_sString.length();
+}
+
+CStringValue::StringMethods CStringValue::ConstructMethods()
+{
+	return {
+		{"to_upper", {0u, &CStringValue::ToUpper}},
+		{"to_lower", {0u, &CStringValue::ToLower}},
+
+	};
 }

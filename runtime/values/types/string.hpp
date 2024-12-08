@@ -1,6 +1,7 @@
 #pragma once
 #include "simple.hpp"
 #include "internal/aggregate.hpp"
+#include "runtime/values/types/internal/builtin_methods.hpp"
 
 struct CStringContent final
 {
@@ -34,6 +35,8 @@ protected:
 
 class CStringValue : public CValue<CInternalStringValue>
 {
+	using StringMethods = CBuiltInMethods<CStringValue>::InputType;
+
 public:
 	CStringValue() = default;
 	[[nodiscard]] EValueType Type() const noexcept override { return t_string; };
@@ -41,6 +44,7 @@ public:
 	[[nodiscard]] IValue* Copy() override;
 
 	static CStringValue* Construct(const std::string& v);
+	static StringMethods ConstructMethods();
 
 	virtual void Release() override;
 
@@ -48,6 +52,7 @@ public:
 	[[nodiscard]] constexpr bool IsArithmetic() const noexcept override { return false; }
 	[[nodiscard]] constexpr bool IsIndexable() const noexcept override { return true; }
 	[[nodiscard]] constexpr bool IsAggregate() const noexcept override { return true; }
+	[[nodiscard]] constexpr bool IsCallable() const noexcept override { return !!m_pMethod; }
 
 	[[nodiscard]] bool ToBoolean() const override { return !Internal()->GetString().empty(); }
 	[[nodiscard]] std::int64_t ToInt() const override { return static_cast<std::int64_t>(ToBoolean()); }
@@ -62,9 +67,16 @@ public:
 	[[nodiscard]] IValue* Index(std::int64_t index) override;
 	[[nodiscard]] IValue* GetAggregate(std::size_t memberIdx) override;
 
+	[[nodiscard]] IValue* Call(CFunction* const thisFunction, const IValues& args) override;
+
+
 private:
 	[[nodiscard]] std::string TypeAsString() const override { return "string"s; }
 	[[nodiscard]] std::string ValueAsString() const override { return '\"' + Internal()->GetString() + '\"'; }
 
-public:
+
+	[[nodiscard]] IValue* ToUpper(CFunction* const thisFunction, const IValues& newValue);
+	[[nodiscard]] IValue* ToLower(CFunction* const thisFunction, const IValues& newValue);
+
+	const CBuiltInMethod<CStringValue>* m_pMethod{ nullptr };
 };

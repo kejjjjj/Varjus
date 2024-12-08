@@ -1,0 +1,35 @@
+let array = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+fn isOver5(v) {
+	return v > 5;
+}
+fn isEven(v) {
+	return v % 2 == 0; 
+}
+fn makeHello(v) {
+	return "hello";
+}
+
+fn ToUpper(v){
+	return v.to_upper();
+}
+
+fn main() {
+
+	let evenValues = array.filter(isEven);
+	let valuesOver5 = evenValues.filter(isOver5);
+	let contains10 = valuesOver5.contains(10);
+	let find8 = valuesOver5.find(fn(v) { return v === 8; });
+	let allHello = valuesOver5.map(makeHello);
+	let upperHello = allHello.map(ToUpper);
+
+	return {
+		even: evenValues,
+		values_over_5: valuesOver5,
+		contains_10: contains10,
+		find_8: find8,
+		as_hello: allHello,
+		upper_hello: upperHello,
+	};
+
+}
+

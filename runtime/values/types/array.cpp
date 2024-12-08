@@ -1,5 +1,5 @@
 #include "array.hpp"
-#include "array_internal/array_builtin.hpp"
+#include "internal/builtin_methods.hpp"
 #include "runtime/runtime.hpp"
 #include "runtime/variables.hpp"
 #include "runtime/exceptions/exception.hpp"
@@ -81,7 +81,7 @@ IValue* CArrayValue::Index(std::int64_t index)
 }
 IValue* CArrayValue::GetAggregate(std::size_t memberIdx)
 {
-	if (auto func = CStaticArrayBuiltInMethods::LookupMethod(memberIdx)) {
+	if (auto func = CBuiltInMethods<CArrayValue>::LookupMethod(memberIdx)) {
 		auto ptr = HasOwner() ? this : this->Copy()->ToArray();
 		ptr->m_pMethod = func;
 		return ptr;
@@ -101,7 +101,7 @@ IValue* CArrayValue::GetAggregate(std::size_t memberIdx)
 IValue* CArrayValue::Call(CFunction* const thisFunction, const IValues& args)
 {
 	assert(IsCallable());
-	auto ret = CStaticArrayBuiltInMethods::CallMethod(thisFunction, this, args, m_pMethod);
+	auto ret = CBuiltInMethods<CArrayValue>::CallMethod(thisFunction, this, args, m_pMethod);
 	m_pMethod = nullptr;
 	return ret;
 }
@@ -143,4 +143,18 @@ std::string CArrayValue::ValueAsString() const
 	result.erase(result.size() - 2, 2);
 
 	return "[ " + result + " ]";
+}
+
+CArrayValue::ArrayMethods CArrayValue::ConstructMethods()
+{
+	return {
+		{"push",       {1u, &CArrayValue::Push}},
+		{"push_front", {1u, &CArrayValue::PushFront}},
+		{"pop",        {0u, &CArrayValue::Pop}},
+		{"pop_front",  {0u, &CArrayValue::PopFront}},
+		{"map",        {1u, &CArrayValue::Map}},
+		{"find",       {1u, &CArrayValue::Find}},
+		{"filter",     {1u, &CArrayValue::Filter}},
+		{"contains",   {1u, &CArrayValue::Contains}},
+	};
 }

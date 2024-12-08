@@ -128,7 +128,7 @@ public:
 		const VariableCaptures& captures) override;
 protected:
 
-	[[nodiscard]] constexpr EStructureType Type() const noexcept { return st_function; };
+	[[nodiscard]] constexpr EStructureType Type() const noexcept override { return st_function; };
 
 	std::string m_sName;
 	std::size_t m_uNumParameters{ 0u };
@@ -153,7 +153,7 @@ public:
 	[[nodiscard]] IValue* Evaluate(CFunction* const thisFunction);
 	[[nodiscard]] inline bool HasAST() { return !!m_pAST.get(); }
 protected:
-	[[nodiscard]] constexpr EStructureType Type() const noexcept { return st_expression;};
+	[[nodiscard]] constexpr EStructureType Type() const noexcept override { return st_expression;};
 
 private:
 	[[nodiscard]] static IValue* Evaluate(CFunction* const thisFunction, const AbstractSyntaxTree* node);
@@ -185,7 +185,7 @@ public:
 	[[maybe_unused]] IValue* Execute(CFunction* const thisFunction) override;
 
 protected:
-	[[nodiscard]] constexpr EStructureType Type() const noexcept { return st_conditional; };
+	[[nodiscard]] constexpr EStructureType Type() const noexcept override { return st_conditional; };
 
 private:
 
@@ -209,7 +209,7 @@ public:
 	[[maybe_unused]] IValue* Execute(CFunction* const thisFunction) override;
 
 protected:
-	[[nodiscard]] constexpr EStructureType Type() const noexcept { return st_for; };
+	[[nodiscard]] constexpr EStructureType Type() const noexcept override { return st_for; };
 
 private:
 	std::unique_ptr<CRuntimeExpression> m_pInitializer;
@@ -227,7 +227,7 @@ public:
 	[[maybe_unused]] IValue* Execute(CFunction* const thisFunction) override;
 
 protected:
-	[[nodiscard]] constexpr EStructureType Type() const noexcept { return st_while; };
+	[[nodiscard]] constexpr EStructureType Type() const noexcept override { return st_while; };
 
 private:
 	std::unique_ptr<CRuntimeExpression> m_pCondition;
@@ -242,7 +242,7 @@ public:
 	[[maybe_unused]] IValue* Execute(CFunction* const thisFunction) override;
 
 protected:
-	[[nodiscard]] constexpr EStructureType Type() const noexcept { return st_return; };
+	[[nodiscard]] constexpr EStructureType Type() const noexcept override { return st_return; };
 
 private:
 	std::unique_ptr<AbstractSyntaxTree> m_pAST;
@@ -258,7 +258,7 @@ public:
 	[[maybe_unused]] IValue* Execute(CFunction* const thisFunction) override;
 
 protected:
-	[[nodiscard]] constexpr EStructureType Type() const noexcept { return st_try_catch; };
+	[[nodiscard]] constexpr EStructureType Type() const noexcept override { return st_try_catch; };
 private:
 	[[maybe_unused]] IValue* ExecuteCatchBlock(CFunction* const thisFunction, IValue* ex);
 
@@ -277,7 +277,7 @@ public:
 	[[maybe_unused]] IValue* Execute(CFunction* const thisFunction) override;
 
 protected:
-	[[nodiscard]] constexpr EStructureType Type() const noexcept { return st_throw; };
+	[[nodiscard]] constexpr EStructureType Type() const noexcept override { return st_throw; };
 
 private:
 	std::unique_ptr<AbstractSyntaxTree> m_pAST;
@@ -291,7 +291,7 @@ public:
 	[[maybe_unused]] IValue* Execute(CFunction* const thisFunction) override;
 
 protected:
-	[[nodiscard]] constexpr EStructureType Type() const noexcept { return st_loop_control; };
+	[[nodiscard]] constexpr EStructureType Type() const noexcept override { return st_loop_control; };
 private:
 	EExecutionControl m_eCtrl{ lc_null };
 };

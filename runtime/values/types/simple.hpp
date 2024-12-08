@@ -53,6 +53,7 @@ public:
 	[[nodiscard]] constexpr auto HasOwner() const noexcept { return !!m_pOwner; }
 
 	[[nodiscard]] virtual constexpr bool IsHanging() const noexcept { return !HasOwner(); }
+	[[nodiscard]] virtual constexpr bool IsSharedObject() const noexcept { return false; }
 
 	virtual void Release() override;
 	[[nodiscard]] virtual IValue* Copy() override;
@@ -157,6 +158,8 @@ public:
 
 		return !IValue::HasOwner() && SharedRefCount() == 1;
 	}
+
+	[[nodiscard]] constexpr bool IsSharedObject() const noexcept override { return IsShared(); }
 
 protected:
 	std::variant<Value, std::shared_ptr<Value>> m_oValue{};

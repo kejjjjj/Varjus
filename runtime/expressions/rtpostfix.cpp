@@ -1,7 +1,6 @@
 #include "runtime/structure.hpp"
 #include "runtime/functions/rtfunction.hpp"
 #include "runtime/values/types/types.hpp"
-#include "runtime/values/types/array_internal/array_builtin.hpp"
 
 #include "runtime/values/simple_operators.hpp"
 
@@ -24,18 +23,18 @@ IValue* CRuntimeExpression::EvaluatePostfix(CFunction* const thisFunction, const
 	IValue* returnVal{ nullptr };
 
 	if (node->IsSubscript()) {
-		returnVal = EvaluateSubscript(thisFunction, operand, node->As<const SubscriptASTNode*>());
+		
+		returnVal = EvaluateSubscript(thisFunction, operand, node->GetSubscript());
 
-		if (operand->IsHanging() && operand->Type() != t_string) {
+		if (operand->IsHanging() && operand->IsSharedObject()) {
 			returnVal = returnVal->Copy(); //accessing a temporary e.g. [[1, 2, 3]][0]
-			//doesn't include strings as they are copies instead of references
 		}
 
 	} else if (node->IsFunctionCall()) {
-		returnVal = EvaluateFunctionCall(thisFunction, operand, node->As<const FunctionCallASTNode*>());
+		returnVal = EvaluateFunctionCall(thisFunction, operand, node->GetFunctionCall());
 	} else if (node->IsMemberAccess()) {
-		returnVal = EvaluateMemberAccess(operand, node->As<const MemberAccessASTNode*>());
-		if (operand->IsHanging()) {
+		returnVal = EvaluateMemberAccess(operand, node->GetMemberAccess());
+		if (operand->IsHanging() && operand->IsSharedObject()) {
 			returnVal = returnVal->Copy(); //accessing a temporary e.g. [1, 2, 3].length
 		}
 	} else if (node->IsIncrement()) {

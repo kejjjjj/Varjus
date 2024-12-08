@@ -1,6 +1,6 @@
 #include "runtime.hpp"
 #include "structure.hpp"
-#include "values/types/array_internal/array_builtin.hpp"
+#include "values/types/internal/builtin_methods.hpp"
 #include "values/types/types.hpp"
 #include "variables.hpp"
 
@@ -60,7 +60,7 @@ void CProgramRuntime::Execute()
 		throw CRuntimeError("couldn't find the \"main\" function");
 	}
 
-	CStaticArrayBuiltInMethods::Initialize(GetContext());
+	BuiltInMethods::Setup(GetContext());
 
 	SetupGlobalVariables();
 	EvaluateGlobalExpressions();
