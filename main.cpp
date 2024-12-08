@@ -10,14 +10,7 @@
 
 #include "fs/fs_io.hpp"
 
-#ifndef _DEBUG
-#define BOOST_TEST_MODULE MyTest
-#include <boost/test/included/unit_test.hpp>
-
-int _main()
-#else
 int main()
-#endif
 {
 
     try {
@@ -39,7 +32,7 @@ int main()
         auto end = tokens.end();
 
         auto context = CProgramContext{};
-        context.m_oAllMembers["length"];
+        context.m_oAllMembers.Insert("length");
 
 		CFileLinter linter(begin, end, &context);
 
@@ -63,14 +56,3 @@ int main()
 
     return 0;
 }
-
-#ifndef _DEBUG
-
-struct AllocatorSetup {
-    AllocatorSetup() {}
-    ~AllocatorSetup() { _main(); }
-};
-
-BOOST_GLOBAL_FIXTURE(AllocatorSetup);
-
-#endif

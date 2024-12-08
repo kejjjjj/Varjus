@@ -4,6 +4,9 @@
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
 [Vv]arjus/
+[Vv]arjus.vcx*
+[Vv]arjus.sln
+
 *vcx*
 
 # User-specific files

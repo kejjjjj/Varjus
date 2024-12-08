@@ -1,8 +1,10 @@
 #include "members.hpp"
 
-std::size_t CStringIntegerHashMap::operator[](const std::string& key)
+std::size_t CStringIntegerHashMap::operator[](const std::string& key){
+	return Insert(key);
+}
+[[maybe_unused]] std::size_t CStringIntegerHashMap::Insert(const std::string& key)
 {
-
 	const auto index = m_oStringToId.find(key);
 
 	if (index == m_oStringToId.end()) {
@@ -12,6 +14,7 @@ std::size_t CStringIntegerHashMap::operator[](const std::string& key)
 
 	return m_oStringToId[key];
 }
+
 bool CStringIntegerHashMap::Contains(const std::string& key) const{
 	return m_oStringToId.contains(key);
 }
