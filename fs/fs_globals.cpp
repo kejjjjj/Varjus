@@ -3,16 +3,12 @@
 #include <fstream>
 #include "fs_globals.hpp"
 
-#include <Windows.h>
-#include <direct.h>
-
 namespace _fs = std::filesystem;
 
 std::string fs::exe_file_name()
 {
-	char buffer[MAX_PATH];
-	GetModuleFileNameA(NULL, buffer, MAX_PATH);
-	return std::string(buffer);
+	
+	return std::filesystem::current_path().string();
 }
 std::string fs::exe_path()
 {
@@ -63,7 +59,7 @@ void fs::create_file(const std::string& path)
 }
 bool fs::create_directory(const std::string& path)
 {
-	return _mkdir((path).c_str()) != -1;
+	return std::filesystem::create_directory(path);
 }
 std::vector<std::string> fs::files_in_directory(const std::string& path)
 {
@@ -105,22 +101,9 @@ std::vector<std::string> fs::items_in_directory_formatted(const std::string& pat
 	return files; //compiler I hope you optimize this! 
 }
 
-std::string fs::get_last_error()
-{
-	const DWORD errorMessageID = ::GetLastError();
-	char* messageBuffer = nullptr;
-
-	size_t size = FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-		NULL, errorMessageID, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (char*)&messageBuffer, 0, NULL);
-
-	std::string output = std::string(messageBuffer, size);
-
-	LocalFree(messageBuffer);
-	return output;
-}
 bool fs::valid_file_name(const std::string& name)
 {
-	if (name.empty() || name.length() >= MAX_PATH)
+	if (name.empty())
 		return false;
 
 	for (const auto& i : name) {

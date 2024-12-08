@@ -20,8 +20,6 @@ namespace fs
 	std::vector<std::string> files_in_directory(const std::string& path);
 	std::vector<std::string> items_in_directory_formatted(const std::string& path);
 
-	std::string get_last_error();
-
 	bool directory_exists(const std::string& d);
 	bool file_exists(const std::string& f);
 

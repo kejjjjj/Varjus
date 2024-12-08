@@ -69,7 +69,7 @@ void CProgramRuntime::Execute()
 	const steady_clock now = BeginExecution(iMainFunction->get());
 
 	const std::chrono::duration<float> difference = now - old;
-	std::print(std::cout, "\ntime taken: {:.6f}s\n", difference.count());
+	std::cout << std::format("\ntime taken: {:.6f}s\n", difference.count());
 
 	FreeGlobalVariables();
 
