@@ -53,7 +53,7 @@ public:
 	[[nodiscard]] UniqueAST ToAST();
 
 
-	[[nodiscard]] constexpr bool IsTernary() const noexcept { 
+	[[nodiscard]] inline bool IsTernary() const noexcept { 
 		return m_pOperand && m_pOperand->Type() == ot_ternary; }
 
 private:

@@ -1,6 +1,5 @@
 #include <iostream>
 
-
 #include "linter/tokenizer.hpp"
 #include "linter/error.hpp"
 #include "linter/linter.hpp"

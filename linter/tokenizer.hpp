@@ -23,15 +23,15 @@ private:
 	[[nodiscard]] constexpr bool EndOfBuffer() const noexcept { return m_oScriptPos == m_oScriptEnd; }
 	[[nodiscard]] constexpr bool EndOfBuffer(const std::string_view::iterator& pos) const noexcept { return pos == m_oScriptEnd; }
 
-	[[nodiscard]] constexpr std::unique_ptr<CToken> ReadToken();
+	[[nodiscard]] std::unique_ptr<CToken> ReadToken();
 
-	[[nodiscard]] constexpr Success ReadWhiteSpace() noexcept;
-	[[nodiscard]] constexpr Success ReadNumber(CToken& token) noexcept;
-	[[nodiscard]] constexpr Success ReadInteger(CToken& token) noexcept;
-	[[nodiscard]] constexpr Success ReadString(CToken& token) noexcept;
-	[[nodiscard]] constexpr Success ReadName(CToken& token) noexcept;
+	[[nodiscard]] Success ReadWhiteSpace() noexcept;
+	[[nodiscard]] Success ReadNumber(CToken& token) noexcept;
+	[[nodiscard]] Success ReadInteger(CToken& token) noexcept;
+	[[nodiscard]] Success ReadString(CToken& token) noexcept;
+	[[nodiscard]] Success ReadName(CToken& token) noexcept;
 
-	[[nodiscard]] constexpr std::unique_ptr<CToken> ReadPunctuation() noexcept;
+	[[nodiscard]] std::unique_ptr<CToken> ReadPunctuation() noexcept;
 
 
 

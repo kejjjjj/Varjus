@@ -110,7 +110,7 @@ steady_clock CProgramRuntime::BeginExecution(CRuntimeFunction* entryFunc)
 	std::vector<IValue*> args;
 	if (auto returnValue = entryFunc->Execute(nullptr, args, {})) {
 		steady_clock now = std::chrono::steady_clock::now();
-		std::print(std::cout, "The program returned: {}\n", returnValue->ToPrintableString());
+		std::cout << std::format("The program returned: {}\n", returnValue->ToPrintableString());
 		returnValue->Release();
 		return now;
 	}

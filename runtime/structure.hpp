@@ -151,7 +151,7 @@ public:
 
 	[[maybe_unused]] IValue* Execute(CFunction* const thisFunction) override;
 	[[nodiscard]] IValue* Evaluate(CFunction* const thisFunction);
-	[[nodiscard]] constexpr bool HasAST() { return !!m_pAST.get(); }
+	[[nodiscard]] inline bool HasAST() { return !!m_pAST.get(); }
 protected:
 	[[nodiscard]] constexpr EStructureType Type() const noexcept { return st_expression;};
 

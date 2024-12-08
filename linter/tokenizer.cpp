@@ -51,7 +51,7 @@ std::vector<CToken*> CBufferTokenizer::GetTokens()
 
 	return tokens;
 }
-constexpr std::unique_ptr<CToken> CBufferTokenizer::ReadToken()
+std::unique_ptr<CToken> CBufferTokenizer::ReadToken()
 {
 	m_oLastScriptPos = m_oScriptPos;
 
@@ -90,7 +90,7 @@ constexpr std::unique_ptr<CToken> CBufferTokenizer::ReadToken()
 	return std::make_unique<CToken>(token);
 }
 
-constexpr Success CBufferTokenizer::ReadWhiteSpace() noexcept
+Success CBufferTokenizer::ReadWhiteSpace() noexcept
 {
 
 	auto& [line, column] = m_oParserPosition;
@@ -120,7 +120,7 @@ constexpr Success CBufferTokenizer::ReadWhiteSpace() noexcept
 
 	return success;
 }
-constexpr Success CBufferTokenizer::ReadNumber(CToken& token) noexcept
+Success CBufferTokenizer::ReadNumber(CToken& token) noexcept
 {
 	auto& [_, column] = m_oParserPosition;
 
@@ -169,7 +169,7 @@ constexpr Success CBufferTokenizer::ReadNumber(CToken& token) noexcept
 	return success;
 
 }
-constexpr Success CBufferTokenizer::ReadInteger(CToken& token) noexcept
+Success CBufferTokenizer::ReadInteger(CToken& token) noexcept
 {
 	if (EndOfBuffer())
 		return failure;
@@ -191,7 +191,7 @@ constexpr Success CBufferTokenizer::ReadInteger(CToken& token) noexcept
 
 	return success;
 }
-constexpr Success CBufferTokenizer::ReadString(CToken& token) noexcept
+Success CBufferTokenizer::ReadString(CToken& token) noexcept
 {
 	auto& [line, column] = m_oParserPosition;
 
@@ -243,7 +243,7 @@ const std::unordered_map<std::string_view, TokenType> reservedKeywords = {
 	{"throw", TokenType::tt_throw}
 };
 
-constexpr Success CBufferTokenizer::ReadName(CToken& token) noexcept
+Success CBufferTokenizer::ReadName(CToken& token) noexcept
 {
 	auto& [_, column] = m_oParserPosition;
 
@@ -270,7 +270,7 @@ constexpr Success CBufferTokenizer::ReadName(CToken& token) noexcept
 	return success;
 
 }
-constexpr std::unique_ptr<CToken> CBufferTokenizer::ReadPunctuation() noexcept
+std::unique_ptr<CToken> CBufferTokenizer::ReadPunctuation() noexcept
 {
 	auto& [line, column] = m_oParserPosition;
 
