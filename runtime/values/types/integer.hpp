@@ -20,6 +20,8 @@ public:
 	[[nodiscard]] constexpr bool IsArithmetic() const noexcept override { return true; }
 	[[nodiscard]] constexpr bool IsBooleanConvertible() const noexcept override { return true; }
 
+	[[nodiscard]] CIntValue* ToCInt() override { return this; }
+
 private:
 	[[nodiscard]] std::string TypeAsString() const override { return "int"s; }
 	[[nodiscard]] std::string ValueAsString() const override { return std::to_string(Get()); }

@@ -13,6 +13,9 @@ using namespace std::string_literals;
 class CVariable;
 class CRuntimeFunction;
 class IValue;
+class CBooleanValue;
+class CIntValue;
+class CDoubleValue;
 class CStringValue;
 class CInternalArrayValue;
 class CArrayValue;
@@ -85,8 +88,6 @@ public:
 	[[nodiscard]] std::int64_t& AsInt();
 	[[nodiscard]] double &AsDouble();
 	[[nodiscard]] std::string& AsString();
-	[[nodiscard]] CRuntimeFunction* AsCallable();
-	[[nodiscard]] CInternalArrayValue* AsArray();
 
 	[[nodiscard]] virtual bool ToBoolean() const { return false; }
 	[[nodiscard]] virtual std::int64_t ToInt() const { return 0; }
@@ -94,6 +95,10 @@ public:
 	[[nodiscard]] virtual const std::string& ToString() const { return emptyString; }
 
 	[[nodiscard]] virtual std::size_t AddressOf() const noexcept { return reinterpret_cast<std::size_t>(this); }
+
+	[[nodiscard]] virtual CBooleanValue* ToCBoolean() { return nullptr; }
+	[[nodiscard]] virtual CIntValue* ToCInt() { return nullptr; }
+	[[nodiscard]] virtual CDoubleValue* ToCDouble() { return nullptr; }
 
 	[[nodiscard]] virtual CStringValue* ToCString() { return nullptr; }
 	[[nodiscard]] virtual CCallableValue* ToCallable() { return nullptr; }

@@ -18,24 +18,18 @@ IValue* IValue::Copy()
 	return CProgramRuntime::AcquireNewValue<IValue>();
 }
 bool& IValue::AsBoolean(){
-	return dynamic_cast<CBooleanValue*>(this)->Get();
+	return ToCBoolean()->Get(); 
 }
 std::int64_t& IValue::AsInt() {
-	return dynamic_cast<CIntValue*>(this)->Get();
+	return ToCInt()->Get();
 }
 double& IValue::AsDouble() {
-	return dynamic_cast<CDoubleValue*>(this)->Get();
+	return ToCDouble()->Get();
 }
 std::string& IValue::AsString(){
-	return dynamic_cast<CStringValue*>(this)->Internal()->GetString();
+	return ToCString()->Internal()->GetString();
 }
-CRuntimeFunction* IValue::AsCallable(){
-	return dynamic_cast<CCallableValue*>(this)->GetShared()->GetCallable();
-}
-CInternalArrayValue* IValue::AsArray()
-{
-	return dynamic_cast<CInternalArrayValue*>(this);
-}
+
 std::string IValue::ToPrintableString() const
 {
 	return std::format("{}: {}", ValueAsString(), TypeAsString());

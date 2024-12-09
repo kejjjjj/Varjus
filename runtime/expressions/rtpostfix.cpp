@@ -34,9 +34,13 @@ IValue* CRuntimeExpression::EvaluatePostfix(CFunction* const thisFunction, const
 		returnVal = EvaluateFunctionCall(thisFunction, operand, node->GetFunctionCall());
 	} else if (node->IsMemberAccess()) {
 		returnVal = EvaluateMemberAccess(operand, node->GetMemberAccess());
-		if (operand->IsHanging() && operand->IsSharedObject()) {
+
+		const auto isMethod = !returnVal->IsSharedObject() && returnVal->IsCallable();
+
+		if (!isMethod && operand->IsHanging()) {
 			returnVal = returnVal->Copy(); //accessing a temporary e.g. [1, 2, 3].length
 		}
+
 	} else if (node->IsIncrement()) {
 		returnVal = EvaluateIncrement(operand);
 	} else if (node->IsDecrement()) {

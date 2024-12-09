@@ -62,7 +62,7 @@ CVariable* CArrayAggregate::AddAttribute(ElementIndex elem)
 {
 	auto& var = m_oIndexLookup[elem] = CProgramRuntime::AcquireNewVariable();
 
-	if (elem == ARRAY_LENGTH) {
+	if (elem == LENGTH_PROPERTY) {
 		var->SetValue(CProgramRuntime::AcquireNewValue<CIntValue>(0));
 		var->GetValue()->MakeImmutable();
 	} else {

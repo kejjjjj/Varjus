@@ -25,7 +25,12 @@ private:
 
 	[[nodiscard]] std::unique_ptr<CToken> ReadToken();
 
+	[[nodiscard]] bool IsToken(const std::string& t) noexcept;
+
 	[[nodiscard]] Success ReadWhiteSpace() noexcept;
+	[[nodiscard]] Success ReadSingleLineComment() noexcept;
+	[[nodiscard]] Success ReadMultiLineComment();
+
 	[[nodiscard]] Success ReadNumber(CToken& token) noexcept;
 	[[nodiscard]] Success ReadInteger(CToken& token) noexcept;
 	[[nodiscard]] Success ReadString(CToken& token) noexcept;

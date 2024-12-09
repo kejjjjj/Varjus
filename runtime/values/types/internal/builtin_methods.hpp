@@ -52,8 +52,11 @@ public:
 	}
 
 	[[nodiscard]] static inline const MethodType* LookupMethod(ElementIndex index) {
-		try { return m_oMethodLookup.at(index); }
-		catch ([[maybe_unused]] std::out_of_range& ex) { return nullptr; }
+
+		if (m_oMethodLookup.contains(index))
+			return m_oMethodLookup[index];
+
+		return nullptr;
 	}
 
 	[[nodiscard]] static inline IValue* CallMethod(CFunction* const thisFunction,
@@ -62,7 +65,12 @@ public:
 		if (method->m_uNumArguments != args.size())
 			throw CRuntimeError(std::format("the method expected {} arguments instead of {}", method->m_uNumArguments, args.size()));
 
-		return std::mem_fn(method->memFn)(_this, thisFunction, args);
+		auto returnVal = std::mem_fn(method->memFn)(_this, thisFunction, args);
+
+		for (auto& val : args)
+			val->Release();
+
+		return returnVal;
 	}
 
 	[[nodiscard]] static inline auto& GetIterator() noexcept { return m_oMethodLookup; }

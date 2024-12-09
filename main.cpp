@@ -15,16 +15,18 @@ int main()
     try {
 
         const auto reader = VarjusIOReader("\\scripts\\script.var");
-        const auto fileBuf = reader.IO_Read();
+        auto fileBuf = reader.IO_Read();
 
         if (!fileBuf) {
             throw std::exception("couldn't read the file buffer");
         }
 
+        fileBuf->push_back('\n'); // fixes a crash lol
+
         auto tokenizer = CBufferTokenizer(*fileBuf);
 
         if (!tokenizer.Tokenize())
-            throw std::exception("tokenization failure");
+            throw std::exception("the input file didn't have any parsable tokens");
 
 		auto tokens = tokenizer.GetTokens();
 		auto begin = tokens.begin();

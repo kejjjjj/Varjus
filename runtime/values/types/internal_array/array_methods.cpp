@@ -4,12 +4,26 @@
 #include "runtime/exceptions/exception.hpp"
 #include "runtime/values/simple_operators.hpp"
 
+CArrayValue::ArrayMethods CArrayValue::ConstructMethods()
+{
+	return {
+		{"push",       {1u, &CArrayValue::Push}},
+		{"push_front", {1u, &CArrayValue::PushFront}},
+		{"pop",        {0u, &CArrayValue::Pop}},
+		{"pop_front",  {0u, &CArrayValue::PopFront}},
+		{"map",        {1u, &CArrayValue::Map}},
+		{"find",       {1u, &CArrayValue::Find}},
+		{"filter",     {1u, &CArrayValue::Filter}},
+		{"contains",   {1u, &CArrayValue::Contains}},
+	};
+}
+
 IValue* CArrayValue::Push([[maybe_unused]] CFunction* const thisFunction, const IValues& newValues)
 {
 	assert(newValues.size() == 1);
 	auto& vars = GetShared()->GetVariables();
 	auto& newVar = vars.emplace_back(CProgramRuntime::AcquireNewVariable());
-	newVar->SetValue(newValues.front());
+	newVar->SetValue(newValues.front()->Copy());
 	return newVar->GetValue()->Copy();
 }
 IValue* CArrayValue::PushFront([[maybe_unused]] CFunction* const thisFunction, const IValues& newValues)
@@ -18,7 +32,7 @@ IValue* CArrayValue::PushFront([[maybe_unused]] CFunction* const thisFunction, c
 	auto& vars = GetShared()->GetVariables();
 
 	auto it = vars.insert(vars.begin(), CProgramRuntime::AcquireNewVariable());
-	(*it)->SetValue(newValues.front());
+	(*it)->SetValue(newValues.front()->Copy());
 	return (*it)->GetValue()->Copy();
 }
 
@@ -67,15 +81,32 @@ IValue* CArrayValue::Map(CFunction* const thisFunction, const IValues& newValues
 
 	IValues results(vars.size());
 	IValues args(1);
+	IValue* exceptionValue{ nullptr };
 
 	//result array
 	for (auto i = std::size_t(0); const auto& var : vars) {
 		args[0] = var->GetValue()->Copy();
 		results[i++] = mapFunc->Call(thisFunction, args);
+
+		//because of course someone will throw an exception :x
+		if (CProgramRuntime::ExceptionThrown()) {
+			exceptionValue = results[i - 1];
+			results.resize(i - 1);
+			break;
+		}
+
 	}
 
-	if (mapFunc->IsHanging())
-		mapFunc->Release();
+	if (CProgramRuntime::ExceptionThrown()) {
+
+		for (auto& r : results) {
+			if(r != exceptionValue)
+				r->Release();
+		}
+
+		return exceptionValue;
+	}
+
 
 	return CArrayValue::Construct(std::move(results));
 }
@@ -90,11 +121,18 @@ IValue* CArrayValue::Find(CFunction* const thisFunction, const IValues& newValue
 	auto& vars = GetShared()->GetVariables();
 
 	IValue* result{ nullptr };
+	IValue* exception{ nullptr };
+
 	IValues args(1);
 
 	for (const auto& var : vars) {
 		args[0] = var->GetValue()->Copy();
 		IValue* thisIteration = mapFunc->Call(thisFunction, args);
+
+		if (CProgramRuntime::ExceptionThrown()) {
+			exception = thisIteration;
+			break;
+		}
 
 		if(!thisIteration->IsBooleanConvertible())
 			throw CRuntimeError(std::format("array.find expected a boolean return value", mapFunc->TypeAsString()));
@@ -109,8 +147,9 @@ IValue* CArrayValue::Find(CFunction* const thisFunction, const IValues& newValue
 			break;
 	}
 
-	if (mapFunc->IsHanging())
-		mapFunc->Release();
+	if (CProgramRuntime::ExceptionThrown()) {
+		return exception;
+	}
 
 	if (!result)
 		return CProgramRuntime::AcquireNewValue<IValue>(); //didn't find, return undefined
@@ -129,12 +168,19 @@ IValue* CArrayValue::Filter(CFunction* const thisFunction, const IValues& newVal
 
 	IValues results;
 	IValues args(1);
+	IValue* exception{ nullptr };
 
 	//result array
 	for (const auto & var : vars) {
 		args[0] = var->GetValue()->Copy();
 
 		IValue* thisIteration = mapFunc->Call(thisFunction, args);
+
+
+		if (CProgramRuntime::ExceptionThrown()) {
+			exception = thisIteration;
+			break;
+		}
 
 		if (!thisIteration->IsBooleanConvertible())
 			throw CRuntimeError(std::format("array.filter expected a boolean return value", mapFunc->TypeAsString()));
@@ -143,10 +189,14 @@ IValue* CArrayValue::Filter(CFunction* const thisFunction, const IValues& newVal
 			results.push_back(var->GetValue()->Copy());
 
 		thisIteration->Release(); // nothing meaningful, release it
+
+		if (CProgramRuntime::ExceptionThrown())
+			break;
 	}
 
-	if (mapFunc->IsHanging())
-		mapFunc->Release();
+	if (CProgramRuntime::ExceptionThrown()) {
+		return exception;
+	}
 
 	return CArrayValue::Construct(std::move(results));
 }
@@ -171,9 +221,6 @@ IValue* CArrayValue::Contains([[maybe_unused]] CFunction* const thisFunction, co
 
 		thisIteration->Release(); // nothing meaningful, release it
 	}
-
-	if (!searchElement->HasOwner())
-		searchElement->Release();
 
 	if (!result)
 		return CProgramRuntime::AcquireNewValue<CBooleanValue>(false);

@@ -20,6 +20,9 @@ public:
 	[[nodiscard]] constexpr bool IsArithmetic() const noexcept override { return true; }
 	[[nodiscard]] constexpr bool IsBooleanConvertible() const noexcept override { return false; }
 
+	[[nodiscard]] CDoubleValue* ToCDouble() override { return this; }
+
+
 private:
 	[[nodiscard]] std::string TypeAsString() const override { return "double"s; }
 	[[nodiscard]] std::string ValueAsString() const override { return std::to_string(Get()); }

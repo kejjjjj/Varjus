@@ -78,5 +78,14 @@ private:
 	[[nodiscard]] IValue* ToUpper(CFunction* const thisFunction, const IValues& newValue);
 	[[nodiscard]] IValue* ToLower(CFunction* const thisFunction, const IValues& newValue);
 
+	[[nodiscard]] IValue* Substring(CFunction* const thisFunction, const IValues& newValue);
+	[[nodiscard]] IValue* Split(CFunction* const thisFunction, const IValues& newValue);
+
+	[[nodiscard]] IValue* Replace(CFunction* const thisFunction, const IValues& newValue);
+	[[nodiscard]] IValue* Repeat(CFunction* const thisFunction, const IValues& newValue);
+	
+	[[nodiscard]] IValue* GetCodeAt(CFunction* const thisFunction, const IValues& newValue);
+
+
 	const CBuiltInMethod<CStringValue>* m_pMethod{ nullptr };
 };

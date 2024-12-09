@@ -6,19 +6,25 @@
 
 CStringValue* CStringValue::Construct(const std::string& v)
 {
+
 	auto str = CProgramRuntime::AcquireNewValue<CStringValue>();
 	auto internal = str->Internal();
 	str->MakeUnique();
 	internal->Set(v);
-	internal->GetAggregateValue().AddAttribute(ARRAY_LENGTH);
+	internal->GetAggregateValue().AddAttribute(LENGTH_PROPERTY);
 	return str;
 }
 
 IValue* CStringValue::Copy(){
-	return Construct(Internal()->GetString());
+	
+	auto v = Construct(Internal()->GetString());
+	v->m_pMethod = m_pMethod;
+	return v;
 }
 void CStringValue::Release()
 {
+	m_pMethod = nullptr;
+
 	Internal()->Release();
 
 	ReleaseInternal();
@@ -43,7 +49,6 @@ IValue* CStringValue::Index(std::int64_t index)
 }
 IValue* CStringValue::GetAggregate(std::size_t memberIdx)
 {
-
 	if (auto func = CBuiltInMethods<CStringValue>::LookupMethod(memberIdx)) {
 		auto ptr = HasOwner() ? this : this->Copy()->ToCString();
 		ptr->m_pMethod = func;
@@ -52,7 +57,7 @@ IValue* CStringValue::GetAggregate(std::size_t memberIdx)
 
 	auto value = Internal()->GetAggregateValue().ElementLookup(memberIdx);
 
-	if (memberIdx == ARRAY_LENGTH) {
+	if (memberIdx == LENGTH_PROPERTY) {
 		assert(value->IsIntegral());
 		value->AsInt() = static_cast<std::int64_t>(Internal()->Length());
 	}
@@ -82,11 +87,4 @@ std::size_t CInternalStringValue::Length() const noexcept
 	return m_oValue.m_sString.length();
 }
 
-CStringValue::StringMethods CStringValue::ConstructMethods()
-{
-	return {
-		{"to_upper", {0u, &CStringValue::ToUpper}},
-		{"to_lower", {0u, &CStringValue::ToLower}},
 
-	};
-}

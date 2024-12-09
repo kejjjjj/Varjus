@@ -60,6 +60,22 @@ std::unique_ptr<CToken> CBufferTokenizer::ReadToken()
 	if (EndOfBuffer())
 		return nullptr;
 
+	while (true) {
+
+		if (!ReadWhiteSpace())
+			return nullptr;
+
+		if (IsToken("//")) {
+			if (!ReadSingleLineComment())
+				return nullptr;
+		} else if (IsToken("/*")) {
+			if (!ReadMultiLineComment())
+				return nullptr;
+		} else {
+			break;
+		}
+	}
+
 	if (!ReadWhiteSpace())
 		return nullptr;
 
@@ -90,8 +106,21 @@ std::unique_ptr<CToken> CBufferTokenizer::ReadToken()
 	return std::make_unique<CToken>(token);
 }
 
+bool CBufferTokenizer::IsToken(const std::string& t) noexcept
+{
+	if ((std::size_t)std::distance(m_oScriptPos, m_oScriptEnd) < t.length())
+		return failure;
+
+	const auto end = m_oScriptPos + (std::ptrdiff_t)t.length();
+	const auto punctuation = std::string_view(m_oScriptPos, end);
+
+	return punctuation == t;
+}
+
 Success CBufferTokenizer::ReadWhiteSpace() noexcept
 {
+	if (EndOfBuffer())
+		return failure;
 
 	auto& [line, column] = m_oParserPosition;
 
@@ -117,6 +146,61 @@ Success CBufferTokenizer::ReadWhiteSpace() noexcept
 			return failure;
 
 	}
+
+	return success;
+}
+Success CBufferTokenizer::ReadSingleLineComment() noexcept
+{
+	auto& [line, column] = m_oParserPosition;
+
+	if (EndOfBuffer())
+		return failure;
+
+	while (*m_oScriptPos != '\n') {
+
+		if (*m_oScriptPos == '\t')
+			column += size_t(4);
+		else
+			column++;
+		
+		m_oScriptPos++;
+
+		if (EndOfBuffer())
+			break;
+	}
+
+	return success;
+
+
+}
+
+Success CBufferTokenizer::ReadMultiLineComment()
+{
+	auto& [line, column] = m_oParserPosition;
+
+	if (EndOfBuffer())
+		return failure;
+
+	while (!IsToken("*/")) {
+
+		if (*m_oScriptPos == '\n') {
+			line++;
+			column = size_t(1);
+		}
+		else {
+			if (*m_oScriptPos == '\t')
+				column += size_t(4);
+			else
+				column++;
+		}
+
+		m_oScriptPos++;
+
+		if (EndOfBuffer())
+			throw std::exception("expected to find */ before EOF");
+	}
+
+	m_oScriptPos += 2; // */
 
 	return success;
 }

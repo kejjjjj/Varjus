@@ -16,7 +16,7 @@ IValue* OP_ASSIGNMENT(IValue* lhs, IValue* rhs)
 	if (!variable)
 		throw CRuntimeError("cannot assign to a temporary value");
 
-	assert(lhs != rhs);
+	//assert(lhs != rhs);
 	if (lhs == rhs)
 		return lhs;
 

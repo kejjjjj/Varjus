@@ -50,13 +50,13 @@ void CArrayValue::Release(){
 
 IValue* CArrayValue::Copy(){
 
-	if (IsCallable()) //array method such as array.push -> can't be copied
-		return CProgramRuntime::AcquireNewValue<IValue>();
+	//if (IsCallable()) //array method such as array.push -> can't be copied
+	//	return CProgramRuntime::AcquireNewValue<IValue>();
 
 	CArrayValue* ptr = CProgramRuntime::AcquireNewValue<CArrayValue>();
 	ptr->MakeShared();
 	ptr->GetShared() = GetShared();
-
+	ptr->m_pMethod = m_pMethod;
 	return ptr;
 }
 
@@ -89,7 +89,7 @@ IValue* CArrayValue::GetAggregate(std::size_t memberIdx)
 
 	auto value = Internal()->GetAggregateValue().ElementLookup(memberIdx);
 
-	if (memberIdx == ARRAY_LENGTH) {
+	if (memberIdx == LENGTH_PROPERTY) {
 		assert(value->IsIntegral());
 		value->AsInt() = static_cast<std::int64_t>(Internal()->Length());
 	}
@@ -145,16 +145,4 @@ std::string CArrayValue::ValueAsString() const
 	return "[ " + result + " ]";
 }
 
-CArrayValue::ArrayMethods CArrayValue::ConstructMethods()
-{
-	return {
-		{"push",       {1u, &CArrayValue::Push}},
-		{"push_front", {1u, &CArrayValue::PushFront}},
-		{"pop",        {0u, &CArrayValue::Pop}},
-		{"pop_front",  {0u, &CArrayValue::PopFront}},
-		{"map",        {1u, &CArrayValue::Map}},
-		{"find",       {1u, &CArrayValue::Find}},
-		{"filter",     {1u, &CArrayValue::Filter}},
-		{"contains",   {1u, &CArrayValue::Contains}},
-	};
-}
+

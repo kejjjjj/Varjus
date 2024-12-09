@@ -11,7 +11,7 @@ class AbstractSyntaxTree;
 using GlobalMemberIndex = std::size_t;
 using ElementIndex = std::size_t;
 
-#define ARRAY_LENGTH std::size_t(0)
+#define LENGTH_PROPERTY std::size_t(0)
 
 enum AggregateType
 {
