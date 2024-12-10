@@ -100,6 +100,8 @@ private:
 
 	[[nodiscard]] IValue* Contains(CFunction* const thisFunction, const IValues& newValue);
 
+	[[nodiscard]] IValue* Reverse(CFunction* const thisFunction, const IValues& newValue);
+
 	const CBuiltInMethod<CArrayValue>* m_pMethod{ nullptr };
 };
 

@@ -21,6 +21,7 @@ private:
 	[[nodiscard]] std::unique_ptr<CUnaryBase> ParseIncrement();
 	[[nodiscard]] std::unique_ptr<CUnaryBase> ParseDecrement();
 	[[nodiscard]] std::unique_ptr<CUnaryBase> ParseLogicalNot();
+	[[nodiscard]] std::unique_ptr<CUnaryBase> ParseTypeOf();
 
 	[[nodiscard]] bool IsUnaryOperator(const CPunctuationToken& token) const noexcept;
 
@@ -34,7 +35,8 @@ enum EUnaryType{
 	un_negation,
 	un_increment,
 	un_decrement,
-	un_logical_not
+	un_logical_not,
+	un_typeof
 };
 
 class CUnaryBase
@@ -82,6 +84,15 @@ class CUnaryLogicalNot final : public CUnaryBase
 public:
 	CUnaryLogicalNot() = default;
 	[[nodiscard]] constexpr EUnaryType Type() const noexcept override { return un_logical_not; }
+
+	[[nodiscard]] std::unique_ptr<AbstractSyntaxTree> ToAST() override;
+};
+class CUnaryTypeOf final : public CUnaryBase
+{
+	NONCOPYABLE(CUnaryTypeOf);
+public:
+	CUnaryTypeOf() = default;
+	[[nodiscard]] constexpr EUnaryType Type() const noexcept override { return un_typeof; }
 
 	[[nodiscard]] std::unique_ptr<AbstractSyntaxTree> ToAST() override;
 };

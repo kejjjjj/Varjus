@@ -72,7 +72,6 @@ public:
 
 	CVectorLinter operator=(const CVectorLinter&) = delete;
 protected:
-	VectorOf<const ContainerType*> m_oTokens;
 };
 
 enum EvaluationType

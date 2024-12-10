@@ -52,7 +52,7 @@ Success CForStatementLinter::ParseInitializer() {
 		return failure;
 	}
 
-	if ((*m_iterPos)->Type() == TokenType::tt_declaration) {
+	if ((*m_iterPos)->Type() == TokenType::tt_let) {
 		CVariableDeclarationLinter linter(m_iterPos, m_iterEnd, m_pThisScope, m_pOwner);
 
 		if (!linter.Parse())

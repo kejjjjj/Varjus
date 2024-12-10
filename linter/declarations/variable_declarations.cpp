@@ -81,7 +81,7 @@ Success CVariableDeclarationLinter::Parse()
 
 bool CVariableDeclarationLinter::IsDeclaration(const CToken* token) const noexcept
 {
-	return token && token->Type() == tt_declaration;
+	return token && token->Type() == tt_let;
 }
 bool CVariableDeclarationLinter::IsIdentifier(const CToken* token) const noexcept
 {

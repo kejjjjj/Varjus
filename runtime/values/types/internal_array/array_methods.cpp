@@ -15,6 +15,8 @@ CArrayValue::ArrayMethods CArrayValue::ConstructMethods()
 		{"find",       {1u, &CArrayValue::Find}},
 		{"filter",     {1u, &CArrayValue::Filter}},
 		{"contains",   {1u, &CArrayValue::Contains}},
+		{"reverse",    {0u, &CArrayValue::Reverse}},
+
 	};
 }
 
@@ -226,4 +228,17 @@ IValue* CArrayValue::Contains([[maybe_unused]] CFunction* const thisFunction, co
 		return CProgramRuntime::AcquireNewValue<CBooleanValue>(false);
 
 	return result;
+}
+IValue* CArrayValue::Reverse([[maybe_unused]] CFunction* const thisFunction, [[maybe_unused]] const IValues& newValues)
+{
+	
+	auto& vars = GetShared()->GetVariables();
+	IValues valuesAsCopy(vars.size());
+
+	for (auto i = size_t(0); auto& var : vars)
+		valuesAsCopy[i++] = var->GetValue()->Copy();
+	
+	std::reverse(valuesAsCopy.begin(), valuesAsCopy.end());
+
+	return CArrayValue::Construct(std::move(valuesAsCopy));
 }

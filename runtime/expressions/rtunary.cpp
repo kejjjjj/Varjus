@@ -16,6 +16,7 @@ static IValue* EvaluateNegation(IValue* operand);
 static IValue* EvaluateIncrement(IValue* operand);
 static IValue* EvaluateDecrement(IValue* operand);
 static IValue* EvaluateLogicalNot(IValue* operand);
+static IValue* EvaluateTypeOf(IValue* operand);
 
 IValue* CRuntimeExpression::EvaluateUnary(CFunction* const thisFunction, const UnaryASTNode* node)
 {
@@ -30,6 +31,8 @@ IValue* CRuntimeExpression::EvaluateUnary(CFunction* const thisFunction, const U
 		returnVal = EvaluateDecrement(operand);
 	} else if (node->IsLogicalNot()) {
 		returnVal = EvaluateLogicalNot(operand);
+	} else if (node->IsTypeOf()) {
+		returnVal = EvaluateTypeOf(operand);
 	}
 	
 	assert(returnVal);
@@ -53,22 +56,25 @@ IValue* EvaluateNegation(IValue* operand)
 }
 IValue* EvaluateIncrement(IValue* operand)
 {
-	if (!operand->HasOwner())
-		throw CRuntimeError("cannot increment a temporary value");
 
 	if (operand->Type() != t_int)
 		throw CRuntimeError(std::format("the increment operand must have an int type, but is \"{}\"", operand->TypeAsString()));
+	
+	if (!operand->HasOwner())
+		throw CRuntimeError("cannot increment a temporary value");
 
 	++operand->AsInt();
 	return operand;
 }
 IValue* EvaluateDecrement(IValue* operand)
 {
-	if (!operand->HasOwner())
-		throw CRuntimeError("cannot decrement a temporary value");
 
 	if (operand->Type() != t_int)
 		throw CRuntimeError(std::format("the decrement operand must have an int type, but is \"{}\"", operand->TypeAsString()));
+	
+	if (!operand->HasOwner())
+		throw CRuntimeError("cannot decrement a temporary value");
+
 	--operand->AsInt();
 	return operand;
 }
@@ -79,3 +85,8 @@ IValue* EvaluateLogicalNot(IValue* operand)
 
 	return CProgramRuntime::AcquireNewValue<CBooleanValue>(!operand->ToBoolean());
 }
+
+IValue* EvaluateTypeOf(IValue* operand){
+	return CStringValue::Construct(operand->TypeAsString());
+}
+

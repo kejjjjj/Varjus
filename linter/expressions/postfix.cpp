@@ -55,7 +55,6 @@ Success CPostfixLinter::ParsePostfix()
 		if (m_oPostfixes.size())
 			m_oPostfixes.back()->m_oCodePosition = asPunctuation.m_oSourcePosition;
 
-		m_oTokens.emplace_back(&asPunctuation);
 	}
 
 	std::reverse(m_oPostfixes.begin(), m_oPostfixes.end());

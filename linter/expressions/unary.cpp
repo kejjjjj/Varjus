@@ -19,33 +19,39 @@ CUnaryLinter::~CUnaryLinter() = default;
 Success CUnaryLinter::ParseUnary()
 {
 
-	while(!IsEndOfBuffer() && (*m_iterPos)->IsOperator()) {
-		const auto& asPunctuation = dynamic_cast<CPunctuationToken&>(**m_iterPos);
+	while(!IsEndOfBuffer() && ((*m_iterPos)->IsOperator() || (*m_iterPos)->Type() == tt_typeof)) {
 
-		if (!IsUnaryOperator(asPunctuation))
-			break;
+		auto pos = *m_iterPos;
 
-		switch (asPunctuation.m_ePunctuation) {
-		case p_sub:
-			m_oUnaryOperators.emplace_back(ParseNegation());
-			break;
-		case p_increment:
-			m_oUnaryOperators.emplace_back(ParseIncrement());
-			break;
-		case p_decrement:
-			m_oUnaryOperators.emplace_back(ParseDecrement());
-			break;
-		case p_exclamation:
-			m_oUnaryOperators.emplace_back(ParseLogicalNot());
-			break;
-		default:
-			assert(false);
+		if ((*m_iterPos)->Type() == tt_typeof) {
+			m_oUnaryOperators.emplace_back(ParseTypeOf());
+		} else {
+			const auto& asPunctuation = dynamic_cast<CPunctuationToken&>(**m_iterPos);
+
+			if (!IsUnaryOperator(asPunctuation))
+				break;
+
+			switch (asPunctuation.m_ePunctuation) {
+			case p_sub:
+				m_oUnaryOperators.emplace_back(ParseNegation());
+				break;
+			case p_increment:
+				m_oUnaryOperators.emplace_back(ParseIncrement());
+				break;
+			case p_decrement:
+				m_oUnaryOperators.emplace_back(ParseDecrement());
+				break;
+			case p_exclamation:
+				m_oUnaryOperators.emplace_back(ParseLogicalNot());
+				break;
+			default:
+				assert(false);
+			}
 		}
 
 		if (m_oUnaryOperators.size())
-			m_oUnaryOperators.back()->m_oCodePosition = asPunctuation.m_oSourcePosition;
+			m_oUnaryOperators.back()->m_oCodePosition = pos->m_oSourcePosition;
 
-		m_oTokens.emplace_back(&asPunctuation);
 	}
 
 	return success;
@@ -95,4 +101,15 @@ std::unique_ptr<CUnaryBase> CUnaryLinter::ParseLogicalNot()
 }
 std::unique_ptr<AbstractSyntaxTree> CUnaryLogicalNot::ToAST() {
 	return std::make_unique<UnaryLogicalNotAST>(m_oCodePosition);
+}
+
+std::unique_ptr<CUnaryBase> CUnaryLinter::ParseTypeOf()
+{
+	assert(!IsEndOfBuffer() && (*m_iterPos)->Type() == tt_typeof);
+	std::advance(m_iterPos, 1);
+	return std::make_unique<CUnaryTypeOf>();
+}
+
+std::unique_ptr<AbstractSyntaxTree> CUnaryTypeOf::ToAST() {
+	return std::make_unique<UnaryTypeOfAST>(m_oCodePosition);
 }

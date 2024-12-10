@@ -94,11 +94,12 @@ IValue* CRuntimeExpression::EvaluateFunctionCall(CFunction* const thisFunction, 
 
 IValue* EvaluateIncrement(IValue* operand)
 {
-	if (!operand->HasOwner())
-		throw CRuntimeError("cannot increment a temporary value");
 
 	if (operand->Type() != t_int)
 		throw CRuntimeError(std::format("the increment operand must have an int type, but is \"{}\"", operand->TypeAsString()));
+	
+	if (!operand->HasOwner())
+		throw CRuntimeError("cannot increment a temporary value");
 
 	auto v = CProgramRuntime::AcquireNewValue<CIntValue>(operand->AsInt()); //create temp old value
 	++operand->AsInt(); //but increment this value
@@ -107,11 +108,12 @@ IValue* EvaluateIncrement(IValue* operand)
 }
 IValue* EvaluateDecrement(IValue* operand)
 {
-	if (!operand->HasOwner())
-		throw CRuntimeError("cannot decrement a temporary value");
 
 	if (operand->Type() != t_int)
 		throw CRuntimeError(std::format("the decrement operand must have an int type, but is \"{}\"", operand->TypeAsString()));
+
+	if (!operand->HasOwner())
+		throw CRuntimeError("cannot decrement a temporary value");
 
 	auto v = CProgramRuntime::AcquireNewValue<CIntValue>(operand->AsInt()); //create temp old value
 	--operand->AsInt(); //but decrement this value

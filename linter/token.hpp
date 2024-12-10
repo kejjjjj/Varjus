@@ -15,7 +15,7 @@ enum TokenType : signed char
 	tt_string,
 	tt_name,
 	tt_operator,
-	tt_declaration,
+	tt_let,
 	tt_fn,
 	tt_if,
 	tt_else,
@@ -27,6 +27,7 @@ enum TokenType : signed char
 	tt_try,
 	tt_catch,
 	tt_throw,
+	tt_typeof,
 	tt_unused_count
 };
 
@@ -51,8 +52,11 @@ constexpr std::array<const char*, tt_unused_count> tokenTypeStrings = {{
 	"continue",
 	"try",
 	"catch",
-	"throw"
+	"throw",
+	"typeof"
 }};
+
+static_assert(tokenTypeStrings.size() == tt_unused_count);
 
 enum Punctuation : char;
 enum OperatorPriority : char;

@@ -1,28 +1,6 @@
 
-fn isUpper(character){
-	let asNumber = character.get_code_at(0);
-	return (asNumber >= 65 && asNumber <= 90);
-}
-
-/* comment test
-purpose: convert input to an array of booleans
-		 where true is an uppercase letter and
-		 false lowercase
-*/
-// returns: array of booleans
-fn CheckUpperCase(input){
-	return input.split("").map(isUpper);
-}
-
-fn FilterUpperCase(input){
-	return input.split("").filter(isUpper);
-}
-
-fn repeatAndReplace(input, count, src, dst){
-	return input.repeat(count).replace(src, dst);
-}
 
 fn main()
 {	
-	return FilterUpperCase("Seppo Varjus");
+	return "ass" === "ass";
 }

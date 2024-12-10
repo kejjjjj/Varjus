@@ -17,6 +17,8 @@ public:
 	[[nodiscard]] virtual constexpr bool IsDecrement() const noexcept { return false; }
 	[[nodiscard]] virtual constexpr bool IsLogicalNot() const noexcept { return false; }
 
+	[[nodiscard]] virtual constexpr bool IsTypeOf() const noexcept { return false; }
+
 };
 class UnaryNegationAST : public UnaryASTNode
 {
@@ -58,4 +60,15 @@ public:
 	}
 
 	[[nodiscard]] constexpr bool IsLogicalNot() const noexcept override { return true; }
+};
+
+class UnaryTypeOfAST : public UnaryASTNode
+{
+	NONCOPYABLE(UnaryTypeOfAST);
+public:
+	UnaryTypeOfAST(const CodePosition& pos)
+		: UnaryASTNode(pos) {
+	}
+
+	[[nodiscard]] constexpr bool IsTypeOf() const noexcept override { return true; }
 };

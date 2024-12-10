@@ -16,7 +16,6 @@ public:
 	~CPostfixLinter();
 
 	[[maybe_unused]] Success ParsePostfix();
-	[[nodiscard]] auto& GetTokens() const { return m_oTokens; }
 
 	[[nodiscard]] VectorOf<std::unique_ptr<IPostfixBase>> Move() noexcept;
 private:
