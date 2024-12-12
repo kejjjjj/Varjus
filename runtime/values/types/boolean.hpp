@@ -1,7 +1,7 @@
 #pragma once
 #include "simple.hpp"
 
-class CBooleanValue : public CValue<bool>
+class CBooleanValue final : public CValue<bool>
 {
 public:
 	CBooleanValue() = default;

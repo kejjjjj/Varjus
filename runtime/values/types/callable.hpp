@@ -14,7 +14,7 @@ using VectorOf = std::vector<T>;
 using VariableIndex = std::size_t;
 
 
-class CInternalCallableValue
+class CInternalCallableValue final
 {
 public:
 	CInternalCallableValue() = default;
@@ -34,7 +34,7 @@ private:
 	std::unordered_map<VariableIndex, CVariable*> m_oCaptures;
 };
 
-class CCallableValue : public CValue<CInternalCallableValue>
+class CCallableValue final : public CValue<CInternalCallableValue>
 {
 public:
 	CCallableValue() = default;

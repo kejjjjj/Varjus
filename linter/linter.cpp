@@ -151,6 +151,7 @@ Success CFileLinter::LintToken(const CLinterContext& ctx)
 
 }
 
+
 Success CFileLinter::ParseFile()
 {
 	if (!HoistFile())
@@ -195,6 +196,19 @@ Success CFileLinter::HoistFile()
 
 	return success;
 }
+
+
+static void DeclareGlobalObjects(CMemory* m_pOwner, CScope* const scope)
+{
+	VectorOf<std::string> keys = { "console" };
+
+	for (auto& key : keys) {
+		m_pOwner->m_VariableManager->DeclareVariable(key);
+		if (!scope->DeclareVariable(key))
+			return CLinterErrors::PushError("internal bug in DeclareGlobalObjects", {});
+	}
+}
+
 Success CFileLinter::LintFile()
 {
 	m_pFile = std::make_unique<CFileRuntimeData>();
@@ -202,6 +216,8 @@ Success CFileLinter::LintFile()
 	globalMemory.m_pHoister = m_pHoister.get();
 
 	auto globalScope = std::make_shared<CScope>(&globalMemory);
+
+	DeclareGlobalObjects(&globalMemory, globalScope.get());
 
 	CLinterContext ctx{
 		.m_iterPos = m_iterPos,

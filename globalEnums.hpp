@@ -18,3 +18,8 @@ enum EValueType : unsigned char
 	t_array,
 	t_object,
 };
+
+enum ERuntimeGlobalObjects {
+	rto_console,
+	rto_count,
+};

@@ -10,6 +10,15 @@
 
 CObjectValue::~CObjectValue() = default;
 
+CObjectValue* CObjectValue::Construct(ObjectInitializer&& values)
+{
+	auto ptr = CProgramRuntime::AcquireNewValue<CObjectValue>();
+	ptr->MakeShared();
+	auto internal = ptr->Internal();
+	internal->Set(std::move(values));
+	return ptr;
+}
+
 void CObjectValue::Release() {
 
 	if (SharedRefCount() == 1) {
@@ -21,7 +30,7 @@ void CObjectValue::Release() {
 	ReleaseShared();
 }
 
-CObjectValue* CObjectValue::Copy() {
+IValue* CObjectValue::Copy() {
 	CObjectValue* ptr = CProgramRuntime::AcquireNewValue<CObjectValue>();
 	ptr->MakeShared();
 	ptr->GetShared() = GetShared();

@@ -10,7 +10,7 @@
 #include <stdexcept>
 #include <functional>
 #include <format>
-
+#include <type_traits>
 class CFunction;
 using ElementIndex = std::size_t;
 
@@ -19,6 +19,8 @@ namespace BuiltInMethods
 {
 	void Setup(const CProgramContext* context);
 }
+
+constexpr auto UNCHECKED_PARAMETER_COUNT = std::numeric_limits<std::size_t>::max();
 
 template<typename Type>
 struct CBuiltInMethod
@@ -62,7 +64,7 @@ public:
 	[[nodiscard]] static inline IValue* CallMethod(CFunction* const thisFunction,
 		Type* _this, const IValues& args, const MethodType* method) {
 
-		if (method->m_uNumArguments != args.size())
+		if (method->m_uNumArguments != UNCHECKED_PARAMETER_COUNT && method->m_uNumArguments != args.size())
 			throw CRuntimeError(std::format("the method expected {} arguments instead of {}", method->m_uNumArguments, args.size()));
 
 		auto returnVal = std::mem_fn(method->memFn)(_this, thisFunction, args);

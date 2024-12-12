@@ -2,7 +2,7 @@
 #include "simple.hpp"
 
 
-class CDoubleValue : public CValue<double>
+class CDoubleValue final : public CValue<double>
 {
 public:
 	CDoubleValue() = default;

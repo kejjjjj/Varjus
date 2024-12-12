@@ -2,6 +2,7 @@
 #include "structure.hpp"
 #include "values/types/internal/builtin_methods.hpp"
 #include "values/types/types.hpp"
+#include "values/types/internal_objects/console.hpp"
 #include "variables.hpp"
 
 #include <ranges>
@@ -20,6 +21,7 @@ template<> COwningObjectPool<CStringValue>        CProgramRuntime::m_oValuePool<
 template<> COwningObjectPool<CCallableValue>      CProgramRuntime::m_oValuePool<CCallableValue>(VALUEPOOL_INIT_SIZE);
 template<> COwningObjectPool<CArrayValue>         CProgramRuntime::m_oValuePool<CArrayValue>   (VALUEPOOL_INIT_SIZE);
 template<> COwningObjectPool<CObjectValue>        CProgramRuntime::m_oValuePool<CObjectValue>  (VALUEPOOL_INIT_SIZE);
+template<> COwningObjectPool<CConsoleValue>       CProgramRuntime::m_oValuePool<CConsoleValue> (VALUEPOOL_INIT_SIZE);
 
 VectorOf<RuntimeFunction> CProgramRuntime::m_oFunctions;
 VectorOf<CVariable*> CProgramRuntime::m_oGlobalVariables;
@@ -88,8 +90,12 @@ void CProgramRuntime::SetupGlobalVariables() const {
 
 	//create global variables
 	m_oGlobalVariables = CProgramRuntime::AcquireNewVariables(m_uNumGlobalVariables);
+	assert(m_oGlobalVariables.size() >= rto_count);
 
-	for (auto& var : m_oGlobalVariables) {
+	m_oGlobalVariables[rto_console]->SetValue(CConsoleValue::Construct());
+	m_oGlobalVariables[rto_console]->GetValue()->MakeImmutable();
+
+	for (auto& var : m_oGlobalVariables | std::views::drop(rto_count)) {
 		var->SetValue(AcquireNewValue<IValue>());
 	}
 }

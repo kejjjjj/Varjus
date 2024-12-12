@@ -1,7 +1,7 @@
 #pragma once
 #include "simple.hpp"
 
-class CIntValue : public CValue<std::int64_t>
+class CIntValue final : public CValue<std::int64_t>
 {
 public:
 	CIntValue() = default;

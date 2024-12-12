@@ -1,6 +1,21 @@
 
+fn stringToCharCodes(str)
+{
+	return str.split("").map(fn(v) { 
+		return v.get_code_at(0);
+	});
+
+}
+
+fn printTo(con)
+{
+	// convert "Seppo" to integers
+	con.log(stringToCharCodes("Seppo"));
+	return con;
+}
 
 fn main()
-{	
-	return "ass" === "ass";
+{
+	printTo(console).log("hello after printTo");
+	return true;
 }

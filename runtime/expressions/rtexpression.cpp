@@ -122,16 +122,11 @@ IValue* CRuntimeExpression::EvaluateLeaf(CFunction* const thisFunction, const Ab
 	}
 
 	if (node->IsArray()) {
-		const auto var = node->GetArray();
-		return CArrayValue::Construct(EvaluateList(thisFunction, var->m_oExpressions));
+		return CArrayValue::Construct(EvaluateList(thisFunction, node->GetArray()->m_oExpressions));
 	}
 
 	if (node->IsObject()) {
-		auto ptr = CProgramRuntime::AcquireNewValue<CObjectValue>();
-		ptr->MakeShared();
-		auto internal = ptr->Internal();
-		internal->Set(EvaluateObject(thisFunction, node->GetObject()->m_oAttributes));
-		return ptr;
+		return CObjectValue::Construct(EvaluateObject(thisFunction, node->GetObject()->m_oAttributes));
 	}
 
 	if (node->IsConstant()) {

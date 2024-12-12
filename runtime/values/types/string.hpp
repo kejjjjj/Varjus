@@ -33,7 +33,7 @@ protected:
 	CStringContent m_oValue;
 };
 
-class CStringValue : public CValue<CInternalStringValue>
+class CStringValue final : public CValue<CInternalStringValue>
 {
 	using StringMethods = CBuiltInMethods<CStringValue>::InputType;
 
@@ -72,7 +72,7 @@ public:
 
 private:
 	[[nodiscard]] std::string TypeAsString() const override { return "string"s; }
-	[[nodiscard]] std::string ValueAsString() const override { return '\"' + Internal()->GetString() + '\"'; }
+	[[nodiscard]] std::string ValueAsString() const override { return Internal()->GetString(); }
 
 
 	[[nodiscard]] IValue* ToUpper(CFunction* const thisFunction, const IValues& newValue);

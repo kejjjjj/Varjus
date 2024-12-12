@@ -36,25 +36,27 @@ protected:
 	CAggregate m_oValue;
 };
 
-class CObjectValue final : public CValue<CInternalObjectValue>
+class CObjectValue : public CValue<CInternalObjectValue>
 {
 public:
 	CObjectValue() = default;
 	~CObjectValue();
 
+	static CObjectValue* Construct(ObjectInitializer&& values);
+
 	//copy constructor
 	[[nodiscard]] EValueType Type() const noexcept override { return t_object; };
 
-	void Release() override;
+	virtual void Release() override;
 
 	[[nodiscard]] constexpr bool IsAggregate() const noexcept override { return true; }
 	[[nodiscard]] constexpr bool IsBooleanConvertible() const noexcept override { return false; }
 
-	[[nodiscard]] CObjectValue* Copy() override;
+	[[nodiscard]] virtual IValue* Copy() override;
 	[[nodiscard]] CInternalObjectValue* Internal();
 	[[nodiscard]] CInternalObjectValue* Internal() const;
 
-	[[nodiscard]] IValue* GetAggregate(std::size_t memberIdx) override;
+	[[nodiscard]] virtual IValue* GetAggregate(std::size_t memberIdx) override;
 
 	[[nodiscard]] CObjectValue* ToObject() override { return this; }
 
@@ -62,7 +64,7 @@ public:
 		return reinterpret_cast<std::size_t>(GetShared().get());
 	}
 
-private:
+protected:
 	[[nodiscard]] std::string TypeAsString() const override { return "object"s; }
 	[[nodiscard]] std::string ValueAsString() const override;
 

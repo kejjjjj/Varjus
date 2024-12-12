@@ -21,7 +21,6 @@ using CodePosition = std::tuple<size_t, size_t>;
 using RuntimeBlock = std::unique_ptr<IRuntimeStructure>;
 using steady_clock = std::chrono::time_point<std::chrono::steady_clock>;
 
-
 template<typename T>
 concept IValueChild = std::is_base_of_v<IValue, T> || std::is_same_v<CVariable, T>;
 template<typename T>
@@ -63,17 +62,6 @@ public:
 	template <IValueChild T>
 	[[nodiscard]] static constexpr COwningObjectPool<T>& GetPool() {
 		return m_oValuePool<T>;
-	}
-
-	[[nodiscard]] static size_t GetPoolUseCount() {
-		return 
-			GetPool<IValue>().GetInUseCount()
-			+ GetPool<CBooleanValue>().GetInUseCount()
-			+ GetPool<CIntValue>().GetInUseCount()
-			+ GetPool<CDoubleValue>().GetInUseCount()
-			+ GetPool<CStringValue>().GetInUseCount()
-			+ GetPool<CCallableValue>().GetInUseCount();
-
 	}
 
 	[[nodiscard]] static CVariable* AcquireNewVariable();
