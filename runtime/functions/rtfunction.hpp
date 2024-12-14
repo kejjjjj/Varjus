@@ -11,6 +11,7 @@ using VectorOf = std::vector<T>;
 
 class CVariable;
 class IValue;
+class CRuntimeModule;
 
 template<typename A, typename B>
 using KeyValue = std::pair<A, B>;
@@ -25,10 +26,14 @@ class CFunction
 	NONCOPYABLE(CFunction);
 	friend class CRuntimeFunction;
 public:
-	CFunction(VectorOf<IValue*>& args, const VariableCaptures& captures, const CRuntimeFunction& func);
+	CFunction(std::size_t ownerModule, VectorOf<IValue*>& args,
+		const VariableCaptures& captures, const CRuntimeFunction& func);
 
 	[[nodiscard]] CVariable* GetVariableByIndex(std::size_t index) const;
 
+	constexpr auto GetModuleIndex() const noexcept { return m_uModuleIndex; }
+
 private:
 	std::unordered_map<VariableIndex, CVariable*> m_oStack;
+	std::size_t m_uModuleIndex{};
 };

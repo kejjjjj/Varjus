@@ -24,6 +24,7 @@ public:
 
 private:
 	[[nodiscard]] IValue* Log(CFunction* const thisFunction, const IValues& values);
+	[[nodiscard]] IValue* Clear(CFunction* const thisFunction, const IValues& values);
 
 	const CBuiltInMethod<CConsoleValue>* m_pMethod{ nullptr };
 };

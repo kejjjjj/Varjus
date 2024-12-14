@@ -9,6 +9,7 @@
 #include "linter/linter.hpp"
 #include "linter/functions/stack.hpp"
 #include "linter/context.hpp"
+#include "linter/imports/module.hpp"
 #include "globalEnums.hpp"
 
 #include "runtime/structure.hpp"
@@ -16,7 +17,7 @@
 
 CFunctionLinter::CFunctionLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack)
 	: CLinterSingle(pos, end), m_pScope(scope), m_pOwner(stack),
-	m_pThisStack(std::make_unique<CStack>(m_pOwner->GetGlobalMemory(), m_pOwner->m_pFile, m_pOwner->m_pContext))
+	m_pThisStack(std::make_unique<CStack>(m_pOwner->GetGlobalMemory(), m_pOwner->m_pModule))
 {
 
 	if (const auto s = m_pScope.lock()) {
@@ -40,10 +41,10 @@ Success CFunctionLinter::Parse()
 	if (!ParseFunctionScope())
 		return failure;
 
-	assert(m_pOwner && m_pOwner->m_pFile);
+	assert(m_pOwner && m_pOwner->m_pModule);
 
-	m_pOwner->m_pFile->AddFunction(ToRuntimeFunction());
-	m_pOwner->m_FunctionManager->DeclareFunction(m_oFunctionName, m_pOwner->m_pFile->GetFunctionCount());
+	m_pOwner->m_pModule->AddFunction(ToRuntimeFunction());
+	m_pOwner->m_FunctionManager->DeclareFunction(m_oFunctionName, m_pOwner->m_pModule->GetFunctionCount());
 	return success;
 }
 
@@ -193,13 +194,12 @@ std::unique_ptr<CRuntimeFunction> CFunctionLinter::ToRuntimeFunction() const
 	assert(m_pThisStack != nullptr && m_pThisStack->IsStack());
 
 	const auto stack = m_pThisStack->ToStack();
-	//std::cout << std::format("declaring: {} with ({}, {})\n", 
-	//	stack->m_pFunction->m_sName, stack->m_oArgumentIndices.size(), stack->m_oIndicesWhichRequireSharedOwnership.size());
 
 	assert(stack->m_pFunction != nullptr);
 	stack->m_pFunction->m_oInstructions = std::move(m_pThisScope->MoveInstructions());
 
 	auto&& ret = std::make_unique<CRuntimeFunction>(
+		m_pOwner->GetGlobalMemory()->m_pModule->GetIndex(),
 		*stack->m_pFunction, 
 		GetParameterIndices(stack),
 		GetVariableIndices(stack));

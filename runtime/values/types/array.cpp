@@ -16,10 +16,7 @@ VectorOf<ElementIndex>& runtime::__internal::GetAggregateArrayData()
 	if (!once)
 		return elems;
 
-	auto& m = CProgramRuntime::GetContext()->m_oAllMembers;
-
-	elems.push_back(m.At("length"));
-
+	elems.push_back(LENGTH_PROPERTY);
 	once = false;
 	return elems;
 }

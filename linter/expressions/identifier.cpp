@@ -82,9 +82,6 @@ CLinterVariable* CIdentifierLinter::GetVariableByIdentifier(const std::string& s
 
 bool CIdentifierLinter::ContainsFunction(const std::string& str) const noexcept
 {
-	if (m_pOwner->m_FunctionManager->ContainsFunctionGlobally(str))
-		return true;
-
 	if (m_pOwner->HasHoistedData()) {
 		auto& hoister = m_pOwner->GetHoister();
 		return hoister->ContainsFunction(str);

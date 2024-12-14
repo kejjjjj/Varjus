@@ -10,7 +10,7 @@ namespace fs
 	std::string exe_file_name();
 	std::string exe_path();
 	std::string get_extension(const std::string& path);
-	std::string previous_directory(std::string& directory);
+	std::string previous_directory(const std::string& directory);
 	std::string get_file_name(const std::string& fullpath);
 	std::string get_file_name_no_extension(const std::string& fullpath);
 

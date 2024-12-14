@@ -31,7 +31,8 @@ IValue* CCallableValue::Call(CFunction* const thisFunction, const IValues& args)
 	auto internal = Internal();
 	auto callable = internal->GetCallable();
 
-	auto ret = callable->Execute(thisFunction, const_cast<IValues&>(args), internal->GetCaptures());
+	auto ret = callable->Execute(thisFunction->GetModuleIndex(),
+		thisFunction, const_cast<IValues&>(args), internal->GetCaptures());
 
 	assert(ret);
 

@@ -19,9 +19,6 @@ CLinterFunction* CFunctionManager::GetFunction(const std::string& var) {
 bool CFunctionManager::ContainsFunction(const std::string& name) const {
 	return m_oFunctions.contains(name);
 }
-bool CFunctionManager::ContainsFunctionGlobally(const std::string& name) const {
-	return !!m_pOwner->m_pFile->FindFunction(name);
-}
 std::size_t CFunctionManager::GetFunctionCount() const noexcept {
 	return m_oFunctions.size();
 }

@@ -1,14 +1,15 @@
+#include "exceptions/exception.hpp"
+#include "modules/rtmodule.hpp"
 #include "runtime.hpp"
 #include "structure.hpp"
 #include "values/types/internal/builtin_methods.hpp"
-#include "values/types/types.hpp"
 #include "values/types/internal_objects/console.hpp"
+#include "values/types/types.hpp"
 #include "variables.hpp"
 
-#include <ranges>
-#include <iostream>
 #include <chrono>
-#include "exceptions/exception.hpp"
+#include <iostream>
+#include <ranges>
 
 #define VALUEPOOL_INIT_SIZE size_t(100)
 
@@ -23,24 +24,15 @@ template<> COwningObjectPool<CArrayValue>         CProgramRuntime::m_oValuePool<
 template<> COwningObjectPool<CObjectValue>        CProgramRuntime::m_oValuePool<CObjectValue>  (VALUEPOOL_INIT_SIZE);
 template<> COwningObjectPool<CConsoleValue>       CProgramRuntime::m_oValuePool<CConsoleValue> (VALUEPOOL_INIT_SIZE);
 
-VectorOf<RuntimeFunction> CProgramRuntime::m_oFunctions;
-VectorOf<CVariable*> CProgramRuntime::m_oGlobalVariables;
-CProgramContext* CProgramRuntime::m_pContext{ nullptr };
+RuntimeModules CProgramRuntime::m_oModules;
 const CodePosition* CProgramRuntime::m_pCodePosition{ nullptr };
 bool CProgramRuntime::m_bExceptionThrown{ false };
 
-CProgramRuntime::CProgramRuntime(CFileRuntimeData* const file, CProgramContext* const context)
-{
-	m_pContext = context;
-	m_oFunctions = (std::move(file->m_oFunctions));
-	m_oGlobalScopeInstructions = std::move(file->m_oGlobalScopeInstructions);
-	m_uNumGlobalVariables = file->m_uNumGlobalVariables;
-	m_oGlobalVariables.clear();
-	m_bExceptionThrown = false;
-
-	assert(m_pContext);
+CProgramRuntime::CProgramRuntime(RuntimeModules&& modules){
+	m_oModules = std::move(modules);
 }
-CProgramRuntime::~CProgramRuntime() { m_oFunctions.clear(); };
+
+CProgramRuntime::~CProgramRuntime(){};
 
 using steady_clock = std::chrono::time_point<std::chrono::steady_clock>;
 
@@ -55,25 +47,39 @@ void PrintLeaks(const char* name) {
 
 void CProgramRuntime::Execute()
 {
+	CRuntimeFunction* mainFunction{ nullptr };
 
-	const auto iMainFunction = std::ranges::find(m_oFunctions, "main", [](const RuntimeFunction& rf) { return rf->GetName(); });
+	for (auto& mod : m_oModules) {
 
-	if (iMainFunction == m_oFunctions.end()) {
+		const auto iMainFunction = std::ranges::find(mod->m_oFunctions, "main", [](const RuntimeFunction& rf) { return rf->GetName(); });
+
+		if (iMainFunction != mod->m_oFunctions.end()) {
+			mainFunction = iMainFunction->get();
+			break;
+		}
+
+	}
+
+
+	if (!mainFunction) {
 		throw CRuntimeError("couldn't find the \"main\" function");
 	}
 
-	BuiltInMethods::Setup(GetContext());
+	for (auto& mod : m_oModules) {
+		BuiltInMethods::Setup(mod->GetContext());
 
-	SetupGlobalVariables();
-	EvaluateGlobalExpressions();
+		mod->SetupGlobalVariables();
+		mod->EvaluateGlobalExpressions();
+	}
 
 	const steady_clock old = std::chrono::steady_clock::now();
-	const steady_clock now = BeginExecution(iMainFunction->get());
+	const steady_clock now = BeginExecution(mainFunction);
 
 	const std::chrono::duration<float> difference = now - old;
 	std::cout << std::format("\ntime taken: {:.6f}s\n", difference.count());
 
-	FreeGlobalVariables();
+	for (auto& mod : m_oModules) 
+		mod->FreeGlobalVariables();
 
 	PrintLeaks<IValue>        ("undefined");
 	PrintLeaks<CBooleanValue> ("boolean");
@@ -84,37 +90,14 @@ void CProgramRuntime::Execute()
 	PrintLeaks<CArrayValue>   ("array");
 	PrintLeaks<CObjectValue>  ("object");
 	PrintLeaks<CVariable>     ("variable");
-
 }
-void CProgramRuntime::SetupGlobalVariables() const {
 
-	//create global variables
-	m_oGlobalVariables = CProgramRuntime::AcquireNewVariables(m_uNumGlobalVariables);
-	assert(m_oGlobalVariables.size() >= rto_count);
-
-	m_oGlobalVariables[rto_console]->SetValue(CConsoleValue::Construct());
-	m_oGlobalVariables[rto_console]->GetValue()->MakeImmutable();
-
-	for (auto& var : m_oGlobalVariables | std::views::drop(rto_count)) {
-		var->SetValue(AcquireNewValue<IValue>());
-	}
-}
-void CProgramRuntime::EvaluateGlobalExpressions() {
-	for (auto& insn : m_oGlobalScopeInstructions) {
-		if (insn->Execute(nullptr))
-			break;
-	}
-}
-void CProgramRuntime::FreeGlobalVariables(){
-	for (auto& variable : m_oGlobalVariables)
-		variable->Release();
-}
 steady_clock CProgramRuntime::BeginExecution(CRuntimeFunction* entryFunc)
 {
 	assert(entryFunc);
 
 	std::vector<IValue*> args;
-	if (auto returnValue = entryFunc->Execute(nullptr, args, {})) {
+	if (auto returnValue = entryFunc->Execute(entryFunc->GetModuleIndex(), nullptr, args, {})) {
 		steady_clock now = std::chrono::steady_clock::now();
 		std::cout << std::format("The program returned: {}\n", returnValue->ToPrintableString());
 		returnValue->Release();
@@ -124,23 +107,13 @@ steady_clock CProgramRuntime::BeginExecution(CRuntimeFunction* entryFunc)
 	return std::chrono::steady_clock::now();
 	
 }
-CProgramContext* CProgramRuntime::GetContext()
-{
-	return m_pContext;
-}
-CRuntimeFunction* CProgramRuntime::GetFunctionByIndex(std::size_t index)
-{
-	assert(index < m_oFunctions.size());
-	return m_oFunctions[index].get();
-}
-CVariable* CProgramRuntime::GetGlobalVariableByIndex(std::size_t index)
-{
-	assert(index < m_oGlobalVariables.size());
-	return m_oGlobalVariables[index];
-}
+
 void CProgramRuntime::SetExecutionPosition(const CodePosition* pos) noexcept{
 	m_pCodePosition = pos;
 }
 const CodePosition* CProgramRuntime::GetExecutionPosition() noexcept{
 	return m_pCodePosition;
+}
+CRuntimeModule* CProgramRuntime::GetModuleByIndex(std::size_t index) { 
+	return m_oModules[index].get(); 
 }

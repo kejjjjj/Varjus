@@ -22,7 +22,7 @@ std::string fs::get_extension(const std::string& file)
 
 	return file.substr(extensionPos);
 }
-std::string fs::previous_directory(std::string& directory)
+std::string fs::previous_directory(const std::string& directory)
 {
 	size_t pos = directory.find_last_of('\\');
 	if (pos < 1 || pos == std::string::npos)

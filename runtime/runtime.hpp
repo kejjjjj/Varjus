@@ -14,7 +14,7 @@ class CVariable;
 class CRuntimeFunction;
 class CFileRuntimeData;
 class IRuntimeStructure;
-struct CProgramContext;
+class CRuntimeModule;
 
 using RuntimeFunction = std::unique_ptr<CRuntimeFunction>;
 using CodePosition = std::tuple<size_t, size_t>;
@@ -26,6 +26,8 @@ concept IValueChild = std::is_base_of_v<IValue, T> || std::is_same_v<CVariable, 
 template<typename T>
 concept VariableT = std::is_same_v<CVariable, T>;
 
+using RuntimeModules = VectorOf<std::unique_ptr<CRuntimeModule>>;
+
 class CProgramRuntime
 {
 	NONCOPYABLE(CProgramRuntime);
@@ -36,15 +38,10 @@ class CProgramRuntime
 	friend class CAggregate;
 
 public:
-	// only one file for now
-	CProgramRuntime(CFileRuntimeData* const file, CProgramContext* const context);
+	CProgramRuntime(RuntimeModules&& modules);
 	~CProgramRuntime();
 
 	void Execute();
-
-	[[nodiscard]] static CProgramContext* GetContext();
-	[[nodiscard]] static CRuntimeFunction* GetFunctionByIndex(std::size_t index);
-	[[nodiscard]] static CVariable* GetGlobalVariableByIndex(std::size_t index);
 
 	static void SetExecutionPosition(const CodePosition* pos) noexcept;
 	[[nodiscard]] static const CodePosition* GetExecutionPosition() noexcept;
@@ -52,6 +49,7 @@ public:
 	static inline void ThrowException() noexcept { m_bExceptionThrown = true; }
 	static inline void CatchException() noexcept { m_bExceptionThrown = false; }
 	[[nodiscard]] static inline bool ExceptionThrown() noexcept { return m_bExceptionThrown; }
+	[[nodiscard]] static CRuntimeModule* GetModuleByIndex(std::size_t index);
 
 private:
 
@@ -115,18 +113,12 @@ public:
 	}
 
 private:
-	void SetupGlobalVariables() const;
-	void EvaluateGlobalExpressions();
-	void FreeGlobalVariables();
+
 
 	steady_clock BeginExecution(CRuntimeFunction* entryFunc);
 
-	VectorOf<RuntimeBlock> m_oGlobalScopeInstructions;
-	std::size_t m_uNumGlobalVariables{};
-
-	static VectorOf<RuntimeFunction> m_oFunctions;
-	static CProgramContext* m_pContext;
+	static RuntimeModules m_oModules;
 	static const CodePosition* m_pCodePosition;
-	static VectorOf<CVariable*> m_oGlobalVariables;
 	static bool m_bExceptionThrown;
 };
+

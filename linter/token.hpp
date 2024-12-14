@@ -28,6 +28,8 @@ enum TokenType : signed char
 	tt_catch,
 	tt_throw,
 	tt_typeof,
+	tt_import,
+	tt_from,
 	tt_unused_count
 };
 
@@ -53,7 +55,9 @@ constexpr std::array<const char*, tt_unused_count> tokenTypeStrings = {{
 	"try",
 	"catch",
 	"throw",
-	"typeof"
+	"typeof",
+	"import",
+	"from"
 }};
 
 static_assert(tokenTypeStrings.size() == tt_unused_count);

@@ -11,11 +11,11 @@
 
 class CStack;
 class IRuntimeStructure;
-class CFileRuntimeData;
+class CModule;
 class CHoister;
 
 struct CFunctionBlock;
-struct CProgramContext;
+struct CFileContext;
 
 template<typename T>
 using VectorOf = std::vector<T>;
@@ -33,7 +33,7 @@ class CMemory
 	friend class CFileLinter;
 
 public:
-	CMemory(CMemory* globalMemory, CFileRuntimeData* const file, CProgramContext* const context);
+	CMemory(CMemory* globalMemory, CModule* const file);
 	virtual ~CMemory();
 
 	[[nodiscard]] virtual bool IsStack() const noexcept { return false; }
@@ -41,7 +41,7 @@ public:
 	[[nodiscard]] CStack* ToStack();
 	[[nodiscard]] auto ToStack() const;
 
-	[[nodiscard]] constexpr CProgramContext* GetContext() const { return m_pContext; }
+	[[nodiscard]] CFileContext* GetContext() const;
 	[[nodiscard]] auto& GetGlobalMemory() noexcept { return m_pGlobal; }
 	[[nodiscard]] auto& GetGlobalMemory() const noexcept { return m_pGlobal; }
 
@@ -61,8 +61,7 @@ public:
 
 protected:
 
-	CFileRuntimeData* const m_pFile{};
-	CProgramContext* const m_pContext{};
+	CModule* const m_pModule{};
 	CMemory* m_pGlobal{ nullptr };
 	CMemory* m_pLowerRegion{ nullptr };
 
@@ -81,8 +80,8 @@ class CStack final : public CMemory
 	friend class CIdentifierLinter;
 
 public:
-	CStack(CMemory* globalMemory, CFileRuntimeData* const file, CProgramContext* const context);
-	CStack(CMemory* globalMemory, std::unique_ptr<CFunctionBlock>&& func, CFileRuntimeData* const file, CProgramContext* const context);
+	CStack(CMemory* globalMemory, CModule* const file);
+	CStack(CMemory* globalMemory, std::unique_ptr<CFunctionBlock>&& func, CModule* const file);
 	~CStack();
 
 	[[nodiscard]] bool IsStack() const noexcept override { return true; }

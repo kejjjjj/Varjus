@@ -48,7 +48,7 @@ IValue* CAggregate::ElementLookup(GlobalMemberIndex index) const
 	catch ([[maybe_unused]]std::out_of_range& ex) {
 
 		throw CRuntimeError(std::format("this aggregate doesn't have the attribute \"{}\"",
-			CProgramRuntime::GetContext()->m_oAllMembers.At(index)
+			/*CProgramRuntime::GetContext()->m_oAllMembers.At(index)*/ "implement me"
 		));
 	}
 

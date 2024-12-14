@@ -6,6 +6,7 @@
 #include "runtime/variables.hpp"
 #include "runtime/runtime.hpp"
 #include "runtime/exceptions/exception.hpp"
+#include "runtime/modules/rtmodule.hpp"
 
 #include "linter/expressions/ast.hpp"
 
@@ -84,13 +85,17 @@ IValue* CRuntimeExpression::Evaluate(CFunction* const thisFunction, const Abstra
 IValue* CRuntimeExpression::EvaluateLeaf(CFunction* const thisFunction, const AbstractSyntaxTree* node)
 {
 
+
+
 	if (node->IsVariable()) {
 		const auto var = node->GetVariable();
 
 		IValue* v = nullptr;
 
-		if (var->m_bGlobalVariable)
-			v = CProgramRuntime::GetGlobalVariableByIndex(var->m_uIndex)->GetValue();
+		if (var->m_bGlobalVariable) {
+			const auto mod = CProgramRuntime::GetModuleByIndex( thisFunction->GetModuleIndex() );
+			v = mod->GetGlobalVariableByIndex(var->m_uIndex)->GetValue();
+		}
 		else
 			v = thisFunction->GetVariableByIndex(var->m_uIndex)->GetValue();
 
@@ -101,9 +106,11 @@ IValue* CRuntimeExpression::EvaluateLeaf(CFunction* const thisFunction, const Ab
 
 	if (node->IsFunction()) {
 		const auto var = node->GetFunction();
+		const auto mod = CProgramRuntime::GetModuleByIndex(thisFunction->GetModuleIndex());
+
 		auto v = CProgramRuntime::AcquireNewValue<CCallableValue>();
 		v->MakeShared();
-		v->Internal()->GetCallable() = CProgramRuntime::GetFunctionByIndex(var->m_uIndex);
+		v->Internal()->GetCallable() = mod->GetFunctionByIndex(var->m_uIndex);
 		v->MakeImmutable();
 		return v;
 	}

@@ -4,17 +4,18 @@
 #include "linter/error.hpp"
 #include "linter/linter.hpp"
 #include "linter/context.hpp"
-
+#include "linter/imports/module.hpp"
 #include "runtime/runtime.hpp"
+#include "runtime/modules/rtmodule.hpp"
 
 #include "fs/fs_io.hpp"
-
+#include "fs/fs_globals.hpp"
 int main()
 {
 
     try {
 
-        const auto reader = VarjusIOReader("\\scripts\\script.var");
+        const auto reader = VarjusIOReader("scripts\\script.var");
         auto fileBuf = reader.IO_Read();
 
         if (!fileBuf) {
@@ -32,16 +33,13 @@ int main()
 		auto begin = tokens.begin();
         auto end = tokens.end();
 
-        auto context = CProgramContext{};
-        context.m_oAllMembers.Insert("length");
-
-		CFileLinter linter(begin, end, &context);
+        auto wd = fs::previous_directory(reader.GetFilePath());
+		CFileLinter linter(begin, end, wd);
 
         if (!linter.ParseFile())
             throw std::exception("couldn't parse the input file");
 
-
-        CProgramRuntime runtime(linter.GetRuntimeInformation(), &context);
+        CProgramRuntime runtime(CModule::ToRuntimeModules());
         runtime.Execute();
 
      

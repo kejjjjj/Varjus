@@ -62,6 +62,7 @@ public:
 	[[nodiscard]] virtual constexpr EStructureType Type() const noexcept = 0;
 	[[nodiscard]] virtual IValue* Execute([[maybe_unused]] CFunction* const thisFunction) { return nullptr; };
 	[[nodiscard]] virtual IValue* Execute(
+		[[maybe_unused]] std::size_t ownerModule,
 		[[maybe_unused]] CFunction* const thisFunction, 
 		[[maybe_unused]] VectorOf<IValue*>& args,
 		[[maybe_unused]] const VariableCaptures& captures) { return nullptr; };
@@ -118,22 +119,25 @@ class CRuntimeFunction final : public IRuntimeStructureSequence
 	NONCOPYABLE(CRuntimeFunction);
 
 public:
-	CRuntimeFunction(CFunctionBlock& linterFunction,
+	CRuntimeFunction(ElementIndex moduleIndex, CFunctionBlock& linterFunction,
 		VectorOf<VariableIndex>&& args,
 		VectorOf<VariableIndex>&& variableIndices);
 	~CRuntimeFunction();
 
 	[[nodiscard]] constexpr auto& GetName() const noexcept { return m_sName; }
-	[[maybe_unused]] IValue* Execute(CFunction* const thisFunction, VectorOf<IValue*>& args, 
+	[[nodiscard]] constexpr auto& GetModuleIndex() const noexcept { return m_uModuleIndex; }
+
+	[[maybe_unused]] IValue* Execute(std::size_t ownerModule, CFunction* const thisFunction, VectorOf<IValue*>& args,
 		const VariableCaptures& captures) override;
 protected:
 
 	[[nodiscard]] constexpr EStructureType Type() const noexcept override { return st_function; };
 
+	ElementIndex m_uModuleIndex{ 0u };
+
 	std::string m_sName;
 	std::size_t m_uNumParameters{ 0u };
 	std::size_t m_uNumVariables{ 0u };
-
 	VectorOf<VariableIndex> m_oArgumentIndices;
 	VectorOf<VariableIndex> m_oVariableIndices;
 };
@@ -304,27 +308,4 @@ public:
 protected:
 	virtual RuntimeBlock ToRuntimeObject() const = 0;
 };
-
-class CFileRuntimeData final
-{
-	friend class CProgramRuntime;
-	friend class CFileLinter;
-	NONCOPYABLE(CFileRuntimeData)
-public:
-	CFileRuntimeData() = default;
-	constexpr void AddFunction(RuntimeFunction&& func) { m_oFunctions.emplace_back(std::move(func)); }
-
-	[[nodiscard]] CRuntimeFunction* FindFunction(const std::string& v) const;
-	[[nodiscard]] size_t GetFunctionCount() const noexcept { return m_oFunctions.size(); };
-
-	void AddGlobalInstructions(VectorOf<RuntimeBlock>&& insns);
-	void SetGlobalVariableCount(std::size_t v) { m_uNumGlobalVariables = v; }
-
-private:
-
-	std::size_t m_uNumGlobalVariables{};
-	VectorOf<RuntimeBlock> m_oGlobalScopeInstructions;
-	VectorOf<RuntimeFunction> m_oFunctions;
-};
-
 #pragma pack(pop)

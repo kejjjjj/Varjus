@@ -13,7 +13,7 @@ template<> Array::LookupType Array::m_oMethodLookup = {};
 template<> String::LookupType String::m_oMethodLookup = {};
 template<> Console::LookupType Console::m_oMethodLookup = {};
 
-void BuiltInMethods::Setup(const CProgramContext* context) {
+void BuiltInMethods::Setup(const CFileContext* context) {
 
 	static auto arrayStuff = CArrayValue::ConstructMethods();
 	Array::Initialize(context, arrayStuff);

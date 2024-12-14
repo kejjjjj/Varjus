@@ -10,6 +10,8 @@
 #include "functions/stack.hpp"
 #include "functions/function.hpp"
 #include "scopes/scope.hpp"
+#include "imports/import.hpp"
+#include "imports/module.hpp"
 #include "statements/for/for.hpp"
 #include "statements/while/while.hpp"
 #include "statements/if/if.hpp"
@@ -21,11 +23,8 @@
 
 #include <cassert>
 
-CFileLinter::CFileLinter(LinterIterator& start, LinterIterator& end, CProgramContext* const context) 
-	: CLinter(start, end), m_pContext(context), m_oInitialPosition(start)
-{
-	assert(m_pContext);
-}
+CFileLinter::CFileLinter(LinterIterator& start, LinterIterator& end, const std::string& wd)
+	: CLinter(start, end), m_oInitialPosition(start), m_sWorkingDirectory(wd) {}
 CFileLinter::~CFileLinter() = default;
 
 static Success AddInstruction(LinterIterator& pos, RuntimeBlock&& block, const WeakScope& scope)
@@ -52,7 +51,8 @@ template<typename Linter> Success Lint(const CLinterContext& ctx)
 
 	if constexpr (
 		std::is_same_v<CFunctionLinter, Linter> || 
-		std::is_same_v<CElseStatementLinter, Linter>)
+		std::is_same_v<CElseStatementLinter, Linter> ||
+		std::is_same_v<CImportLinter, Linter>)
 		return success;
 
 	else if(ctx.m_bAddInstructions)
@@ -141,8 +141,11 @@ Success CFileLinter::LintToken(const CLinterContext& ctx)
 		return Lint<CTryCatchStatementLinter>(ctx);
 	case tt_throw:
 		return Lint<CThrowStatementLinter>(ctx);
+	case tt_import:
+		return Lint<CImportLinter>(ctx);
 	case tt_catch:
 	case tt_error:
+	case tt_from:
 	case tt_unused_count:
 	default:
 		CLinterErrors::PushError("unexpected token: " + (*ctx.m_iterPos)->Source(), (*ctx.m_iterPos)->m_oSourcePosition);
@@ -158,18 +161,18 @@ Success CFileLinter::ParseFile()
 		return failure;
 
 	m_iterPos = m_oInitialPosition;
-	m_pContext->Reset();
-	m_pFile.reset();
-	m_pContext->m_oAllMembers["length"];
+
 	return LintFile();
 }
 
 Success CFileLinter::HoistFile()
 {
 	m_pHoister = std::make_unique<CHoister>();
-	m_pFile = std::make_unique<CFileRuntimeData>();
 
-	CMemory globalMemory(nullptr, m_pFile.get(), m_pContext);
+	// no need to give a module index to hoisted files
+	auto mod = std::make_unique<CModule>(m_sWorkingDirectory);
+
+	CMemory globalMemory(nullptr, mod.get());
 	auto globalScope = std::make_shared<CScope>(&globalMemory);
 
 	CLinterContext ctx{
@@ -190,7 +193,7 @@ Success CFileLinter::HoistFile()
 		std::advance(m_iterPos, 1);
 	}
 
-	for (const auto& func : m_pFile->m_oFunctions) {
+	for (const auto& func : mod->m_oFunctions) {
 		m_pHoister->DeclareFunction(func->GetName());
 	}
 
@@ -211,8 +214,8 @@ static void DeclareGlobalObjects(CMemory* m_pOwner, CScope* const scope)
 
 Success CFileLinter::LintFile()
 {
-	m_pFile = std::make_unique<CFileRuntimeData>();
-	CMemory globalMemory(nullptr, m_pFile.get(), m_pContext);
+	m_pModule = CModule::CreateNewModule(m_sWorkingDirectory);
+	CMemory globalMemory(nullptr, m_pModule);
 	globalMemory.m_pHoister = m_pHoister.get();
 
 	auto globalScope = std::make_shared<CScope>(&globalMemory);
@@ -237,15 +240,9 @@ Success CFileLinter::LintFile()
 		std::advance(m_iterPos, 1);
 	}
 
-	m_pFile->AddGlobalInstructions(globalScope->MoveInstructions());
-	m_pFile->SetGlobalVariableCount(globalMemory.m_VariableManager->GetVariableCount());
+	m_pModule->AddGlobalInstructions(globalScope->MoveInstructions());
+	m_pModule->SetGlobalVariableCount(globalMemory.m_VariableManager->GetVariableCount());
 
 	return success;
 }
-
-CFileRuntimeData* CFileLinter::GetRuntimeInformation() const noexcept
-{
-	return m_pFile.get();
-}
-
 

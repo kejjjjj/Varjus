@@ -11,7 +11,7 @@ struct IOItem
         : m_bBinary(in_binary_mode), m_sFileName(filename) {}
     virtual ~IOItem() = default;
 
-    constexpr std::string get_target() { return m_sFileName; }
+    constexpr std::string GetFilePath() const noexcept { return m_sFileName; }
 
 protected:
     bool m_bBinary = false;

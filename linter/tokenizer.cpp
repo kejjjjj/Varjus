@@ -325,7 +325,9 @@ const std::unordered_map<std::string_view, TokenType> reservedKeywords = {
 	{"try", TokenType::tt_try},
 	{"catch", TokenType::tt_catch},
 	{"throw", TokenType::tt_throw},
-	{"typeof", TokenType::tt_typeof}
+	{"typeof", TokenType::tt_typeof},
+	{"import", TokenType::tt_import},
+	{"from", TokenType::tt_from}
 };
 
 Success CBufferTokenizer::ReadName(CToken& token) noexcept

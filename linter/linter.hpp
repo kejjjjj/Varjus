@@ -5,10 +5,10 @@
 
 class CMemory;
 class IRuntimeStructure;
-class CFileRuntimeData;
+class CModule;
 class CHoister;
 
-struct CProgramContext;
+struct CFileContext;
 
 using RuntimeBlock = std::unique_ptr<IRuntimeStructure>;
 
@@ -29,7 +29,7 @@ class CFileLinter final : public CLinter<CToken>
 {
 	NONCOPYABLE(CFileLinter)
 public:
-	CFileLinter(LinterIterator& start, LinterIterator& end, CProgramContext* const context);
+	CFileLinter(LinterIterator& start, LinterIterator& end, const std::string& wd);
 	~CFileLinter();
 	[[nodiscard]] static Success LintToken(const CLinterContext& ctx);
 	[[nodiscard]] static Success LintOperator(const CLinterContext& ctx);
@@ -38,18 +38,17 @@ public:
 
 	[[nodiscard]] Success ParseFile();
 
-	CFileRuntimeData* GetRuntimeInformation() const noexcept;
+	CModule* GetModule() const noexcept;
 
 private:
 	[[nodiscard]] Success HoistFile();
 	[[nodiscard]] Success LintFile();
 
 
-	std::unique_ptr<CFileRuntimeData> m_pFile;
-	CProgramContext* const m_pContext;
+	CModule* m_pModule{ nullptr };
 	LinterIterator m_oInitialPosition;
 	std::unique_ptr<CHoister> m_pHoister;
-
+	std::string m_sWorkingDirectory;
 };
 
 

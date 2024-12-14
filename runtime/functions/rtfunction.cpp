@@ -3,6 +3,7 @@
 #include "runtime/structure.hpp"
 #include "runtime/variables.hpp"
 #include "runtime/values/types/types.hpp"
+#include "runtime/modules/rtmodule.hpp"
 
 #include "linter/functions/function.hpp"
 
@@ -12,11 +13,12 @@
 #include <iostream>
 #include <runtime/exceptions/exception.hpp>
 
-CRuntimeFunction::CRuntimeFunction(CFunctionBlock& linterFunction,
+CRuntimeFunction::CRuntimeFunction(ElementIndex moduleIndex, CFunctionBlock& linterFunction,
 	VectorOf<VariableIndex>&& args,
 	VectorOf<VariableIndex>&& variableIndices) :
 
 	IRuntimeStructureSequence(std::move(linterFunction.m_oInstructions)),
+	m_uModuleIndex(moduleIndex),
 	m_sName(linterFunction.m_sName),
 	m_uNumParameters(linterFunction.m_uNumParameters),
 	m_uNumVariables(linterFunction.m_pStack->m_VariableManager->GetVariableCount()),
@@ -27,13 +29,13 @@ CRuntimeFunction::CRuntimeFunction(CFunctionBlock& linterFunction,
 }
 CRuntimeFunction::~CRuntimeFunction() = default;
 
-IValue* CRuntimeFunction::Execute([[maybe_unused]] CFunction* const thisFunction, VectorOf<IValue*>& args, 
-	const VariableCaptures& captures)
+IValue* CRuntimeFunction::Execute(std::size_t ownerModule, [[maybe_unused]] CFunction* const thisFunction, 
+	VectorOf<IValue*>& args, const VariableCaptures& captures)
 {
 	if (m_uNumParameters != args.size())
 		throw CRuntimeError(std::format("the callable expected {} arguments instead of {}", m_uNumParameters, args.size()));
 
-	auto func = CFunction(args, captures, *this);
+	auto func = CFunction(ownerModule, args, captures, *this);
 
 	IValue* returnVal{ nullptr };
 
@@ -66,9 +68,11 @@ IValue* CRuntimeFunction::Execute([[maybe_unused]] CFunction* const thisFunction
 	return copy;
 }
 
-CFunction::CFunction(VectorOf<IValue*>& args, const VariableCaptures& captures, const CRuntimeFunction& func)
+CFunction::CFunction(std::size_t ownerModule, VectorOf<IValue*>& args,
+	const VariableCaptures& captures, const CRuntimeFunction& func)
+	: m_uModuleIndex(ownerModule)
 {
-
+	
 	for (auto i = std::size_t(0); auto& arg : func.m_oArgumentIndices) {
 		auto var = m_oStack[arg] = CProgramRuntime::AcquireNewVariable();
 		var->SetValue(args[i++]);

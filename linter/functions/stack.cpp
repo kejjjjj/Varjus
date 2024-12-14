@@ -2,6 +2,8 @@
 #include "linter/declarations/variable_declarations.hpp"
 #include "linter/functions/function.hpp"
 #include "linter/context.hpp"
+#include "linter/imports/module.hpp"
+
 #include <cassert>
 
 
@@ -10,10 +12,9 @@ bool CLinterVariable::IsGlobal() const noexcept {
 	return m_pOwner == m_pOwner->GetGlobalMemory();
 }
 
-CMemory::CMemory(CMemory* globalMemory, CFileRuntimeData* const file, CProgramContext* const context)
-	: m_pFile(file), m_pContext(context), m_pGlobal(globalMemory) {
-	assert(m_pFile);
-	assert(m_pContext);
+CMemory::CMemory(CMemory* globalMemory, CModule* const file)
+	: m_pModule(file), m_pGlobal(globalMemory) {
+	assert(m_pModule);
 
 	if (!m_pGlobal)
 		m_pGlobal = this;
@@ -23,15 +24,18 @@ CMemory::CMemory(CMemory* globalMemory, CFileRuntimeData* const file, CProgramCo
 }
 CMemory::~CMemory() = default;
 
+CFileContext* CMemory::GetContext() const {
+	return m_pModule->GetContext();
+}
 CStack* CMemory::ToStack() { return dynamic_cast<CStack*>(this); }
 auto CMemory::ToStack() const { return dynamic_cast<const CStack*>(this); }
 
-CStack::CStack(CMemory* globalMemory, CFileRuntimeData* const file, CProgramContext* const context)
-	: CMemory(globalMemory, file, context) {};
+CStack::CStack(CMemory* globalMemory, CModule* const file)
+	: CMemory(globalMemory, file) {};
 
 CStack::CStack(CMemory* globalMemory, std::unique_ptr<CFunctionBlock>&& func, 
-	CFileRuntimeData* const file, CProgramContext* const context)
-	: CMemory(globalMemory, file, context), m_pFunction(std::move(func)){}
+	CModule* const file) : CMemory(globalMemory, file), 
+	m_pFunction(std::move(func)){}
 
 CStack::~CStack() = default;
 

@@ -27,7 +27,6 @@ public:
     [[maybe_unused]] CLinterFunction* DeclareFunction(const std::string& var, std::size_t index);
     [[nodiscard]] CLinterFunction* GetFunction(const std::string& var);
     [[nodiscard]] bool ContainsFunction(const std::string& name) const;
-    [[nodiscard]] bool ContainsFunctionGlobally(const std::string& name) const;
     [[nodiscard]] std::size_t GetFunctionCount() const noexcept;
 
 private:
