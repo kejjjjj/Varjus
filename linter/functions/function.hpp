@@ -27,6 +27,8 @@ public:
 	[[nodiscard]] VectorOf<std::size_t> GetVariableIndices(CStack* stack) const;
 	[[nodiscard]] VectorOf<std::size_t> GetSharedOwnershipVariables(CStack* stack) const;
 
+	[[nodiscard]] constexpr auto& GetName() const noexcept { return m_oFunctionName; }
+
 private:
 	[[nodiscard]] Success ParseFunctionDeclaration();
 

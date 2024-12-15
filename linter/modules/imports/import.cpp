@@ -8,6 +8,8 @@
 #include "linter/linter.hpp"
 #include "linter/tokenizer.hpp"
 #include "linter/modules/module.hpp"
+#include "linter/scopes/scope.hpp"
+#include "linter/modules/exports/export.hpp"
 
 #include "fs/fs_globals.hpp"
 
@@ -47,7 +49,6 @@ Success CImportLinter::Parse()
 		return failure;
 	}
 
-	std::advance(m_iterPos, 1); // skip ;
 
 	return success;
 }
@@ -63,6 +64,8 @@ Success CImportLinter::ParseIdentifierRecursively()
 	if (m_pOwner->GetContext()->m_sFilePath.empty())
 		CLinterErrors::PushError("imports are not supported when there is no working directory", 
 			GetIteratorSafe()->m_oSourcePosition);
+
+	auto scope = m_pScope.lock();
 
 	m_oNames.push_back((*m_iterPos)->Source());
 	std::advance(m_iterPos, 1);
@@ -111,15 +114,25 @@ Success CImportLinter::ParseFile()
 	if (!thisModule)
 		return failure;
 
-	
 	for (auto& name : m_oNames) {
 		const auto exportedSymbol = thisModule->GetExport(name);
 
 		if (!exportedSymbol)
 			CLinterErrors::PushError(std::format("\"{}\" is not an exported symbol", name), GetIteratorSafe()->m_oSourcePosition);
 
-		//TODO: declare this here
+		if (exportedSymbol->Type() == es_variable) {
+			if (!DeclareVariable(name, exportedSymbol, thisModule->GetIndex()))
+				return failure;
 
+			continue;
+		} if (exportedSymbol->Type() == es_function) {
+			if (!DeclareFunction(name, exportedSymbol, thisModule->GetIndex()))
+				return failure;
+
+			continue;
+		}
+
+		assert(false);
 	}
 
 
@@ -144,4 +157,46 @@ CModule* CImportLinter::GetFileModule() const
 	return l.GetModule(); // this is fine because the module is owned by CModule::m_oAllModules
 
 
+}
+
+Success CImportLinter::DeclareVariable(const std::string& symbolName,
+	CExportedSymbol* const s, std::size_t moduleIndex)
+{
+
+	auto scope = m_pScope.lock();
+
+	if (!scope) {
+		CLinterErrors::PushError("CImportLinter: internal error", GetIteratorSafe()->m_oSourcePosition);
+		return failure;
+	}
+
+	if (!scope->DeclareVariable(symbolName)) {
+		CLinterErrors::PushError(std::format("variable \"{}\" already declared", symbolName), (*m_iterPos)->m_oSourcePosition);
+		return failure;
+	}
+
+	auto var = m_pOwner->m_VariableManager->DeclareVariable(symbolName);
+	var->m_bBelongsToDifferentModule = true;
+	var->m_uOtherModuleIndex = moduleIndex;
+	var->m_uOtherModuleIdentifierIndex = s->GetIndex();
+
+	return success;
+}
+
+Success CImportLinter::DeclareFunction(const std::string& symbolName,
+	CExportedSymbol* const s, std::size_t moduleIndex)
+{
+
+	if (m_pOwner->m_FunctionManager->ContainsFunction(symbolName)) {
+		CLinterErrors::PushError(std::format("function \"{}\" already declared", symbolName), (*m_iterPos)->m_oSourcePosition);
+		return failure;
+	}
+
+	auto func = m_pOwner->m_FunctionManager->DeclareFunction(symbolName, m_pOwner->GetModule()->GetFunctionCount());
+
+	func->m_bBelongsToDifferentModule = true;
+	func->m_uOtherModuleIndex = moduleIndex;
+	func->m_uOtherModuleIdentifierIndex = s->GetIndex();
+
+	return success;
 }

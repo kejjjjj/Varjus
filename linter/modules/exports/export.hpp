@@ -19,12 +19,14 @@ public:
 
 private:
 	[[nodiscard]] Success ParseVariableDeclaration();
+	[[nodiscard]] Success ParseFunctionDeclaration();
 
 
 	WeakScope m_pScope;
 	CMemory* const m_pOwner;
 
 	std::unique_ptr<CVariableDeclarationLinter> m_pVariableLinter;
+
 };
 
 enum EExportedSymbol

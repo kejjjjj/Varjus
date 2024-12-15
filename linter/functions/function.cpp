@@ -43,8 +43,9 @@ Success CFunctionLinter::Parse()
 
 	assert(m_pOwner && m_pOwner->m_pModule);
 
+	auto count = m_pOwner->m_pModule->GetFunctionCount();
 	m_pOwner->m_pModule->AddFunction(ToRuntimeFunction());
-	m_pOwner->m_FunctionManager->DeclareFunction(m_oFunctionName, m_pOwner->m_pModule->GetFunctionCount());
+	m_pOwner->m_FunctionManager->DeclareFunction(m_oFunctionName, count);
 	return success;
 }
 

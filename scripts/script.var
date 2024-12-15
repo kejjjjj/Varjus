@@ -1,8 +1,8 @@
 
-import testVariable from "moduleTest.var";
+import okTest from "moduleTest.var";
 
 fn main()
 {
-
-	return 1;
+	return okTest();
 }
+

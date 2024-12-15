@@ -93,7 +93,11 @@ IValue* CRuntimeExpression::EvaluateLeaf(CRuntimeContext* const ctx, const Abstr
 		IValue* v = nullptr;
 
 		if (var->m_bGlobalVariable) {
-			v = ctx->m_pModule->GetGlobalVariableByIndex(var->m_uIndex)->GetValue();
+			auto _module = var->m_bBelongsToDifferentModule
+				? CProgramRuntime::GetModuleByIndex(var->m_uOtherModuleIndex)
+				: ctx->m_pModule;
+
+			v = _module->GetGlobalVariableByIndex(var->m_uIndex)->GetValue();
 		} else {
 			assert(ctx->m_pFunction);
 			v = ctx->m_pFunction->GetVariableByIndex(var->m_uIndex)->GetValue();
@@ -107,8 +111,15 @@ IValue* CRuntimeExpression::EvaluateLeaf(CRuntimeContext* const ctx, const Abstr
 	if (node->IsFunction()) {
 		const auto var = node->GetFunction();
 		auto v = CProgramRuntime::AcquireNewValue<CCallableValue>();
+
+		auto _module = var->m_bBelongsToDifferentModule
+			? CProgramRuntime::GetModuleByIndex(var->m_uOtherModuleIndex)
+			: ctx->m_pModule;
+
+		auto index = var->m_bBelongsToDifferentModule ? var->m_uOtherModuleIdentifierIndex : var->m_uIndex;
+
 		v->MakeShared();
-		v->Internal()->GetCallable() = ctx->m_pModule->GetFunctionByIndex(var->m_uIndex);
+		v->Internal()->GetCallable() = _module->GetFunctionByIndex(index);
 		v->MakeImmutable();
 		return v;
 	}

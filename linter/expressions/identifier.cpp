@@ -103,8 +103,9 @@ CLinterFunction* CIdentifierLinter::GetFunctionByIdentifier(const std::string& s
 
 	auto& hoister = m_pOwner->GetHoister();
 
-	if (hoister->ContainsFunction(str))
-		return manager->DeclareFunction(str, hoister->GetFunctionIndexByName(str));
+	if (hoister->ContainsFunction(str)) {
+		return manager->DeclareFunction(hoister->GetFunctionByName(str));
+	}
 
 	assert(false);
 	return nullptr;

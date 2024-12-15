@@ -5,6 +5,7 @@
 #include "linter/punctuation.hpp"
 #include "linter/functions/stack.hpp"
 #include "linter/modules/module.hpp"
+#include "linter/functions/function.hpp"
 
 #include "linter/declarations/variable_declarations.hpp"
 
@@ -36,6 +37,8 @@ Success CExportLinter::Parse()
 
 	if (CVariableDeclarationLinter::IsDeclaration(*m_iterPos)) {
 		return ParseVariableDeclaration();
+	} else if ((*m_iterPos)->Type() == tt_fn) {
+		return ParseFunctionDeclaration();
 	}
 
 	CLinterErrors::PushError("expected a declaration", GetIteratorSafe()->m_oSourcePosition);
@@ -53,6 +56,20 @@ Success CExportLinter::ParseVariableDeclaration()
 	const auto var = m_pVariableLinter->GetIdentifier();
 	m_pOwner->GetModule()->AddExport(var->m_sName, std::make_unique<CExportedVariable>(var->m_uIndex));
 	return success;
+}
+Success CExportLinter::ParseFunctionDeclaration()
+{
+	auto fnLinter = std::make_unique<CFunctionLinter>(m_iterPos, m_iterEnd, m_pScope, m_pOwner);
+	if (!fnLinter->Parse())
+		return failure;
+
+	if (m_pOwner->IsHoisting()) // no action required
+		return success;
+
+	auto func = m_pOwner->m_FunctionManager->GetFunction(fnLinter->GetName());
+	m_pOwner->GetModule()->AddExport(fnLinter->GetName(), std::make_unique<CExportedFunction>(func->m_uIndex));
+	return success;
+
 }
 RuntimeBlock CExportLinter::ToRuntimeObject() const
 { 

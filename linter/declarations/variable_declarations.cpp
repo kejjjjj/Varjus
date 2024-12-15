@@ -36,7 +36,7 @@ Success CVariableDeclarationLinter::Parse()
 	if (const auto scope = m_pScope.lock()) {
 
 		if (!scope->DeclareVariable((*m_iterPos)->Source())) {
-			CLinterErrors::PushError("variable " + (*m_iterPos)->Source() + " already declared", 
+			CLinterErrors::PushError(std::format("variable \"{}\" already declared", (*m_iterPos)->Source()), 
 				(*m_iterPos)->m_oSourcePosition);
 			return failure;
 		}

@@ -196,8 +196,8 @@ Success CFileLinter::HoistFile()
 		std::advance(m_iterPos, 1);
 	}
 
-	for (const auto& func : mod->m_oFunctions) {
-		m_pHoister->DeclareFunction(func->GetName());
+	for (auto& [name, value] : globalMemory.m_FunctionManager->GetIterator()) {
+		m_pHoister->DeclareFunction(name, value);
 	}
 
 	return success;

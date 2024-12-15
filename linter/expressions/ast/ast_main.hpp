@@ -95,14 +95,28 @@ private:
 	CodePosition m_oApproximatePosition;
 };
 
-class VariableASTNode final : public AbstractSyntaxTree
+struct CLinterVariable;
+struct CLinterFunction;
+
+struct ASTModule
+{
+	ASTModule() = default;
+	ASTModule(bool isModule, std::size_t moduleIndex, std::size_t identifierIndex) :
+		m_bBelongsToDifferentModule(isModule), 
+		m_uOtherModuleIndex(moduleIndex), 
+		m_uOtherModuleIdentifierIndex(identifierIndex){}
+
+	bool m_bBelongsToDifferentModule{ false };
+	std::size_t m_uOtherModuleIndex{};
+	std::size_t m_uOtherModuleIdentifierIndex{};
+};
+
+class VariableASTNode final : public AbstractSyntaxTree, public ASTModule
 {
 	friend class AstToInstructionConverter;
 	NONCOPYABLE(VariableASTNode);
 public:
-	VariableASTNode(const CodePosition& pos, std::size_t variableIndex, bool isGlobalVariable)
-		: AbstractSyntaxTree(pos), m_uIndex(variableIndex), m_bGlobalVariable(isGlobalVariable) {
-	}
+	VariableASTNode(const CodePosition& pos, CLinterVariable* const var);
 
 	[[nodiscard]] constexpr bool IsLeaf() const noexcept override { return true; }
 	[[nodiscard]] constexpr bool IsVariable() const noexcept override { return true; }
@@ -111,15 +125,17 @@ public:
 
 	std::size_t m_uIndex{};
 	bool m_bGlobalVariable{ false };
+
+
 private:
 
 };
-class FunctionASTNode final : public AbstractSyntaxTree
+class FunctionASTNode final : public AbstractSyntaxTree, public ASTModule
 {
 	friend class AstToInstructionConverter;
 	NONCOPYABLE(FunctionASTNode);
 public:
-	FunctionASTNode(const CodePosition& pos, std::size_t i) : AbstractSyntaxTree(pos), m_uIndex(i) {}
+	FunctionASTNode(const CodePosition& pos, CLinterFunction* const func);
 
 	[[nodiscard]] constexpr bool IsLeaf() const noexcept override { return true; }
 	[[nodiscard]] constexpr bool IsFunction() const noexcept override { return true; }

@@ -7,6 +7,7 @@
 #include "linter/expressions/operand/operand_includes.hpp"
 #include "linter/expressions/postfix.hpp"
 #include "linter/functions/stack.hpp"
+#include "linter/functions/function.hpp"
 
 #include "linter/token.hpp"
 
@@ -138,6 +139,17 @@ std::size_t AbstractSyntaxTree::GetLeftBranchDepth() const noexcept
 /***********************************************************************
  >
 ***********************************************************************/
+
+VariableASTNode::VariableASTNode(const CodePosition& pos, CLinterVariable* const var)
+	: AbstractSyntaxTree(pos),
+	ASTModule(var->m_bBelongsToDifferentModule, var->m_uOtherModuleIndex, var->m_uOtherModuleIdentifierIndex),
+	m_uIndex(var->m_uIndex), 
+	m_bGlobalVariable(var->IsGlobal()){}
+
+FunctionASTNode::FunctionASTNode(const CodePosition& pos, CLinterFunction* const func) 
+	: AbstractSyntaxTree(pos),
+	ASTModule(func->m_bBelongsToDifferentModule, func->m_uOtherModuleIndex, func->m_uOtherModuleIdentifierIndex),
+	m_uIndex(func->m_uIndex) {}
 
 ConstantASTNode::ConstantASTNode(const CodePosition& pos, const std::string& data, EValueType datatype)
 	: AbstractSyntaxTree(pos), m_pConstant(data), m_eDataType(datatype) {

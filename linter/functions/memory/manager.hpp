@@ -21,5 +21,10 @@ struct CMemoryIdentifier
 
 	std::string m_sName;
 	std::size_t m_uIndex{};
+
+	bool m_bBelongsToDifferentModule{ false };
+	std::size_t m_uOtherModuleIndex{};
+	std::size_t m_uOtherModuleIdentifierIndex{};
+
 };
 
