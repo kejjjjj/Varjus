@@ -16,11 +16,11 @@ CRuntimeWhileStatement::CRuntimeWhileStatement(std::unique_ptr<AbstractSyntaxTre
 CRuntimeWhileStatement::~CRuntimeWhileStatement() = default;
 
 
-IValue* CRuntimeWhileStatement::Execute([[maybe_unused]] CFunction* const thisFunction)
+IValue* CRuntimeWhileStatement::Execute([[maybe_unused]] CRuntimeContext* const ctx)
 {
 
 	while (true) {
-		auto condition = m_pCondition->Evaluate(thisFunction);
+		auto condition = m_pCondition->Evaluate(ctx);
 		
 		if (!condition->IsBooleanConvertible())
 			throw CRuntimeError("the operand is not convertible to a boolean");
@@ -34,7 +34,7 @@ IValue* CRuntimeWhileStatement::Execute([[maybe_unused]] CFunction* const thisFu
 			break;
 		}
 
-		if (auto v = ExecuteBlock(thisFunction)) {
+		if (auto v = ExecuteBlock(ctx)) {
 			const auto lc = IRuntimeStructure::ToControlStatement(v);
 			if (lc == lc_break)
 				break;

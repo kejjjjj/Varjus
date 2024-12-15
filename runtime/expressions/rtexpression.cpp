@@ -16,12 +16,12 @@ CRuntimeExpression::CRuntimeExpression(std::unique_ptr<AbstractSyntaxTree>&& ast
 	m_pAST(std::move(ast)) {}
 CRuntimeExpression::~CRuntimeExpression() = default;
 
-IValue* CRuntimeExpression::Execute([[maybe_unused]]CFunction* const thisFunction)
+IValue* CRuntimeExpression::Execute(CRuntimeContext* const ctx)
 {
 	//assert(m_pAST);
 	//CProgramRuntime::SetExecutionPosition(&m_pAST->GetCodePosition());
 
-	[[maybe_unused]] const auto result = Evaluate(thisFunction);
+	[[maybe_unused]] const auto result = Evaluate(ctx);
 	
 	if (CProgramRuntime::ExceptionThrown())
 		return result; //we don't want the exception to get destroyed
@@ -31,38 +31,38 @@ IValue* CRuntimeExpression::Execute([[maybe_unused]]CFunction* const thisFunctio
 
 	return nullptr;
 }
-IValue* CRuntimeExpression::Evaluate(CFunction* const thisFunction)
+IValue* CRuntimeExpression::Evaluate(CRuntimeContext* const ctx)
 {
-	return Evaluate(thisFunction, m_pAST.get());
+	return Evaluate(ctx, m_pAST.get());
 }
 
 #pragma pack(push)
 #pragma warning(disable : 4061)
 #pragma warning(disable : 4062)
-IValue* CRuntimeExpression::Evaluate(CFunction* const thisFunction, const AbstractSyntaxTree* node)
+IValue* CRuntimeExpression::Evaluate(CRuntimeContext* const ctx, const AbstractSyntaxTree* node)
 {
 
 	assert(node != nullptr);
 	CProgramRuntime::SetExecutionPosition(&node->GetCodePosition());
 
 	if (node->IsPostfix()) 
-		return EvaluatePostfix(thisFunction, node->GetOperator()->GetPostfix());
+		return EvaluatePostfix(ctx, node->GetOperator()->GetPostfix());
 	
 	if (node->IsUnary())
-		return EvaluateUnary(thisFunction, node->GetOperator()->GetUnary());
+		return EvaluateUnary(ctx, node->GetOperator()->GetUnary());
 
 	if (node->IsSequence())
-		return EvaluateSequence(thisFunction, node);
+		return EvaluateSequence(ctx, node);
 
 	if (node->IsTernary())
-		return EvaluateTernary(thisFunction, node->GetTernary());
+		return EvaluateTernary(ctx, node->GetTernary());
 
 	if (node->IsLeaf()) 
-		return EvaluateLeaf(thisFunction, node);
+		return EvaluateLeaf(ctx, node);
 	
 
-	auto lhs = Evaluate(thisFunction, node->left.get());
-	auto rhs = Evaluate(thisFunction, node->right.get());
+	auto lhs = Evaluate(ctx, node->left.get());
+	auto rhs = Evaluate(ctx, node->right.get());
 
 	assert(node->IsOperator());
 
@@ -82,7 +82,7 @@ IValue* CRuntimeExpression::Evaluate(CFunction* const thisFunction, const Abstra
 }
 #pragma pack(pop)
 
-IValue* CRuntimeExpression::EvaluateLeaf(CFunction* const thisFunction, const AbstractSyntaxTree* node)
+IValue* CRuntimeExpression::EvaluateLeaf(CRuntimeContext* const ctx, const AbstractSyntaxTree* node)
 {
 
 
@@ -93,11 +93,11 @@ IValue* CRuntimeExpression::EvaluateLeaf(CFunction* const thisFunction, const Ab
 		IValue* v = nullptr;
 
 		if (var->m_bGlobalVariable) {
-			const auto mod = CProgramRuntime::GetModuleByIndex( thisFunction->GetModuleIndex() );
-			v = mod->GetGlobalVariableByIndex(var->m_uIndex)->GetValue();
+			v = ctx->m_pModule->GetGlobalVariableByIndex(var->m_uIndex)->GetValue();
+		} else {
+			assert(ctx->m_pFunction);
+			v = ctx->m_pFunction->GetVariableByIndex(var->m_uIndex)->GetValue();
 		}
-		else
-			v = thisFunction->GetVariableByIndex(var->m_uIndex)->GetValue();
 
 		assert(v);
 		assert(v->HasOwner());
@@ -106,11 +106,9 @@ IValue* CRuntimeExpression::EvaluateLeaf(CFunction* const thisFunction, const Ab
 
 	if (node->IsFunction()) {
 		const auto var = node->GetFunction();
-		const auto mod = CProgramRuntime::GetModuleByIndex(thisFunction->GetModuleIndex());
-
 		auto v = CProgramRuntime::AcquireNewValue<CCallableValue>();
 		v->MakeShared();
-		v->Internal()->GetCallable() = mod->GetFunctionByIndex(var->m_uIndex);
+		v->Internal()->GetCallable() = ctx->m_pModule->GetFunctionByIndex(var->m_uIndex);
 		v->MakeImmutable();
 		return v;
 	}
@@ -123,17 +121,17 @@ IValue* CRuntimeExpression::EvaluateLeaf(CFunction* const thisFunction, const Ab
 		auto internal = v->Internal();
 		internal->GetCallable() = var->m_pLambda.get();
 		if (var->m_oVariableCaptures.size())
-			internal->SetCaptures(thisFunction, var->m_oVariableCaptures);
+			internal->SetCaptures(ctx, var->m_oVariableCaptures);
 
 		return v;
 	}
 
 	if (node->IsArray()) {
-		return CArrayValue::Construct(EvaluateList(thisFunction, node->GetArray()->m_oExpressions));
+		return CArrayValue::Construct(EvaluateList(ctx, node->GetArray()->m_oExpressions));
 	}
 
 	if (node->IsObject()) {
-		return CObjectValue::Construct(EvaluateObject(thisFunction, node->GetObject()->m_oAttributes));
+		return CObjectValue::Construct(EvaluateObject(ctx, node->GetObject()->m_oAttributes));
 	}
 
 	if (node->IsConstant()) {
@@ -155,20 +153,20 @@ IValue* CRuntimeExpression::EvaluateLeaf(CFunction* const thisFunction, const Ab
 	assert(false);
 	return nullptr;
 }
-IValue* CRuntimeExpression::EvaluateSequence(CFunction* const thisFunction, const AbstractSyntaxTree* node)
+IValue* CRuntimeExpression::EvaluateSequence(CRuntimeContext* const ctx, const AbstractSyntaxTree* node)
 {
 	//discard lhs
-	auto lhs = Evaluate(thisFunction, node->left.get());
+	auto lhs = Evaluate(ctx, node->left.get());
 
 	if (!lhs->HasOwner())
 		lhs->Release();
 
-	return Evaluate(thisFunction, node->right.get());
+	return Evaluate(ctx, node->right.get());
 }
 
-IValue* CRuntimeExpression::EvaluateTernary(CFunction* const thisFunction, const TernaryASTNode* node)
+IValue* CRuntimeExpression::EvaluateTernary(CRuntimeContext* const ctx, const TernaryASTNode* node)
 {
-	auto operand = Evaluate(thisFunction, node->m_pOperand.get());
+	auto operand = Evaluate(ctx, node->m_pOperand.get());
 
 	if (!operand->IsBooleanConvertible())
 		throw CRuntimeError("the operand is not convertible to a boolean");
@@ -179,9 +177,9 @@ IValue* CRuntimeExpression::EvaluateTernary(CFunction* const thisFunction, const
 		operand->Release();
 
 	if (boolValue) {
-		return Evaluate(thisFunction, node->m_pTrue.get());
+		return Evaluate(ctx, node->m_pTrue.get());
 	}
 
-	return Evaluate(thisFunction, node->m_pFalse.get());
+	return Evaluate(ctx, node->m_pFalse.get());
 
 }

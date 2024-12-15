@@ -29,20 +29,27 @@ CRuntimeFunction::CRuntimeFunction(ElementIndex moduleIndex, CFunctionBlock& lin
 }
 CRuntimeFunction::~CRuntimeFunction() = default;
 
-IValue* CRuntimeFunction::Execute(std::size_t ownerModule, [[maybe_unused]] CFunction* const thisFunction, 
+IValue* CRuntimeFunction::Execute(CRuntimeContext* const ctx,
 	VectorOf<IValue*>& args, const VariableCaptures& captures)
 {
 	if (m_uNumParameters != args.size())
 		throw CRuntimeError(std::format("the callable expected {} arguments instead of {}", m_uNumParameters, args.size()));
 
-	auto func = CFunction(ownerModule, args, captures, *this);
+
+	auto func = CFunction(args, captures, *this);
+	const auto isMainFunction = ctx->m_pFunction == nullptr;
+
+	CRuntimeContext thisContext{
+		.m_pModule = ctx->m_pModule,
+		.m_pFunction = &func
+	};
 
 	IValue* returnVal{ nullptr };
 
 	for (const auto& insn : m_oInstructions) {
-		if (returnVal = insn->Execute(&func), returnVal) {
+		if (returnVal = insn->Execute(&thisContext), returnVal) {
 
-			if (!thisFunction && CProgramRuntime::ExceptionThrown())
+			if (isMainFunction && CProgramRuntime::ExceptionThrown())
 				throw CRuntimeError(std::format("an uncaught exception: {}", returnVal->ToPrintableString()));
 
 			break;
@@ -68,9 +75,8 @@ IValue* CRuntimeFunction::Execute(std::size_t ownerModule, [[maybe_unused]] CFun
 	return copy;
 }
 
-CFunction::CFunction(std::size_t ownerModule, VectorOf<IValue*>& args,
+CFunction::CFunction(VectorOf<IValue*>& args,
 	const VariableCaptures& captures, const CRuntimeFunction& func)
-	: m_uModuleIndex(ownerModule)
 {
 	
 	for (auto i = std::size_t(0); auto& arg : func.m_oArgumentIndices) {

@@ -18,11 +18,11 @@ CRuntimeForStatement::CRuntimeForStatement(
 
 CRuntimeForStatement::~CRuntimeForStatement() = default;
 
-IValue* CRuntimeForStatement::Execute(CFunction* const thisFunction)
+IValue* CRuntimeForStatement::Execute(CRuntimeContext* const ctx)
 {
 
 	if (m_pInitializer->HasAST()) {
-		auto v = m_pInitializer->Evaluate(thisFunction);
+		auto v = m_pInitializer->Evaluate(ctx);
 		if (!v->HasOwner())
 			v->Release();
 	}
@@ -32,7 +32,7 @@ IValue* CRuntimeForStatement::Execute(CFunction* const thisFunction)
 	while (true) {
 
 		if (!firstIter && m_pOnEnd->HasAST()) {
-			auto v = m_pOnEnd->Evaluate(thisFunction);
+			auto v = m_pOnEnd->Evaluate(ctx);
 			if (!v->HasOwner())
 				v->Release();
 		}
@@ -40,7 +40,7 @@ IValue* CRuntimeForStatement::Execute(CFunction* const thisFunction)
 		firstIter = false;
 
 		if (m_pCondition->HasAST()) {
-			auto condition = m_pCondition->Evaluate(thisFunction);
+			auto condition = m_pCondition->Evaluate(ctx);
 
 			if (!condition->IsBooleanConvertible())
 				throw CRuntimeError("the operand is not convertible to a boolean");
@@ -55,7 +55,7 @@ IValue* CRuntimeForStatement::Execute(CFunction* const thisFunction)
 			}
 		}
 
-		if (auto v = ExecuteBlock(thisFunction)) {
+		if (auto v = ExecuteBlock(ctx)) {
 			const auto lc = IRuntimeStructure::ToControlStatement(v);
 
 			if (lc == lc_break)

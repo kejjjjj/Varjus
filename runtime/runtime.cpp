@@ -96,8 +96,13 @@ steady_clock CProgramRuntime::BeginExecution(CRuntimeFunction* entryFunc)
 {
 	assert(entryFunc);
 
+	CRuntimeContext ctx{
+		.m_pModule = CProgramRuntime::GetModuleByIndex(entryFunc->GetModuleIndex()),
+		.m_pFunction = nullptr,
+	};
+
 	std::vector<IValue*> args;
-	if (auto returnValue = entryFunc->Execute(entryFunc->GetModuleIndex(), nullptr, args, {})) {
+	if (auto returnValue = entryFunc->Execute(&ctx, args, {})) {
 		steady_clock now = std::chrono::steady_clock::now();
 		std::cout << std::format("The program returned: {}\n", returnValue->ToPrintableString());
 		returnValue->Release();
@@ -115,5 +120,6 @@ const CodePosition* CProgramRuntime::GetExecutionPosition() noexcept{
 	return m_pCodePosition;
 }
 CRuntimeModule* CProgramRuntime::GetModuleByIndex(std::size_t index) { 
+	assert(index < m_oModules.size());
 	return m_oModules[index].get(); 
 }

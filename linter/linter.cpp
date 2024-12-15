@@ -10,8 +10,9 @@
 #include "functions/stack.hpp"
 #include "functions/function.hpp"
 #include "scopes/scope.hpp"
-#include "imports/import.hpp"
-#include "imports/module.hpp"
+#include "modules/imports/import.hpp"
+#include "modules/exports/export.hpp"
+#include "modules/module.hpp"
 #include "statements/for/for.hpp"
 #include "statements/while/while.hpp"
 #include "statements/if/if.hpp"
@@ -23,8 +24,8 @@
 
 #include <cassert>
 
-CFileLinter::CFileLinter(LinterIterator& start, LinterIterator& end, const std::string& wd)
-	: CLinter(start, end), m_oInitialPosition(start), m_sWorkingDirectory(wd) {}
+CFileLinter::CFileLinter(LinterIterator& start, LinterIterator& end, const std::string& filePath)
+	: CLinter(start, end), m_oInitialPosition(start), m_sFilePath(filePath) {}
 CFileLinter::~CFileLinter() = default;
 
 static Success AddInstruction(LinterIterator& pos, RuntimeBlock&& block, const WeakScope& scope)
@@ -143,6 +144,8 @@ Success CFileLinter::LintToken(const CLinterContext& ctx)
 		return Lint<CThrowStatementLinter>(ctx);
 	case tt_import:
 		return Lint<CImportLinter>(ctx);
+	case tt_export:
+		return Lint<CExportLinter>(ctx);
 	case tt_catch:
 	case tt_error:
 	case tt_from:
@@ -170,7 +173,7 @@ Success CFileLinter::HoistFile()
 	m_pHoister = std::make_unique<CHoister>();
 
 	// no need to give a module index to hoisted files
-	auto mod = std::make_unique<CModule>(m_sWorkingDirectory);
+	auto mod = std::make_unique<CModule>(m_sFilePath);
 
 	CMemory globalMemory(nullptr, mod.get());
 	auto globalScope = std::make_shared<CScope>(&globalMemory);
@@ -214,7 +217,7 @@ static void DeclareGlobalObjects(CMemory* m_pOwner, CScope* const scope)
 
 Success CFileLinter::LintFile()
 {
-	m_pModule = CModule::CreateNewModule(m_sWorkingDirectory);
+	m_pModule = CModule::CreateNewModule(m_sFilePath);
 	CMemory globalMemory(nullptr, m_pModule);
 	globalMemory.m_pHoister = m_pHoister.get();
 

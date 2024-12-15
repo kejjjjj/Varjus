@@ -77,7 +77,7 @@ public:
 	[[nodiscard]] IValue* Index(std::int64_t index) override;
 	[[nodiscard]] IValue* GetAggregate(std::size_t memberIdx) override;
 
-	[[nodiscard]] IValue* Call(CFunction* const thisFunction, const IValues& args) override;
+	[[nodiscard]] IValue* Call(CRuntimeContext* const ctx, const IValues& args) override;
 
 	[[nodiscard]] std::size_t AddressOf() const noexcept override { 
 		return reinterpret_cast<std::size_t>(GetShared().get()); 
@@ -89,18 +89,18 @@ private:
 	[[nodiscard]] std::string TypeAsString() const override { return "array"s; }
 	[[nodiscard]] std::string ValueAsString() const override;
 
-	[[nodiscard]] IValue* Push(CFunction* const thisFunction, const IValues& newValue);
-	[[nodiscard]] IValue* PushFront(CFunction* const thisFunction, const IValues& newValue);
-	[[nodiscard]] IValue* Pop(CFunction* const thisFunction, const IValues& newValue);
-	[[nodiscard]] IValue* PopFront(CFunction* const thisFunction, const IValues& newValue);
+	[[nodiscard]] IValue* Push(CRuntimeContext* const ctx, const IValues& newValue);
+	[[nodiscard]] IValue* PushFront(CRuntimeContext* const ctx, const IValues& newValue);
+	[[nodiscard]] IValue* Pop(CRuntimeContext* const ctx, const IValues& newValue);
+	[[nodiscard]] IValue* PopFront(CRuntimeContext* const ctx, const IValues& newValue);
 
-	[[nodiscard]] IValue* Map(CFunction* const thisFunction, const IValues& newValue);
-	[[nodiscard]] IValue* Find(CFunction* const thisFunction, const IValues& newValue);
-	[[nodiscard]] IValue* Filter(CFunction* const thisFunction, const IValues& newValue);
+	[[nodiscard]] IValue* Map(CRuntimeContext* const ctx, const IValues& newValue);
+	[[nodiscard]] IValue* Find(CRuntimeContext* const ctx, const IValues& newValue);
+	[[nodiscard]] IValue* Filter(CRuntimeContext* const ctx, const IValues& newValue);
 
-	[[nodiscard]] IValue* Contains(CFunction* const thisFunction, const IValues& newValue);
+	[[nodiscard]] IValue* Contains(CRuntimeContext* const ctx, const IValues& newValue);
 
-	[[nodiscard]] IValue* Reverse(CFunction* const thisFunction, const IValues& newValue);
+	[[nodiscard]] IValue* Reverse(CRuntimeContext* const ctx, const IValues& newValue);
 
 	const CBuiltInMethod<CArrayValue>* m_pMethod{ nullptr };
 };

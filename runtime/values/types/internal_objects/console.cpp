@@ -50,15 +50,15 @@ IValue* CConsoleValue::GetAggregate(std::size_t memberIdx) {
 	return CObjectValue::GetAggregate(memberIdx);
 }
 
-IValue* CConsoleValue::Call(CFunction* const thisFunction, const IValues& args)
+IValue* CConsoleValue::Call(CRuntimeContext* const ctx, const IValues& args)
 {
 	assert(IsCallable());
-	auto ret = CBuiltInMethods<CConsoleValue>::CallMethod(thisFunction, this, args, m_pMethod);
+	auto ret = CBuiltInMethods<CConsoleValue>::CallMethod(ctx, this, args, m_pMethod);
 	m_pMethod = nullptr;
 	return ret;
 }
 
-IValue* CConsoleValue::Log([[maybe_unused]] CFunction* const thisFunction, const IValues& values)
+IValue* CConsoleValue::Log([[maybe_unused]] CRuntimeContext* const ctx, const IValues& values)
 {
 
 	std::string p;
@@ -71,7 +71,7 @@ IValue* CConsoleValue::Log([[maybe_unused]] CFunction* const thisFunction, const
 	return CProgramRuntime::AcquireNewValue<IValue>();
 }
 
-IValue* CConsoleValue::Clear([[maybe_unused]] CFunction* const thisFunction, [[maybe_unused]] const IValues& values)
+IValue* CConsoleValue::Clear([[maybe_unused]] CRuntimeContext* const ctx, [[maybe_unused]] const IValues& values)
 {
 #if _WIN32
 	system("cls");

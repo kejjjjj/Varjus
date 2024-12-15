@@ -6,6 +6,9 @@
 #include "linter/functions/stack.hpp"
 #include "linter/context.hpp"
 #include "linter/linter.hpp"
+#include "linter/tokenizer.hpp"
+#include "linter/modules/module.hpp"
+
 #include "fs/fs_globals.hpp"
 
 #include <cassert>
@@ -34,6 +37,9 @@ Success CImportLinter::Parse()
 	std::advance(m_iterPos, 1); // skip from
 
 	if (!ParseFilePath())
+		return failure;
+
+	if (!ParseFile())
 		return failure;
 
 	if (IsEndOfBuffer() || !(*m_iterPos)->IsOperator(p_semicolon)) {
@@ -88,17 +94,54 @@ Success CImportLinter::ParseFilePath()
 
 	m_oTargetFile = fullPath;
 
+	if (m_oTargetFile == m_pOwner->GetModule()->GetFilePath()) {
+		CLinterErrors::PushError(std::format("attempted to import from current file", fullPath), GetIteratorSafe()->m_oSourcePosition);
+		return failure;
+	}
+
+
 	std::advance(m_iterPos, 1); // skip file name
 	return success;
 }
 
 Success CImportLinter::ParseFile()
 {
-	CFileLinter l(m_iterPos, m_iterEnd, m_oTargetFile);
+	auto thisModule = GetFileModule();
 
-	if (!l.ParseFile())
+	if (!thisModule)
 		return failure;
 
+	
+	for (auto& name : m_oNames) {
+		const auto exportedSymbol = thisModule->GetExport(name);
+
+		if (!exportedSymbol)
+			CLinterErrors::PushError(std::format("\"{}\" is not an exported symbol", name), GetIteratorSafe()->m_oSourcePosition);
+
+		//TODO: declare this here
+
+	}
+
+
 	return success;
+
+}
+CModule* CImportLinter::GetFileModule() const
+{
+	if (auto cachedModule = CModule::FindCachedModule(m_oTargetFile)) 
+		return cachedModule;
+	
+	auto uniqueTokens = CBufferTokenizer::ParseFileFromFilePath(m_oTargetFile);
+	auto tokens = CBufferTokenizer::ConvertTokensToReadOnly(uniqueTokens);
+	auto begin = tokens.begin();
+	auto end = tokens.end();
+
+	CFileLinter l(begin, end, m_oTargetFile);
+
+	if (!l.ParseFile())
+		return nullptr;
+
+	return l.GetModule(); // this is fine because the module is owned by CModule::m_oAllModules
+
 
 }

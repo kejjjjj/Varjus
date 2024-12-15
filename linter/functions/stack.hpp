@@ -41,6 +41,8 @@ public:
 	[[nodiscard]] CStack* ToStack();
 	[[nodiscard]] auto ToStack() const;
 
+	[[nodiscard]] constexpr auto& GetModule() noexcept { return m_pGlobal->m_pModule; }
+
 	[[nodiscard]] CFileContext* GetContext() const;
 	[[nodiscard]] auto& GetGlobalMemory() noexcept { return m_pGlobal; }
 	[[nodiscard]] auto& GetGlobalMemory() const noexcept { return m_pGlobal; }

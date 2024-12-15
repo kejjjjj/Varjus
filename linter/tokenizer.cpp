@@ -1,7 +1,7 @@
-#include "token.hpp"
 #include "tokenizer.hpp"
 #include "punctuation.hpp"
 #include "globalEnums.hpp"
+#include "fs/fs_io.hpp"
 
 #include <cassert>
 #include <iostream>
@@ -327,7 +327,8 @@ const std::unordered_map<std::string_view, TokenType> reservedKeywords = {
 	{"throw", TokenType::tt_throw},
 	{"typeof", TokenType::tt_typeof},
 	{"import", TokenType::tt_import},
-	{"from", TokenType::tt_from}
+	{"from", TokenType::tt_from},
+	{"export", TokenType::tt_export}
 };
 
 Success CBufferTokenizer::ReadName(CToken& token) noexcept
@@ -390,4 +391,39 @@ std::unique_ptr<CToken> CBufferTokenizer::ReadPunctuation() noexcept
 
 
 	return nullptr;
+}
+
+
+
+/***********************************************************************
+ > 
+***********************************************************************/
+std::vector<std::unique_ptr<CToken>> CBufferTokenizer::ParseFileFromFilePath(const std::string& filePath)
+{
+	const auto reader = IOReader(filePath, false);
+	auto fileBuf = reader.IO_Read();
+
+	if (!fileBuf) {
+		throw std::exception("couldn't read the file buffer");
+	}
+
+	fileBuf->push_back('\n'); // fixes a crash lol
+
+	auto tokenizer = CBufferTokenizer(*fileBuf);
+
+	if (!tokenizer.Tokenize())
+		throw std::exception("the input file didn't have any parsable tokens");
+
+	return std::move(tokenizer.m_oTokens);
+}
+std::vector<CToken*> CBufferTokenizer::ConvertTokensToReadOnly(UniqueTokenVector& src)
+{
+	assert(!src.empty());
+
+	std::vector<CToken*> tokens;
+
+	for (auto& t : src)
+		tokens.push_back(t.get());
+
+	return tokens;
 }

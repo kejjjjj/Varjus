@@ -23,21 +23,21 @@ CStringValue::StringMethods CStringValue::ConstructMethods()
 
 }
 
-IValue* CStringValue::ToUpper([[maybe_unused]] CFunction* const thisFunction, [[maybe_unused]] const IValues& newValue)
+IValue* CStringValue::ToUpper([[maybe_unused]] CRuntimeContext* const ctx, [[maybe_unused]] const IValues& newValue)
 {
 	std::string v = Internal()->GetString();
 	std::ranges::transform(v, v.begin(), [](std::int8_t c) { 
 		return static_cast<std::int8_t>(std::toupper(static_cast<std::int32_t>(c))); });
 	return Construct(v);
 }
-IValue* CStringValue::ToLower([[maybe_unused]] CFunction* const thisFunction, [[maybe_unused]] const IValues& newValue)
+IValue* CStringValue::ToLower([[maybe_unused]] CRuntimeContext* const ctx, [[maybe_unused]] const IValues& newValue)
 {
 	std::string v = Internal()->GetString();
 	std::ranges::transform(v, v.begin(), [](std::int8_t c) {
 		return static_cast<std::int8_t>(std::tolower(static_cast<std::int32_t>(c))); });
 	return Construct(v);
 }
-IValue* CStringValue::Substring([[maybe_unused]] CFunction* const thisFunction, const IValues& newValue)
+IValue* CStringValue::Substring([[maybe_unused]] CRuntimeContext* const ctx, const IValues& newValue)
 {
 	std::string& v = Internal()->GetString();
 	
@@ -89,7 +89,7 @@ std::vector<std::string> SplitString(const std::string& str, const std::string& 
 	return result;
 }
 
-IValue* CStringValue::Split([[maybe_unused]] CFunction* const thisFunction, const IValues& newValue)
+IValue* CStringValue::Split([[maybe_unused]] CRuntimeContext* const ctx, const IValues& newValue)
 {
 	std::string& v = Internal()->GetString();
 
@@ -118,7 +118,7 @@ std::string ReplaceAll(const std::string& str, const std::string& oldSub, const 
 	return result;
 }
 
-IValue* CStringValue::Replace([[maybe_unused]] CFunction* const thisFunction, const IValues& newValue)
+IValue* CStringValue::Replace([[maybe_unused]] CRuntimeContext* const ctx, const IValues& newValue)
 {
 	std::string& v = Internal()->GetString();
 	
@@ -136,7 +136,7 @@ IValue* CStringValue::Replace([[maybe_unused]] CFunction* const thisFunction, co
 	return CStringValue::Construct(ReplaceAll(v, a->AsString(), b->AsString()));
 }
 
-IValue* CStringValue::Repeat([[maybe_unused]] CFunction* const thisFunction, const IValues& newValue)
+IValue* CStringValue::Repeat([[maybe_unused]] CRuntimeContext* const ctx, const IValues& newValue)
 {
 	std::string& v = Internal()->GetString();
 
@@ -155,7 +155,7 @@ IValue* CStringValue::Repeat([[maybe_unused]] CFunction* const thisFunction, con
 	return CStringValue::Construct(result);
 }
 
-IValue* CStringValue::GetCodeAt([[maybe_unused]] CFunction* const thisFunction, const IValues& newValue)
+IValue* CStringValue::GetCodeAt([[maybe_unused]] CRuntimeContext* const ctx, const IValues& newValue)
 {
 	std::string& v = Internal()->GetString();
 

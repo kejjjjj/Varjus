@@ -4,7 +4,7 @@
 #include "linter/error.hpp"
 #include "linter/linter.hpp"
 #include "linter/context.hpp"
-#include "linter/imports/module.hpp"
+#include "linter/modules/module.hpp"
 #include "runtime/runtime.hpp"
 #include "runtime/modules/rtmodule.hpp"
 
@@ -16,25 +16,13 @@ int main()
     try {
 
         const auto reader = VarjusIOReader("scripts\\script.var");
-        auto fileBuf = reader.IO_Read();
 
-        if (!fileBuf) {
-            throw std::exception("couldn't read the file buffer");
-        }
-
-        fileBuf->push_back('\n'); // fixes a crash lol
-
-        auto tokenizer = CBufferTokenizer(*fileBuf);
-
-        if (!tokenizer.Tokenize())
-            throw std::exception("the input file didn't have any parsable tokens");
-
-		auto tokens = tokenizer.GetTokens();
+        auto uniqueTokens = CBufferTokenizer::ParseFileFromFilePath(reader.GetFilePath());
+        auto tokens = CBufferTokenizer::ConvertTokensToReadOnly(uniqueTokens);
 		auto begin = tokens.begin();
         auto end = tokens.end();
 
-        auto wd = fs::previous_directory(reader.GetFilePath());
-		CFileLinter linter(begin, end, wd);
+		CFileLinter linter(begin, end, reader.GetFilePath());
 
         if (!linter.ParseFile())
             throw std::exception("couldn't parse the input file");

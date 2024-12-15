@@ -65,10 +65,10 @@ IValue* CStringValue::GetAggregate(std::size_t memberIdx)
 	return value;
 
 }
-IValue* CStringValue::Call(CFunction* const thisFunction, const IValues& args)
+IValue* CStringValue::Call(CRuntimeContext* const ctx, const IValues& args)
 {
 	assert(IsCallable());
-	auto ret = CBuiltInMethods<CStringValue>::CallMethod(thisFunction, this, args, m_pMethod);
+	auto ret = CBuiltInMethods<CStringValue>::CallMethod(ctx, this, args, m_pMethod);
 	m_pMethod = nullptr;
 	return ret;
 }

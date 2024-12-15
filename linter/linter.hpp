@@ -29,7 +29,7 @@ class CFileLinter final : public CLinter<CToken>
 {
 	NONCOPYABLE(CFileLinter)
 public:
-	CFileLinter(LinterIterator& start, LinterIterator& end, const std::string& wd);
+	CFileLinter(LinterIterator& start, LinterIterator& end, const std::string& filePath);
 	~CFileLinter();
 	[[nodiscard]] static Success LintToken(const CLinterContext& ctx);
 	[[nodiscard]] static Success LintOperator(const CLinterContext& ctx);
@@ -38,7 +38,7 @@ public:
 
 	[[nodiscard]] Success ParseFile();
 
-	CModule* GetModule() const noexcept;
+	constexpr auto& GetModule() const noexcept { return m_pModule; }
 
 private:
 	[[nodiscard]] Success HoistFile();
@@ -48,7 +48,7 @@ private:
 	CModule* m_pModule{ nullptr };
 	LinterIterator m_oInitialPosition;
 	std::unique_ptr<CHoister> m_pHoister;
-	std::string m_sWorkingDirectory;
+	std::string m_sFilePath;
 };
 
 

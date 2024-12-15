@@ -4,9 +4,11 @@
 #include <vector>
 #include <memory>
 
-enum Success : signed char;
-class CToken;
+#include "token.hpp"
 
+enum Success : signed char;
+
+using UniqueTokenVector = std::vector<std::unique_ptr<CToken>>;
 
 //throws on failure
 class CBufferTokenizer final
@@ -46,9 +48,14 @@ private:
 
 	std::tuple<size_t, size_t> m_oParserPosition;
 
-	std::vector<std::unique_ptr<CToken>> m_oTokens;
+	UniqueTokenVector m_oTokens;
 
 	const std::string_view& m_sSource;
 	Success m_eSuccess;
+
+public:
+
+	static UniqueTokenVector ParseFileFromFilePath(const std::string& filePath);
+	static std::vector<CToken*> ConvertTokensToReadOnly(UniqueTokenVector& src);
 };
 

@@ -95,10 +95,10 @@ IValue* CArrayValue::GetAggregate(std::size_t memberIdx)
 	return value;
 }
 
-IValue* CArrayValue::Call(CFunction* const thisFunction, const IValues& args)
+IValue* CArrayValue::Call(CRuntimeContext* const ctx, const IValues& args)
 {
 	assert(IsCallable());
-	auto ret = CBuiltInMethods<CArrayValue>::CallMethod(thisFunction, this, args, m_pMethod);
+	auto ret = CBuiltInMethods<CArrayValue>::CallMethod(ctx, this, args, m_pMethod);
 	m_pMethod = nullptr;
 	return ret;
 }

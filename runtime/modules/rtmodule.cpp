@@ -1,6 +1,6 @@
 #include "rtmodule.hpp"
 
-#include "linter/imports/module.hpp"
+#include "linter/modules/module.hpp"
 
 #include "runtime/runtime.hpp"
 #include "runtime/variables.hpp"
@@ -32,8 +32,14 @@ void CRuntimeModule::SetupGlobalVariables() {
 	}
 }
 void CRuntimeModule::EvaluateGlobalExpressions() {
+
+	CRuntimeContext ctx{
+		.m_pModule = this,
+		.m_pFunction = nullptr
+	};
+
 	for (auto& insn : m_oGlobalScopeInstructions) {
-		if (insn->Execute(nullptr))
+		if (insn->Execute(&ctx))
 			break;
 	}
 }

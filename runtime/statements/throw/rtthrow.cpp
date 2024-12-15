@@ -8,9 +8,9 @@ CRuntimeThrowStatement::CRuntimeThrowStatement(std::unique_ptr<AbstractSyntaxTre
 }
 CRuntimeThrowStatement::~CRuntimeThrowStatement() = default;;
 
-IValue* CRuntimeThrowStatement::Execute(CFunction* const thisFunction)
+IValue* CRuntimeThrowStatement::Execute(CRuntimeContext* const ctx)
 {
 	assert(m_pAST.get());
 	CProgramRuntime::ThrowException();
-	return CRuntimeExpression::Evaluate(thisFunction, m_pAST.get());
+	return CRuntimeExpression::Evaluate(ctx, m_pAST.get());
 }

@@ -26,13 +26,12 @@ void CCallableValue::Release()
 	CProgramRuntime::FreeValue<CCallableValue>(this);
 	ReleaseShared();
 }
-IValue* CCallableValue::Call(CFunction* const thisFunction, const IValues& args)
+IValue* CCallableValue::Call(CRuntimeContext* const ctx, const IValues& args)
 {
 	auto internal = Internal();
 	auto callable = internal->GetCallable();
 
-	auto ret = callable->Execute(thisFunction->GetModuleIndex(),
-		thisFunction, const_cast<IValues&>(args), internal->GetCaptures());
+	auto ret = callable->Execute(ctx, const_cast<IValues&>(args), internal->GetCaptures());
 
 	assert(ret);
 
@@ -45,11 +44,11 @@ CInternalCallableValue* CCallableValue::Internal() {
 CInternalCallableValue* CCallableValue::Internal() const {
 	return GetShared().get();
 }
-void CInternalCallableValue::SetCaptures(CFunction* const thisFunction, const VectorOf<VariableIndex>& captures)
+void CInternalCallableValue::SetCaptures(CRuntimeContext* const ctx, const VectorOf<VariableIndex>& captures)
 {
 
 	for (auto& varIndex : captures)
-		m_oCaptures[varIndex] = thisFunction->GetVariableByIndex(varIndex)->Copy();
+		m_oCaptures[varIndex] = ctx->m_pFunction->GetVariableByIndex(varIndex)->Copy();
 
 }
 void CInternalCallableValue::Release()

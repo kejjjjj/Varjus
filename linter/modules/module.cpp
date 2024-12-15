@@ -1,9 +1,13 @@
 #include "module.hpp"
+
 #include "runtime/structure.hpp"
 #include "runtime/modules/rtmodule.hpp"
+#include "exports/export.hpp"
 
 #include <ranges>
 
+CModule::CModule() = default;
+CModule::CModule(const std::string& filePath) : m_oContext(filePath) {}
 CModule::~CModule() = default;
 
 
@@ -28,6 +32,15 @@ void CModule::SetGlobalVariableCount(std::size_t v) {
 
 std::unique_ptr<CRuntimeModule> CModule::ToRuntimeModule(){
 	return std::make_unique<CRuntimeModule>(*this);
+}
+void CModule::AddExport(const std::string& name, UniqueExportedSymbol&& symbol) {
+	m_oModuleExports[name] = std::move(symbol);
+}
+CExportedSymbol* CModule::GetExport(const std::string& name) const {
+	if (!m_oModuleExports.contains(name))
+		return nullptr;
+
+	return m_oModuleExports.at(name).get();
 }
 
 /***********************************************************************

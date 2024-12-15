@@ -2,7 +2,7 @@
 #include "linter/declarations/variable_declarations.hpp"
 #include "linter/functions/function.hpp"
 #include "linter/context.hpp"
-#include "linter/imports/module.hpp"
+#include "linter/modules/module.hpp"
 
 #include <cassert>
 

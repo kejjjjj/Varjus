@@ -28,28 +28,26 @@ Success CVariableDeclarationLinter::Parse()
 
 
 	if (IsEndOfBuffer() ||!IsIdentifier(*m_iterPos)) {
-		CLinterErrors::PushError("expected variable name, but found " + 
-			GetIteratorSafe()->Source(), GetIteratorSafe()->m_oSourcePosition);
+		CLinterErrors::PushError(std::format("expected variable name, but found \"{}\"", GetIteratorSafe()->Source()), 
+			GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 
 	if (const auto scope = m_pScope.lock()) {
 
 		if (!scope->DeclareVariable((*m_iterPos)->Source())) {
-			CLinterErrors::PushError("variable " + (*m_iterPos)->Source() + " already declared", (*m_iterPos)->m_oSourcePosition);
+			CLinterErrors::PushError("variable " + (*m_iterPos)->Source() + " already declared", 
+				(*m_iterPos)->m_oSourcePosition);
 			return failure;
 		}
-
 		if(scope->IsGlobalScope())
-			m_pOwner->GetGlobalMemory()->m_VariableManager->DeclareVariable((*m_iterPos)->Source());
+			m_sDeclaredVariable = m_pOwner->GetGlobalMemory()->m_VariableManager->DeclareVariable((*m_iterPos)->Source());
 		else
-			m_pOwner->m_VariableManager->DeclareVariable((*m_iterPos)->Source());
-
+			m_sDeclaredVariable = m_pOwner->m_VariableManager->DeclareVariable((*m_iterPos)->Source());
 	} else {
 		CLinterErrors::PushError("!(const auto scope = currentScope.lock())", (*m_iterPos)->m_oSourcePosition);
 		return failure;
 	}
-
 	std::advance(m_iterPos, 1);
 
 	if (IsEndOfBuffer()) {
@@ -79,21 +77,13 @@ Success CVariableDeclarationLinter::Parse()
 }
 
 
-bool CVariableDeclarationLinter::IsDeclaration(const CToken* token) const noexcept
-{
+bool CVariableDeclarationLinter::IsDeclaration(const CToken* token) noexcept{
 	return token && token->Type() == tt_let;
 }
 bool CVariableDeclarationLinter::IsIdentifier(const CToken* token) const noexcept
 {
 	return token && token->Type() == tt_name;
 }
-
-bool CVariableDeclarationLinter::IsGlobalVariable() const noexcept
-{
-	assert(m_pOwner);
-	return !m_pOwner->IsStack();
-}
-
 RuntimeBlock CVariableDeclarationLinter::ToRuntimeObject() const
 {
 	// yes this is very not at all undefined behavior :pagman:

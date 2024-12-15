@@ -20,11 +20,11 @@ public:
 	[[nodiscard]] constexpr bool IsCallable() const noexcept override { return !!m_pMethod; }
 
 	[[nodiscard]] IValue* GetAggregate(std::size_t memberIdx) override;
-	[[nodiscard]] IValue* Call(CFunction* const thisFunction, const IValues& args) override;
+	[[nodiscard]] IValue* Call(CRuntimeContext* const ctx, const IValues& args) override;
 
 private:
-	[[nodiscard]] IValue* Log(CFunction* const thisFunction, const IValues& values);
-	[[nodiscard]] IValue* Clear(CFunction* const thisFunction, const IValues& values);
+	[[nodiscard]] IValue* Log(CRuntimeContext* const ctx, const IValues& values);
+	[[nodiscard]] IValue* Clear(CRuntimeContext* const ctx, const IValues& values);
 
 	const CBuiltInMethod<CConsoleValue>* m_pMethod{ nullptr };
 };

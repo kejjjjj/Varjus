@@ -20,7 +20,7 @@ CArrayValue::ArrayMethods CArrayValue::ConstructMethods()
 	};
 }
 
-IValue* CArrayValue::Push([[maybe_unused]] CFunction* const thisFunction, const IValues& newValues)
+IValue* CArrayValue::Push([[maybe_unused]] CRuntimeContext* const ctx, const IValues& newValues)
 {
 	assert(newValues.size() == 1);
 	auto& vars = GetShared()->GetVariables();
@@ -28,7 +28,7 @@ IValue* CArrayValue::Push([[maybe_unused]] CFunction* const thisFunction, const 
 	newVar->SetValue(newValues.front()->Copy());
 	return newVar->GetValue()->Copy();
 }
-IValue* CArrayValue::PushFront([[maybe_unused]] CFunction* const thisFunction, const IValues& newValues)
+IValue* CArrayValue::PushFront([[maybe_unused]] CRuntimeContext* const ctx, const IValues& newValues)
 {
 	assert(newValues.size() == 1);
 	auto& vars = GetShared()->GetVariables();
@@ -38,7 +38,7 @@ IValue* CArrayValue::PushFront([[maybe_unused]] CFunction* const thisFunction, c
 	return (*it)->GetValue()->Copy();
 }
 
-IValue* CArrayValue::Pop([[maybe_unused]] CFunction* const thisFunction, [[maybe_unused]] const IValues& newValues)
+IValue* CArrayValue::Pop([[maybe_unused]] CRuntimeContext* const ctx, [[maybe_unused]] const IValues& newValues)
 {
 
 	auto& vars = GetShared()->GetVariables();
@@ -54,7 +54,7 @@ IValue* CArrayValue::Pop([[maybe_unused]] CFunction* const thisFunction, [[maybe
 
 	return copy;
 }
-IValue* CArrayValue::PopFront([[maybe_unused]] CFunction* const thisFunction, [[maybe_unused]] const IValues& newValues)
+IValue* CArrayValue::PopFront([[maybe_unused]] CRuntimeContext* const ctx, [[maybe_unused]] const IValues& newValues)
 {
 
 	auto& vars = GetShared()->GetVariables();
@@ -71,7 +71,7 @@ IValue* CArrayValue::PopFront([[maybe_unused]] CFunction* const thisFunction, [[
 	return copy;
 }
 
-IValue* CArrayValue::Map(CFunction* const thisFunction, const IValues& newValues)
+IValue* CArrayValue::Map(CRuntimeContext* const ctx, const IValues& newValues)
 {
 	assert(newValues.size() == 1);
 	auto& mapFunc = newValues.front();
@@ -88,7 +88,7 @@ IValue* CArrayValue::Map(CFunction* const thisFunction, const IValues& newValues
 	//result array
 	for (auto i = std::size_t(0); const auto& var : vars) {
 		args[0] = var->GetValue()->Copy();
-		results[i++] = mapFunc->Call(thisFunction, args);
+		results[i++] = mapFunc->Call(ctx, args);
 
 		//because of course someone will throw an exception :x
 		if (CProgramRuntime::ExceptionThrown()) {
@@ -112,7 +112,7 @@ IValue* CArrayValue::Map(CFunction* const thisFunction, const IValues& newValues
 
 	return CArrayValue::Construct(std::move(results));
 }
-IValue* CArrayValue::Find(CFunction* const thisFunction, const IValues& newValues)
+IValue* CArrayValue::Find(CRuntimeContext* const ctx, const IValues& newValues)
 {
 	assert(newValues.size() == 1);
 	auto& mapFunc = newValues.front();
@@ -129,7 +129,7 @@ IValue* CArrayValue::Find(CFunction* const thisFunction, const IValues& newValue
 
 	for (const auto& var : vars) {
 		args[0] = var->GetValue()->Copy();
-		IValue* thisIteration = mapFunc->Call(thisFunction, args);
+		IValue* thisIteration = mapFunc->Call(ctx, args);
 
 		if (CProgramRuntime::ExceptionThrown()) {
 			exception = thisIteration;
@@ -158,7 +158,7 @@ IValue* CArrayValue::Find(CFunction* const thisFunction, const IValues& newValue
 
 	return result->Copy();
 }
-IValue* CArrayValue::Filter(CFunction* const thisFunction, const IValues& newValues)
+IValue* CArrayValue::Filter(CRuntimeContext* const ctx, const IValues& newValues)
 {
 	assert(newValues.size() == 1);
 	auto& mapFunc = newValues.front();
@@ -176,8 +176,7 @@ IValue* CArrayValue::Filter(CFunction* const thisFunction, const IValues& newVal
 	for (const auto & var : vars) {
 		args[0] = var->GetValue()->Copy();
 
-		IValue* thisIteration = mapFunc->Call(thisFunction, args);
-
+		IValue* thisIteration = mapFunc->Call(ctx, args);
 
 		if (CProgramRuntime::ExceptionThrown()) {
 			exception = thisIteration;
@@ -203,7 +202,7 @@ IValue* CArrayValue::Filter(CFunction* const thisFunction, const IValues& newVal
 	return CArrayValue::Construct(std::move(results));
 }
 
-IValue* CArrayValue::Contains([[maybe_unused]] CFunction* const thisFunction, const IValues& newValues)
+IValue* CArrayValue::Contains([[maybe_unused]] CRuntimeContext* const ctx, const IValues& newValues)
 {
 	assert(newValues.size() == 1);
 	auto& searchElement = newValues.front();
@@ -229,7 +228,7 @@ IValue* CArrayValue::Contains([[maybe_unused]] CFunction* const thisFunction, co
 
 	return result;
 }
-IValue* CArrayValue::Reverse([[maybe_unused]] CFunction* const thisFunction, [[maybe_unused]] const IValues& newValues)
+IValue* CArrayValue::Reverse([[maybe_unused]] CRuntimeContext* const ctx, [[maybe_unused]] const IValues& newValues)
 {
 	
 	auto& vars = GetShared()->GetVariables();

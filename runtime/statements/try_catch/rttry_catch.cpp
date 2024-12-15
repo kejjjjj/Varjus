@@ -10,13 +10,13 @@ CRuntimeTryCatchStatement::CRuntimeTryCatchStatement(VariableIndex catchVariable
 
 CRuntimeTryCatchStatement::~CRuntimeTryCatchStatement() = default;
 
-IValue* CRuntimeTryCatchStatement::Execute(CFunction* const thisFunction)
+IValue* CRuntimeTryCatchStatement::Execute(CRuntimeContext* const ctx)
 {
 
 	for (auto& insn : m_oTryInstructions) {
-		if (auto rv = insn->Execute(thisFunction)) {
+		if (auto rv = insn->Execute(ctx)) {
 			if (CProgramRuntime::ExceptionThrown()) {
-				return ExecuteCatchBlock(thisFunction, rv);
+				return ExecuteCatchBlock(ctx, rv);
 			}
 
 			return rv;
@@ -26,11 +26,11 @@ IValue* CRuntimeTryCatchStatement::Execute(CFunction* const thisFunction)
 
 	return nullptr;
 }
-IValue* CRuntimeTryCatchStatement::ExecuteCatchBlock(CFunction* const thisFunction, IValue* ex)
+IValue* CRuntimeTryCatchStatement::ExecuteCatchBlock(CRuntimeContext* const ctx, IValue* ex)
 {
 	CProgramRuntime::CatchException();
 
-	auto catchVar = thisFunction->GetVariableByIndex(m_uCatchVariableIndex);
+	auto catchVar = ctx->m_pFunction->GetVariableByIndex(m_uCatchVariableIndex);
 	assert(catchVar && catchVar->GetValue());
 
 	auto& value = catchVar->GetValue();
@@ -40,7 +40,7 @@ IValue* CRuntimeTryCatchStatement::ExecuteCatchBlock(CFunction* const thisFuncti
 	catchVar->SetValue(ex->HasOwner() ? ex->Copy() : ex);
 
 	for (auto& insn : m_oCatchInstructions) {
-		if (auto rv = insn->Execute(thisFunction)) {
+		if (auto rv = insn->Execute(ctx)) {
 			return rv;
 		}
 	}

@@ -4,6 +4,7 @@
 #include "linter/expressions/definitions.hpp"
 
 class CMemory;
+class CModule;
 
 class CImportLinter final : public CLinterSingle<CToken>
 {
@@ -11,14 +12,15 @@ class CImportLinter final : public CLinterSingle<CToken>
 public:
 	explicit CImportLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const owner);
 
-	Success Parse();
+	[[nodiscard]] Success Parse();
 
 private:
 
-	Success ParseIdentifierRecursively();
-	Success ParseFilePath();
+	[[nodiscard]] Success ParseIdentifierRecursively();
+	[[nodiscard]] Success ParseFilePath();
 
-	Success ParseFile();
+	[[nodiscard]] Success ParseFile();
+	[[nodiscard]] CModule* GetFileModule() const;
 
 	WeakScope m_pScope;
 	CMemory* const m_pOwner;

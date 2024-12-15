@@ -20,10 +20,10 @@ CRuntimeConditionalStatement::~CRuntimeConditionalStatement() = default;
 
 
 
-IValue* IRuntimeStructureSequence::ExecuteBlock([[maybe_unused]] CFunction* const thisFunction)
+IValue* IRuntimeStructureSequence::ExecuteBlock(CRuntimeContext* const ctx)
 {
 	for (auto& insn : m_oInstructions)
-		if (auto v = insn->Execute(thisFunction))
+		if (auto v = insn->Execute(ctx))
 			return v;
 
 	return nullptr;

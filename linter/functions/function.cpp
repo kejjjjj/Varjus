@@ -9,7 +9,7 @@
 #include "linter/linter.hpp"
 #include "linter/functions/stack.hpp"
 #include "linter/context.hpp"
-#include "linter/imports/module.hpp"
+#include "linter/modules/module.hpp"
 #include "globalEnums.hpp"
 
 #include "runtime/structure.hpp"

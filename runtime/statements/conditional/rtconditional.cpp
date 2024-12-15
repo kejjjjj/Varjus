@@ -20,15 +20,15 @@ CRuntimeConditionalStatement* CRuntimeConditionalStatement::SeekLastBlock()
 	return block;
 }
 
-IValue* CRuntimeConditionalStatement::Execute([[maybe_unused]] CFunction* const thisFunction)
+IValue* CRuntimeConditionalStatement::Execute([[maybe_unused]] CRuntimeContext* const ctx)
 {
 
 	if (!m_pCondition) { // else
-		return ExecuteBlock(thisFunction);
+		return ExecuteBlock(ctx);
 	}
 
 
-	auto condition = m_pCondition->Evaluate(thisFunction);
+	auto condition = m_pCondition->Evaluate(ctx);
 
 	if (!condition->IsBooleanConvertible())
 		throw CRuntimeError("the operand is not convertible to a boolean");
@@ -39,11 +39,11 @@ IValue* CRuntimeConditionalStatement::Execute([[maybe_unused]] CFunction* const 
 		condition->Release();
 
 	if (boolValue) {
-		return ExecuteBlock(thisFunction);
+		return ExecuteBlock(ctx);
 	}
 	
 	if (m_pNext) //else (if)
-		return m_pNext->Execute(thisFunction);
+		return m_pNext->Execute(ctx);
 
 	return nullptr;
 }

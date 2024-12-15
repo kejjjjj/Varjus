@@ -67,7 +67,7 @@ public:
 	[[nodiscard]] IValue* Index(std::int64_t index) override;
 	[[nodiscard]] IValue* GetAggregate(std::size_t memberIdx) override;
 
-	[[nodiscard]] IValue* Call(CFunction* const thisFunction, const IValues& args) override;
+	[[nodiscard]] IValue* Call(CRuntimeContext* const ctx, const IValues& args) override;
 
 
 private:
@@ -75,16 +75,16 @@ private:
 	[[nodiscard]] std::string ValueAsString() const override { return Internal()->GetString(); }
 
 
-	[[nodiscard]] IValue* ToUpper(CFunction* const thisFunction, const IValues& newValue);
-	[[nodiscard]] IValue* ToLower(CFunction* const thisFunction, const IValues& newValue);
+	[[nodiscard]] IValue* ToUpper(CRuntimeContext* const ctx, const IValues& newValue);
+	[[nodiscard]] IValue* ToLower(CRuntimeContext* const ctx, const IValues& newValue);
 
-	[[nodiscard]] IValue* Substring(CFunction* const thisFunction, const IValues& newValue);
-	[[nodiscard]] IValue* Split(CFunction* const thisFunction, const IValues& newValue);
+	[[nodiscard]] IValue* Substring(CRuntimeContext* const ctx, const IValues& newValue);
+	[[nodiscard]] IValue* Split(CRuntimeContext* const ctx, const IValues& newValue);
 
-	[[nodiscard]] IValue* Replace(CFunction* const thisFunction, const IValues& newValue);
-	[[nodiscard]] IValue* Repeat(CFunction* const thisFunction, const IValues& newValue);
+	[[nodiscard]] IValue* Replace(CRuntimeContext* const ctx, const IValues& newValue);
+	[[nodiscard]] IValue* Repeat(CRuntimeContext* const ctx, const IValues& newValue);
 	
-	[[nodiscard]] IValue* GetCodeAt(CFunction* const thisFunction, const IValues& newValue);
+	[[nodiscard]] IValue* GetCodeAt(CRuntimeContext* const ctx, const IValues& newValue);
 
 
 	const CBuiltInMethod<CStringValue>* m_pMethod{ nullptr };

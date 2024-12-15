@@ -16,22 +16,22 @@
 static IValue* EvaluateIncrement(IValue* operand);
 static IValue* EvaluateDecrement(IValue* operand);
 
-IValue* CRuntimeExpression::EvaluatePostfix(CFunction* const thisFunction, const PostfixASTNode* node)
+IValue* CRuntimeExpression::EvaluatePostfix(CRuntimeContext* const ctx, const PostfixASTNode* node)
 {
-	auto operand = Evaluate(thisFunction, node->left.get());
+	auto operand = Evaluate(ctx, node->left.get());
 
 	IValue* returnVal{ nullptr };
 
 	if (node->IsSubscript()) {
 		
-		returnVal = EvaluateSubscript(thisFunction, operand, node->GetSubscript());
+		returnVal = EvaluateSubscript(ctx, operand, node->GetSubscript());
 
 		if (operand->IsHanging() && operand->IsSharedObject()) {
 			returnVal = returnVal->Copy(); //accessing a temporary e.g. [[1, 2, 3]][0]
 		}
 
 	} else if (node->IsFunctionCall()) {
-		returnVal = EvaluateFunctionCall(thisFunction, operand, node->GetFunctionCall());
+		returnVal = EvaluateFunctionCall(ctx, operand, node->GetFunctionCall());
 	} else if (node->IsMemberAccess()) {
 		returnVal = EvaluateMemberAccess(operand, node->GetMemberAccess());
 
@@ -62,12 +62,12 @@ IValue* CRuntimeExpression::EvaluateMemberAccess(IValue* operand, const MemberAc
 	return operand->GetAggregate(node->m_uGlobalMemberIndex);
 
 }
-IValue* CRuntimeExpression::EvaluateSubscript(CFunction* const thisFunction, IValue* operand, const SubscriptASTNode* node)
+IValue* CRuntimeExpression::EvaluateSubscript(CRuntimeContext* const ctx, IValue* operand, const SubscriptASTNode* node)
 {
 	if (!operand->IsIndexable())
 		throw CRuntimeError(std::format("a value of type \"{}\" cannot be indexed", operand->TypeAsString()));
 
-	auto accessor = Evaluate(thisFunction, node->m_pAST.get());
+	auto accessor = Evaluate(ctx, node->m_pAST.get());
 
 	if (!accessor->IsIntegral())
 		throw CRuntimeError(std::format("array accessor must be integral, but is \"{}\"", accessor->TypeAsString()));
@@ -81,15 +81,15 @@ IValue* CRuntimeExpression::EvaluateSubscript(CFunction* const thisFunction, IVa
 
 	return index;
 }
-IValue* CRuntimeExpression::EvaluateFunctionCall(CFunction* const thisFunction, IValue* operand, const FunctionCallASTNode* node)
+IValue* CRuntimeExpression::EvaluateFunctionCall(CRuntimeContext* const ctx, IValue* operand, const FunctionCallASTNode* node)
 {
 
 	if (!operand->IsCallable())
 		throw CRuntimeError(std::format("a value of type \"{}\" is not callable", operand->TypeAsString()));
 
 	// the callee will take ownership of temp-value args
-	auto args = EvaluateList(thisFunction, node->m_oArguments);
-	return operand->Call(thisFunction, args);
+	auto args = EvaluateList(ctx, node->m_oArguments);
+	return operand->Call(ctx, args);
 }
 
 IValue* EvaluateIncrement(IValue* operand)

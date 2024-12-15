@@ -18,9 +18,9 @@ static IValue* EvaluateDecrement(IValue* operand);
 static IValue* EvaluateLogicalNot(IValue* operand);
 static IValue* EvaluateTypeOf(IValue* operand);
 
-IValue* CRuntimeExpression::EvaluateUnary(CFunction* const thisFunction, const UnaryASTNode* node)
+IValue* CRuntimeExpression::EvaluateUnary(CRuntimeContext* const ctx, const UnaryASTNode* node)
 {
-	auto operand = Evaluate(thisFunction, node->left.get());
+	auto operand = Evaluate(ctx, node->left.get());
 	IValue* returnVal{ nullptr };
 
 	if (node->IsNegation()) {

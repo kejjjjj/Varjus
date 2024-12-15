@@ -11,7 +11,7 @@
 #include <functional>
 #include <format>
 #include <type_traits>
-class CFunction;
+struct CRuntimeContext;
 using ElementIndex = std::size_t;
 
 
@@ -26,7 +26,7 @@ template<typename Type>
 struct CBuiltInMethod
 {
 	std::size_t m_uNumArguments;
-	IValue* (Type::* memFn)(CFunction* const, const IValues&);
+	IValue* (Type::* memFn)(CRuntimeContext* const, const IValues&);
 };
 
 template<class Type>
@@ -65,13 +65,13 @@ public:
 		return nullptr;
 	}
 
-	[[nodiscard]] static inline IValue* CallMethod(CFunction* const thisFunction,
+	[[nodiscard]] static inline IValue* CallMethod(CRuntimeContext* const ctx,
 		Type* _this, const IValues& args, const MethodType* method) {
 
 		if (method->m_uNumArguments != UNCHECKED_PARAMETER_COUNT && method->m_uNumArguments != args.size())
 			throw CRuntimeError(std::format("the method expected {} arguments instead of {}", method->m_uNumArguments, args.size()));
 
-		auto returnVal = std::mem_fn(method->memFn)(_this, thisFunction, args);
+		auto returnVal = std::mem_fn(method->memFn)(_this, ctx, args);
 
 		for (auto& val : args)
 			val->Release();

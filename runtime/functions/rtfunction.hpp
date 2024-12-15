@@ -26,14 +26,10 @@ class CFunction
 	NONCOPYABLE(CFunction);
 	friend class CRuntimeFunction;
 public:
-	CFunction(std::size_t ownerModule, VectorOf<IValue*>& args,
+	CFunction(VectorOf<IValue*>& args,
 		const VariableCaptures& captures, const CRuntimeFunction& func);
 
 	[[nodiscard]] CVariable* GetVariableByIndex(std::size_t index) const;
-
-	constexpr auto GetModuleIndex() const noexcept { return m_uModuleIndex; }
-
 private:
 	std::unordered_map<VariableIndex, CVariable*> m_oStack;
-	std::size_t m_uModuleIndex{};
 };

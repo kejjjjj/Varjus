@@ -6,6 +6,7 @@
 #include "runtime/structure.hpp"
 
 class CMemory;
+struct CLinterVariable;
 
 class CVariableDeclarationLinter final : public CLinterSingle<CToken>, protected IRuntimeBlock
 {
@@ -18,19 +19,20 @@ public:
 	~CVariableDeclarationLinter();
 
 	[[nodiscard]] Success Parse();
-
-	[[nodiscard]] bool IsGlobalVariable() const noexcept;
-
 	[[nodiscard]] RuntimeBlock ToRuntimeObject() const override;
-
 	[[nodiscard]] std::unique_ptr<AbstractSyntaxTree>&& MoveInitializer();
 
+	[[nodiscard]] constexpr auto& GetIdentifier() const noexcept { return m_sDeclaredVariable; }
+
+	[[nodiscard]] static bool IsDeclaration(const CToken* token) noexcept;
+
+
 private:
-	[[nodiscard]] bool IsDeclaration(const CToken* token) const noexcept;
 	[[nodiscard]] bool IsIdentifier(const CToken* token) const noexcept;
 
 	WeakScope m_pScope;
 	CMemory* const m_pOwner = 0;
+	const CLinterVariable* m_sDeclaredVariable{ nullptr };
 
 	std::unique_ptr<AbstractSyntaxTree> m_pInitializerAST;
 };

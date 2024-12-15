@@ -39,6 +39,7 @@ class SubscriptASTNode;
 class FunctionCallASTNode;
 class TernaryASTNode;
 class CVariable;
+class CRuntimeModule;
 
 struct CFunctionBlock;
 
@@ -51,6 +52,11 @@ using VariableCaptures = std::unordered_map<VariableIndex, CVariable*>;
 #pragma pack(push)
 #pragma warning(disable : 4266)
 
+struct CRuntimeContext
+{
+	CRuntimeModule* m_pModule;
+	CFunction* m_pFunction;
+};
 
 class IRuntimeStructure
 {
@@ -60,10 +66,12 @@ public:
 	virtual ~IRuntimeStructure();
 
 	[[nodiscard]] virtual constexpr EStructureType Type() const noexcept = 0;
-	[[nodiscard]] virtual IValue* Execute([[maybe_unused]] CFunction* const thisFunction) { return nullptr; };
+
 	[[nodiscard]] virtual IValue* Execute(
-		[[maybe_unused]] std::size_t ownerModule,
-		[[maybe_unused]] CFunction* const thisFunction, 
+		[[maybe_unused]] CRuntimeContext* const ctx) { return nullptr; };
+
+	[[nodiscard]] virtual IValue* Execute(
+		[[maybe_unused]] CRuntimeContext* const ctx,
 		[[maybe_unused]] VectorOf<IValue*>& args,
 		[[maybe_unused]] const VariableCaptures& captures) { return nullptr; };
 
@@ -101,7 +109,7 @@ public:
 	IRuntimeStructureSequence(InstructionSequence&& insns);
 	~IRuntimeStructureSequence();
 
-	[[nodiscard]] IValue* ExecuteBlock([[maybe_unused]] CFunction* const thisFunction);
+	[[nodiscard]] IValue* ExecuteBlock(CRuntimeContext* const ctx);
 	
 	[[nodiscard]] auto NumInstructions() const noexcept {
 		return m_oInstructions.size();
@@ -127,7 +135,7 @@ public:
 	[[nodiscard]] constexpr auto& GetName() const noexcept { return m_sName; }
 	[[nodiscard]] constexpr auto& GetModuleIndex() const noexcept { return m_uModuleIndex; }
 
-	[[maybe_unused]] IValue* Execute(std::size_t ownerModule, CFunction* const thisFunction, VectorOf<IValue*>& args,
+	[[maybe_unused]] IValue* Execute(CRuntimeContext* const ctx, VectorOf<IValue*>& args,
 		const VariableCaptures& captures) override;
 protected:
 
@@ -153,27 +161,27 @@ public:
 	CRuntimeExpression(std::unique_ptr<AbstractSyntaxTree>&& ast);
 	~CRuntimeExpression();
 
-	[[maybe_unused]] IValue* Execute(CFunction* const thisFunction) override;
-	[[nodiscard]] IValue* Evaluate(CFunction* const thisFunction);
+	[[maybe_unused]] IValue* Execute(CRuntimeContext* const ctx) override;
+	[[nodiscard]] IValue* Evaluate(CRuntimeContext* const ctx);
 	[[nodiscard]] inline bool HasAST() { return !!m_pAST.get(); }
 protected:
 	[[nodiscard]] constexpr EStructureType Type() const noexcept override { return st_expression;};
 
 private:
-	[[nodiscard]] static IValue* Evaluate(CFunction* const thisFunction, const AbstractSyntaxTree* node);
-	[[nodiscard]] static IValue* EvaluateLeaf(CFunction* const thisFunction, const AbstractSyntaxTree* node);
-	[[nodiscard]] static IValue* EvaluatePostfix(CFunction* const thisFunction, const PostfixASTNode* node);
-	[[nodiscard]] static IValue* EvaluateUnary(CFunction* const thisFunction, const UnaryASTNode* node);
+	[[nodiscard]] static IValue* Evaluate(CRuntimeContext* const ctx, const AbstractSyntaxTree* node);
+	[[nodiscard]] static IValue* EvaluateLeaf(CRuntimeContext* const ctx, const AbstractSyntaxTree* node);
+	[[nodiscard]] static IValue* EvaluatePostfix(CRuntimeContext* const ctx, const PostfixASTNode* node);
+	[[nodiscard]] static IValue* EvaluateUnary(CRuntimeContext* const ctx, const UnaryASTNode* node);
 
-	[[nodiscard]] static IValue* EvaluateSequence(CFunction* const thisFunction, const AbstractSyntaxTree* node);
-	[[nodiscard]] static IValue* EvaluateTernary(CFunction* const thisFunction, const TernaryASTNode* node);
+	[[nodiscard]] static IValue* EvaluateSequence(CRuntimeContext* const ctx, const AbstractSyntaxTree* node);
+	[[nodiscard]] static IValue* EvaluateTernary(CRuntimeContext* const ctx, const TernaryASTNode* node);
 
 	[[nodiscard]] static IValue* EvaluateMemberAccess(IValue* operand, const MemberAccessASTNode* node);
-	[[nodiscard]] static IValue* EvaluateSubscript(CFunction* const thisFunction, IValue* operand, const SubscriptASTNode* node);
-	[[nodiscard]] static IValue* EvaluateFunctionCall(CFunction* const thisFunction, IValue* operand, const FunctionCallASTNode* node);
+	[[nodiscard]] static IValue* EvaluateSubscript(CRuntimeContext* const ctx, IValue* operand, const SubscriptASTNode* node);
+	[[nodiscard]] static IValue* EvaluateFunctionCall(CRuntimeContext* const ctx, IValue* operand, const FunctionCallASTNode* node);
 
-	[[nodiscard]] static VectorOf<IValue*> EvaluateList(CFunction* const thisFunction, const ExpressionList& list);
-	[[nodiscard]] static ObjectInitializer EvaluateObject(CFunction* const thisFunction, const ObjectInitializerData& obj);
+	[[nodiscard]] static VectorOf<IValue*> EvaluateList(CRuntimeContext* const ctx, const ExpressionList& list);
+	[[nodiscard]] static ObjectInitializer EvaluateObject(CRuntimeContext* const ctx, const ObjectInitializerData& obj);
 	std::unique_ptr<AbstractSyntaxTree> m_pAST;
 
 };
@@ -186,7 +194,7 @@ public:
 	CRuntimeConditionalStatement(std::unique_ptr<AbstractSyntaxTree>&& condition, InstructionSequence&& insns);
 	~CRuntimeConditionalStatement();
 
-	[[maybe_unused]] IValue* Execute(CFunction* const thisFunction) override;
+	[[maybe_unused]] IValue* Execute(CRuntimeContext* const ctx) override;
 
 protected:
 	[[nodiscard]] constexpr EStructureType Type() const noexcept override { return st_conditional; };
@@ -210,7 +218,7 @@ public:
 		std::unique_ptr<AbstractSyntaxTree>&& endExpr, InstructionSequence&& insns);
 	~CRuntimeForStatement();
 
-	[[maybe_unused]] IValue* Execute(CFunction* const thisFunction) override;
+	[[maybe_unused]] IValue* Execute(CRuntimeContext* const ctx) override;
 
 protected:
 	[[nodiscard]] constexpr EStructureType Type() const noexcept override { return st_for; };
@@ -228,7 +236,7 @@ public:
 	CRuntimeWhileStatement(std::unique_ptr<AbstractSyntaxTree>&& condition, InstructionSequence&& insns);
 	~CRuntimeWhileStatement();
 
-	[[maybe_unused]] IValue* Execute(CFunction* const thisFunction) override;
+	[[maybe_unused]] IValue* Execute(CRuntimeContext* const ctx) override;
 
 protected:
 	[[nodiscard]] constexpr EStructureType Type() const noexcept override { return st_while; };
@@ -243,7 +251,7 @@ public:
 	CRuntimeReturnStatement(std::unique_ptr<AbstractSyntaxTree>&& condition);
 	~CRuntimeReturnStatement();
 
-	[[maybe_unused]] IValue* Execute(CFunction* const thisFunction) override;
+	[[maybe_unused]] IValue* Execute(CRuntimeContext* const ctx) override;
 
 protected:
 	[[nodiscard]] constexpr EStructureType Type() const noexcept override { return st_return; };
@@ -259,12 +267,12 @@ public:
 	CRuntimeTryCatchStatement(VariableIndex catchVariable, InstructionSequence&& tryBlock, InstructionSequence&& catchBlock);
 	~CRuntimeTryCatchStatement();
 
-	[[maybe_unused]] IValue* Execute(CFunction* const thisFunction) override;
+	[[maybe_unused]] IValue* Execute(CRuntimeContext* const ctx) override;
 
 protected:
 	[[nodiscard]] constexpr EStructureType Type() const noexcept override { return st_try_catch; };
 private:
-	[[maybe_unused]] IValue* ExecuteCatchBlock(CFunction* const thisFunction, IValue* ex);
+	[[maybe_unused]] IValue* ExecuteCatchBlock(CRuntimeContext* const ctx, IValue* ex);
 
 	VariableIndex m_uCatchVariableIndex{};
 	InstructionSequence m_oTryInstructions;
@@ -278,7 +286,7 @@ public:
 	CRuntimeThrowStatement(std::unique_ptr<AbstractSyntaxTree>&& condition);
 	~CRuntimeThrowStatement();
 
-	[[maybe_unused]] IValue* Execute(CFunction* const thisFunction) override;
+	[[maybe_unused]] IValue* Execute(CRuntimeContext* const ctx) override;
 
 protected:
 	[[nodiscard]] constexpr EStructureType Type() const noexcept override { return st_throw; };
@@ -292,7 +300,7 @@ class CRuntimeLoopControlStatement final : public IRuntimeStructure {
 public:
 	CRuntimeLoopControlStatement(EExecutionControl c) : m_eCtrl(c){}
 	
-	[[maybe_unused]] IValue* Execute(CFunction* const thisFunction) override;
+	[[maybe_unused]] IValue* Execute(CRuntimeContext* const ctx) override;
 
 protected:
 	[[nodiscard]] constexpr EStructureType Type() const noexcept override { return st_loop_control; };
