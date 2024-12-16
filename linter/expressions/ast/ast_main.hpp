@@ -6,6 +6,7 @@
 #include "globalDefinitions.hpp"
 #include "linter/expressions/definitions.hpp"
 #include "linter/punctuation.hpp"
+#include "linter/modules/references.hpp"
 
 class AbstractSyntaxTree;
 using ASTNode = std::shared_ptr<AbstractSyntaxTree>;
@@ -98,20 +99,7 @@ private:
 struct CLinterVariable;
 struct CLinterFunction;
 
-struct ASTModule
-{
-	ASTModule() = default;
-	ASTModule(bool isModule, std::size_t moduleIndex, std::size_t identifierIndex) :
-		m_bBelongsToDifferentModule(isModule), 
-		m_uOtherModuleIndex(moduleIndex), 
-		m_uOtherModuleIdentifierIndex(identifierIndex){}
-
-	bool m_bBelongsToDifferentModule{ false };
-	std::size_t m_uOtherModuleIndex{};
-	std::size_t m_uOtherModuleIdentifierIndex{};
-};
-
-class VariableASTNode final : public AbstractSyntaxTree, public ASTModule
+class VariableASTNode final : public AbstractSyntaxTree, public CCrossModuleReference
 {
 	friend class AstToInstructionConverter;
 	NONCOPYABLE(VariableASTNode);
@@ -123,14 +111,11 @@ public:
 
 	[[nodiscard]] constexpr const VariableASTNode* GetVariable() const noexcept override { return this; }
 
-	std::size_t m_uIndex{};
 	bool m_bGlobalVariable{ false };
-
-
 private:
 
 };
-class FunctionASTNode final : public AbstractSyntaxTree, public ASTModule
+class FunctionASTNode final : public AbstractSyntaxTree, public CCrossModuleReference
 {
 	friend class AstToInstructionConverter;
 	NONCOPYABLE(FunctionASTNode);
@@ -141,8 +126,6 @@ public:
 	[[nodiscard]] constexpr bool IsFunction() const noexcept override { return true; }
 
 	[[nodiscard]] constexpr const FunctionASTNode* GetFunction() const noexcept override { return this; }
-
-	std::size_t m_uIndex{};
 };
 class ConstantASTNode final : public AbstractSyntaxTree
 {
@@ -214,6 +197,7 @@ public:
 	UniqueAST m_pTrue;
 	UniqueAST m_pFalse;
 };
+struct CCrossModuleReference;
 
 class LambdaASTNode final : public AbstractSyntaxTree
 {
@@ -221,7 +205,7 @@ class LambdaASTNode final : public AbstractSyntaxTree
 
 public:
 
-	LambdaASTNode(const CodePosition& pos, RuntimeFunction&& operand, VectorOf<ElementIndex>&& captures);
+	LambdaASTNode(const CodePosition& pos, RuntimeFunction&& operand, VectorOf<CCrossModuleReference>&& captures);
 	~LambdaASTNode();
 
 	[[nodiscard]] constexpr bool IsLeaf() const noexcept override { return true; }
@@ -230,7 +214,7 @@ public:
 	[[nodiscard]] constexpr const LambdaASTNode* GetLambda() const noexcept override { return this; }
 
 	RuntimeFunction m_pLambda;
-	VectorOf<ElementIndex> m_oVariableCaptures;
+	VectorOf<CCrossModuleReference> m_oVariableCaptures;
 };
 
 class PostfixASTNode;

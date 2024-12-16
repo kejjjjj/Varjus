@@ -1,4 +1,5 @@
-export fn okTest()
+export let ass = "hello bitch";
+export fn evalLambda(lambda)
 {
-	return "ok";
+	ass = lambda(5);
 }

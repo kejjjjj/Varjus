@@ -197,7 +197,7 @@ Success CFileLinter::HoistFile()
 	}
 
 	for (auto& [name, value] : globalMemory.m_FunctionManager->GetIterator()) {
-		m_pHoister->DeclareFunction(name, value);
+		m_pHoister->DeclareFunction(name, *value);
 	}
 
 	return success;

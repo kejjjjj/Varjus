@@ -3,9 +3,9 @@
 #include "runtime/runtime.hpp"
 #include "runtime/functions/rtfunction.hpp"
 #include "runtime/variables.hpp"
-CRuntimeTryCatchStatement::CRuntimeTryCatchStatement(VariableIndex catchVariable, 
+CRuntimeTryCatchStatement::CRuntimeTryCatchStatement(const CCrossModuleReference& catchVariable,
 	InstructionSequence&& tryBlock, InstructionSequence&& catchBlock)
-	: m_uCatchVariableIndex(catchVariable),
+	: m_uCatchVariable(catchVariable),
 	m_oTryInstructions(std::move(tryBlock)), m_oCatchInstructions(std::move(catchBlock)){}
 
 CRuntimeTryCatchStatement::~CRuntimeTryCatchStatement() = default;
@@ -30,7 +30,7 @@ IValue* CRuntimeTryCatchStatement::ExecuteCatchBlock(CRuntimeContext* const ctx,
 {
 	CProgramRuntime::CatchException();
 
-	auto catchVar = ctx->m_pFunction->GetVariableByIndex(m_uCatchVariableIndex);
+	auto catchVar = ctx->m_pFunction->GetVariableByRef(m_uCatchVariable);
 	assert(catchVar && catchVar->GetValue());
 
 	auto& value = catchVar->GetValue();

@@ -63,21 +63,20 @@ CLinterVariable* CIdentifierLinter::GetVariableByIdentifier(const std::string& s
 	if (var)
 		return var;
 
-	var = m_pOwner->m_VariableManager->GetVariable(str);
-	if (!var) {
+	//find the variable from a local function if it exists
 
-		assert(m_pOwner->IsStack());
-		auto stack = m_pOwner->ToStack();
-		const auto globalFunc = stack->GetGlobalFunction();
-		assert(globalFunc);
+	if (m_pOwner->IsLocalFunction()) {
+		const auto globalFunc = m_pOwner->ToStack()->GetGlobalFunction();
 		var = globalFunc->m_VariableManager->GetVariable(str);
 		assert(var);
 
 		// this variable is being accessed in a lambda function
-		stack->AddSharedOwnershipVariable(var->m_uIndex);
+		// capture it
+		var->m_bCaptured = true;
+		return var;
 	}
 
-	return var;
+	return m_pOwner->m_VariableManager->GetVariable(str);
 }
 
 bool CIdentifierLinter::ContainsFunction(const std::string& str) const noexcept
@@ -104,7 +103,7 @@ CLinterFunction* CIdentifierLinter::GetFunctionByIdentifier(const std::string& s
 	auto& hoister = m_pOwner->GetHoister();
 
 	if (hoister->ContainsFunction(str)) {
-		return manager->DeclareFunction(hoister->GetFunctionByName(str));
+		return manager->DeclareFunction(*hoister->GetFunctionByName(str));
 	}
 
 	assert(false);

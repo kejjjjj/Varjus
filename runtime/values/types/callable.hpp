@@ -1,8 +1,11 @@
 #pragma once
 #include "simple.hpp"
+#include "linter/modules/references.hpp"
+
 #include <unordered_map>
 #include <vector>
 #include <format>
+
 
 class CRuntimeFunction;
 class CFunction;
@@ -13,14 +16,15 @@ using VectorOf = std::vector<T>;
 
 using VariableIndex = std::size_t;
 
-
 class CInternalCallableValue final
 {
+	friend class CCallableValue;
+
 public:
 	CInternalCallableValue() = default;
 	~CInternalCallableValue() = default;
 
-	void SetCaptures(CRuntimeContext* const ctx, const VectorOf<VariableIndex>& captures);
+	void SetCaptures(CRuntimeContext* const ctx, const VectorOf<CCrossModuleReference>& captures);
 	auto& GetCaptures() { return m_oCaptures; }
 
 	auto& GetCallable() noexcept { return m_pCallable; }
@@ -28,10 +32,14 @@ public:
 
 	void Release();
 
+	constexpr void SetModuleIndex(std::size_t mIndex) noexcept { m_uModule = mIndex; m_bRequiresModuleChange = true; }
+
 private:
 	
 	CRuntimeFunction* m_pCallable{ nullptr };
-	std::unordered_map<VariableIndex, CVariable*> m_oCaptures;
+	std::unordered_map<CCrossModuleReference, CVariable*, CCrossModuleReferenceHasher> m_oCaptures;
+	std::size_t m_uModule{};
+	bool m_bRequiresModuleChange{ false };
 };
 
 class CCallableValue final : public CValue<CInternalCallableValue>
@@ -57,7 +65,7 @@ public:
 	[[nodiscard]] CInternalCallableValue* Internal() const;
 
 	[[nodiscard]] IValue* Call(CRuntimeContext* const ctx, const IValues& args) override;
-
+		
 	[[nodiscard]] std::size_t AddressOf() const noexcept override {
 		return reinterpret_cast<std::size_t>(GetShared().get());
 	}

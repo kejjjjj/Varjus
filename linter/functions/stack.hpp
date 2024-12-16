@@ -40,6 +40,7 @@ public:
 
 	[[nodiscard]] CStack* ToStack();
 	[[nodiscard]] auto ToStack() const;
+	[[nodiscard]] virtual constexpr bool IsLocalFunction() const noexcept { return false; };
 
 	[[nodiscard]] constexpr auto& GetModule() noexcept { return m_pGlobal->m_pModule; }
 
@@ -55,9 +56,6 @@ public:
 	[[nodiscard]] bool HasHoistedData() const noexcept { return !!m_pGlobal->m_pHoister; }
 	[[nodiscard]] auto& GetHoister() const noexcept { return m_pGlobal->m_pHoister; }
 
-	void MakeLambda() noexcept { m_bIsLambda = true; }
-	[[nodiscard]] bool IsLambda() const noexcept { return m_bIsLambda; }
-
 	std::unique_ptr<CVariableManager> m_VariableManager;
 	std::unique_ptr<CFunctionManager> m_FunctionManager;
 
@@ -69,11 +67,12 @@ protected:
 
 private:
 	VectorOf<RuntimeBlock> m_oInstructions;
-	bool m_bIsLambda{ false };
 	CHoister* m_pHoister{ nullptr };
 };
 
 using RuntimeBlock = std::unique_ptr<IRuntimeStructure>;
+
+
 
 class CStack final : public CMemory
 {
@@ -88,16 +87,12 @@ public:
 
 	[[nodiscard]] bool IsStack() const noexcept override { return true; }
 	[[nodiscard]] CStack* GetGlobalFunction();
+	[[nodiscard]] constexpr bool IsLocalFunction() const noexcept override { return !!m_pLowerFunction; };
 
 	void AddFunctionInstruction(RuntimeBlock&& block) const;
-
-	void AddSharedOwnershipVariable(std::size_t varIndex) { m_oIndicesWhichRequireSharedOwnership.insert(varIndex); }
-	void AddArgumentVariable(std::size_t varIndex) { m_oArgumentIndices.insert(varIndex); }
 
 	std::unique_ptr<CFunctionBlock> m_pFunction;
 	CStack* m_pLowerFunction{ nullptr };
 
 private:
-	std::set<std::size_t> m_oIndicesWhichRequireSharedOwnership;
-	std::set<std::size_t> m_oArgumentIndices;
 };

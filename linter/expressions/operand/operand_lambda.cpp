@@ -17,7 +17,7 @@ std::unique_ptr<IOperand> CLinterOperand::ParseLambda()
 
 	auto& oldIter = m_iterPos;
 
-	if (m_pOwner->IsLambda()) {
+	if (m_pOwner->IsLocalFunction()) {
 		CLinterErrors::PushError("nested lambdas are not supported", GetIteratorSafe()->m_oSourcePosition);
 		return nullptr;
 	}
@@ -30,7 +30,6 @@ std::unique_ptr<IOperand> CLinterOperand::ParseLambda()
 		: m_pOwner->ToStack()->GetGlobalFunction();
 
 	fnLinter.m_pThisScope->MakeLoopScope(false);
-	fnLinter.m_pThisStack->MakeLambda();
 
 	if (!fnLinter.ParseFunctionParameters())
 		return nullptr;
@@ -50,8 +49,8 @@ std::unique_ptr<IOperand> CLinterOperand::ParseLambda()
 	return ptr;
 }
 
-CLambdaOperand::CLambdaOperand(RuntimeFunction&& ptr, VectorOf<ElementIndex>&& captures)
-	: m_pLambda(std::move(ptr)), m_oVariableCaptures(std::move(captures)){}
+CLambdaOperand::CLambdaOperand(RuntimeFunction&& ptr, VectorOf<CCrossModuleReference>&& captures)
+	: m_pLambda(std::move(ptr)), m_oVariableCaptures(std::move(captures)) {}
 CLambdaOperand::~CLambdaOperand() = default;
 
 UniqueAST CLambdaOperand::ToAST() {

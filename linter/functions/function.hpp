@@ -23,9 +23,9 @@ public:
 	[[nodiscard]] RuntimeBlock ToRuntimeObject() const override;
 	[[nodiscard]] std::unique_ptr<CRuntimeFunction> ToRuntimeFunction() const;
 
-	[[nodiscard]] VectorOf<std::size_t> GetParameterIndices(CStack* stack) const;
-	[[nodiscard]] VectorOf<std::size_t> GetVariableIndices(CStack* stack) const;
-	[[nodiscard]] VectorOf<std::size_t> GetSharedOwnershipVariables(CStack* stack) const;
+	[[nodiscard]] VectorOf<CCrossModuleReference> GetParameterIndices(CStack* stack) const;
+	[[nodiscard]] VectorOf<CCrossModuleReference> GetVariableIndices(CStack* stack) const;
+	[[nodiscard]] VectorOf<CCrossModuleReference> GetSharedOwnershipVariables(CStack* stack) const;
 
 	[[nodiscard]] constexpr auto& GetName() const noexcept { return m_oFunctionName; }
 

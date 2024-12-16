@@ -1,8 +1,11 @@
 
-import okTest from "moduleTest.var";
+import evalLambda, ass from "moduleTest.var";
 
 fn main()
 {
-	return okTest();
-}
+	let uhOh = fn(value) { ass = value; };
 
+	evalLambda(uhOh);
+
+	return ass;
+}

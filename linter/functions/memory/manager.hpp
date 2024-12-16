@@ -1,7 +1,9 @@
 #pragma once
 #include <string>
+#include <memory>
 
 #include "globalDefinitions.hpp"
+#include "linter/modules/references.hpp"
 
 enum EMemoryIdentifierType
 {
@@ -9,22 +11,16 @@ enum EMemoryIdentifierType
 	mi_function
 };
 
-struct CMemoryIdentifier
+struct CMemoryIdentifier : public CCrossModuleReference
 {
-	CMemoryIdentifier() = default;
-	CMemoryIdentifier(const std::string& name, std::size_t index)
-		: m_sName(name), m_uIndex(index) {
-	}
+	CMemoryIdentifier() = delete;
+	CMemoryIdentifier(const std::string& name, const CCrossModuleReference& ref)
+		: CCrossModuleReference(ref), m_sName(name) { }
+
 	virtual ~CMemoryIdentifier() = default;
 
 	[[nodiscard]] virtual constexpr EMemoryIdentifierType Type() const noexcept = 0;
 
 	std::string m_sName;
-	std::size_t m_uIndex{};
-
-	bool m_bBelongsToDifferentModule{ false };
-	std::size_t m_uOtherModuleIndex{};
-	std::size_t m_uOtherModuleIdentifierIndex{};
-
 };
 

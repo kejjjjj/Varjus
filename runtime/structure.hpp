@@ -4,7 +4,7 @@
 #include <string>
 #include <unordered_map>
 #include "globalDefinitions.hpp"
-
+#include "linter/modules/references.hpp"
 /***********************************************************************
  > represents the runtime execution structure
 ***********************************************************************/
@@ -47,7 +47,7 @@ template<typename T>
 using VectorOf = std::vector<T>;
 using ArgumentIndex = std::size_t;
 using VariableIndex = std::size_t;
-using VariableCaptures = std::unordered_map<VariableIndex, CVariable*>;
+using VariableCaptures = std::unordered_map<CCrossModuleReference, CVariable*, CCrossModuleReferenceHasher>;
 
 #pragma pack(push)
 #pragma warning(disable : 4266)
@@ -128,8 +128,8 @@ class CRuntimeFunction final : public IRuntimeStructureSequence
 
 public:
 	CRuntimeFunction(ElementIndex moduleIndex, CFunctionBlock& linterFunction,
-		VectorOf<VariableIndex>&& args,
-		VectorOf<VariableIndex>&& variableIndices);
+		VectorOf<CCrossModuleReference>&& args,
+		VectorOf<CCrossModuleReference>&& variableIndices);
 	~CRuntimeFunction();
 
 	[[nodiscard]] constexpr auto& GetName() const noexcept { return m_sName; }
@@ -146,8 +146,8 @@ protected:
 	std::string m_sName;
 	std::size_t m_uNumParameters{ 0u };
 	std::size_t m_uNumVariables{ 0u };
-	VectorOf<VariableIndex> m_oArgumentIndices;
-	VectorOf<VariableIndex> m_oVariableIndices;
+	VectorOf<CCrossModuleReference> m_oArgumentIndices;
+	VectorOf<CCrossModuleReference> m_oVariableIndices;
 };
 
 
@@ -264,7 +264,7 @@ class CRuntimeTryCatchStatement final : public IRuntimeStructure
 {
 	NONCOPYABLE(CRuntimeTryCatchStatement);
 public:
-	CRuntimeTryCatchStatement(VariableIndex catchVariable, InstructionSequence&& tryBlock, InstructionSequence&& catchBlock);
+	CRuntimeTryCatchStatement(const CCrossModuleReference& catchVariable, InstructionSequence&& tryBlock, InstructionSequence&& catchBlock);
 	~CRuntimeTryCatchStatement();
 
 	[[maybe_unused]] IValue* Execute(CRuntimeContext* const ctx) override;
@@ -274,7 +274,7 @@ protected:
 private:
 	[[maybe_unused]] IValue* ExecuteCatchBlock(CRuntimeContext* const ctx, IValue* ex);
 
-	VariableIndex m_uCatchVariableIndex{};
+	CCrossModuleReference m_uCatchVariable;
 	InstructionSequence m_oTryInstructions;
 	InstructionSequence m_oCatchInstructions;
 };

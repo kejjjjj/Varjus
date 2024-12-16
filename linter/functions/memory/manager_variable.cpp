@@ -12,7 +12,7 @@ CLinterVariable* CVariableManager::DeclareVariable(const std::string& var) {
 	assert(!var.empty());
 
 	if (ContainsVariable(var))
-		return &m_oVariables[var];
+		return m_oVariables[var].get();
 
 	auto context = m_pOwner->GetContext();
 
@@ -20,12 +20,14 @@ CLinterVariable* CVariableManager::DeclareVariable(const std::string& var) {
 		? context->m_oAllGlobalVariables
 		: context->m_oAllVariables;
 
-	m_oVariables[var] = CLinterVariable(m_pOwner, var, map[var]);
-	return &m_oVariables[var];
+	CCrossModuleReference ref(map[var]);
+
+	m_oVariables[var] = std::make_unique<CLinterVariable>(m_pOwner, var, ref);
+	return m_oVariables[var].get();
 }
 
 CLinterVariable* CVariableManager::GetVariable(const std::string& var) {
-	return ContainsVariable(var) ? &m_oVariables[var] : nullptr;
+	return ContainsVariable(var) ? m_oVariables[var].get() : nullptr;
 }
 bool CVariableManager::ContainsVariable(const std::string& name) const {
 	return m_oVariables.contains(name);

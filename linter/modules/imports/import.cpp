@@ -177,8 +177,8 @@ Success CImportLinter::DeclareVariable(const std::string& symbolName,
 
 	auto var = m_pOwner->m_VariableManager->DeclareVariable(symbolName);
 	var->m_bBelongsToDifferentModule = true;
-	var->m_uOtherModuleIndex = moduleIndex;
-	var->m_uOtherModuleIdentifierIndex = s->GetIndex();
+	var->m_uModuleIndex = moduleIndex;
+	var->m_uIndex = s->GetIndex();
 
 	return success;
 }
@@ -195,8 +195,8 @@ Success CImportLinter::DeclareFunction(const std::string& symbolName,
 	auto func = m_pOwner->m_FunctionManager->DeclareFunction(symbolName, m_pOwner->GetModule()->GetFunctionCount());
 
 	func->m_bBelongsToDifferentModule = true;
-	func->m_uOtherModuleIndex = moduleIndex;
-	func->m_uOtherModuleIdentifierIndex = s->GetIndex();
+	func->m_uModuleIndex = moduleIndex;
+	func->m_uIndex = s->GetIndex();
 
 	return success;
 }

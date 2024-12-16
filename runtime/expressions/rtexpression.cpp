@@ -82,59 +82,67 @@ IValue* CRuntimeExpression::Evaluate(CRuntimeContext* const ctx, const AbstractS
 }
 #pragma pack(pop)
 
+inline IValue* EvaluateVariable(CRuntimeContext* const ctx, const VariableASTNode* const var)
+{
+	IValue* v = nullptr;
+
+	if (var->m_bGlobalVariable) {
+		auto activeModule = var->m_bBelongsToDifferentModule
+			? CProgramRuntime::GetModuleByIndex(var->m_uModuleIndex)
+			: ctx->m_pModule;
+
+		assert(activeModule);
+		v = activeModule->GetGlobalVariableByIndex(var->m_uIndex)->GetValue();
+	}
+	else {
+		assert(ctx->m_pFunction);
+		v = ctx->m_pFunction->GetVariableByRef(*var)->GetValue();
+	}
+	assert(v && v->HasOwner());
+	return v;
+}
+inline IValue* EvaluateFunction(CRuntimeContext* const ctx, const FunctionASTNode* const var)
+{
+	auto v = CProgramRuntime::AcquireNewValue<CCallableValue>();
+
+	auto activeModule = var->m_bBelongsToDifferentModule
+		? CProgramRuntime::GetModuleByIndex(var->m_uModuleIndex)
+		: ctx->m_pModule;
+
+	v->MakeShared();
+	v->Internal()->GetCallable() = activeModule->GetFunctionByIndex(var->m_uIndex);
+
+	if (var->m_bBelongsToDifferentModule)
+		v->Internal()->SetModuleIndex(var->m_uModuleIndex);
+
+	v->MakeImmutable();
+	return v;
+}
+inline IValue* EvaluateLambda(CRuntimeContext* const ctx, const LambdaASTNode* const var)
+{
+	auto v = CProgramRuntime::AcquireNewValue<CCallableValue>();
+	v->MakeShared();
+
+	auto internal = v->Internal();
+	internal->GetCallable() = var->m_pLambda.get();
+	if (var->m_oVariableCaptures.size())
+		internal->SetCaptures(ctx, var->m_oVariableCaptures);
+
+	return v;
+}
 IValue* CRuntimeExpression::EvaluateLeaf(CRuntimeContext* const ctx, const AbstractSyntaxTree* node)
 {
 
-
-
 	if (node->IsVariable()) {
-		const auto var = node->GetVariable();
-
-		IValue* v = nullptr;
-
-		if (var->m_bGlobalVariable) {
-			auto _module = var->m_bBelongsToDifferentModule
-				? CProgramRuntime::GetModuleByIndex(var->m_uOtherModuleIndex)
-				: ctx->m_pModule;
-
-			v = _module->GetGlobalVariableByIndex(var->m_uIndex)->GetValue();
-		} else {
-			assert(ctx->m_pFunction);
-			v = ctx->m_pFunction->GetVariableByIndex(var->m_uIndex)->GetValue();
-		}
-
-		assert(v);
-		assert(v->HasOwner());
-		return v;
+		return EvaluateVariable(ctx, node->GetVariable());
 	}
 
 	if (node->IsFunction()) {
-		const auto var = node->GetFunction();
-		auto v = CProgramRuntime::AcquireNewValue<CCallableValue>();
-
-		auto _module = var->m_bBelongsToDifferentModule
-			? CProgramRuntime::GetModuleByIndex(var->m_uOtherModuleIndex)
-			: ctx->m_pModule;
-
-		auto index = var->m_bBelongsToDifferentModule ? var->m_uOtherModuleIdentifierIndex : var->m_uIndex;
-
-		v->MakeShared();
-		v->Internal()->GetCallable() = _module->GetFunctionByIndex(index);
-		v->MakeImmutable();
-		return v;
+		return EvaluateFunction(ctx, node->GetFunction());
 	}
 
 	if (node->IsLambda()) {
-		const auto var = node->GetLambda();
-		auto v = CProgramRuntime::AcquireNewValue<CCallableValue>();
-		v->MakeShared();
-
-		auto internal = v->Internal();
-		internal->GetCallable() = var->m_pLambda.get();
-		if (var->m_oVariableCaptures.size())
-			internal->SetCaptures(ctx, var->m_oVariableCaptures);
-
-		return v;
+		return EvaluateLambda(ctx, node->GetLambda());
 	}
 
 	if (node->IsArray()) {

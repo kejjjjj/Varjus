@@ -14,8 +14,8 @@
 #include <runtime/exceptions/exception.hpp>
 
 CRuntimeFunction::CRuntimeFunction(ElementIndex moduleIndex, CFunctionBlock& linterFunction,
-	VectorOf<VariableIndex>&& args,
-	VectorOf<VariableIndex>&& variableIndices) :
+	VectorOf<CCrossModuleReference>&& args,
+	VectorOf<CCrossModuleReference>&& variableIndices) :
 
 	IRuntimeStructureSequence(std::move(linterFunction.m_oInstructions)),
 	m_uModuleIndex(moduleIndex),
@@ -67,6 +67,7 @@ IValue* CRuntimeFunction::Execute(CRuntimeContext* const ctx,
 	}
 
 	for (auto& [index, value] : func.m_oStack) {
+
 		//don't free captured values or they get destroyed and the next calls to this function fail
 		if(!captures.contains(index)) 
 			value->Release();
@@ -95,7 +96,7 @@ CFunction::CFunction(VectorOf<IValue*>& args,
 	
 }
 
-CVariable* CFunction::GetVariableByIndex(std::size_t index) const
+CVariable* CFunction::GetVariableByRef(const CCrossModuleReference& ref) const
 {
-	return m_oStack.at(index);
+	return m_oStack.at(ref);
 }

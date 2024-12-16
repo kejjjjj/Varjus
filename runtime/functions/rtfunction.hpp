@@ -4,6 +4,7 @@
 #include <memory>
 #include <unordered_map>
 
+#include "linter/modules/references.hpp"
 #include "globalDefinitions.hpp"
 
 template <typename T>
@@ -18,8 +19,7 @@ using KeyValue = std::pair<A, B>;
 using VariableIndex = std::size_t;
 
 using IndexToVariable = KeyValue<VariableIndex, CVariable*>;
-using VariableCaptures = std::unordered_map<VariableIndex, CVariable*>;
-
+using VariableCaptures = std::unordered_map<CCrossModuleReference, CVariable*, CCrossModuleReferenceHasher>;
 
 class CFunction
 {
@@ -29,7 +29,7 @@ public:
 	CFunction(VectorOf<IValue*>& args,
 		const VariableCaptures& captures, const CRuntimeFunction& func);
 
-	[[nodiscard]] CVariable* GetVariableByIndex(std::size_t index) const;
+	[[nodiscard]] CVariable* GetVariableByRef(const CCrossModuleReference& ref) const;
 private:
-	std::unordered_map<VariableIndex, CVariable*> m_oStack;
+	std::unordered_map<CCrossModuleReference, CVariable*, CCrossModuleReferenceHasher> m_oStack;
 };

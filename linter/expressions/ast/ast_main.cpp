@@ -8,6 +8,7 @@
 #include "linter/expressions/postfix.hpp"
 #include "linter/functions/stack.hpp"
 #include "linter/functions/function.hpp"
+#include "linter/modules/references.hpp"
 
 #include "linter/token.hpp"
 
@@ -141,15 +142,12 @@ std::size_t AbstractSyntaxTree::GetLeftBranchDepth() const noexcept
 ***********************************************************************/
 
 VariableASTNode::VariableASTNode(const CodePosition& pos, CLinterVariable* const var)
-	: AbstractSyntaxTree(pos),
-	ASTModule(var->m_bBelongsToDifferentModule, var->m_uOtherModuleIndex, var->m_uOtherModuleIdentifierIndex),
-	m_uIndex(var->m_uIndex), 
+	: AbstractSyntaxTree(pos), CCrossModuleReference(*var),
 	m_bGlobalVariable(var->IsGlobal()){}
 
 FunctionASTNode::FunctionASTNode(const CodePosition& pos, CLinterFunction* const func) 
 	: AbstractSyntaxTree(pos),
-	ASTModule(func->m_bBelongsToDifferentModule, func->m_uOtherModuleIndex, func->m_uOtherModuleIdentifierIndex),
-	m_uIndex(func->m_uIndex) {}
+	CCrossModuleReference(*func){}
 
 ConstantASTNode::ConstantASTNode(const CodePosition& pos, const std::string& data, EValueType datatype)
 	: AbstractSyntaxTree(pos), m_pConstant(data), m_eDataType(datatype) {
@@ -174,7 +172,7 @@ TernaryASTNode::TernaryASTNode(const CodePosition& pos, CTernaryOperand* operand
 }
 TernaryASTNode::~TernaryASTNode() = default;
 
-LambdaASTNode::LambdaASTNode(const CodePosition& pos, RuntimeFunction&& operand, VectorOf<ElementIndex>&& captures)
+LambdaASTNode::LambdaASTNode(const CodePosition& pos, RuntimeFunction&& operand, VectorOf<CCrossModuleReference>&& captures)
 	: AbstractSyntaxTree(pos),
 	m_pLambda(std::move(operand)), m_oVariableCaptures(std::move(captures)) {
 }

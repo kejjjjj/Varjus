@@ -8,10 +8,9 @@ class CMemory;
 
 struct CLinterFunction final : public CMemoryIdentifier
 {
-    CLinterFunction() = default;
-    CLinterFunction(const std::string& name, std::size_t index)
-        : CMemoryIdentifier(name, index) {
-    }
+    CLinterFunction() = delete;
+    CLinterFunction(const std::string& name, const CCrossModuleReference& ref)
+        : CMemoryIdentifier(name, ref) {}
 
     [[nodiscard]] constexpr EMemoryIdentifierType Type() const noexcept override { return mi_function; }
 };
@@ -34,6 +33,6 @@ public:
     auto& GetIterator() noexcept { return m_oFunctions; }
 
 private:
-    std::unordered_map<std::string, CLinterFunction> m_oFunctions;
+    std::unordered_map<std::string, std::unique_ptr<CLinterFunction>> m_oFunctions;
     CMemory* const m_pOwner;
 };

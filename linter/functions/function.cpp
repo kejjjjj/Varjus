@@ -116,7 +116,7 @@ Success CFunctionLinter::ParseFunctionParametersRecursively()
 	}
 
 	auto var = m_pThisStack->m_VariableManager->DeclareVariable((*m_iterPos)->Source());
-	m_pThisStack->AddArgumentVariable(var->m_uIndex);
+	var->m_bParameter = true;
 	m_oParameters.push_back((*m_iterPos)->Source());
 
 	std::advance(m_iterPos, 1); //skip identifier
@@ -209,32 +209,45 @@ std::unique_ptr<CRuntimeFunction> CFunctionLinter::ToRuntimeFunction() const
 
 	return ret;
 }
-VectorOf<std::size_t> CFunctionLinter::GetParameterIndices(CStack* stack) const{
-	return VectorOf<std::size_t>(stack->m_oArgumentIndices.begin(), stack->m_oArgumentIndices.end());
-}
-VectorOf<std::size_t> CFunctionLinter::GetVariableIndices(CStack* stack) const
-{
-	VectorOf<std::size_t> indices;
+VectorOf<CCrossModuleReference> CFunctionLinter::GetParameterIndices(CStack* stack) const{
+	VectorOf<CCrossModuleReference> refs;
 
 	for (auto& [name, var] : stack->m_VariableManager->GetVariableIterator()) {
 
-		if (std::ranges::find(stack->m_oArgumentIndices, var.m_uIndex) != stack->m_oArgumentIndices.end())
+		if (var->m_bParameter)
+			refs.push_back(*var);
+	}
+
+	return refs;
+}
+VectorOf<CCrossModuleReference> CFunctionLinter::GetVariableIndices(CStack* stack) const
+{
+	VectorOf<CCrossModuleReference> indices;
+
+	for (auto& [name, var] : stack->m_VariableManager->GetVariableIterator()) {
+
+		//exclude parameters
+		if (var->m_bParameter)
 			continue;
 
-		if (std::ranges::find(stack->m_oIndicesWhichRequireSharedOwnership, var.m_uIndex) 
-			!= stack->m_oIndicesWhichRequireSharedOwnership.end())
+		//exclude captured values
+		if (var->m_bCaptured)
 			continue;
 
-		indices.emplace_back(var.m_uIndex);
+		indices.push_back(*var);
 	}
 
 	return indices;
 }
-VectorOf<std::size_t> CFunctionLinter::GetSharedOwnershipVariables(CStack* stack) const
+VectorOf<CCrossModuleReference> CFunctionLinter::GetSharedOwnershipVariables(CStack* stack) const
 {
+	VectorOf<CCrossModuleReference> refs;
 
-	return VectorOf<std::size_t>(
-		stack->m_oIndicesWhichRequireSharedOwnership.begin(),
-		stack->m_oIndicesWhichRequireSharedOwnership.end()
-	);
+	for (auto& [name, var] : stack->m_VariableManager->GetVariableIterator()) {
+
+		if (var->m_bCaptured)
+			refs.push_back(*var);
+	}
+
+	return refs;
 }

@@ -21,7 +21,7 @@ private:
 
 	Success ParseCatchStatement();
 
-	VariableIndex m_uCatchVariable{};
+	CCrossModuleReference m_uCatchVariable;
 	VectorOf<RuntimeBlock> m_oTryInstructions;
 	VectorOf<RuntimeBlock> m_oCatchInstructions;
 };

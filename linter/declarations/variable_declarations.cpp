@@ -48,7 +48,8 @@ Success CVariableDeclarationLinter::Parse()
 		CLinterErrors::PushError("!(const auto scope = currentScope.lock())", (*m_iterPos)->m_oSourcePosition);
 		return failure;
 	}
-	std::advance(m_iterPos, 1);
+
+	std::advance(m_iterPos, 1); // skip identifier
 
 	if (IsEndOfBuffer()) {
 		CLinterErrors::PushError("expected \";\"", GetIteratorSafe()->m_oSourcePosition);
