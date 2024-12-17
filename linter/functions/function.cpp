@@ -231,8 +231,8 @@ VectorOf<CCrossModuleReference> CFunctionLinter::GetVariableIndices(CStack* stac
 			continue;
 
 		//exclude captured values
-		if (var->m_bCaptured)
-			continue;
+		//if (var->m_bCaptured)
+		//	continue;
 
 		indices.push_back(*var);
 	}

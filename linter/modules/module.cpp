@@ -5,6 +5,7 @@
 #include "exports/export.hpp"
 
 #include <ranges>
+#include <sstream>
 
 CModule::CModule() = default;
 CModule::CModule(const std::string& filePath) : m_oContext(filePath) {}
@@ -48,7 +49,8 @@ CExportedSymbol* CModule::GetExport(const std::string& name) const {
 ***********************************************************************/
 VectorOf<std::unique_ptr<CModule>> CModule::m_oAllModules;
 std::unordered_map<std::string, CModule*> CModule::m_oCachedModules;
-
+std::unordered_map<std::string, VectorOf<std::string>> CModule::m_oDependencyGraph;
+std::unordered_set<std::string> CModule::m_oVisitedModules;
 
 CModule* CModule::CreateNewModule(const std::string& filePath)
 {
@@ -77,5 +79,25 @@ RuntimeModules CModule::ToRuntimeModules()
 }
 
 
+std::string CModule::DependencyGraphToString() noexcept
+{
+	std::stringstream ss;
 
+	for (const auto& [sourceFile, dependencies] : CModule::m_oDependencyGraph) {
+		ss << sourceFile << " imports: ";
+
+		if (dependencies.empty()) {
+			ss << "None"; // Handle case where there are no imports
+		}
+		else {
+			for (const auto& dependency : dependencies) {
+				ss << dependency << " ";
+			}
+		}
+
+		ss << '\n'; 
+	}
+
+	return ss.str();
+}
 

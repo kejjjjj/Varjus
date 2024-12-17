@@ -10,6 +10,7 @@
 #include "globalEnums.hpp"
 
 #include <cassert>
+#include <iostream>
 
 
 CIdentifierLinter::CIdentifierLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack)
@@ -68,12 +69,13 @@ CLinterVariable* CIdentifierLinter::GetVariableByIdentifier(const std::string& s
 	if (m_pOwner->IsLocalFunction()) {
 		const auto globalFunc = m_pOwner->ToStack()->GetGlobalFunction();
 		var = globalFunc->m_VariableManager->GetVariable(str);
-		assert(var);
 
-		// this variable is being accessed in a lambda function
-		// capture it
-		var->m_bCaptured = true;
-		return var;
+		if (var) {
+			// this variable is being accessed in a lambda function
+			// capture it
+			var->m_bCaptured = true;
+			return var;
+		}
 	}
 
 	return m_pOwner->m_VariableManager->GetVariable(str);

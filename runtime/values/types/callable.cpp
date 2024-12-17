@@ -59,12 +59,16 @@ void CInternalCallableValue::SetCaptures(CRuntimeContext* const ctx, const Vecto
 
 	for (auto& var : captures) {
 
-		//auto activeModule = var.m_bBelongsToDifferentModule
-		//	? CProgramRuntime::GetModuleByIndex(var.m_uModuleIndex)
-		//	: ctx->m_pModule;
+		auto activeModule = var.m_bBelongsToDifferentModule
+			? CProgramRuntime::GetModuleByIndex(var.m_uModuleIndex)
+			: ctx->m_pModule;
 
-		assert(false);
-		m_oCaptures[var] = ctx->m_pFunction->GetVariableByRef(var)->Copy();
+		if (var.m_bBelongsToDifferentModule) {
+			m_oCaptures[var] = activeModule->GetGlobalVariableByIndex(var.m_uIndex)->Copy();
+		}
+		else {
+			m_oCaptures[var] = ctx->m_pFunction->GetVariableByRef(var)->Copy();
+		}
 	}
 }
 void CInternalCallableValue::Release()

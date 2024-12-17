@@ -1,5 +1,7 @@
-export let ass = "hello bitch";
-export fn evalLambda(lambda)
+
+
+
+export fn get6()
 {
-	ass = lambda(5);
+	return 6;
 }

@@ -109,6 +109,18 @@ Success CImportLinter::ParseFilePath()
 
 Success CImportLinter::ParseFile()
 {
+	const auto& sourceFile = m_pOwner->GetContext()->m_sFilePath;
+
+	if (!CModule::m_oDependencyGraph.contains(sourceFile)) {
+		CModule::m_oDependencyGraph[sourceFile] = {};
+	}
+
+	if (CModule::m_oVisitedModules.contains(m_oTargetFile))
+		return success;
+
+	CModule::m_oVisitedModules.insert(m_oTargetFile);
+	CModule::m_oDependencyGraph[sourceFile].push_back(m_oTargetFile);
+
 	auto thisModule = GetFileModule();
 
 	if (!thisModule)
@@ -153,6 +165,7 @@ CModule* CImportLinter::GetFileModule() const
 
 	if (!l.ParseFile())
 		return nullptr;
+
 
 	return l.GetModule(); // this is fine because the module is owned by CModule::m_oAllModules
 
@@ -199,4 +212,9 @@ Success CImportLinter::DeclareFunction(const std::string& symbolName,
 	func->m_uIndex = s->GetIndex();
 
 	return success;
+}
+
+void CImportLinter::BuildDependencyGraph()
+{
+
 }

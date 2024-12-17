@@ -18,16 +18,17 @@ public:
 
 private:
 
+	[[nodiscard]] void BuildDependencyGraph();
+
 	[[nodiscard]] Success ParseIdentifierRecursively();
 	[[nodiscard]] Success ParseFilePath();
 
 	[[nodiscard]] Success ParseFile();
 	[[nodiscard]] CModule* GetFileModule() const;
 
-	[[nodiscard]] Success DeclareVariable(const std::string& symbolName, 
-		CExportedSymbol* const s, std::size_t moduleIndex);
-	[[nodiscard]] Success DeclareFunction(const std::string& symbolName,
-		CExportedSymbol* const s, std::size_t moduleIndex);
+	[[nodiscard]] Success DeclareVariable(const std::string& symbolName, CExportedSymbol* const s, std::size_t moduleIndex);
+	[[nodiscard]] Success DeclareFunction(const std::string& symbolName, CExportedSymbol* const s, std::size_t moduleIndex);
+
 	WeakScope m_pScope;
 	CMemory* const m_pOwner;
 

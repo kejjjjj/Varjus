@@ -5,6 +5,8 @@
 
 #include "runtime/structure.hpp"
 
+#include <unordered_set>
+
 class IRuntimeStructure;
 class CRuntimeFunction;
 class CRuntimeModule;
@@ -44,14 +46,13 @@ public:
 
 	void AddExport(const std::string& name, UniqueExportedSymbol&& symbol);
 	[[nodiscard]] CExportedSymbol* GetExport(const std::string& name) const;
+	[[nodiscard]] constexpr auto& GetExports() const noexcept { return m_oModuleExports; }
 private:
 
 	std::size_t m_uNumGlobalVariables{};
 	VectorOf<RuntimeBlock> m_oGlobalScopeInstructions;
 	VectorOf<RuntimeFunction> m_oFunctions;
 	ModuleExports m_oModuleExports;
-
-	VectorOf<RuntimeBlock> m_oExports;
 
 	CFileContext m_oContext;
 	std::size_t m_uIndex{};
@@ -61,7 +62,13 @@ public:
 	static CModule* FindCachedModule(const std::string& filePath);
 	static RuntimeModules ToRuntimeModules();
 
+	static std::string DependencyGraphToString() noexcept;
+
+	static std::unordered_map<std::string, VectorOf<std::string>> m_oDependencyGraph;
+	static std::unordered_set<std::string> m_oVisitedModules;
+
 private:
 	static VectorOf<std::unique_ptr<CModule>> m_oAllModules;
 	static std::unordered_map<std::string, CModule*> m_oCachedModules;
+
 };

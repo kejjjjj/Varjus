@@ -43,8 +43,11 @@ std::unique_ptr<IOperand> CLinterOperand::ParseLambda()
 	fnLinter.m_oFunctionName = "lambda";
 	fnLinter.m_pThisStack->m_pFunction = fnLinter.ToFunction();
 
-	auto&& ptr = std::make_unique<CLambdaOperand>(fnLinter.ToRuntimeFunction(), 
-		fnLinter.GetSharedOwnershipVariables(fnLinter.m_pThisStack.get()));
+	VectorOf<CCrossModuleReference> refs = m_pOwner->IsStack()
+		? fnLinter.GetSharedOwnershipVariables(m_pOwner->ToStack())
+		: VectorOf<CCrossModuleReference>{};
+
+	auto&& ptr = std::make_unique<CLambdaOperand>(fnLinter.ToRuntimeFunction(), std::move(refs));
 	ptr->m_oCodePosition = (*oldIter)->m_oSourcePosition;
 	return ptr;
 }

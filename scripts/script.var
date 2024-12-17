@@ -1,11 +1,12 @@
 
-import evalLambda, ass from "moduleTest.var";
+import get6 from "moduleTest.var";
+
+export fn get5()
+{
+	return 5;
+}
 
 fn main()
 {
-	let uhOh = fn(value) { ass = value; };
-
-	evalLambda(uhOh);
-
-	return ass;
+	return get6();
 }
