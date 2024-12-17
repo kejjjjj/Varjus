@@ -24,6 +24,9 @@ of course there's a LOT more happening behind the scenes, but here's a quick sum
 - 31 operators
 - global variables
 - local variables
+- imports
+- exports
+- modules
 - exceptions
   - try
   - catch
