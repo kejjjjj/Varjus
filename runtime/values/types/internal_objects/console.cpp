@@ -6,8 +6,7 @@ CConsoleValue::ConsoleMethods CConsoleValue::ConstructMethods()
 {
 	return {
 		{"log",   {UNCHECKED_PARAMETER_COUNT, &CConsoleValue::Log}},
-		{"clear", {0u, &CConsoleValue::Clear}},
-
+		/*{"clear", {0u, &CConsoleValue::Clear}},*/
 	};
 };
 
@@ -74,12 +73,12 @@ IValue* CConsoleValue::Log([[maybe_unused]] CRuntimeContext* const ctx, const IV
 	return CProgramRuntime::AcquireNewValue<IValue>();
 }
 
-IValue* CConsoleValue::Clear([[maybe_unused]] CRuntimeContext* const ctx, [[maybe_unused]] const IValues& values)
-{
-#if _WIN32
-	system("cls");
-#else
-	#error "Unsupported OS"
-#endif
-	return CProgramRuntime::AcquireNewValue<IValue>();
-}
+//IValue* CConsoleValue::Clear([[maybe_unused]] CRuntimeContext* const ctx, [[maybe_unused]] const IValues& values)
+//{
+//#if _WIN32
+//	system("cls");
+//#else
+//	#error "Unsupported OS"
+//#endif
+//	return CProgramRuntime::AcquireNewValue<IValue>();
+//}

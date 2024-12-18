@@ -24,7 +24,7 @@ public:
 
 private:
 	[[nodiscard]] IValue* Log(CRuntimeContext* const ctx, const IValues& values);
-	[[nodiscard]] IValue* Clear(CRuntimeContext* const ctx, const IValues& values);
+	//[[nodiscard]] IValue* Clear(CRuntimeContext* const ctx, const IValues& values);
 
 	const CBuiltInMethod<CConsoleValue>* m_pMethod{ nullptr };
 };

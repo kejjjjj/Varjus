@@ -99,7 +99,7 @@ void CModule::CheckCircularDependencies(const std::string& src, const Dependency
 
 				if (std::find(recursionStack.begin(), recursionStack.end(), dependency) != recursionStack.end()) {
 
-					for(auto i : std::views::iota(0u, recursionStack.size() - 1))
+					for(auto i : std::views::iota(0ull, recursionStack.size() - 1))
 						conflictDetails.emplace_back(recursionStack[i], recursionStack[i + 1]);
 					
 					return false;

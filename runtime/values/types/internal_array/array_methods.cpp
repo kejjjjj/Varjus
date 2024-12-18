@@ -13,6 +13,7 @@ CArrayValue::ArrayMethods CArrayValue::ConstructMethods()
 		{"pop_front",  {0u, &CArrayValue::PopFront}},
 		{"map",        {1u, &CArrayValue::Map}},
 		{"find",       {1u, &CArrayValue::Find}},
+		{"find_last",  {1u, &CArrayValue::FindLast}},
 		{"filter",     {1u, &CArrayValue::Filter}},
 		{"contains",   {1u, &CArrayValue::Contains}},
 		{"reverse",    {0u, &CArrayValue::Reverse}},
@@ -112,7 +113,29 @@ IValue* CArrayValue::Map(CRuntimeContext* const ctx, const IValues& newValues)
 
 	return CArrayValue::Construct(std::move(results));
 }
-IValue* CArrayValue::Find(CRuntimeContext* const ctx, const IValues& newValues)
+static inline IValue* FindTestValue(CRuntimeContext* const ctx, IValue* const mapFunc, CVariable* const var)
+{
+	IValues args(1);
+	args[0] = var->GetValue()->Copy();
+
+	IValue* thisIteration = mapFunc->Call(ctx, args);
+	IValue* result{ nullptr };
+
+	if (CProgramRuntime::ExceptionThrown()) {
+		return CProgramRuntime::GetExceptionValue();
+	}
+
+	if (!thisIteration->IsBooleanConvertible())
+		throw CRuntimeError(std::format("array.find expected a boolean return value", mapFunc->TypeAsString()));
+
+	if (thisIteration->ToBoolean()) {
+		result = var->GetValue();
+	}
+
+	thisIteration->Release(); // nothing meaningful, release it
+	return result;
+}
+static inline IValue* FindInternal(CArrayValue* _this, CRuntimeContext* const ctx, const IValues& newValues, bool findFirst)
 {
 	assert(newValues.size() == 1);
 	auto& mapFunc = newValues.front();
@@ -120,43 +143,44 @@ IValue* CArrayValue::Find(CRuntimeContext* const ctx, const IValues& newValues)
 	if (!mapFunc->IsCallable())
 		throw CRuntimeError(std::format("array.find expected \"callable\", but got \"{}\"", mapFunc->TypeAsString()));
 
-	auto& vars = GetShared()->GetVariables();
+	auto& vars = _this->GetShared()->GetVariables();
 
 	IValue* result{ nullptr };
-	IValue* exception{ nullptr };
 
 	IValues args(1);
 
-	for (const auto& var : vars) {
-		args[0] = var->GetValue()->Copy();
-		IValue* thisIteration = mapFunc->Call(ctx, args);
+	if (findFirst) {
+		for (const auto& var : vars) {
+			result = FindTestValue(ctx, mapFunc, var);
 
-		if (CProgramRuntime::ExceptionThrown()) {
-			exception = thisIteration;
-			break;
+			if (result)
+				break;
 		}
+	} else {
+		for (auto b = vars.rbegin(); b != vars.rend(); ++b) {
+			result = FindTestValue(ctx, mapFunc, *b);
 
-		if(!thisIteration->IsBooleanConvertible())
-			throw CRuntimeError(std::format("array.find expected a boolean return value", mapFunc->TypeAsString()));
-
-		if (thisIteration->ToBoolean()) {
-			result = var->GetValue();
+			if (result)
+				break;
 		}
-
-		thisIteration->Release(); // nothing meaningful, release it
-
-		if (result)
-			break;
 	}
 
 	if (CProgramRuntime::ExceptionThrown()) {
-		return exception;
+		return CProgramRuntime::GetExceptionValue();
 	}
 
 	if (!result)
 		return CProgramRuntime::AcquireNewValue<IValue>(); //didn't find, return undefined
 
 	return result->Copy();
+}
+IValue* CArrayValue::Find(CRuntimeContext* const ctx, const IValues& newValues)
+{
+	return FindInternal(this, ctx, newValues, true);
+}
+IValue* CArrayValue::FindLast(CRuntimeContext* const ctx, const IValues& newValues)
+{
+	return FindInternal(this, ctx, newValues, false);
 }
 IValue* CArrayValue::Filter(CRuntimeContext* const ctx, const IValues& newValues)
 {

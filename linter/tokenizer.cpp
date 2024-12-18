@@ -90,8 +90,8 @@ std::unique_ptr<CToken> CBufferTokenizer::ReadToken()
 		if (!ReadName(token)) {
 			return nullptr;
 		}
-	} else if (*m_oScriptPos == '\"') {
-		if (!ReadString(token)) {
+	} else if (*m_oScriptPos == '\"' || *m_oScriptPos == '\'' || *m_oScriptPos == '`') {
+		if (!ReadString(token, *m_oScriptPos, *m_oScriptPos == '`')) {
 			return nullptr;
 		}
 	} else {
@@ -205,7 +205,7 @@ Success CBufferTokenizer::ReadMultiLineComment()
 
 	return success;
 }
-Success CBufferTokenizer::ReadNumber(CToken& token) noexcept
+Success CBufferTokenizer::ReadNumber(CToken& token)
 {
 	auto& [_, column] = m_oParserPosition;
 
@@ -234,8 +234,15 @@ Success CBufferTokenizer::ReadNumber(CToken& token) noexcept
 		if (EndOfBuffer())
 			return success;
 
+		if (token.m_sSource[0] == '0' && (*m_oScriptPos == 'x' || *m_oScriptPos == 'X')) {
+			m_oScriptPos++; // skip x
+			if (!ReadHex(token))
+				return failure;
+
+		}
+
 		//floating point decimal
-		if (*m_oScriptPos == '.') {
+		else if (*m_oScriptPos == '.') {
 			token.m_sSource.push_back(*m_oScriptPos++);
 			token.m_eTokenType = TokenType::tt_double;
 
@@ -276,7 +283,45 @@ Success CBufferTokenizer::ReadInteger(CToken& token) noexcept
 
 	return success;
 }
-Success CBufferTokenizer::ReadString(CToken& token)
+Success CBufferTokenizer::ReadHex(CToken& token)
+{
+	auto& [_, column] = m_oParserPosition;
+
+	if (EndOfBuffer())
+		return failure;
+
+	std::string hexStr;
+
+	while (true) {
+
+		if (EndOfBuffer()) {
+			CLinterErrors::PushError("unexpected end of file");
+			return failure;
+		}
+
+		auto c = *m_oScriptPos;
+
+		const auto isHex = 
+			(c >= '0' && c <= '9') ||
+			(c >= 'a' && c <= 'f') ||
+			(c >= 'A' && c <= 'A');
+
+		if (!isHex)
+			break;
+
+		hexStr.push_back(*m_oScriptPos++);
+		
+	}
+
+
+
+	auto intValue = std::stoll(hexStr, nullptr, 16);
+	token.m_sSource = std::to_string(intValue);
+	column += hexStr.length();
+
+	return success;
+}
+Success CBufferTokenizer::ReadString(CToken& token, std::int8_t quote, bool allowNewLine)
 {
 	auto& [line, column] = m_oParserPosition;
 
@@ -287,10 +332,17 @@ Success CBufferTokenizer::ReadString(CToken& token)
 		if (EndOfBuffer())
 			return failure;
 
-		if (*m_oScriptPos == '\"')
+		if (*m_oScriptPos == quote)
 			break;
 
 		if (*m_oScriptPos == '\n') {
+
+			if (!allowNewLine) {
+				CLinterErrors::PushError("newline within a string", m_oParserPosition);
+				return failure;
+			}
+				
+
 			line++;
 			column = 1ull;
 		} else {
@@ -307,7 +359,7 @@ Success CBufferTokenizer::ReadString(CToken& token)
 		if (EndOfBuffer())
 			return failure;
 
-	} while (*m_oScriptPos != '\"');
+	} while (*m_oScriptPos != quote);
 
 	m_oScriptPos++;  //skip "
 	column++;
@@ -340,6 +392,7 @@ std::int8_t CBufferTokenizer::ReadEscapeCharacter()
 	case '\'': c = '\''; break;
 	case '\"': c = '\"'; break;
 	case '\?': c = '\?'; break;
+	case '`': c = '`'; break;
 	default: 
 		CLinterErrors::PushError("unexpected escape character", m_oParserPosition);
 		return 0;

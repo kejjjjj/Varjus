@@ -1,6 +1,10 @@
-
-fn main()
+fn main() 
 {
-	let ass = "\\";
-	console.log(ass);
+	let array1 = [5, 12, 50, 130, 44];
+
+	let found = array1.find_last(fn(element) { 
+		return element > 45; 
+	});
+
+	console.log(found);
 }

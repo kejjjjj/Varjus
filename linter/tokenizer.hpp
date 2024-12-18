@@ -33,9 +33,11 @@ private:
 	[[nodiscard]] Success ReadSingleLineComment() noexcept;
 	[[nodiscard]] Success ReadMultiLineComment();
 
-	[[nodiscard]] Success ReadNumber(CToken& token) noexcept;
+	[[nodiscard]] Success ReadNumber(CToken& token);
 	[[nodiscard]] Success ReadInteger(CToken& token) noexcept;
-	[[nodiscard]] Success ReadString(CToken& token);
+	[[nodiscard]] Success ReadHex(CToken& token);
+
+	[[nodiscard]] Success ReadString(CToken& token, std::int8_t quote, bool allowNewLine);
 	[[nodiscard]] std::int8_t ReadEscapeCharacter();
 
 	[[nodiscard]] Success ReadName(CToken& token) noexcept;

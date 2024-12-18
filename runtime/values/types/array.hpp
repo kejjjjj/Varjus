@@ -96,6 +96,8 @@ private:
 
 	[[nodiscard]] IValue* Map(CRuntimeContext* const ctx, const IValues& newValue);
 	[[nodiscard]] IValue* Find(CRuntimeContext* const ctx, const IValues& newValue);
+	[[nodiscard]] IValue* FindLast(CRuntimeContext* const ctx, const IValues& newValue);
+
 	[[nodiscard]] IValue* Filter(CRuntimeContext* const ctx, const IValues& newValue);
 
 	[[nodiscard]] IValue* Contains(CRuntimeContext* const ctx, const IValues& newValue);
