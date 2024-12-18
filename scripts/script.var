@@ -1,12 +1,6 @@
 
-import get6 from "moduleTest.var";
-
-export fn get5()
-{
-	return 5;
-}
-
 fn main()
 {
-	return get6();
+	let ass = "\\";
+	console.log(ass);
 }

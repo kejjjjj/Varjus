@@ -35,7 +35,9 @@ private:
 
 	[[nodiscard]] Success ReadNumber(CToken& token) noexcept;
 	[[nodiscard]] Success ReadInteger(CToken& token) noexcept;
-	[[nodiscard]] Success ReadString(CToken& token) noexcept;
+	[[nodiscard]] Success ReadString(CToken& token);
+	[[nodiscard]] std::int8_t ReadEscapeCharacter();
+
 	[[nodiscard]] Success ReadName(CToken& token) noexcept;
 
 	[[nodiscard]] std::unique_ptr<CToken> ReadPunctuation() noexcept;

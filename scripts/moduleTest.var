@@ -1,7 +1,0 @@
-
-
-
-export fn get6()
-{
-	return 6;
-}

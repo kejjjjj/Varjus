@@ -109,19 +109,27 @@ Success CImportLinter::ParseFilePath()
 
 Success CImportLinter::ParseFile()
 {
-	const auto& sourceFile = m_pOwner->GetContext()->m_sFilePath;
 
+	const auto& sourceFile = m_pOwner->GetContext()->m_sFilePath;
 	if (!CModule::m_oDependencyGraph.contains(sourceFile)) {
 		CModule::m_oDependencyGraph[sourceFile] = {};
 	}
 
-	if (CModule::m_oVisitedModules.contains(m_oTargetFile))
-		return success;
+	if (CModule::m_oVisitedModules.contains(m_oTargetFile)) {
+		CModule* thisModule = CModule::FindCachedModule(m_oTargetFile);
 
-	CModule::m_oVisitedModules.insert(m_oTargetFile);
+		if (!thisModule) { // means this file hasn't been parsed yet
+			CModule::CheckCircularDependencies(sourceFile, CModule::m_oDependencyGraph);
+		}
+	}
+	else {
+		CModule::m_oVisitedModules.insert(m_oTargetFile);
+	}
+
 	CModule::m_oDependencyGraph[sourceFile].push_back(m_oTargetFile);
+	CModule::CheckCircularDependencies(sourceFile, CModule::m_oDependencyGraph);
 
-	auto thisModule = GetFileModule();
+	CModule* thisModule = GetFileModule();
 
 	if (!thisModule)
 		return failure;

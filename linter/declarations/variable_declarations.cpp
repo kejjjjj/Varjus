@@ -33,17 +33,20 @@ Success CVariableDeclarationLinter::Parse()
 		return failure;
 	}
 
+	const auto& varName = (*m_iterPos)->Source();
+
 	if (const auto scope = m_pScope.lock()) {
 
-		if (!scope->DeclareVariable((*m_iterPos)->Source())) {
-			CLinterErrors::PushError(std::format("variable \"{}\" already declared", (*m_iterPos)->Source()), 
-				(*m_iterPos)->m_oSourcePosition);
+		const auto containsFunc = m_pOwner->m_FunctionManager->ContainsFunction(varName);
+
+
+		if (containsFunc || !scope->DeclareVariable((*m_iterPos)->Source())) {
+			CLinterErrors::PushError(std::format("\"{}\" already declared", (*m_iterPos)->Source()), (*m_iterPos)->m_oSourcePosition);
 			return failure;
 		}
-		if(scope->IsGlobalScope())
-			m_sDeclaredVariable = m_pOwner->GetGlobalMemory()->m_VariableManager->DeclareVariable((*m_iterPos)->Source());
-		else
-			m_sDeclaredVariable = m_pOwner->m_VariableManager->DeclareVariable((*m_iterPos)->Source());
+
+		m_sDeclaredVariable = m_pOwner->m_VariableManager->DeclareVariable(varName);
+
 	} else {
 		CLinterErrors::PushError("!(const auto scope = currentScope.lock())", (*m_iterPos)->m_oSourcePosition);
 		return failure;

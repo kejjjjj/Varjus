@@ -1,0 +1,10 @@
+
+export fn add(a, b)
+{
+	throw "exception!";
+}
+
+export fn add_noexcept(a, b)
+{
+	return a + b;
+}

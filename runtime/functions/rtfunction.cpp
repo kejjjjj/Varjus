@@ -55,7 +55,7 @@ IValue* CRuntimeFunction::Execute(CRuntimeContext* const ctx,
 			break;
 		}
 
-		assert(!CProgramRuntime::ExceptionThrown());
+		//assert(!CProgramRuntime::ExceptionThrown());
 	}
 
 	IValue* copy = nullptr;

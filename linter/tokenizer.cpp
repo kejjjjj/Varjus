@@ -2,6 +2,7 @@
 #include "punctuation.hpp"
 #include "globalEnums.hpp"
 #include "fs/fs_io.hpp"
+#include "error.hpp"
 
 #include <cassert>
 #include <iostream>
@@ -275,7 +276,7 @@ Success CBufferTokenizer::ReadInteger(CToken& token) noexcept
 
 	return success;
 }
-Success CBufferTokenizer::ReadString(CToken& token) noexcept
+Success CBufferTokenizer::ReadString(CToken& token)
 {
 	auto& [line, column] = m_oParserPosition;
 
@@ -296,7 +297,12 @@ Success CBufferTokenizer::ReadString(CToken& token) noexcept
 			column += (*m_oScriptPos == '\t' ? 4 : 1);
 		}
 
-		token.m_sSource.push_back(*m_oScriptPos++);
+		if(*m_oScriptPos == '\\')
+			token.m_sSource.push_back(ReadEscapeCharacter());
+		else
+			token.m_sSource.push_back(*m_oScriptPos);
+
+		m_oScriptPos++;
 
 		if (EndOfBuffer())
 			return failure;
@@ -308,7 +314,40 @@ Success CBufferTokenizer::ReadString(CToken& token) noexcept
 
 	return success;
 }
+std::int8_t CBufferTokenizer::ReadEscapeCharacter()
+{
+	auto& [line, column] = m_oParserPosition;
 
+	m_oScriptPos++;  //skip '\\'
+	column++;
+
+	if (EndOfBuffer()) {
+		CLinterErrors::PushError("unexpected end of file");
+		return 0;
+	}
+
+	std::int8_t c = *m_oScriptPos;
+
+	switch (c) {
+	case '\\': c = '\\'; break;
+	case 'n': c = '\n'; break;
+	case 'r': c = '\r'; break;
+	case 't': c = '\t'; break;
+	case 'v': c = '\v'; break;
+	case 'b': c = '\b'; break;
+	case 'f': c = '\f'; break;
+	case 'a': c = '\a'; break;
+	case '\'': c = '\''; break;
+	case '\"': c = '\"'; break;
+	case '\?': c = '\?'; break;
+	default: 
+		CLinterErrors::PushError("unexpected escape character", m_oParserPosition);
+		return 0;
+	}
+
+	return c;
+
+}
 const std::unordered_map<std::string_view, TokenType> reservedKeywords = {
 	{"undefined", TokenType::tt_undefined},
 	{"false", TokenType::tt_false},
@@ -404,7 +443,7 @@ std::vector<std::unique_ptr<CToken>> CBufferTokenizer::ParseFileFromFilePath(con
 	auto fileBuf = reader.IO_Read();
 
 	if (!fileBuf) {
-		throw std::exception("couldn't read the file buffer");
+		throw CLinterError("couldn't read the file buffer");
 	}
 
 	fileBuf->push_back('\n'); // fixes a crash lol
@@ -412,7 +451,7 @@ std::vector<std::unique_ptr<CToken>> CBufferTokenizer::ParseFileFromFilePath(con
 	auto tokenizer = CBufferTokenizer(*fileBuf);
 
 	if (!tokenizer.Tokenize())
-		throw std::exception("the input file didn't have any parsable tokens");
+		throw CLinterError("the input file didn't have any parsable tokens");
 
 	return std::move(tokenizer.m_oTokens);
 }

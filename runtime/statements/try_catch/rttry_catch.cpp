@@ -16,7 +16,8 @@ IValue* CRuntimeTryCatchStatement::Execute(CRuntimeContext* const ctx)
 	for (auto& insn : m_oTryInstructions) {
 		if (auto rv = insn->Execute(ctx)) {
 			if (CProgramRuntime::ExceptionThrown()) {
-				return ExecuteCatchBlock(ctx, rv);
+				assert(CProgramRuntime::GetExceptionValue());
+				return ExecuteCatchBlock(ctx, CProgramRuntime::GetExceptionValue());
 			}
 
 			return rv;

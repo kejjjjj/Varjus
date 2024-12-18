@@ -15,6 +15,7 @@ CConsoleValue* CConsoleValue::Construct()
 {
 	auto ptr = CProgramRuntime::AcquireNewValue<CConsoleValue>();
 	ptr->MakeShared();
+	ptr->m_pMethod = nullptr;
 	return ptr;
 }
 
@@ -52,7 +53,9 @@ IValue* CConsoleValue::GetAggregate(std::size_t memberIdx) {
 
 IValue* CConsoleValue::Call(CRuntimeContext* const ctx, const IValues& args)
 {
-	assert(IsCallable());
+	if(!IsCallable())
+		throw CRuntimeError(std::format("a value of type \"{}\" is not callable", TypeAsString()));
+
 	auto ret = CBuiltInMethods<CConsoleValue>::CallMethod(ctx, this, args, m_pMethod);
 	m_pMethod = nullptr;
 	return ret;

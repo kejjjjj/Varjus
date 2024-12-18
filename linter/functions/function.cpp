@@ -75,6 +75,16 @@ Success CFunctionLinter::ParseFunctionDeclaration()
 	}
 
 	m_oFunctionName = (*m_iterPos)->Source();
+
+	const auto containsFunc = m_pOwner->m_FunctionManager->ContainsFunction(m_oFunctionName);
+	const auto containsVar = m_pOwner->m_VariableManager->ContainsVariable(m_oFunctionName);
+
+	if (containsFunc || containsVar) {
+		CLinterErrors::PushError(std::format("\"{}\" is already defined", m_oFunctionName), GetIteratorSafe()->m_oSourcePosition);
+		return failure;
+	}
+
+
 	std::advance(m_iterPos, 1); //skip identifier
 
 	if (!ParseFunctionParameters())

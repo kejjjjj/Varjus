@@ -11,6 +11,10 @@ CRuntimeThrowStatement::~CRuntimeThrowStatement() = default;;
 IValue* CRuntimeThrowStatement::Execute(CRuntimeContext* const ctx)
 {
 	assert(m_pAST.get());
+	auto v = CRuntimeExpression::Evaluate(ctx, m_pAST.get());
+
+	CProgramRuntime::GetExceptionValue() = v->Copy();
 	CProgramRuntime::ThrowException();
-	return CRuntimeExpression::Evaluate(ctx, m_pAST.get());
+
+	return v;
 }

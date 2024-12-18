@@ -27,8 +27,6 @@ int main()
         if (!linter.ParseFile())
             throw std::exception("couldn't parse the input file");
 
-        std::cout << CModule::DependencyGraphToString() << '\n';
-
         CProgramRuntime runtime(CModule::ToRuntimeModules());
         runtime.Execute();
 
@@ -36,9 +34,9 @@ int main()
     }
     catch (CLinterError& e) {
         std::cerr << "\033[31m" <<
-            "\n--------------ERROR--------------\n\n"
+            "\n-----------LINTER ERROR-----------\n\n"
             << e.what() <<
-            "\n\n-------------------------------" << "\033[0m\n";
+            "\n\n--------------------------------" << "\033[0m\n";
     }
     catch (CRuntimeError& e) {
 		std::cerr << "\033[31m" <<

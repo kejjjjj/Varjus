@@ -9,6 +9,10 @@ void CLinterErrors::PushError(const std::string& error, const CodePosition& posi
     errorStack.emplace_back(CLinterError(error, position));
     throw errorStack.back();
 }
+void CLinterErrors::PushError(const std::string& error) {
+    errorStack.emplace_back(CLinterError(error));
+    throw errorStack.back();
+}
 void CLinterErrors::ClearErrorStack() 
 { 
     errorStack.clear(); 

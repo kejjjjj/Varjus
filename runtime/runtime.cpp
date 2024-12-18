@@ -27,6 +27,7 @@ template<> COwningObjectPool<CConsoleValue>       CProgramRuntime::m_oValuePool<
 RuntimeModules CProgramRuntime::m_oModules;
 const CodePosition* CProgramRuntime::m_pCodePosition{ nullptr };
 bool CProgramRuntime::m_bExceptionThrown{ false };
+IValue* CProgramRuntime::m_pExceptionValue{ nullptr };
 
 CProgramRuntime::CProgramRuntime(RuntimeModules&& modules){
 	m_oModules = std::move(modules);
@@ -47,6 +48,7 @@ void PrintLeaks(const char* name) {
 
 void CProgramRuntime::Execute()
 {
+	m_pExceptionValue = nullptr;
 	CRuntimeFunction* mainFunction{ nullptr };
 
 	for (auto& mod : m_oModules) {

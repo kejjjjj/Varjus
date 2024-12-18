@@ -18,7 +18,7 @@ using UniqueExportedSymbol = std::unique_ptr<CExportedSymbol>;
 
 using RuntimeModules = VectorOf<std::unique_ptr<CRuntimeModule>>;
 using ModuleExports = std::unordered_map<std::string, UniqueExportedSymbol>;
-
+using DependencyGraph = std::unordered_map<std::string, VectorOf<std::string>>;
 class CModule
 {
 	NONCOPYABLE(CModule);
@@ -63,11 +63,14 @@ public:
 	static RuntimeModules ToRuntimeModules();
 
 	static std::string DependencyGraphToString() noexcept;
+	static void CheckCircularDependencies(const std::string& src, const DependencyGraph& graph);
 
-	static std::unordered_map<std::string, VectorOf<std::string>> m_oDependencyGraph;
+	static DependencyGraph m_oDependencyGraph;
 	static std::unordered_set<std::string> m_oVisitedModules;
 
 private:
+
+
 	static VectorOf<std::unique_ptr<CModule>> m_oAllModules;
 	static std::unordered_map<std::string, CModule*> m_oCachedModules;
 

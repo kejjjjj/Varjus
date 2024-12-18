@@ -6,6 +6,8 @@
 
 #include <ranges>
 #include <sstream>
+#include <functional>
+#include <linter/error.hpp>
 
 CModule::CModule() = default;
 CModule::CModule(const std::string& filePath) : m_oContext(filePath) {}
@@ -49,7 +51,7 @@ CExportedSymbol* CModule::GetExport(const std::string& name) const {
 ***********************************************************************/
 VectorOf<std::unique_ptr<CModule>> CModule::m_oAllModules;
 std::unordered_map<std::string, CModule*> CModule::m_oCachedModules;
-std::unordered_map<std::string, VectorOf<std::string>> CModule::m_oDependencyGraph;
+DependencyGraph CModule::m_oDependencyGraph;
 std::unordered_set<std::string> CModule::m_oVisitedModules;
 
 CModule* CModule::CreateNewModule(const std::string& filePath)
@@ -78,24 +80,67 @@ RuntimeModules CModule::ToRuntimeModules()
 	return modules;
 }
 
+void CModule::CheckCircularDependencies(const std::string& src, const DependencyGraph& graph)
+{
+	if (graph.empty())
+		return;
+
+	std::unordered_set<std::string> visited;
+	VectorOf<std::string> recursionStack;
+	VectorOf<std::pair<std::string, std::string>> conflictDetails;
+
+	std::function<bool(const std::string&)> DFS = [&](const std::string& amodule) {
+		
+		visited.insert(amodule);
+		recursionStack.push_back(amodule);
+
+		if (graph.contains(amodule)) {
+			for (const auto& dependency : graph.at(amodule)) {
+
+				if (std::find(recursionStack.begin(), recursionStack.end(), dependency) != recursionStack.end()) {
+
+					for(auto i : std::views::iota(0u, recursionStack.size() - 1))
+						conflictDetails.emplace_back(recursionStack[i], recursionStack[i + 1]);
+					
+					return false;
+
+				}
+
+				if (!visited.contains(dependency))
+					return DFS(dependency);
+			}
+		}
+
+		recursionStack.pop_back();
+		return true;
+	};
+
+	if (!DFS(src)) {
+
+		std::stringstream ss;
+		ss << "circular dependency detected involving the following files:\n";
+		for (const auto& [source, target] : conflictDetails)
+			ss << " - " << source << " <-> " << target << '\n';
+
+		return CLinterErrors::PushError(ss.str());
+	}
+}
 
 std::string CModule::DependencyGraphToString() noexcept
 {
 	std::stringstream ss;
 
 	for (const auto& [sourceFile, dependencies] : CModule::m_oDependencyGraph) {
-		ss << sourceFile << " imports: ";
+		ss << sourceFile << " imports:\n";
 
 		if (dependencies.empty()) {
-			ss << "None"; // Handle case where there are no imports
+			ss << " - None\n"; // Handle case where there are no imports
 		}
 		else {
 			for (const auto& dependency : dependencies) {
-				ss << dependency << " ";
+				ss << " - " << dependency << '\n';
 			}
 		}
-
-		ss << '\n'; 
 	}
 
 	return ss.str();

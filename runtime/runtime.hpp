@@ -49,6 +49,8 @@ public:
 	static inline void ThrowException() noexcept { m_bExceptionThrown = true; }
 	static inline void CatchException() noexcept { m_bExceptionThrown = false; }
 	[[nodiscard]] static inline bool ExceptionThrown() noexcept { return m_bExceptionThrown; }
+	[[nodiscard]] static inline auto& GetExceptionValue() noexcept { return m_pExceptionValue; }
+
 	[[nodiscard]] static CRuntimeModule* GetModuleByIndex(std::size_t index);
 
 private:
@@ -120,5 +122,6 @@ private:
 	static RuntimeModules m_oModules;
 	static const CodePosition* m_pCodePosition;
 	static bool m_bExceptionThrown;
+	static IValue* m_pExceptionValue;
 };
 

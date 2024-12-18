@@ -24,7 +24,7 @@ IValue* CRuntimeExpression::Execute(CRuntimeContext* const ctx)
 	[[maybe_unused]] const auto result = Evaluate(ctx);
 	
 	if (CProgramRuntime::ExceptionThrown())
-		return result; //we don't want the exception to get destroyed
+		return CProgramRuntime::GetExceptionValue(); //we don't want the exception to get destroyed
 	
 	if (result && !result->HasOwner())
 		result->Release();
@@ -41,6 +41,8 @@ IValue* CRuntimeExpression::Evaluate(CRuntimeContext* const ctx)
 #pragma warning(disable : 4062)
 IValue* CRuntimeExpression::Evaluate(CRuntimeContext* const ctx, const AbstractSyntaxTree* node)
 {
+	if (CProgramRuntime::ExceptionThrown())
+		return CProgramRuntime::GetExceptionValue();
 
 	assert(node != nullptr);
 	CProgramRuntime::SetExecutionPosition(&node->GetCodePosition());
@@ -59,7 +61,6 @@ IValue* CRuntimeExpression::Evaluate(CRuntimeContext* const ctx, const AbstractS
 
 	if (node->IsLeaf()) 
 		return EvaluateLeaf(ctx, node);
-	
 
 	auto lhs = Evaluate(ctx, node->left.get());
 	auto rhs = Evaluate(ctx, node->right.get());
