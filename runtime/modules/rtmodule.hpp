@@ -35,7 +35,7 @@ public:
 	void FreeGlobalVariables();
 
 	CFileContext* GetContext() noexcept { return &m_oContext; }
-
+	[[nodiscard]] constexpr auto GetIndex() const noexcept { return m_uModuleIndex; }
 private:
 	VectorOf<RuntimeBlock> m_oGlobalScopeInstructions;
 	std::size_t m_uNumGlobalVariables{};
@@ -44,6 +44,6 @@ private:
 	VectorOf<CVariable*> m_oGlobalVariables;
 
 	CFileContext m_oContext;
-
+	std::size_t m_uModuleIndex{};
 };
 

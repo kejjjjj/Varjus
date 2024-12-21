@@ -13,7 +13,8 @@
 #include "globalEnums.hpp"
 
 #include "runtime/structure.hpp"
-#include <iostream>
+
+#include <format>
 
 CFunctionLinter::CFunctionLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack)
 	: CLinterSingle(pos, end), m_pScope(scope), m_pOwner(stack),

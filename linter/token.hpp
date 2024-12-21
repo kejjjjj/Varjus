@@ -44,7 +44,7 @@ constexpr std::array<const char*, tt_unused_count> tokenTypeStrings = {{
 	"string",
 	"name",
 	"operator",
-	"declaration",
+	"let",
 	"fn",
 	"if",
 	"else",

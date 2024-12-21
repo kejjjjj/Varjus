@@ -11,7 +11,8 @@ CRuntimeModule::CRuntimeModule(CModule& ctx) :
 	m_oGlobalScopeInstructions(std::move(ctx.m_oGlobalScopeInstructions)),
 	m_uNumGlobalVariables(ctx.m_uNumGlobalVariables), 
 	m_oFunctions(std::move(ctx.m_oFunctions)),
-	m_oContext(std::move(ctx.m_oContext)) {}
+	m_oContext(std::move(ctx.m_oContext)),
+	m_uModuleIndex(ctx.GetIndex()){}
 
 CRuntimeModule::~CRuntimeModule() = default;
 

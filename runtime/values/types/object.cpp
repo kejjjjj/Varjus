@@ -10,12 +10,12 @@
 
 CObjectValue::~CObjectValue() = default;
 
-CObjectValue* CObjectValue::Construct(ObjectInitializer&& values)
+CObjectValue* CObjectValue::Construct(std::size_t moduleIndex, ObjectInitializer&& values)
 {
 	auto ptr = CProgramRuntime::AcquireNewValue<CObjectValue>();
 	ptr->MakeShared();
 	auto internal = ptr->Internal();
-	internal->Set(std::move(values));
+	internal->Set(moduleIndex, std::move(values));
 	return ptr;
 }
 
@@ -75,8 +75,9 @@ void CInternalObjectValue::Release()
 {
 	GetAggregateValue().Release();
 }
-void CInternalObjectValue::Set(ObjectInitializer&& v) {
+void CInternalObjectValue::Set(std::size_t moduleIndex, ObjectInitializer&& v) {
 
+	m_oValue.SetModuleIndex(moduleIndex);
 	for (auto& [key, value] : v) {
 		m_oValue.AddAttribute(key, value);
 	}

@@ -110,7 +110,7 @@ IValue* CArrayValue::Map(CRuntimeContext* const ctx, const IValues& newValues)
 		return exceptionValue;
 	}
 
-
+	
 	return CArrayValue::Construct(std::move(results));
 }
 static inline IValue* FindTestValue(CRuntimeContext* const ctx, IValue* const mapFunc, CVariable* const var)

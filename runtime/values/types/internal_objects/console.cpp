@@ -14,37 +14,39 @@ CConsoleValue* CConsoleValue::Construct()
 {
 	auto ptr = CProgramRuntime::AcquireNewValue<CConsoleValue>();
 	ptr->MakeShared();
-	ptr->m_pMethod = nullptr;
 	return ptr;
 }
 
 void CConsoleValue::Release() {
 
 	if (SharedRefCount() == 1) {
-		m_pMethod = nullptr;
 		Get().Release();
 	}
 
 	ReleaseInternal();
+	CDataTypeMethods::Release();
 	CProgramRuntime::FreeValue<CConsoleValue>(this);
 	ReleaseShared();
 }
 
-CConsoleValue* CConsoleValue::Copy() {
+IValue* CConsoleValue::Copy() {
+
+	if (auto c = CDataTypeMethods::Copy())
+		return c;
+
 	CConsoleValue* ptr = CProgramRuntime::AcquireNewValue<CConsoleValue>();
 	ptr->MakeShared();
 	ptr->GetShared() = GetShared();
-	ptr->m_pMethod = m_pMethod;
 
 	return ptr;
 }
 
 IValue* CConsoleValue::GetAggregate(std::size_t memberIdx) {
 
-	if (auto func = CBuiltInMethods<CConsoleValue>::LookupMethod(memberIdx)) {
-		auto ptr = HasOwner() ? this : this->Copy();
-		ptr->m_pMethod = func;
-		return ptr;
+	if (auto func = CDataTypeMethods::FindMethod(memberIdx)) {
+		auto newValue = HasOwner() ? this : static_cast<CConsoleValue*>(this->Copy());
+		newValue->SetMethod(func);
+		return newValue;
 	}
 
 	return CObjectValue::GetAggregate(memberIdx);
@@ -55,8 +57,8 @@ IValue* CConsoleValue::Call(CRuntimeContext* const ctx, const IValues& args)
 	if(!IsCallable())
 		throw CRuntimeError(std::format("a value of type \"{}\" is not callable", TypeAsString()));
 
-	auto ret = CBuiltInMethods<CConsoleValue>::CallMethod(ctx, this, args, m_pMethod);
-	m_pMethod = nullptr;
+	auto ret = CBuiltInMethods<CConsoleValue>::CallMethod(ctx, this, args, GetMethod());
+	CDataTypeMethods::Release();
 	return ret;
 }
 

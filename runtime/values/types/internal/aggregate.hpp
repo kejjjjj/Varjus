@@ -28,18 +28,24 @@ public:
 
 	[[nodiscard]] virtual constexpr AggregateType Type() const noexcept { return at_object; }
 
+	constexpr void SetModuleIndex(std::size_t i) noexcept { m_uModuleIndex = i; }
+
 	void Release();
-	void Setup(const std::vector<ElementIndex>& elements);
+	void Setup(std::size_t moduleIndex, const std::vector<ElementIndex>& elements);
 
 	[[maybe_unused]] virtual CVariable* AddAttribute(ElementIndex elem);
 	void AddAttribute(ElementIndex elem, IValue* value);
 
 	[[nodiscard]] IValue* ElementLookup(GlobalMemberIndex index) const;
 
+#ifdef RUNNING_TESTS
+	[[nodiscard]] IValue* ElementLookupNoExcept(GlobalMemberIndex index) const noexcept;
+#endif
 	[[nodiscard]] auto& Iterator() { return m_oIndexLookup; }
 
 protected:
 	std::unordered_map<ElementIndex, CVariable*> m_oIndexLookup;
+	std::size_t m_uModuleIndex{};
 };
 
 

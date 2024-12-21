@@ -41,8 +41,11 @@ public:
 	CProgramRuntime(RuntimeModules&& modules);
 	~CProgramRuntime();
 
+#ifdef RUNNING_TESTS
+	IValue* Execute();
+#else
 	void Execute();
-
+#endif
 	static void SetExecutionPosition(const CodePosition* pos) noexcept;
 	[[nodiscard]] static const CodePosition* GetExecutionPosition() noexcept;
 
@@ -52,8 +55,10 @@ public:
 	[[nodiscard]] static inline auto& GetExceptionValue() noexcept { return m_pExceptionValue; }
 
 	[[nodiscard]] static CRuntimeModule* GetModuleByIndex(std::size_t index);
+	[[nodiscard]] static bool HasLeaks();
 
 private:
+
 
 	template <IValueChild T>
 	static COwningObjectPool<T> m_oValuePool;
@@ -116,8 +121,12 @@ public:
 
 private:
 
-
+#ifdef RUNNING_TESTS
+	IValue* BeginExecution(CRuntimeFunction* entryFunc);
+#else
 	steady_clock BeginExecution(CRuntimeFunction* entryFunc);
+#endif
+	CRuntimeFunction* FindMainFunction(const RuntimeModules& modules);
 
 	static RuntimeModules m_oModules;
 	static const CodePosition* m_pCodePosition;

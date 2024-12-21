@@ -1,10 +1,7 @@
 #pragma once
 
 #include "internal/aggregate.hpp"
-#include "runtime/values/types/simple.hpp"
-#include "runtime/values/types/internal/builtin_methods.hpp"
-
-
+#include "internal/method.hpp"
 
 #include <vector>
 #include <memory>
@@ -50,7 +47,7 @@ protected:
 };
 
 
-class CArrayValue final : public CValue<CInternalArrayValue>
+class CArrayValue final : public CValue<CInternalArrayValue>, public CDataTypeMethods<CArrayValue>
 {
 	using ArrayMethods = CBuiltInMethods<CArrayValue>::InputType;
 public:
@@ -66,7 +63,7 @@ public:
 
 	[[nodiscard]] constexpr bool IsIndexable() const noexcept override { return true; }
 	[[nodiscard]] constexpr bool IsAggregate() const noexcept override { return true; }
-	[[nodiscard]] constexpr bool IsCallable() const noexcept override { return !!m_pMethod; }
+	[[nodiscard]] constexpr bool IsCallable() const noexcept override { return CDataTypeMethods::IsCallable(); }
 	[[nodiscard]] constexpr bool IsBooleanConvertible() const noexcept override { return false; }
 
 	[[nodiscard]] IValue* Copy() override;
@@ -104,6 +101,6 @@ private:
 
 	[[nodiscard]] IValue* Reverse(CRuntimeContext* const ctx, const IValues& newValue);
 
-	const CBuiltInMethod<CArrayValue>* m_pMethod{ nullptr };
+	//const CBuiltInMethod<CArrayValue>* m_pMethod{ nullptr };
 };
 

@@ -25,7 +25,7 @@ public:
 
 	void Release();
 
-	void Set(ObjectInitializer&& v);
+	void Set(std::size_t moduleIndex, ObjectInitializer&& v);
 	constexpr auto& Get() noexcept { return m_oValue; }
 	constexpr auto& Get() const noexcept { return m_oValue; }
 
@@ -42,7 +42,7 @@ public:
 	CObjectValue() = default;
 	~CObjectValue();
 
-	static CObjectValue* Construct(ObjectInitializer&& values);
+	static CObjectValue* Construct(std::size_t moduleIndex, ObjectInitializer&& values);
 
 	//copy constructor
 	[[nodiscard]] EValueType Type() const noexcept override { return t_object; };

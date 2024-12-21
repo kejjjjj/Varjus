@@ -1,7 +1,8 @@
 #pragma once
 #include "simple.hpp"
 #include "internal/aggregate.hpp"
-#include "runtime/values/types/internal/builtin_methods.hpp"
+#include "internal/method.hpp"
+
 
 struct CStringContent final
 {
@@ -33,7 +34,7 @@ protected:
 	CStringContent m_oValue;
 };
 
-class CStringValue final : public CValue<CInternalStringValue>
+class CStringValue final : public CValue<CInternalStringValue>, public CDataTypeMethods<CStringValue>
 {
 	using StringMethods = CBuiltInMethods<CStringValue>::InputType;
 
@@ -52,7 +53,7 @@ public:
 	[[nodiscard]] constexpr bool IsArithmetic() const noexcept override { return false; }
 	[[nodiscard]] constexpr bool IsIndexable() const noexcept override { return true; }
 	[[nodiscard]] constexpr bool IsAggregate() const noexcept override { return true; }
-	[[nodiscard]] constexpr bool IsCallable() const noexcept override { return !!m_pMethod; }
+	[[nodiscard]] constexpr bool IsCallable() const noexcept override { return CDataTypeMethods::IsCallable(); }
 
 	[[nodiscard]] bool ToBoolean() const override { return !Internal()->GetString().empty(); }
 	[[nodiscard]] std::int64_t ToInt() const override { return static_cast<std::int64_t>(ToBoolean()); }
@@ -86,6 +87,4 @@ private:
 	
 	[[nodiscard]] IValue* GetCodeAt(CRuntimeContext* const ctx, const IValues& newValue);
 
-
-	const CBuiltInMethod<CStringValue>* m_pMethod{ nullptr };
 };

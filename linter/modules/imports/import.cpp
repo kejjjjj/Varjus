@@ -14,6 +14,7 @@
 #include "fs/fs_globals.hpp"
 
 #include <cassert>
+#include <format>
 
 CImportLinter::CImportLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack)
 	: CLinterSingle(pos, end), m_pScope(scope), m_pOwner(stack) {}

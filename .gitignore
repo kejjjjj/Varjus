@@ -7,6 +7,9 @@
 [Vv]arjus.vcx*
 [Vv]arjus.sln
 
+tests/all_tests/build/
+tests/all_tests/Varjus.exe
+
 *vcx*
 
 # User-specific files

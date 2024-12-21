@@ -11,6 +11,7 @@
 #include <functional>
 #include <format>
 #include <type_traits>
+
 struct CRuntimeContext;
 using ElementIndex = std::size_t;
 

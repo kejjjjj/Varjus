@@ -8,12 +8,13 @@
 #include "runtime/variables.hpp"
 #include "runtime/values/types/simple.hpp"
 #include "runtime/exceptions/exception.hpp"
-
+#include "runtime/modules/rtmodule.hpp"
 
 #include <cassert>
 #include <stdexcept>
 
-void CAggregate::Setup(const std::vector<ElementIndex>& elements){
+void CAggregate::Setup(std::size_t moduleIndex, const std::vector<ElementIndex>& elements){
+	SetModuleIndex(moduleIndex);
 	for (auto& l : elements) {
 		AddAttribute(l);
 	}
@@ -47,13 +48,23 @@ IValue* CAggregate::ElementLookup(GlobalMemberIndex index) const
 	}
 	catch ([[maybe_unused]]std::out_of_range& ex) {
 
+		const auto modulePtr = CProgramRuntime::GetModuleByIndex(m_uModuleIndex);
 		throw CRuntimeError(std::format("this aggregate doesn't have the attribute \"{}\"",
-			/*CProgramRuntime::GetContext()->m_oAllMembers.At(index)*/ "implement me"
+			modulePtr->GetContext()->m_oAllMembers.At(index)
 		));
 	}
 
 }
 
+#ifdef RUNNING_TESTS
+IValue* CAggregate::ElementLookupNoExcept(GlobalMemberIndex index) const noexcept {
+
+	if (!m_oIndexLookup.contains(index))
+		return nullptr;
+
+	return m_oIndexLookup.at(index)->GetValue();
+}
+#endif
 /***********************************************************************
  > 
 ***********************************************************************/

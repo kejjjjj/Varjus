@@ -17,14 +17,15 @@ CStringValue* CStringValue::Construct(const std::string& v)
 
 IValue* CStringValue::Copy(){
 	
+	if (auto c = CDataTypeMethods::Copy())
+		return c;
+
 	auto v = Construct(Internal()->GetString());
-	v->m_pMethod = m_pMethod;
 	return v;
 }
 void CStringValue::Release()
 {
-	m_pMethod = nullptr;
-
+	CDataTypeMethods::Release();
 	Internal()->Release();
 
 	ReleaseInternal();
@@ -49,10 +50,10 @@ IValue* CStringValue::Index(std::int64_t index)
 }
 IValue* CStringValue::GetAggregate(std::size_t memberIdx)
 {
-	if (auto func = CBuiltInMethods<CStringValue>::LookupMethod(memberIdx)) {
-		auto ptr = HasOwner() ? this : this->Copy()->ToCString();
-		ptr->m_pMethod = func;
-		return ptr;
+	if (auto func = CDataTypeMethods::FindMethod(memberIdx)) {
+		auto newValue = HasOwner() ? this : this->Copy()->ToCString();
+		newValue->SetMethod(func);
+		return newValue;
 	}
 
 	auto value = Internal()->GetAggregateValue().ElementLookup(memberIdx);
@@ -68,8 +69,8 @@ IValue* CStringValue::GetAggregate(std::size_t memberIdx)
 IValue* CStringValue::Call(CRuntimeContext* const ctx, const IValues& args)
 {
 	assert(IsCallable());
-	auto ret = CBuiltInMethods<CStringValue>::CallMethod(ctx, this, args, m_pMethod);
-	m_pMethod = nullptr;
+	auto ret = CBuiltInMethods<CStringValue>::CallMethod(ctx, this, args, GetMethod());
+	CDataTypeMethods::Release();
 	return ret;
 }
 CInternalStringValue::~CInternalStringValue() = default;

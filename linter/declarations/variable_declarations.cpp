@@ -8,6 +8,7 @@
 #include "linter/expressions/ast.hpp"
 
 #include <cassert>
+#include <format>
 
 CVariableDeclarationLinter::CVariableDeclarationLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack) :
 	CLinterSingle(pos, end), m_pScope(scope), m_pOwner(stack)
@@ -27,7 +28,7 @@ Success CVariableDeclarationLinter::Parse()
 	std::advance(m_iterPos, 1);
 
 
-	if (IsEndOfBuffer() ||!IsIdentifier(*m_iterPos)) {
+	if (IsEndOfBuffer() || !IsIdentifier(*m_iterPos)) {
 		CLinterErrors::PushError(std::format("expected variable name, but found \"{}\"", GetIteratorSafe()->Source()), 
 			GetIteratorSafe()->m_oSourcePosition);
 		return failure;
@@ -79,13 +80,10 @@ Success CVariableDeclarationLinter::Parse()
 	m_pInitializerAST = linter.ToMergedAST();
 	return success;
 }
-
-
 bool CVariableDeclarationLinter::IsDeclaration(const CToken* token) noexcept{
 	return token && token->Type() == tt_let;
 }
-bool CVariableDeclarationLinter::IsIdentifier(const CToken* token) const noexcept
-{
+bool CVariableDeclarationLinter::IsIdentifier(const CToken* token) const noexcept{
 	return token && token->Type() == tt_name;
 }
 RuntimeBlock CVariableDeclarationLinter::ToRuntimeObject() const

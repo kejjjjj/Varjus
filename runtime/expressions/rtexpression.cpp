@@ -18,9 +18,6 @@ CRuntimeExpression::~CRuntimeExpression() = default;
 
 IValue* CRuntimeExpression::Execute(CRuntimeContext* const ctx)
 {
-	//assert(m_pAST);
-	//CProgramRuntime::SetExecutionPosition(&m_pAST->GetCodePosition());
-
 	[[maybe_unused]] const auto result = Evaluate(ctx);
 	
 	if (CProgramRuntime::ExceptionThrown())
@@ -151,7 +148,7 @@ IValue* CRuntimeExpression::EvaluateLeaf(CRuntimeContext* const ctx, const Abstr
 	}
 
 	if (node->IsObject()) {
-		return CObjectValue::Construct(EvaluateObject(ctx, node->GetObject()->m_oAttributes));
+		return CObjectValue::Construct(ctx->m_pModule->GetIndex() ,EvaluateObject(ctx, node->GetObject()->m_oAttributes));
 	}
 
 	if (node->IsConstant()) {

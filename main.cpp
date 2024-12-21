@@ -30,7 +30,7 @@ int main()
         CProgramRuntime runtime(CModule::ToRuntimeModules());
         runtime.Execute();
 
-     
+    
     }
     catch (CLinterError& e) {
         std::cerr << "\033[31m" <<
