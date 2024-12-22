@@ -272,7 +272,7 @@ public:
 protected:
 	[[nodiscard]] constexpr EStructureType Type() const noexcept override { return st_try_catch; };
 private:
-	[[maybe_unused]] IValue* ExecuteCatchBlock(CRuntimeContext* const ctx, IValue* ex);
+	[[maybe_unused]] IValue* ExecuteCatchBlock(CRuntimeContext* const ctx);
 
 	CCrossModuleReference m_uCatchVariable;
 	InstructionSequence m_oTryInstructions;

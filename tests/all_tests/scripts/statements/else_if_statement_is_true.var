@@ -1,0 +1,12 @@
+
+fn main()
+{
+	let v = 50;
+
+	if(v === 49)
+		return false;
+	else if(v === 50)
+		return true;
+
+	return false;
+}

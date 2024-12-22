@@ -21,7 +21,7 @@ IValue* CRuntimeExpression::Execute(CRuntimeContext* const ctx)
 	[[maybe_unused]] const auto result = Evaluate(ctx);
 	
 	if (CProgramRuntime::ExceptionThrown())
-		return CProgramRuntime::GetExceptionValue(); //we don't want the exception to get destroyed
+		return result; //we don't want the exception to get destroyed
 	
 	if (result && !result->HasOwner())
 		result->Release();

@@ -120,6 +120,7 @@ public:
 	}
 
 private:
+	void FreeAllValues();
 
 #ifdef RUNNING_TESTS
 	IValue* BeginExecution(CRuntimeFunction* entryFunc);

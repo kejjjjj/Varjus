@@ -1,0 +1,17 @@
+//using array.push might be too much for this simple test
+
+fn main()
+{	
+	let results = [0,0,0];
+	let currentValue = 0;
+
+	for(let i = 0; i <= 5; i++) {
+
+		if(i % 2 == 0)
+			continue;
+
+		results[currentValue++] = i;
+	}
+
+	return results;
+}

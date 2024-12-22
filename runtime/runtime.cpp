@@ -30,6 +30,8 @@ bool CProgramRuntime::m_bExceptionThrown{ false };
 IValue* CProgramRuntime::m_pExceptionValue{ nullptr };
 
 CProgramRuntime::CProgramRuntime(RuntimeModules&& modules){
+	FreeAllValues();
+
 	m_oModules = std::move(modules);
 	m_bExceptionThrown = false;
 	m_pExceptionValue = nullptr;
@@ -55,6 +57,11 @@ bool HasLeak() {
 		return true;
 
 	return false;
+}
+
+template<PrintableValue T>
+void ClearPool() {
+	CProgramRuntime::GetPool<T>().ResetPool();
 }
 
 #ifdef RUNNING_TESTS
@@ -190,4 +197,18 @@ bool CProgramRuntime::HasLeaks()
 		HasLeak<CVariable>() || 
 		HasLeak<CConsoleValue>()
 	);
+}
+void CProgramRuntime::FreeAllValues()
+{
+	
+	ClearPool<IValue>();
+	ClearPool<CBooleanValue>();
+	ClearPool<CIntValue>();
+	ClearPool<CDoubleValue>();
+	ClearPool<CStringValue>();
+	ClearPool<CCallableValue>();
+	ClearPool<CArrayValue>();
+	ClearPool<CObjectValue>();
+	ClearPool<CVariable>();
+	ClearPool<CConsoleValue>();
 }

@@ -80,7 +80,7 @@ Success CFunctionLinter::ParseFunctionDeclaration()
 	const auto containsFunc = m_pOwner->m_FunctionManager->ContainsFunction(m_oFunctionName);
 	const auto containsVar = m_pOwner->m_VariableManager->ContainsVariable(m_oFunctionName);
 
-	if (containsFunc || containsVar) {
+	if (containsFunc && m_pOwner->IsHoisting() || containsVar) {
 		CLinterErrors::PushError(std::format("\"{}\" is already defined", m_oFunctionName), GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}

@@ -1,0 +1,11 @@
+
+fn return50()
+{
+	return 50;
+}
+
+fn main()
+{
+	let var = return50;
+	return var();
+}

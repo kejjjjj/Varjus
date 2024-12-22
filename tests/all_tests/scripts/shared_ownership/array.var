@@ -1,0 +1,8 @@
+fn main()
+{
+	let initial = [ 0, 1 ];
+	let copy = initial;
+	copy[0] = 50;
+
+	return initial;
+}

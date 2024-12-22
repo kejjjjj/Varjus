@@ -34,9 +34,9 @@ public:
 
 	constexpr void SetModuleIndex(std::size_t mIndex) noexcept { m_uModule = mIndex; m_bRequiresModuleChange = true; }
 
-//#ifndef RUNNING_TESTS
-//private:
-//#endif
+#ifndef RUNNING_TESTS
+private:
+#endif
 
 	CRuntimeFunction* m_pCallable{ nullptr };
 	std::unordered_map<CCrossModuleReference, CVariable*, CCrossModuleReferenceHasher> m_oCaptures;

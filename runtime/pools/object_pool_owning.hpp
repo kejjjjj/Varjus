@@ -46,6 +46,14 @@ public:
         return pool.size() - available.size();
     }
 
+    void ResetPool()
+    {
+        while (available.size())
+            available.pop();
+
+        pool.clear();
+    }
+
 private:
     std::vector<std::unique_ptr<T>> pool;
     std::stack<T*> available;

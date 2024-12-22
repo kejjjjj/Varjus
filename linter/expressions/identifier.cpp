@@ -100,6 +100,9 @@ CLinterFunction* CIdentifierLinter::GetFunctionByIdentifier(const std::string& s
 	auto lowest = m_pOwner->GetGlobalMemory();
 	auto& manager = lowest->m_FunctionManager;
 
+	if (manager->ContainsFunction(str))
+		return manager->GetFunction(str);
+
 	//try seeing if this function exists in the hoisted data
 
 	auto& hoister = m_pOwner->GetHoister();
