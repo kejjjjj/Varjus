@@ -13,8 +13,10 @@ IValue* CRuntimeThrowStatement::Execute(CRuntimeContext* const ctx)
 	assert(m_pAST.get());
 	auto v = CRuntimeExpression::Evaluate(ctx, m_pAST.get());
 
-	CProgramRuntime::GetExceptionValue() = v;
+	auto ret = v->HasOwner() ? v->Copy() : v;
+
+	CProgramRuntime::GetExceptionValue() = ret;
 	CProgramRuntime::ThrowException();
 
-	return v;
+	return ret;
 }

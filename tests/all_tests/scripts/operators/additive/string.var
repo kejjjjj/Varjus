@@ -1,0 +1,11 @@
+fn main()
+{
+	return [
+		"hello" + " world",
+		"\"h\"" + "\"e\"",
+		`hello
+		world`,
+		"'hello, world'",
+		'"hello, world"'
+	];
+}

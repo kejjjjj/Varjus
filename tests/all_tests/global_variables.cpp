@@ -1,8 +1,5 @@
 #include "tests/tests.hpp"
-#include "tests/catch_amalgamated.hpp"
-#include "runtime/structure.hpp"
-#include "runtime/runtime.hpp"
-#include "runtime/modules/rtmodule.hpp"
+#include "tests/utils.hpp"
 
 #define PATH_PREFIX "global_variables"
 #define JP(x) (std::string(PATH_PREFIX) + "\\" + x)

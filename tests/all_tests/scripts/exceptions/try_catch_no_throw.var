@@ -1,0 +1,13 @@
+
+fn main()
+{
+	let str = undefined;
+	
+	try{
+		str = "try";
+	}catch(ex){
+		str = "catch";
+	}
+
+	return str;
+}

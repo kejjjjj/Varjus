@@ -1,23 +1,13 @@
 
 fn exceptionFunc()
 {
+
 	try{
-		try{ 
-			try{
-				try{ 
-					throw "exceptionFunc";
-				} catch(ex){ 
-					throw ex; 
-				}
-			} catch(ex) {
-				throw ex;
-			}
-		} catch(ex) {
-			throw ex;
-		}
-	} catch(ex) {
+		throw "exceptionFunc";
+	}catch(ex){
 		throw ex;
 	}
+
 }
 
 fn main()

@@ -38,7 +38,7 @@ constexpr auto GetTemplatedValue(IValue* t)
 {
 	if constexpr (std::is_same_v<ASSERT_BOOL, T>)
 		return t->ToBoolean();
-	if constexpr (std::is_same_v<ASSERT_INT, T>)
+	else if constexpr (std::is_same_v<ASSERT_INT, T>)
 		return t->ToInt();
 	else if constexpr (std::is_same_v<ASSERT_DOUBLE, T>)
 		return t->ToDouble();

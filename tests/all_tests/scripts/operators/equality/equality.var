@@ -1,0 +1,25 @@
+
+fn main()
+{
+	return [
+		1 == 1,
+		1 == true,
+		1 == 1.0,
+
+		1 == 2,
+		1 == false,
+		1 == 1.1,
+
+		"hello" == "hello",
+		"hello1" == "hello",
+
+		undefined == undefined,
+
+		main == main,
+
+		fn(){ return 1; } == fn() { return 1; },
+
+		[] == [],
+		{} == {}
+	];
+}
