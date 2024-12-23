@@ -5,16 +5,8 @@ ObjectInitializer CRuntimeExpression::EvaluateObject(CRuntimeContext* const ctx,
 {
 	ObjectInitializer init;
 	for (auto& [key, value] : obj) {
-
 		auto v = Evaluate(ctx, value.get());
-
-		init.emplace_back(
-			std::make_pair(
-				key,
-				v->HasOwner() ? v->Copy() : v
-			)
-		);
-
+		init.emplace_back(std::make_pair(key, v->HasOwner() ? v->Copy() : v));
 	}
 
 	return init;

@@ -17,6 +17,7 @@ CArrayValue::ArrayMethods CArrayValue::ConstructMethods()
 		{"filter",     {1u, &CArrayValue::Filter}},
 		{"contains",   {1u, &CArrayValue::Contains}},
 		{"reverse",    {0u, &CArrayValue::Reverse}},
+		{"join",	   {1u, &CArrayValue::Join}},
 
 	};
 }
@@ -264,4 +265,38 @@ IValue* CArrayValue::Reverse([[maybe_unused]] CRuntimeContext* const ctx, [[mayb
 	std::reverse(valuesAsCopy.begin(), valuesAsCopy.end());
 
 	return CArrayValue::Construct(std::move(valuesAsCopy));
+}
+
+std::string JoinStrings(const VectorOf<std::string>& strings, const std::string& delimiter) {
+	std::ostringstream result;
+	for (auto i = std::size_t(0); i < strings.size(); ++i) {
+		result << strings[i];
+		if (i != strings.size() - std::size_t(1)) {
+			result << delimiter;
+		}
+	}
+	return result.str();
+}
+
+IValue* CArrayValue::Join([[maybe_unused]] CRuntimeContext* const ctx, [[maybe_unused]] const IValues& newValues)
+{
+	auto& delimiterValue = newValues.front();
+	if (delimiterValue->Type() != t_string)
+		throw CRuntimeError(std::format("array.join expected a string parameter, but got \"{}\"", delimiterValue->TypeAsString()));
+
+	VectorOf<std::string> stringValues;
+	auto& vars = GetShared()->GetVariables();
+
+
+
+	for (auto& var : vars) {
+		auto& value = var->GetValue();
+		if (value->Type() != t_string)
+			throw CRuntimeError(std::format("array.join called on an array that contains \"{}\" instead of \"string\"", 
+				delimiterValue->TypeAsString()));
+
+		stringValues.push_back(value->ToString());
+	}
+
+	return CStringValue::Construct(JoinStrings(stringValues, delimiterValue->ToString()));
 }

@@ -2,7 +2,7 @@
 #include "operand_ternary.hpp"
 #include "linter/expressions/ast.hpp"
 #include "linter/expressions/expression.hpp"
-
+#include "linter/functions/stack.hpp"
 #include "linter/error.hpp"
 #include "linter/token.hpp"
 #include <cassert>
@@ -32,6 +32,9 @@ std::unique_ptr<IOperand> CLinterOperand::ParseTernary(std::optional<PairMatcher
 
 	if (hadEoe)
 		std::advance(m_iterPos, -1);
+
+	if (m_pOwner->IsHoisting())
+		return nullptr;
 
 	auto&& ptr = std::make_unique<CTernaryOperand>(ToAST(), ifTrue.ToMergedAST(), ifFalse.ToMergedAST());
 	ptr->m_oCodePosition = (*oldIter)->m_oSourcePosition;

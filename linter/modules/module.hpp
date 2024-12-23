@@ -58,6 +58,8 @@ private:
 	std::size_t m_uIndex{};
 public:
 
+	static void ResetEverythingStatic();
+
 	static CModule* CreateNewModule(const std::string& filePath);
 	static CModule* FindCachedModule(const std::string& filePath);
 	static RuntimeModules ToRuntimeModules();

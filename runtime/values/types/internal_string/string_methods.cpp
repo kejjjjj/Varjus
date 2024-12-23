@@ -105,7 +105,6 @@ IValue* CStringValue::Split([[maybe_unused]] CRuntimeContext* const ctx, const I
 
 	return CArrayValue::Construct(std::move(tokensAsValues));
 }
-
 std::string ReplaceAll(const std::string& str, const std::string& oldSub, const std::string& newSub) {
 	std::string result = str;
 	size_t pos = 0;

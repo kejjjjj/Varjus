@@ -13,6 +13,8 @@
 IValue* TEST_ExecuteFile(const std::string& srcFile)
 {
     try {
+        CModule::ResetEverythingStatic();
+
         const auto reader = VarjusIOReader("\\scripts\\" + srcFile);
 
         //std::cout << reader.GetFilePath() << '\n';

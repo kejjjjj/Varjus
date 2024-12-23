@@ -18,7 +18,7 @@ public:
 
 	[[nodiscard]] constexpr bool IsCoerceable() const noexcept override { return true; }
 	[[nodiscard]] constexpr bool IsArithmetic() const noexcept override { return true; }
-	[[nodiscard]] constexpr bool IsBooleanConvertible() const noexcept override { return false; }
+	[[nodiscard]] constexpr bool IsBooleanConvertible() const noexcept override { return true; }
 
 	[[nodiscard]] CDoubleValue* ToCDouble() override { return this; }
 

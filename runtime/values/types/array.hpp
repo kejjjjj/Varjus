@@ -100,6 +100,7 @@ private:
 	[[nodiscard]] IValue* Contains(CRuntimeContext* const ctx, const IValues& newValue);
 
 	[[nodiscard]] IValue* Reverse(CRuntimeContext* const ctx, const IValues& newValue);
+	[[nodiscard]] IValue* Join(CRuntimeContext* const ctx, const IValues& newValue);
 
 	//const CBuiltInMethod<CArrayValue>* m_pMethod{ nullptr };
 };

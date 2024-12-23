@@ -1,0 +1,8 @@
+
+import variable from "other.var";
+
+fn main()
+{
+	variable = 4;
+	return variable;
+}

@@ -40,14 +40,12 @@ Success CVariableDeclarationLinter::Parse()
 
 		const auto containsFunc = m_pOwner->m_FunctionManager->ContainsFunction(varName);
 
-
 		if (containsFunc || !scope->DeclareVariable((*m_iterPos)->Source())) {
 			CLinterErrors::PushError(std::format("\"{}\" already declared", (*m_iterPos)->Source()), (*m_iterPos)->m_oSourcePosition);
 			return failure;
 		}
 
 		m_sDeclaredVariable = m_pOwner->m_VariableManager->DeclareVariable(varName);
-
 	} else {
 		CLinterErrors::PushError("!(const auto scope = currentScope.lock())", (*m_iterPos)->m_oSourcePosition);
 		return failure;

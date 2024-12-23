@@ -54,6 +54,14 @@ std::unordered_map<std::string, CModule*> CModule::m_oCachedModules;
 DependencyGraph CModule::m_oDependencyGraph;
 std::unordered_set<std::string> CModule::m_oVisitedModules;
 
+void CModule::ResetEverythingStatic()
+{
+	m_oAllModules.clear();
+	m_oCachedModules.clear();
+	m_oDependencyGraph.clear();
+	m_oVisitedModules.clear();
+}
+
 CModule* CModule::CreateNewModule(const std::string& filePath)
 {
 	auto index = m_oAllModules.size();

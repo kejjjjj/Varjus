@@ -54,3 +54,51 @@ TEST_CASE("FactorialIterative(7)") {
 	retVal->Release();
 	REQUIRE(CProgramRuntime::HasLeaks() == false);
 }
+
+TEST_CASE("ReverseString(hello)") {
+
+	auto retVal = TEST_ExecuteFile(JP("reverse_string.var"));
+
+	REQUIRE(retVal != nullptr);
+	REQUIRE(retVal->Type() == t_string);
+	REQUIRE(retVal->ToString() == "olleh");
+
+	REQUIRE(retVal->HasOwner() == false);
+	retVal->Release();
+	REQUIRE(CProgramRuntime::HasLeaks() == false);
+}
+
+TEST_CASE("Counter(Hello, World!)") {
+
+	auto retVal = TEST_ExecuteFile(JP("counter.var"));
+
+	AssertArray(retVal, AssertArrayValue<ASSERT_INT>(t_int, { 13, 11 }));
+
+	REQUIRE(retVal->HasOwner() == false);
+	retVal->Release();
+	REQUIRE(CProgramRuntime::HasLeaks() == false);
+}
+
+TEST_CASE("MaxSubArray([-2, 1, -3, 4, -1, 2, 1, -5, 4])") {
+
+	auto retVal = TEST_ExecuteFile(JP("max_sub_array.var"));
+
+	REQUIRE(retVal != nullptr);
+	REQUIRE(retVal->Type() == t_int);
+	REQUIRE(retVal->ToInt() == 6);
+
+	REQUIRE(retVal->HasOwner() == false);
+	retVal->Release();
+	REQUIRE(CProgramRuntime::HasLeaks() == false);
+}
+
+TEST_CASE("GenerateParenthesis(3)") {
+
+	auto retVal = TEST_ExecuteFile(JP("generate_parenthesis.var"));
+
+	AssertArray(retVal, AssertArrayValue<ASSERT_STRING>(t_string, { "((()))","(()())","(())()","()(())","()()()" }));
+
+	REQUIRE(retVal->HasOwner() == false);
+	retVal->Release();
+	REQUIRE(CProgramRuntime::HasLeaks() == false);
+}

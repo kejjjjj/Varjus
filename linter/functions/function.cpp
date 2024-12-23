@@ -15,6 +15,7 @@
 #include "runtime/structure.hpp"
 
 #include <format>
+#include <algorithm>
 
 CFunctionLinter::CFunctionLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack)
 	: CLinterSingle(pos, end), m_pScope(scope), m_pOwner(stack),
@@ -223,11 +224,15 @@ std::unique_ptr<CRuntimeFunction> CFunctionLinter::ToRuntimeFunction() const
 VectorOf<CCrossModuleReference> CFunctionLinter::GetParameterIndices(CStack* stack) const{
 	VectorOf<CCrossModuleReference> refs;
 
+	
 	for (auto& [name, var] : stack->m_VariableManager->GetVariableIterator()) {
 
 		if (var->m_bParameter)
 			refs.push_back(*var);
 	}
+
+	std::sort(refs.begin(), refs.end(), [](const CCrossModuleReference& a, const CCrossModuleReference& b) {
+		return a.m_uIndex < b.m_uIndex; });
 
 	return refs;
 }
