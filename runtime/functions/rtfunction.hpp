@@ -30,6 +30,8 @@ public:
 		const VariableCaptures& captures, const CRuntimeFunction& func);
 
 	[[nodiscard]] CVariable* GetVariableByRef(const CCrossModuleReference& ref) const;
+
+
 private:
 	std::unordered_map<CCrossModuleReference, CVariable*, CCrossModuleReferenceHasher> m_oStack;
 };

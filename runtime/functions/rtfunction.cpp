@@ -66,11 +66,14 @@ IValue* CRuntimeFunction::Execute(CRuntimeContext* const ctx,
 		copy = CProgramRuntime::AcquireNewValue<IValue>();
 	}
 
-	for (auto& [index, value] : func.m_oStack) {
+	for (auto& [index, variable] : func.m_oStack) {
+
+		//did this function capture this?
+		const auto isCaptured = captures.contains(index);
 
 		//don't free captured values or they get destroyed and the next calls to this function fail
-		if(!captures.contains(index)) 
-			value->Release();
+		if(!isCaptured)
+			variable->Release();
 	}
 
 	return copy;
@@ -98,5 +101,6 @@ CFunction::CFunction(VectorOf<IValue*>& args,
 
 CVariable* CFunction::GetVariableByRef(const CCrossModuleReference& ref) const
 {
+	assert(m_oStack.contains(ref));
 	return m_oStack.at(ref);
 }

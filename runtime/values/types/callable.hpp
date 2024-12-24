@@ -25,10 +25,10 @@ public:
 	~CInternalCallableValue() = default;
 
 	void SetCaptures(CRuntimeContext* const ctx, const VectorOf<CCrossModuleReference>& captures);
-	auto& GetCaptures() { return m_oCaptures; }
+	[[nodiscard]] auto& GetCaptures() { return m_oCaptures; }
 
-	auto& GetCallable() noexcept { return m_pCallable; }
-	auto& GetCallable() const noexcept { return m_pCallable; }
+	[[nodiscard]] auto& GetCallable() noexcept { return m_pCallable; }
+	[[nodiscard]] auto& GetCallable() const noexcept { return m_pCallable; }
 
 	void Release();
 
@@ -37,7 +37,6 @@ public:
 #ifndef RUNNING_TESTS
 private:
 #endif
-
 	CRuntimeFunction* m_pCallable{ nullptr };
 	std::unordered_map<CCrossModuleReference, CVariable*, CCrossModuleReferenceHasher> m_oCaptures;
 	std::size_t m_uModule{};

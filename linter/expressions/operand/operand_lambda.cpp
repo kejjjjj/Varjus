@@ -40,6 +40,9 @@ std::unique_ptr<IOperand> CLinterOperand::ParseLambda()
 
 	std::advance(m_iterPos, 1);
 
+	if (m_pOwner->IsHoisting())
+		return nullptr;
+
 	fnLinter.m_oFunctionName = "lambda";
 	fnLinter.m_pThisStack->m_pFunction = fnLinter.ToFunction();
 

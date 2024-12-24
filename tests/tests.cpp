@@ -17,7 +17,7 @@ IValue* TEST_ExecuteFile(const std::string& srcFile)
 
         const auto reader = VarjusIOReader("\\scripts\\" + srcFile);
 
-        //std::cout << reader.GetFilePath() << '\n';
+        std::cout << reader.GetFilePath() << '\n';
 
         auto uniqueTokens = CBufferTokenizer::ParseFileFromFilePath(reader.GetFilePath());
         auto tokens = CBufferTokenizer::ConvertTokensToReadOnly(uniqueTokens);

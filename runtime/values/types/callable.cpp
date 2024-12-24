@@ -76,7 +76,9 @@ void CInternalCallableValue::Release()
 	auto end = m_oCaptures.end();
 	for (auto it = m_oCaptures.begin(); it != end; ) {
 
-		if (!it->second->GetValue() || it->second->Release()) {
+		assert(it->second->RefCount() != 0);
+
+		if (it->second->Release()) {
 			it = m_oCaptures.erase(it);
 		} else {
 			++it; 
