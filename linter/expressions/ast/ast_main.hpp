@@ -31,6 +31,8 @@ class TernaryASTNode;
 class LambdaASTNode;
 class OperatorASTNode;
 
+class CMemory;
+
 template<typename T>
 concept Pointer = std::is_pointer_v<T> || std::is_reference_v<T>;
 using RuntimeFunction = std::unique_ptr<CRuntimeFunction>;
@@ -61,6 +63,8 @@ public:
 
 	[[nodiscard]] virtual constexpr const OperatorASTNode* GetOperator() const noexcept { return nullptr; }
 	[[nodiscard]] virtual constexpr const VariableASTNode* GetVariable() const noexcept { return nullptr; }
+	[[nodiscard]] virtual constexpr VariableASTNode* GetVariable() noexcept { return nullptr; }
+
 	[[nodiscard]] virtual constexpr const ConstantASTNode* GetConstant() const noexcept { return nullptr; }
 	[[nodiscard]] virtual constexpr const FunctionASTNode* GetFunction() const noexcept { return nullptr; }
 	[[nodiscard]] virtual constexpr const ArrayASTNode* GetArray() const noexcept { return nullptr; }
@@ -82,17 +86,18 @@ public:
 	ASTNode right;
 
 public:
-	[[nodiscard]] static std::unique_ptr<AbstractSyntaxTree> CreateAST(VectorOf<CLinterOperand*>& operands, VectorOf<CLinterOperator*>& operators);
-
-protected:
-	[[nodiscard]] std::size_t GetLeftBranchDepth() const noexcept;
+	[[nodiscard]] static std::unique_ptr<AbstractSyntaxTree> CreateAST(CMemory* const owner,
+		VectorOf<CLinterOperand*>& operands, VectorOf<CLinterOperator*>& operators);
 
 private:
 
 	[[nodiscard]] static std::unique_ptr<AbstractSyntaxTree> GetLeaf(VectorOf<CLinterOperand*>& operands, VectorOf<CLinterOperator*>& operators);
 	[[nodiscard]] static OperatorIterator FindLowestPriorityOperator(VectorOf<CLinterOperator*>& operators);
 
-	void CreateRecursively(VectorOf<CLinterOperand*>& operands, VectorOf<CLinterOperator*>& operators);
+	void CreateRecursively(CMemory* const owner, VectorOf<CLinterOperand*>& operands, VectorOf<CLinterOperator*>& operators);
+	bool IsSelfReferencingCapture(const AbstractSyntaxTree* lhs, const AbstractSyntaxTree* rhs);
+
+
 	CodePosition m_oApproximatePosition;
 };
 
@@ -110,8 +115,10 @@ public:
 	[[nodiscard]] constexpr bool IsVariable() const noexcept override { return true; }
 
 	[[nodiscard]] constexpr const VariableASTNode* GetVariable() const noexcept override { return this; }
+	[[nodiscard]] constexpr VariableASTNode* GetVariable() noexcept override { return this; }
 
 	bool m_bGlobalVariable{ false };
+	bool m_bSelfCapturing{ false };
 private:
 
 };

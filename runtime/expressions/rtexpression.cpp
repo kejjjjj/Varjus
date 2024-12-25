@@ -82,7 +82,7 @@ IValue* CRuntimeExpression::Evaluate(CRuntimeContext* const ctx, const AbstractS
 
 inline IValue* EvaluateVariable(CRuntimeContext* const ctx, const VariableASTNode* const var)
 {
-	IValue* v = nullptr;
+	CVariable* variable{ nullptr };
 
 	if (var->m_bGlobalVariable) {
 		auto activeModule = var->m_bBelongsToDifferentModule
@@ -90,14 +90,19 @@ inline IValue* EvaluateVariable(CRuntimeContext* const ctx, const VariableASTNod
 			: ctx->m_pModule;
 
 		assert(activeModule);
-		v = activeModule->GetGlobalVariableByIndex(var->m_uIndex)->GetValue();
+		variable = activeModule->GetGlobalVariableByIndex(var->m_uIndex);
 	}
 	else {
 		assert(ctx->m_pFunction);
-		v = ctx->m_pFunction->GetVariableByRef(*var)->GetValue();
+		variable = ctx->m_pFunction->GetVariableByRef(*var);
 	}
-	assert(v && v->HasOwner());
-	return v;
+
+	assert(variable->GetValue() && variable->GetValue()->HasOwner());
+
+	if (var->m_bSelfCapturing)
+		variable->m_bSelfCapturing = true;
+
+	return variable->GetValue();
 }
 inline IValue* EvaluateFunction(CRuntimeContext* const ctx, const FunctionASTNode* const var)
 {

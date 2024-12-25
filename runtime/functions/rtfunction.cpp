@@ -61,7 +61,15 @@ IValue* CRuntimeFunction::Execute(CRuntimeContext* const ctx,
 	IValue* copy = nullptr;
 
 	if (returnVal) {
-		copy = returnVal->HasOwner() ? returnVal->Copy() : returnVal;
+
+		CVariable* owner = returnVal->GetOwner();
+		if (owner && owner->m_bSelfCapturing) {
+			owner->RefCount()++;
+			copy = returnVal;
+		}
+		else {
+			copy = returnVal->HasOwner() ? returnVal->Copy() : returnVal;
+		}
 	} else {
 		copy = CProgramRuntime::AcquireNewValue<IValue>();
 	}
@@ -69,10 +77,8 @@ IValue* CRuntimeFunction::Execute(CRuntimeContext* const ctx,
 	for (auto& [index, variable] : func.m_oStack) {
 
 		//did this function capture this?
-		const auto isCaptured = captures.contains(index);
-
 		//don't free captured values or they get destroyed and the next calls to this function fail
-		if(!isCaptured)
+		if(!captures.contains(index))
 			variable->Release();
 	}
 

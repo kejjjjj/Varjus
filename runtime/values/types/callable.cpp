@@ -63,22 +63,30 @@ void CInternalCallableValue::SetCaptures(CRuntimeContext* const ctx, const Vecto
 			? CProgramRuntime::GetModuleByIndex(var.m_uModuleIndex)
 			: ctx->m_pModule;
 
+
+		CVariable* variable{ nullptr };
+
 		if (var.m_bBelongsToDifferentModule) {
-			m_oCaptures[var] = activeModule->GetGlobalVariableByIndex(var.m_uIndex)->Copy();
+			variable = activeModule->GetGlobalVariableByIndex(var.m_uIndex);
 		}
 		else {
-			m_oCaptures[var] = ctx->m_pFunction->GetVariableByRef(var)->Copy();
+			variable = ctx->m_pFunction->GetVariableByRef(var);
 		}
+
+		m_oCaptures[var] = variable->m_bSelfCapturing ? variable : variable->Copy();
+		
 	}
 }
 void CInternalCallableValue::Release()
 {
+
 	auto end = m_oCaptures.end();
 	for (auto it = m_oCaptures.begin(); it != end; ) {
+		auto& variable = it->second;
 
-		assert(it->second->RefCount() != 0);
+		//assert(variable->RefCount() != 0);
 
-		if (it->second->Release()) {
+		if (variable->RefCount() == 0 || variable->Release()) {
 			it = m_oCaptures.erase(it);
 		} else {
 			++it; 

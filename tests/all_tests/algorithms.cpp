@@ -92,13 +92,13 @@ TEST_CASE("MaxSubArray([-2, 1, -3, 4, -1, 2, 1, -5, 4])") {
 	REQUIRE(CProgramRuntime::HasLeaks() == false);
 }
 
-//TEST_CASE("GenerateParenthesis(3)") {
-//
-//	auto retVal = TEST_ExecuteFile(JP("generate_parenthesis.var"));
-//
-//	AssertArray(retVal, AssertArrayValue<ASSERT_STRING>(t_string, { "((()))","(()())","(())()","()(())","()()()" }));
-//
-//	REQUIRE(retVal->HasOwner() == false);
-//	retVal->Release();
-//	REQUIRE(CProgramRuntime::HasLeaks() == false);
-//}
+TEST_CASE("GenerateParenthesis(3)") {
+
+	auto retVal = TEST_ExecuteFile(JP("generate_parenthesis.var"));
+
+	AssertArray(retVal, AssertArrayValue<ASSERT_STRING>(t_string, { "((()))","(()())","(())()","()(())","()()()" }));
+
+	REQUIRE(retVal->HasOwner() == false);
+	retVal->Release();
+	REQUIRE(CProgramRuntime::HasLeaks() == false);
+}

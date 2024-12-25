@@ -33,11 +33,11 @@ bool CVariable::Release()
 		return false;
 	}
 
-
 	auto& v = GetValue();
 	assert(v && v->HasOwner());
 	v->Release();
 	v = nullptr;
+	m_bSelfCapturing = false;
 	CProgramRuntime::FreeVariable(this);	
 	return true;
 }

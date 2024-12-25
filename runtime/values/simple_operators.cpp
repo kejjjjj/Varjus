@@ -38,7 +38,7 @@ IValue* OP_ASSIGNMENT(IValue* lhs, IValue* rhs)
 			break;
 		case t_callable:
 			assert(rhs->ToCallable());
-			variable->SetValue(rhs->ToCallable());
+			variable->SetValue(rhs->ToCallable()->Copy());
 			break;
 		case t_array:
 			assert(rhs->ToArray());

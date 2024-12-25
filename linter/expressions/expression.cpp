@@ -131,7 +131,7 @@ std::unique_ptr<AbstractSyntaxTree> CLinterExpression::ToAST() const
 	}
 
 	assert(operands.size() == operators.size() + 1u);
-	return AbstractSyntaxTree::CreateAST(operands, operators);
+	return AbstractSyntaxTree::CreateAST(m_pOwner, operands, operators);
 }
 std::unique_ptr<AbstractSyntaxTree> CLinterExpression::ToMergedAST() const
 {

@@ -9,15 +9,16 @@
 #include "linter/functions/stack.hpp"
 #include "linter/functions/function.hpp"
 #include "linter/modules/references.hpp"
+#include "linter/error.hpp"
 
 #include "linter/token.hpp"
 
 #include <cassert>
-#include <sstream>
 
 AbstractSyntaxTree::~AbstractSyntaxTree() = default;
 
-std::unique_ptr<AbstractSyntaxTree> AbstractSyntaxTree::CreateAST(VectorOf<CLinterOperand*>& operands, VectorOf<CLinterOperator*>& operators)
+std::unique_ptr<AbstractSyntaxTree> AbstractSyntaxTree::CreateAST(CMemory* const owner,
+	VectorOf<CLinterOperand*>& operands, VectorOf<CLinterOperator*>& operators)
 {
 	assert(!operands.empty());
 
@@ -27,7 +28,7 @@ std::unique_ptr<AbstractSyntaxTree> AbstractSyntaxTree::CreateAST(VectorOf<CLint
 		auto&& itr = FindLowestPriorityOperator(operators);
 		root = std::make_unique<OperatorASTNode>((*itr)->GetToken()->m_oSourcePosition, (*itr)->GetPunctuation());
 	}
-	root->CreateRecursively(operands, operators);
+	root->CreateRecursively(owner, operands, operators);
 	return root;
 }
 
@@ -47,7 +48,8 @@ std::unique_ptr<AbstractSyntaxTree> AbstractSyntaxTree::GetLeaf(VectorOf<CLinter
 	return node;
 }
 
-void AbstractSyntaxTree::CreateRecursively(VectorOf<CLinterOperand*>& operands, VectorOf<CLinterOperator*>& operators)
+void AbstractSyntaxTree::CreateRecursively(CMemory* const owner, 
+	VectorOf<CLinterOperand*>& operands, VectorOf<CLinterOperator*>& operators)
 {
 	if (operands.empty()) {
 		assert(operators.empty());
@@ -79,7 +81,7 @@ void AbstractSyntaxTree::CreateRecursively(VectorOf<CLinterOperand*>& operands, 
 		if (left = GetLeaf(lhsOperands, lhsOperators), !left) {
 			const OperatorIterator l = FindLowestPriorityOperator(lhsOperators);
 			left = std::make_shared<OperatorASTNode>((*l)->GetToken()->m_oSourcePosition, (*l)->GetPunctuation());
-			left->CreateRecursively(lhsOperands, lhsOperators);
+			left->CreateRecursively(owner, lhsOperands, lhsOperators);
 
 
 		}
@@ -88,9 +90,17 @@ void AbstractSyntaxTree::CreateRecursively(VectorOf<CLinterOperand*>& operands, 
 		if (right = GetLeaf(rhsOperands, rhsOperators), !right) {
 			const OperatorIterator l = FindLowestPriorityOperator(rhsOperators);
 			right = std::make_shared<OperatorASTNode>((*l)->GetToken()->m_oSourcePosition, (*l)->GetPunctuation());
-			right->CreateRecursively(rhsOperands, rhsOperators);
+			right->CreateRecursively(owner, rhsOperands, rhsOperators);
 
 		}
+	}
+
+	//really the only smart way to detect a lambda that captures itself
+	//this bug is a piece of shit
+	if (owner->IsStack() && IsSelfReferencingCapture(left.get(), right.get())) {
+		left->GetVariable()->m_bSelfCapturing = true;
+		//CLinterErrors::PushError("self capturing local lambdas aren't supported yet", right->m_oApproximatePosition);
+		//return;
 	}
 
 }
@@ -112,29 +122,31 @@ OperatorIterator AbstractSyntaxTree::FindLowestPriorityOperator(VectorOf<CLinter
 
 	return lowestPriorityOperatorItr;
 }
-std::size_t AbstractSyntaxTree::GetLeftBranchDepth() const noexcept
+
+bool AbstractSyntaxTree::IsSelfReferencingCapture(const AbstractSyntaxTree* lhs, const AbstractSyntaxTree* rhs)
 {
-	if (!left && !right)
-		return 0u;
+	//logic: lhs = rhs and rhs is a lambda and rhs captures lhs
+	if (!lhs || !rhs)
+		return false;
 
-	std::size_t depth{ 1u };
+	if (!lhs->IsVariable())
+		return false;
 
-	auto ptr = this;
+	if (!rhs->IsLambda())
+		return false;
 
-	while (ptr) {
+	auto variable = lhs->GetVariable();
+	auto lambda = rhs->GetLambda();
+	bool containsLHS = false;
 
-		std::size_t lDepth = ptr->left ? ptr->left->GetLeftBranchDepth() : 0u;
-		std::size_t rDepth = ptr->right ? ptr->right->GetLeftBranchDepth() : 0u;
-
-		if (!lDepth && !rDepth)
+	for (auto& c : lambda->m_oVariableCaptures) {
+		if (*variable == c) {
+			containsLHS = true;
 			break;
-
-
-		depth++;
-		ptr = lDepth > rDepth ? &*ptr->left : &*ptr->right;
+		}
 	}
 
-	return depth;
+	return containsLHS;
 }
 
 /***********************************************************************
