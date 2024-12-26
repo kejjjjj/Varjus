@@ -83,7 +83,7 @@ void CInternalCallableValue::Release()
 
 	for (auto it = m_oCaptures.begin(); it != m_oCaptures.end(); ) {
 
-		auto& variable = it->second;
+		auto& [ref, variable] = *it;
 
 		if (variable->m_bSelfCapturing && variable->RefCount() == 0 || variable->Release()) {
 

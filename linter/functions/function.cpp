@@ -183,7 +183,7 @@ bool CFunctionLinter::IsFn(const CToken* token) const noexcept
 {
 	return token && token->Type() == tt_fn;
 }
-bool CFunctionLinter::IsIdentifier(const CToken* token) const noexcept
+bool CFunctionLinter::IsIdentifier(const CToken* token) noexcept
 {
 	return token && token->Type() == tt_name;
 }

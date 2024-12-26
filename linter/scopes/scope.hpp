@@ -39,6 +39,7 @@ public:
 	[[nodiscard]] static CScope* DeleteScope(CScope* scope);
 
 	[[nodiscard]] Success DeclareVariable(const std::string& var);
+	[[nodiscard]] bool VariableExists(const std::string& var) const;
 
 	constexpr void MakeLoopScope(bool s = true) noexcept { m_bIsWithinLoop = s; }
 	[[nodiscard]] bool IsLoopScope() const noexcept;
@@ -51,7 +52,6 @@ public:
 	IRuntimeStructure* GetLatestInstruction() const noexcept;
 
 private:
-	[[nodiscard]] bool VariableExists(const std::string& var) const;
 
 	VectorOf<RuntimeBlock> m_oInstructions;
 

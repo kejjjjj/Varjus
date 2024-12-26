@@ -1,0 +1,15 @@
+fn main()
+{
+	return [
+		typeof(undefined),
+		typeof(false),
+		typeof(0),
+		typeof(1.0),
+		typeof("aaa"),
+		typeof(main),
+		typeof(fn(){return 1;}),
+		typeof([]),
+		typeof({})
+	];
+
+}

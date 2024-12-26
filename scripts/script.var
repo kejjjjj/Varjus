@@ -2,20 +2,15 @@
 
 fn doRecursive()
 {
-	
-	let recursiveLambda = fn(v) {
-		if(v < 10){
-			return recursiveLambda(v + 1);
-		}
 
-		return v;
+	let recursiveLambda = fn() {
+		return recursiveLambda;
 	};
 
-	return [recursiveLambda, recursiveLambda];
+	return recursiveLambda;
 }
 
 fn main()
 {
-	let arr = doRecursive();
-	return {a: arr[0](0), b: arr[1](0)};
+	return typeof(doRecursive()()()()()()()()()()()());
 }

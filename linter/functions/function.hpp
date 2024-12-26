@@ -7,10 +7,18 @@
 class IRuntimeStructure;
 struct CFunctionBlock;
 
+struct CParameterData
+{
+	std::string m_sName;
+	CodePosition m_oPosition;
+};
+
 class CFunctionLinter final : public CLinterSingle<CToken>, protected IRuntimeBlock
 {
 	NONCOPYABLE(CFunctionLinter);
 	friend class CLinterOperand;
+	friend class CLambdaChecker;
+
 public:
 	explicit CFunctionLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const owner);
 
@@ -28,6 +36,7 @@ public:
 	[[nodiscard]] VectorOf<CCrossModuleReference> GetSharedOwnershipVariables(CStack* stack) const;
 
 	[[nodiscard]] constexpr auto& GetName() const noexcept { return m_oFunctionName; }
+	[[nodiscard]] static bool IsIdentifier(const CToken* token) noexcept;
 
 private:
 	[[nodiscard]] Success ParseFunctionDeclaration();
@@ -36,7 +45,6 @@ private:
 
 
 	[[nodiscard]] bool IsFn(const CToken* token) const noexcept;
-	[[nodiscard]] bool IsIdentifier(const CToken* token) const noexcept;
 
 	WeakScope m_pScope;
 	CMemory* const m_pOwner;
