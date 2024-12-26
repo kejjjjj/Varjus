@@ -61,15 +61,7 @@ IValue* CRuntimeFunction::Execute(CRuntimeContext* const ctx,
 	IValue* copy = nullptr;
 
 	if (returnVal) {
-
-		CVariable* owner = returnVal->GetOwner();
-		if (owner && owner->m_bSelfCapturing) {
-			owner->RefCount()++;
-			copy = returnVal;
-		}
-		else {
-			copy = returnVal->HasOwner() ? returnVal->Copy() : returnVal;
-		}
+		copy = returnVal->HasOwner() ? returnVal->Copy() : returnVal;
 	} else {
 		copy = CProgramRuntime::AcquireNewValue<IValue>();
 	}

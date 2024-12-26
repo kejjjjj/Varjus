@@ -2,7 +2,7 @@
 
 fn doRecursive()
 {
-	
+
 	let recursiveLambda = fn(v) {
 		if(v < 10){
 			return recursiveLambda(v + 1);
@@ -11,11 +11,10 @@ fn doRecursive()
 		return v;
 	};
 
-	return [recursiveLambda, recursiveLambda];
+	return recursiveLambda;
 }
 
 fn main()
 {
-	let arr = doRecursive();
-	return {a: arr[0](0), b: arr[1](0)};
+	return doRecursive()(0);
 }

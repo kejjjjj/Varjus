@@ -16,13 +16,14 @@ IValue* CCallableValue::Copy()
 	for (auto& [k, va] : var->GetCaptures())
 		va->RefCount()++; //increase ref count so that these don't get destroyed
 
+	//if (m_pOwner && m_pOwner->m_bSelfCapturing)
+	//	m_pOwner->RefCount()++;
+
 	return ptr;
 
 }
 void CCallableValue::Release()
 {
-	if (SharedRefCount() == 1) {
-	}
 	Get().Release(); //always decrement ref count
 
 	ReleaseInternal();
@@ -80,13 +81,15 @@ void CInternalCallableValue::SetCaptures(CRuntimeContext* const ctx, const Vecto
 void CInternalCallableValue::Release()
 {
 
-	auto end = m_oCaptures.end();
-	for (auto it = m_oCaptures.begin(); it != end; ) {
+	for (auto it = m_oCaptures.begin(); it != m_oCaptures.end(); ) {
+
 		auto& variable = it->second;
 
-		//assert(variable->RefCount() != 0);
+		if (variable->m_bSelfCapturing && variable->RefCount() == 0 || variable->Release()) {
 
-		if (variable->RefCount() == 0 || variable->Release()) {
+			if (m_oCaptures.empty()) // why is this needed???
+				break;
+
 			it = m_oCaptures.erase(it);
 		} else {
 			++it; 

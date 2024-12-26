@@ -77,3 +77,16 @@ TEST_CASE("Closure used in a closure (variable context)") {
 	retVal->Release();
 	REQUIRE(CProgramRuntime::HasLeaks() == false);
 }
+
+TEST_CASE("Self capturing recursive closure") {
+
+	auto retVal = TEST_ExecuteFile(JP("self_capturing_closure.var"));
+
+	REQUIRE(retVal != nullptr);
+	REQUIRE(retVal->Type() == t_int);
+	REQUIRE(retVal->ToInt() == 10);
+
+	REQUIRE(retVal->HasOwner() == false);
+	retVal->Release();
+	REQUIRE(CProgramRuntime::HasLeaks() == false);
+}

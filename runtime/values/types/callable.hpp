@@ -33,7 +33,6 @@ public:
 	void Release();
 
 	constexpr void SetModuleIndex(std::size_t mIndex) noexcept { m_uModule = mIndex; m_bRequiresModuleChange = true; }
-
 #ifndef RUNNING_TESTS
 private:
 #endif
@@ -41,6 +40,7 @@ private:
 	std::unordered_map<CCrossModuleReference, CVariable*, CCrossModuleReferenceHasher> m_oCaptures;
 	std::size_t m_uModule{};
 	bool m_bRequiresModuleChange{ false };
+
 };
 
 class CCallableValue final : public CValue<CInternalCallableValue>

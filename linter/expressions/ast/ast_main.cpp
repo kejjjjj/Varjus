@@ -96,9 +96,12 @@ void AbstractSyntaxTree::CreateRecursively(CMemory* const owner,
 	}
 
 	//really the only smart way to detect a lambda that captures itself
-	//this bug is a piece of shit
+	
 	if (owner->IsStack() && IsSelfReferencingCapture(left.get(), right.get())) {
 		left->GetVariable()->m_bSelfCapturing = true;
+
+		//this is how desperate I got...
+		//this bug was a piece of shit
 		//CLinterErrors::PushError("self capturing local lambdas aren't supported yet", right->m_oApproximatePosition);
 		//return;
 	}
