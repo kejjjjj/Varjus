@@ -2,13 +2,19 @@
 #include "operand_expression.hpp"
 #include "linter/expressions/expression.hpp"
 #include "linter/expressions/ast.hpp"
-
 #include "linter/token.hpp"
 
-std::unique_ptr<IOperand> CLinterOperand::ParseParentheses()
-{
-	std::advance(m_iterPos, 1); // skip (
+#include "operand_lambda.hpp"
 
+std::unique_ptr<IOperand> CLinterOperand::ParseParentheses(std::optional<PairMatcher>& eoe)
+{
+	CLambdaChecker checker(m_iterPos, m_iterEnd, m_pScope, m_pOwner);
+
+	if (checker.Parse(eoe)) {
+		return checker.Result();
+	}
+
+	std::advance(m_iterPos, 1); // skip (
 
 	const auto& oldIter = m_iterPos;
 

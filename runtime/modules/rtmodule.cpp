@@ -6,6 +6,7 @@
 #include "runtime/variables.hpp"
 #include "runtime/structure.hpp"
 #include "runtime/values/types/internal_objects/console.hpp"
+#include "runtime/values/types/internal_objects/math.hpp"
 
 CRuntimeModule::CRuntimeModule(CModule& ctx) :
 	m_oGlobalScopeInstructions(std::move(ctx.m_oGlobalScopeInstructions)),
@@ -26,7 +27,8 @@ void CRuntimeModule::SetupGlobalVariables() {
 	m_oGlobalVariables[rto_console]->SetValue(CConsoleValue::Construct());
 	m_oGlobalVariables[rto_console]->GetValue()->MakeImmutable();
 
-
+	m_oGlobalVariables[rto_math]->SetValue(CMathValue::Construct());
+	m_oGlobalVariables[rto_math]->GetValue()->MakeImmutable();
 
 	for (auto& var : m_oGlobalVariables | std::views::drop(rto_count)) {
 		var->SetValue(CProgramRuntime::AcquireNewValue<IValue>());

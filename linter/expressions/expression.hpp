@@ -53,7 +53,6 @@ public:
 	[[nodiscard]] std::unique_ptr<AbstractSyntaxTree> ToAST() const;
 
 	[[nodiscard]] RuntimeBlock ToRuntimeObject() const override;
-
 private:
 
 	[[nodiscard]] bool EndOfExpression(const std::optional<PairMatcher>& eoe) const noexcept;

@@ -134,3 +134,41 @@ TEST_CASE("Returns array length of [1,2,3]") {
 	retVal->Release();
 	REQUIRE(CProgramRuntime::HasLeaks() == false);
 }
+
+TEST_CASE("Temporary arrow function () => 2") {
+
+	auto retVal = TEST_ExecuteFile(JP("arrow_function.var"));
+
+	REQUIRE(retVal != nullptr);
+	REQUIRE(retVal->Type() == t_callable);
+
+	REQUIRE(retVal->HasOwner() == false);
+	retVal->Release();
+	REQUIRE(CProgramRuntime::HasLeaks() == false);
+}
+
+TEST_CASE("Temporary arrow function call () => 2") {
+
+	auto retVal = TEST_ExecuteFile(JP("arrow_function_call.var"));
+
+	REQUIRE(retVal != nullptr);
+	REQUIRE(retVal->Type() == t_int);
+	REQUIRE(retVal->ToInt() == 2);
+
+	REQUIRE(retVal->HasOwner() == false);
+	retVal->Release();
+	REQUIRE(CProgramRuntime::HasLeaks() == false);
+}
+
+TEST_CASE("Temporary arrow function call with args ((a, b) => a + b)(2, 4)") {
+
+	auto retVal = TEST_ExecuteFile(JP("arrow_function_call_with_args.var"));
+
+	REQUIRE(retVal != nullptr);
+	REQUIRE(retVal->Type() == t_int);
+	REQUIRE(retVal->ToInt() == 6);
+
+	REQUIRE(retVal->HasOwner() == false);
+	retVal->Release();
+	REQUIRE(CProgramRuntime::HasLeaks() == false);
+}

@@ -7,6 +7,7 @@
 #include "linter/scopes/scope.hpp"
 #include "linter/error.hpp"
 #include "linter/expressions/expression.hpp"
+#include "linter/statements/return/return.hpp"
 
 #include "runtime/structure.hpp"
 
@@ -88,16 +89,25 @@ Success CLambdaChecker::Parse(std::optional<PairMatcher>& m_oEndOfExpression, CE
 	return success;
 }
 Success CLambdaChecker::ParseInternal(
-	std::optional<PairMatcher>& m_oEndOfExpression, CExpressionList* expression, [[maybe_unused]] EvaluationType evalType)
+	std::optional<PairMatcher>& m_oEndOfExpression, [[maybe_unused]] CExpressionList* expression, [[maybe_unused]] EvaluationType evalType)
 {
 	//short lambdas must start with () parms
 	if (EndOfExpression(m_oEndOfExpression) || (*m_iterPos)->IsOperator(p_par_open) == false)
 		return failure;
 
+	auto& oldIter = m_iterPos;
+
 	std::advance(m_iterPos, 1); // skip (
 
-	if (!ParseParameters())
+	if (IsEndOfBuffer())
 		return failure;
+
+	if ((*m_iterPos)->IsOperator(p_par_close) == false) {
+		if (!ParseParameters())
+			return failure;
+	} else {
+		std::advance(m_iterPos, 1); // skip )
+	}
 
 	if (!IsArrowFunction())
 		return failure; // just parentheses with a list of identifiers... ?
@@ -113,7 +123,7 @@ Success CLambdaChecker::ParseInternal(
 	fnLinter.m_oParameters = m_oParameters;
 
 	for (auto& param : m_oParameters) {
-		auto var = newStack->m_VariableManager->DeclareVariable((*m_iterPos)->Source());
+		auto var = newStack->m_VariableManager->DeclareVariable(param);
 		var->m_bParameter = true;
 
 		if (!newScope->DeclareVariable(param)) {
@@ -130,13 +140,29 @@ Success CLambdaChecker::ParseInternal(
 
 		CLinterExpression linter(m_iterPos, m_iterEnd, newScope, newStack.get());
 
-		if (!linter.Parse(std::nullopt, expression, evaluate_everything)) {
+		if (!linter.Parse(m_oEndOfExpression)) {
 			return failure;
 		}
 
-		newScope->AddInstruction(linter.ToRuntimeObject());
+		newScope->AddInstruction(std::make_unique<CRuntimeReturnStatement>(linter.ToMergedAST()));
+		if(m_oEndOfExpression)
+			std::advance(m_iterPos, -1); // go back one token
 
+	} else {
+		if (!fnLinter.ParseFunctionScope()) {
+			return failure;
+		}
+		std::advance(m_iterPos, 1); // skip }
 	}
+
+	fnLinter.m_pThisStack->m_pFunction = fnLinter.ToFunction();
+
+	VectorOf<CCrossModuleReference> refs = m_pOwner->IsStack()
+		? fnLinter.GetSharedOwnershipVariables(m_pOwner->ToStack())
+		: VectorOf<CCrossModuleReference>{};
+
+	m_pOperand = std::make_unique<CLambdaOperand>(fnLinter.ToRuntimeFunction(), std::move(refs));
+	m_pOperand->m_oCodePosition = (*oldIter)->m_oSourcePosition;
 
 	return success;
 

@@ -6,6 +6,9 @@ namespace __method__internal {
 	[[nodiscard]] IValue* CreateUndefinedVar();
 }
 
+#define FORWARD_DECLARE_METHOD(Name) \
+[[nodiscard]] IValue* Name(CRuntimeContext* const ctx, const IValues& values)
+
 template<class T>
 class CDataTypeMethods
 {

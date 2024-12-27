@@ -1,16 +1,5 @@
 
-
-fn doRecursive()
-{
-
-	let recursiveLambda = fn() {
-		return recursiveLambda;
-	};
-
-	return recursiveLambda;
-}
-
 fn main()
 {
-	return typeof(doRecursive()()()()()()()()()()()());
+	return console.log(console.log("aaaa"));
 }

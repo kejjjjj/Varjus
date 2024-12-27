@@ -4,6 +4,8 @@
 #include "structure.hpp"
 #include "values/types/internal/builtin_methods.hpp"
 #include "values/types/internal_objects/console.hpp"
+#include "values/types/internal_objects/math.hpp"
+
 #include "values/types/types.hpp"
 #include "variables.hpp"
 
@@ -23,6 +25,7 @@ template<> COwningObjectPool<CCallableValue>      CProgramRuntime::m_oValuePool<
 template<> COwningObjectPool<CArrayValue>         CProgramRuntime::m_oValuePool<CArrayValue>   (VALUEPOOL_INIT_SIZE);
 template<> COwningObjectPool<CObjectValue>        CProgramRuntime::m_oValuePool<CObjectValue>  (VALUEPOOL_INIT_SIZE);
 template<> COwningObjectPool<CConsoleValue>       CProgramRuntime::m_oValuePool<CConsoleValue> (VALUEPOOL_INIT_SIZE);
+template<> COwningObjectPool<CMathValue>          CProgramRuntime::m_oValuePool<CMathValue>(VALUEPOOL_INIT_SIZE);
 
 RuntimeModules CProgramRuntime::m_oModules;
 const CodePosition* CProgramRuntime::m_pCodePosition{ nullptr };

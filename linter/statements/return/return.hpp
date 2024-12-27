@@ -11,7 +11,6 @@ struct CFunctionBlock;
 class CReturnStatementLinter final : public CStatementLinter, protected IRuntimeBlock
 {
 	NONCOPYABLE(CReturnStatementLinter);
-
 public:
 	explicit CReturnStatementLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const owner);
 	~CReturnStatementLinter();

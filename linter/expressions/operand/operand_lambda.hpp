@@ -33,8 +33,9 @@ struct CLambdaOperand final : public IOperand
 //short lambda (=>) ambiguity checker class
 //(args) => return 1;
 //(args) => {}
-class CLambdaChecker final : public CLinterSingle<CToken>, protected IRuntimeBlock
+class CLambdaChecker final : public CLinterSingle<CToken>
 {
+	NONCOPYABLE(CLambdaChecker);
 public:
 	CLambdaChecker() = delete;
 	explicit CLambdaChecker(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack);
@@ -44,6 +45,8 @@ public:
 		std::optional<PairMatcher>& m_oEndOfExpression,
 		CExpressionList* expression = nullptr,
 		EvaluationType evalType = evaluate_everything);
+
+	[[nodiscard]] inline std::unique_ptr<CLambdaOperand> Result() noexcept { return std::move(m_pOperand); }
 
 private:
 
@@ -60,4 +63,5 @@ private:
 	WeakScope m_pScope;
 	CMemory* const m_pOwner;
 	VectorOf<std::string> m_oParameters;
+	std::unique_ptr<CLambdaOperand> m_pOperand;
 };

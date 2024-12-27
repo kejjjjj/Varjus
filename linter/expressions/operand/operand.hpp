@@ -58,7 +58,7 @@ public:
 
 private:
 	[[nodiscard]] std::unique_ptr<IOperand> ParseImmediate();
-	[[nodiscard]] std::unique_ptr<IOperand> ParseParentheses();
+	[[nodiscard]] std::unique_ptr<IOperand> ParseParentheses(std::optional<PairMatcher>&);
 	[[nodiscard]] std::unique_ptr<IOperand> ParseIdentifier();
 	[[nodiscard]] std::unique_ptr<IOperand> ParseTernary(std::optional<PairMatcher>& eoe);
 

@@ -156,21 +156,6 @@ Success CFunctionLinter::ParseFunctionScope()
 		return failure;
 	}
 
-	//// no curlybracket? only add one instruction :)
-	//if (!(*m_iterPos)->IsOperator(p_curlybracket_open)) {
-
-	//	CLinterContext ctx{
-	//		.m_iterPos = m_iterPos,
-	//		.m_iterEnd = m_iterEnd,
-	//		.scope = m_pThisScope,
-	//		.memory = &*m_pThisStack,
-	//		.m_bAddInstructions = !m_pOwner->IsHoisting()
-	//	};
-
-	//	return CFileLinter::LintToken(ctx);
-	//}
-
-
 	auto scope = CScopeLinter(m_iterPos, m_iterEnd, m_pThisScope, &*m_pThisStack);
 	if (!scope.Parse()) {
 		return failure;

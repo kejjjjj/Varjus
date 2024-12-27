@@ -102,3 +102,38 @@ TEST_CASE("GenerateParenthesis(3)") {
 	retVal->Release();
 	REQUIRE(CProgramRuntime::HasLeaks() == false);
 }
+
+TEST_CASE("RemoveDuplicates([1, 1, 2, 2, 3, 3])") {
+
+	auto retVal = TEST_ExecuteFile(JP("remove_duplicates.var"));
+
+	AssertArray(retVal, AssertArrayValue<ASSERT_INT>(t_int, { 1, 2, 3 }));
+
+	REQUIRE(retVal->HasOwner() == false);
+	retVal->Release();
+	REQUIRE(CProgramRuntime::HasLeaks() == false);
+}
+TEST_CASE("BinarySearch([1, 2, 3, 4, 5, 6])") {
+
+	auto retVal = TEST_ExecuteFile(JP("binary_search.var"));
+
+	REQUIRE(retVal != nullptr);
+	REQUIRE(retVal->Type() == t_int);
+	REQUIRE(retVal->ToInt() == 3);
+
+	REQUIRE(retVal->HasOwner() == false);
+	retVal->Release();
+	REQUIRE(CProgramRuntime::HasLeaks() == false);
+}
+TEST_CASE("SumArray([10, 15, 20])") {
+
+	auto retVal = TEST_ExecuteFile(JP("sum_array.var"));
+
+	REQUIRE(retVal != nullptr);
+	REQUIRE(retVal->Type() == t_int);
+	REQUIRE(retVal->ToInt() == 45);
+
+	REQUIRE(retVal->HasOwner() == false);
+	retVal->Release();
+	REQUIRE(CProgramRuntime::HasLeaks() == false);
+}

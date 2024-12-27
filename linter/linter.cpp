@@ -170,7 +170,7 @@ Success CFileLinter::ParseFile()
 
 static void DeclareGlobalObjects(CMemory* m_pOwner, CScope* const scope)
 {
-	VectorOf<std::string> keys = { "console" };
+	VectorOf<std::string> keys = { "console", "math" };
 
 	for (auto& key : keys) {
 		m_pOwner->m_VariableManager->DeclareVariable(key);

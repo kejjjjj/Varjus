@@ -32,7 +32,7 @@ Success CLinterOperand::ParseOperand(std::optional<PairMatcher>& eoe)
 	if (IS_IMMEDIATE(token->Type())) {
 		m_pOperand = ParseImmediate();
 	} else if (token->IsOperator(p_par_open)) {
-		m_pOperand = ParseParentheses();
+		m_pOperand = ParseParentheses(eoe);
 	} else if (token->IsOperator(p_bracket_open)) {
 		m_pOperand = ParseArray();
 	} else if (token->IsOperator(p_curlybracket_open)) {

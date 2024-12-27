@@ -21,5 +21,6 @@ enum EValueType : unsigned char
 
 enum ERuntimeGlobalObjects {
 	rto_console,
+	rto_math,
 	rto_count,
 };
