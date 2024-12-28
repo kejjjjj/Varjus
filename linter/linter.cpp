@@ -120,6 +120,7 @@ Success CFileLinter::LintToken(const CLinterContext& ctx)
 	case tt_string:
 	case tt_name:
 	case tt_typeof:
+	case tt_tostring:
 		return Lint<CLinterExpression>(ctx);
 	case tt_operator:
 		return LintOperator(ctx);

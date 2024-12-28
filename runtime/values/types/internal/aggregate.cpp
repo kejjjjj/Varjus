@@ -48,9 +48,9 @@ IValue* CAggregate::ElementLookup(GlobalMemberIndex index) const
 	}
 	catch ([[maybe_unused]]std::out_of_range& ex) {
 
-		const auto modulePtr = CProgramRuntime::GetModuleByIndex(m_uModuleIndex);
+		//const auto modulePtr = CProgramRuntime::GetModuleByIndex(m_uModuleIndex);
 		throw CRuntimeError(std::format("this aggregate doesn't have the attribute \"{}\"",
-			modulePtr->GetContext()->m_oAllMembers.At(index)
+			CFileContext::m_oAllMembers.At(index)
 		));
 	}
 

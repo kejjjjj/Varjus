@@ -28,6 +28,7 @@ enum TokenType : signed char
 	tt_catch,
 	tt_throw,
 	tt_typeof,
+	tt_tostring,
 	tt_import,
 	tt_from,
 	tt_export,
@@ -57,6 +58,7 @@ constexpr std::array<const char*, tt_unused_count> tokenTypeStrings = {{
 	"catch",
 	"throw",
 	"typeof",
+	"tostring",
 	"import",
 	"from",
 	"export"

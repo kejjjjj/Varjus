@@ -17,6 +17,7 @@ static IValue* EvaluateIncrement(IValue* operand);
 static IValue* EvaluateDecrement(IValue* operand);
 static IValue* EvaluateLogicalNot(IValue* operand);
 static IValue* EvaluateTypeOf(IValue* operand);
+static IValue* EvaluateToString(IValue* operand);
 
 IValue* CRuntimeExpression::EvaluateUnary(CRuntimeContext* const ctx, const UnaryASTNode* node)
 {
@@ -33,6 +34,8 @@ IValue* CRuntimeExpression::EvaluateUnary(CRuntimeContext* const ctx, const Unar
 		returnVal = EvaluateLogicalNot(operand);
 	} else if (node->IsTypeOf()) {
 		returnVal = EvaluateTypeOf(operand);
+	} else if (node->IsToString()) {
+		returnVal = EvaluateToString(operand);
 	}
 	
 	assert(returnVal);
@@ -90,3 +93,6 @@ IValue* EvaluateTypeOf(IValue* operand){
 	return CStringValue::Construct(operand->TypeAsString());
 }
 
+IValue* EvaluateToString(IValue* operand) {
+	return CStringValue::Construct(operand->ValueAsString());
+}

@@ -16,26 +16,34 @@ FORWARD_DECLARE_METHOD(PopFront);
 FORWARD_DECLARE_METHOD(Map);
 FORWARD_DECLARE_METHOD(Find);
 FORWARD_DECLARE_METHOD(FindLast);
+FORWARD_DECLARE_METHOD(FindIndex);
+FORWARD_DECLARE_METHOD(FindLastIndex);
 FORWARD_DECLARE_METHOD(Filter);
 FORWARD_DECLARE_METHOD(Contains);
 FORWARD_DECLARE_METHOD(Reversed);
 FORWARD_DECLARE_METHOD(Join);
+FORWARD_DECLARE_METHOD(All);
+FORWARD_DECLARE_METHOD(Any);
 
 void CArrayValue::ConstructMethods()
 {
 	m_oMethods.clear();
 
-	ADD_METHOD("push",       Push,      1u);
-	ADD_METHOD("push_front", PushFront, 1u);
-	ADD_METHOD("pop",        Pop,       0u);
-	ADD_METHOD("pop_front",  PopFront,  0u);
-	ADD_METHOD("map",        Map,       1u);
-	ADD_METHOD("find",       Find,      1u);
-	ADD_METHOD("find_last",  FindLast,  1u);
-	ADD_METHOD("filter",     Filter,    1u);
-	ADD_METHOD("contains",   Contains,  1u);
-	ADD_METHOD("reversed",   Reversed,  0u);
-	ADD_METHOD("join",       Join,      1u);
+	ADD_METHOD("push",            Push,          1u);
+	ADD_METHOD("push_front",      PushFront,     1u);
+	ADD_METHOD("pop",             Pop,           0u);
+	ADD_METHOD("pop_front",       PopFront,      0u);
+	ADD_METHOD("map",             Map,           1u);
+	ADD_METHOD("find",            Find,          1u);
+	ADD_METHOD("find_last",       FindLast,      1u);
+	ADD_METHOD("find_index",      FindIndex,     1u);
+	ADD_METHOD("find_last_index", FindLastIndex, 1u);
+	ADD_METHOD("filter",          Filter,        1u);
+	ADD_METHOD("contains",        Contains,      1u);
+	ADD_METHOD("reversed",        Reversed,      0u);
+	ADD_METHOD("join",            Join,          1u);
+	ADD_METHOD("all",             All,           1u);
+	ADD_METHOD("any",             Any,           1u);
 
 }
 
@@ -204,6 +212,7 @@ static inline IValue* FindInternal(CArrayValue* _this, CRuntimeContext* const ct
 
 	return result->Copy();
 }
+
 DEFINE_METHOD(Find) {
 	START_METHOD(__this);
 	return FindInternal(__this, ctx, newValues, true);
@@ -212,6 +221,80 @@ DEFINE_METHOD(FindLast) {
 	START_METHOD(__this);
 	return FindInternal(__this, ctx, newValues, false);
 }
+
+static inline IValue* FindTestValueIndex(CRuntimeContext* const ctx, IValue* const mapFunc, CVariable* const var, std::size_t i)
+{
+	IValues args(1);
+	args[0] = var->GetValue()->Copy();
+
+	IValue* thisIteration = mapFunc->Call(ctx, args);
+	IValue* result{ nullptr };
+
+	if (CProgramRuntime::ExceptionThrown()) {
+		return CProgramRuntime::GetExceptionValue();
+	}
+
+	if (!thisIteration->IsBooleanConvertible())
+		throw CRuntimeError(std::format("array.find expected a boolean return value", mapFunc->TypeAsString()));
+
+	if (thisIteration->ToBoolean()) {
+		result = CProgramRuntime::AcquireNewValue<CIntValue>(static_cast<std::int64_t>(i));
+	}
+
+	thisIteration->Release(); // nothing meaningful, release it
+	return result;
+}
+static inline IValue* FindIndexInternal(CArrayValue* _this, CRuntimeContext* const ctx, const IValues& newValues, bool findFirst)
+{
+	assert(newValues.size() == 1);
+	auto& mapFunc = newValues.front();
+
+	if (!mapFunc->IsCallable())
+		throw CRuntimeError(std::format("array.findindex expected \"callable\", but got \"{}\"", mapFunc->TypeAsString()));
+
+	auto& vars = _this->GetShared()->GetVariables();
+
+	IValue* result{ nullptr };
+	IValues args(1);
+
+	if (findFirst) {
+		std::size_t i = 0u;
+
+		for (const auto & var : vars) {
+			result = FindTestValueIndex(ctx, mapFunc, var, i++);
+
+			if (result)
+				break;
+		}
+	} else {
+		std::size_t i = vars.size();
+
+		for (auto b = vars.rbegin(); b != vars.rend(); ++b) {
+			result = FindTestValueIndex(ctx, mapFunc, *b, --i);
+
+			if (result)
+				break;
+		}
+	}
+
+	if (CProgramRuntime::ExceptionThrown()) {
+		return CProgramRuntime::GetExceptionValue();
+	}
+
+	if (!result)
+		return CProgramRuntime::AcquireNewValue<CIntValue>(-1); //didn't find, return undefined
+
+	return result;
+}
+DEFINE_METHOD(FindIndex) {
+	START_METHOD(__this);
+	return FindIndexInternal(__this, ctx, newValues, true);
+}
+DEFINE_METHOD(FindLastIndex) {
+	START_METHOD(__this);
+	return FindIndexInternal(__this, ctx, newValues, false);
+}
+
 DEFINE_METHOD(Filter) 
 {
 	assert(newValues.size() == 1);
@@ -329,4 +412,95 @@ DEFINE_METHOD(Join)
 	}
 
 	return CStringValue::Construct(JoinStrings(stringValues, delimiterValue->ToString()));
+}
+
+DEFINE_METHOD(All)
+{
+	assert(newValues.size() == 1);
+	auto& mapFunc = newValues.front();
+
+	if (!mapFunc->IsCallable())
+		throw CRuntimeError(std::format("array.all expected \"callable\", but got \"{}\"", mapFunc->TypeAsString()));
+
+	START_METHOD(__this);
+	auto& vars = __this->GetShared()->GetVariables();
+
+	IValues args(1);
+	IValue* exception{ nullptr };
+
+	bool all = true;
+
+	//result array
+	for (const auto& var : vars) {
+		args[0] = var->GetValue()->Copy();
+
+		IValue* thisIteration = mapFunc->Call(ctx, args);
+
+		if (CProgramRuntime::ExceptionThrown()) {
+			exception = thisIteration;
+			break;
+		}
+
+		if (!thisIteration->IsBooleanConvertible())
+			throw CRuntimeError(std::format("array.filter expected a boolean return value", mapFunc->TypeAsString()));
+
+		if (!thisIteration->ToBoolean())
+			all = false;
+
+		thisIteration->Release(); // nothing meaningful, release it
+
+		if (!all || CProgramRuntime::ExceptionThrown())
+			break;
+	}
+
+	if (CProgramRuntime::ExceptionThrown()) {
+		return exception;
+	}
+
+	return CProgramRuntime::AcquireNewValue<CBooleanValue>(all);
+}
+DEFINE_METHOD(Any)
+{
+	assert(newValues.size() == 1);
+	auto& mapFunc = newValues.front();
+
+	if (!mapFunc->IsCallable())
+		throw CRuntimeError(std::format("array.all expected \"callable\", but got \"{}\"", mapFunc->TypeAsString()));
+
+	START_METHOD(__this);
+	auto& vars = __this->GetShared()->GetVariables();
+
+	IValues args(1);
+	IValue* exception{ nullptr };
+
+	bool any = false;
+
+	//result array
+	for (const auto& var : vars) {
+		args[0] = var->GetValue()->Copy();
+
+		IValue* thisIteration = mapFunc->Call(ctx, args);
+
+		if (CProgramRuntime::ExceptionThrown()) {
+			exception = thisIteration;
+			break;
+		}
+
+		if (!thisIteration->IsBooleanConvertible())
+			throw CRuntimeError(std::format("array.filter expected a boolean return value", mapFunc->TypeAsString()));
+
+		if (thisIteration->ToBoolean())
+			any = true;
+
+		thisIteration->Release(); // nothing meaningful, release it
+
+		if (any || CProgramRuntime::ExceptionThrown())
+			break;
+	}
+
+	if (CProgramRuntime::ExceptionThrown()) {
+		return exception;
+	}
+
+	return CProgramRuntime::AcquireNewValue<CBooleanValue>(any);
 }

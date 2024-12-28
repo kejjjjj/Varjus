@@ -19,12 +19,17 @@ CUnaryLinter::~CUnaryLinter() = default;
 Success CUnaryLinter::ParseUnary()
 {
 
-	while(!IsEndOfBuffer() && ((*m_iterPos)->IsOperator() || (*m_iterPos)->Type() == tt_typeof)) {
+
+	while(!IsEndOfBuffer() && ((*m_iterPos)->IsOperator() 
+		|| (*m_iterPos)->Type() == tt_typeof)
+		|| (*m_iterPos)->Type() == tt_tostring) {
 
 		auto pos = *m_iterPos;
 
 		if ((*m_iterPos)->Type() == tt_typeof) {
 			m_oUnaryOperators.emplace_back(ParseTypeOf());
+		} else if ((*m_iterPos)->Type() == tt_tostring) {
+			m_oUnaryOperators.emplace_back(ParseToString());
 		} else {
 			const auto& asPunctuation = dynamic_cast<CPunctuationToken&>(**m_iterPos);
 
@@ -109,7 +114,15 @@ std::unique_ptr<CUnaryBase> CUnaryLinter::ParseTypeOf()
 	std::advance(m_iterPos, 1);
 	return std::make_unique<CUnaryTypeOf>();
 }
-
+std::unique_ptr<CUnaryBase> CUnaryLinter::ParseToString()
+{
+	assert(!IsEndOfBuffer() && (*m_iterPos)->Type() == tt_tostring);
+	std::advance(m_iterPos, 1);
+	return std::make_unique<CUnaryToString>();
+}
 std::unique_ptr<AbstractSyntaxTree> CUnaryTypeOf::ToAST() {
 	return std::make_unique<UnaryTypeOfAST>(m_oCodePosition);
+}
+std::unique_ptr<AbstractSyntaxTree> CUnaryToString::ToAST() {
+	return std::make_unique<UnaryToStringAST>(m_oCodePosition);
 }

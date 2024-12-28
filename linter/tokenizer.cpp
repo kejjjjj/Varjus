@@ -418,6 +418,7 @@ const std::unordered_map<std::string_view, TokenType> reservedKeywords = {
 	{"catch", TokenType::tt_catch},
 	{"throw", TokenType::tt_throw},
 	{"typeof", TokenType::tt_typeof},
+	{"tostring", TokenType::tt_tostring},
 	{"import", TokenType::tt_import},
 	{"from", TokenType::tt_from},
 	{"export", TokenType::tt_export}

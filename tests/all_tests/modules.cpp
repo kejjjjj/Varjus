@@ -91,3 +91,14 @@ TEST_CASE("Main imports variable and func then the variable gets edited in func"
 	retVal->Release();
 	REQUIRE(CProgramRuntime::HasLeaks() == false);
 }
+
+TEST_CASE("Main and other call array methods") {
+
+	auto retVal = TEST_ExecuteFile(JP("calling_methods_in_separate_files\\main.var"));
+
+	AssertArray(retVal, AssertArrayValue<ASSERT_INT>(t_int, { 50, 2, 3}));
+
+	REQUIRE(retVal->HasOwner() == false);
+	retVal->Release();
+	REQUIRE(CProgramRuntime::HasLeaks() == false);
+}
