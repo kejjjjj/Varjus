@@ -1,13 +1,15 @@
 #pragma once
 
 #include "internal/aggregate.hpp"
-#include "internal/method.hpp"
+#include "runtime/values/types/simple.hpp"
+#include "internal/methods.hpp"
 
 #include <vector>
 #include <memory>
 #include <string>
 
 class CInternalArrayValue;
+class CVariable;
 
 template<typename K, typename V>
 using KeyValue = std::pair<K, V>;
@@ -47,15 +49,14 @@ protected:
 };
 
 
-class CArrayValue final : public CValue<CInternalArrayValue>, public CDataTypeMethods<CArrayValue>
+class CArrayValue final : public CValue<CInternalArrayValue>
 {
-	using ArrayMethods = CBuiltInMethods<CArrayValue>::InputType;
 public:
 	CArrayValue() = default;
 	~CArrayValue();
 	
 	static CArrayValue* Construct(IValues&& values);
-	static ArrayMethods ConstructMethods();
+	static void ConstructMethods(); //only called once during init
 
 	[[nodiscard]] EValueType Type() const noexcept override { return t_array; };
 
@@ -63,7 +64,6 @@ public:
 
 	[[nodiscard]] constexpr bool IsIndexable() const noexcept override { return true; }
 	[[nodiscard]] constexpr bool IsAggregate() const noexcept override { return true; }
-	[[nodiscard]] constexpr bool IsCallable() const noexcept override { return CDataTypeMethods::IsCallable(); }
 	[[nodiscard]] constexpr bool IsBooleanConvertible() const noexcept override { return false; }
 
 	[[nodiscard]] IValue* Copy() override;
@@ -74,8 +74,6 @@ public:
 	[[nodiscard]] IValue* Index(std::int64_t index) override;
 	[[nodiscard]] IValue* GetAggregate(std::size_t memberIdx) override;
 
-	[[nodiscard]] IValue* Call(CRuntimeContext* const ctx, const IValues& args) override;
-
 	[[nodiscard]] std::size_t AddressOf() const noexcept override { 
 		return reinterpret_cast<std::size_t>(GetShared().get()); 
 	}
@@ -85,23 +83,8 @@ public:
 private:
 	[[nodiscard]] std::string TypeAsString() const override { return "array"s; }
 	[[nodiscard]] std::string ValueAsString() const override;
-
-	[[nodiscard]] IValue* Push(CRuntimeContext* const ctx, const IValues& newValue);
-	[[nodiscard]] IValue* PushFront(CRuntimeContext* const ctx, const IValues& newValue);
-	[[nodiscard]] IValue* Pop(CRuntimeContext* const ctx, const IValues& newValue);
-	[[nodiscard]] IValue* PopFront(CRuntimeContext* const ctx, const IValues& newValue);
-
-	[[nodiscard]] IValue* Map(CRuntimeContext* const ctx, const IValues& newValue);
-	[[nodiscard]] IValue* Find(CRuntimeContext* const ctx, const IValues& newValue);
-	[[nodiscard]] IValue* FindLast(CRuntimeContext* const ctx, const IValues& newValue);
-
-	[[nodiscard]] IValue* Filter(CRuntimeContext* const ctx, const IValues& newValue);
-
-	[[nodiscard]] IValue* Contains(CRuntimeContext* const ctx, const IValues& newValue);
-
-	[[nodiscard]] IValue* Reverse(CRuntimeContext* const ctx, const IValues& newValue);
-	[[nodiscard]] IValue* Join(CRuntimeContext* const ctx, const IValues& newValue);
-
-	//const CBuiltInMethod<CArrayValue>* m_pMethod{ nullptr };
+	
+	static DECLARE_BUILT_IN_METHODS m_oMethods;
 };
+
 

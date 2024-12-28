@@ -7,6 +7,7 @@
 #include "linter/modules/module.hpp"
 #include "runtime/runtime.hpp"
 #include "runtime/modules/rtmodule.hpp"
+#include "runtime/exceptions/exception.hpp"
 
 #include "fs/fs_io.hpp"
 #include "fs/fs_globals.hpp"

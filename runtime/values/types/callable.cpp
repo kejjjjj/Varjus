@@ -24,6 +24,13 @@ IValue* CCallableValue::Copy()
 }
 void CCallableValue::Release()
 {
+	if (SharedRefCount() == 1) {
+		if (auto binding = Internal()->GetBinding()) {
+			binding->Release();
+			Internal()->Bind(nullptr);
+		}
+	}
+
 	Get().Release(); //always decrement ref count
 
 	ReleaseInternal();
@@ -42,10 +49,8 @@ IValue* CCallableValue::Call(CRuntimeContext* const ctx, const IValues& args)
 		.m_pFunction = ctx->m_pFunction
 	};
 
-	auto ret = callable->Execute(&newContext, const_cast<IValues&>(args), internal->GetCaptures());
-
+	auto ret = callable->ExecuteFunction(&newContext, internal->GetBinding(), const_cast<IValues&>(args), internal->GetCaptures());
 	assert(ret);
-
 	return ret;
 }
 
@@ -78,6 +83,10 @@ void CInternalCallableValue::SetCaptures(CRuntimeContext* const ctx, const Vecto
 		
 	}
 }
+//void CInternalCallableValue::SetCallable(CRuntimeFunctionBase* c) noexcept
+//{
+//	m_pCallable = c;
+//}
 void CInternalCallableValue::Release()
 {
 

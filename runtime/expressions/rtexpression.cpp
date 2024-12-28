@@ -113,7 +113,7 @@ inline IValue* EvaluateFunction(CRuntimeContext* const ctx, const FunctionASTNod
 		: ctx->m_pModule;
 
 	v->MakeShared();
-	v->Internal()->GetCallable() = activeModule->GetFunctionByIndex(var->m_uIndex);
+	v->Internal()->SetCallable(activeModule->GetFunctionByIndex(var->m_uIndex));
 
 	if (var->m_bBelongsToDifferentModule)
 		v->Internal()->SetModuleIndex(var->m_uModuleIndex);
@@ -127,7 +127,7 @@ inline IValue* EvaluateLambda(CRuntimeContext* const ctx, const LambdaASTNode* c
 	v->MakeShared();
 
 	auto internal = v->Internal();
-	internal->GetCallable() = var->m_pLambda.get();
+	internal->SetCallable(var->m_pLambda.get());
 	if (var->m_oVariableCaptures.size())
 		internal->SetCaptures(ctx, var->m_oVariableCaptures);
 

@@ -82,9 +82,9 @@ public:
 
 	[[nodiscard]] virtual IValue* Index(std::int64_t index);
 	[[nodiscard]] virtual IValue* GetAggregate([[maybe_unused]]std::size_t memberIdx) { return nullptr; }
-	[[nodiscard]] virtual IValue* Call([[maybe_unused]] struct CRuntimeContext* const ctx,
-		[[maybe_unused]] const IValues& args) { return nullptr; }
-
+	[[nodiscard]] virtual IValue* Call([[maybe_unused]] struct CRuntimeContext* const ctx, [[maybe_unused]] const IValues& args) {
+		return nullptr;
+	}
 	[[nodiscard]] bool& AsBoolean();
 	[[nodiscard]] std::int64_t& AsInt();
 	[[nodiscard]] double &AsDouble();

@@ -1,12 +1,14 @@
 #include "array.hpp"
-#include "internal/builtin_methods.hpp"
 #include "runtime/runtime.hpp"
 #include "runtime/variables.hpp"
-#include "runtime/exceptions/exception.hpp"
+#include "runtime/structure.hpp"
 
+#include "runtime/exceptions/exception.hpp"
 #include "linter/context.hpp"
 
 #include <sstream>
+
+
 
 VectorOf<ElementIndex>& runtime::__internal::GetAggregateArrayData()
 {
@@ -39,17 +41,12 @@ void CArrayValue::Release(){
 	}
 
 	ReleaseInternal();
-	CDataTypeMethods::Release();
 	CProgramRuntime::FreeValue<CArrayValue>(this);
 	ReleaseShared();
 
 }
 
 IValue* CArrayValue::Copy(){
-
-	if (auto c = CDataTypeMethods::Copy())
-		return c;
-
 	CArrayValue* ptr = CProgramRuntime::AcquireNewValue<CArrayValue>();
 	ptr->MakeShared();
 	ptr->GetShared() = GetShared();
@@ -68,6 +65,7 @@ CInternalArrayValue* CArrayValue::Internal() const {
 
 IValue* CArrayValue::Index(std::int64_t index)
 {
+
 	auto& vec = GetShared()->GetVariables();
 
 	if (index < 0 || static_cast<size_t>(index) >= vec.size())
@@ -78,10 +76,10 @@ IValue* CArrayValue::Index(std::int64_t index)
 IValue* CArrayValue::GetAggregate(std::size_t memberIdx)
 {
 
-	if (auto func = CDataTypeMethods::FindMethod(memberIdx)) {
-		auto newValue = HasOwner() ? this : this->Copy()->ToArray();
-		newValue->SetMethod(func);
-		return newValue;
+	if (m_oMethods.contains(memberIdx)) {
+		auto v = CProgramRuntime::AcquireNewValue<CCallableValue>();
+		METHOD_BIND(v, this->Copy());
+		return v;
 	}
 
 	auto property = Internal()->GetAggregateValue().ElementLookup(memberIdx);
@@ -92,14 +90,6 @@ IValue* CArrayValue::GetAggregate(std::size_t memberIdx)
 	}
 
 	return property;
-}
-
-IValue* CArrayValue::Call(CRuntimeContext* const ctx, const IValues& args)
-{
-	assert(IsCallable());
-	auto ret = CBuiltInMethods<CArrayValue>::CallMethod(ctx, this, args, GetMethod());
-	CDataTypeMethods::Release();
-	return ret;
 }
 
 CInternalArrayValue::~CInternalArrayValue() = default;

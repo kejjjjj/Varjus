@@ -1,7 +1,7 @@
 #pragma once
 #include "simple.hpp"
 #include "internal/aggregate.hpp"
-#include "internal/method.hpp"
+#include "internal/methods.hpp"
 
 
 struct CStringContent final
@@ -34,10 +34,8 @@ protected:
 	CStringContent m_oValue;
 };
 
-class CStringValue final : public CValue<CInternalStringValue>, public CDataTypeMethods<CStringValue>
+class CStringValue final : public CValue<CInternalStringValue>
 {
-	using StringMethods = CBuiltInMethods<CStringValue>::InputType;
-
 public:
 	CStringValue() = default;
 	[[nodiscard]] EValueType Type() const noexcept override { return t_string; };
@@ -45,7 +43,7 @@ public:
 	[[nodiscard]] IValue* Copy() override;
 
 	static CStringValue* Construct(const std::string& v);
-	static StringMethods ConstructMethods();
+	static void ConstructMethods(); //only called once during init
 
 	virtual void Release() override;
 
@@ -53,7 +51,6 @@ public:
 	[[nodiscard]] constexpr bool IsArithmetic() const noexcept override { return false; }
 	[[nodiscard]] constexpr bool IsIndexable() const noexcept override { return true; }
 	[[nodiscard]] constexpr bool IsAggregate() const noexcept override { return true; }
-	[[nodiscard]] constexpr bool IsCallable() const noexcept override { return CDataTypeMethods::IsCallable(); }
 
 	[[nodiscard]] bool ToBoolean() const override { return !Internal()->GetString().empty(); }
 	[[nodiscard]] std::int64_t ToInt() const override { return static_cast<std::int64_t>(ToBoolean()); }
@@ -68,23 +65,11 @@ public:
 	[[nodiscard]] IValue* Index(std::int64_t index) override;
 	[[nodiscard]] IValue* GetAggregate(std::size_t memberIdx) override;
 
-	[[nodiscard]] IValue* Call(CRuntimeContext* const ctx, const IValues& args) override;
-
-
 private:
 	[[nodiscard]] std::string TypeAsString() const override { return "string"s; }
 	[[nodiscard]] std::string ValueAsString() const override { return Internal()->GetString(); }
 
+	static DECLARE_BUILT_IN_METHODS m_oMethods;
 
-	[[nodiscard]] IValue* ToUpper(CRuntimeContext* const ctx, const IValues& newValue);
-	[[nodiscard]] IValue* ToLower(CRuntimeContext* const ctx, const IValues& newValue);
-
-	[[nodiscard]] IValue* Substring(CRuntimeContext* const ctx, const IValues& newValue);
-	[[nodiscard]] IValue* Split(CRuntimeContext* const ctx, const IValues& newValue);
-
-	[[nodiscard]] IValue* Replace(CRuntimeContext* const ctx, const IValues& newValue);
-	[[nodiscard]] IValue* Repeat(CRuntimeContext* const ctx, const IValues& newValue);
-	
-	[[nodiscard]] IValue* GetCodeAt(CRuntimeContext* const ctx, const IValues& newValue);
 
 };

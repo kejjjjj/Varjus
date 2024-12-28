@@ -1,14 +1,20 @@
 #include "console.hpp"
 #include "runtime/runtime.hpp"
+#include "runtime/structure.hpp"
+
+#include "linter/context.hpp"
 #include <iostream>
 
-CConsoleValue::ConsoleMethods CConsoleValue::ConstructMethods()
+DECLARE_BUILT_IN_METHODS CConsoleValue::m_oMethods;
+
+FORWARD_DECLARE_METHOD(LogConsole);
+
+void CConsoleValue::ConstructMethods()
 {
-	return {
-		{"log",   {UNCHECKED_PARAMETER_COUNT, &CConsoleValue::Log}},
-		/*{"clear", {0u, &CConsoleValue::Clear}},*/
-	};
-};
+	m_oMethods.clear();
+
+	ADD_METHOD("log", LogConsole, UNCHECKED_PARAMETER_COUNT);
+}
 
 CConsoleValue* CConsoleValue::Construct()
 {
@@ -24,15 +30,11 @@ void CConsoleValue::Release() {
 	}
 
 	ReleaseInternal();
-	CDataTypeMethods::Release();
 	CProgramRuntime::FreeValue<CConsoleValue>(this);
 	ReleaseShared();
 }
 
 IValue* CConsoleValue::Copy() {
-
-	if (auto c = CDataTypeMethods::Copy())
-		return c;
 
 	CConsoleValue* ptr = CProgramRuntime::AcquireNewValue<CConsoleValue>();
 	ptr->MakeShared();
@@ -43,44 +45,23 @@ IValue* CConsoleValue::Copy() {
 
 IValue* CConsoleValue::GetAggregate(std::size_t memberIdx) {
 
-	if (auto func = CDataTypeMethods::FindMethod(memberIdx)) {
-		auto newValue = HasOwner() ? this : static_cast<CConsoleValue*>(this->Copy());
-		newValue->SetMethod(func);
-		return newValue;
+	if (m_oMethods.contains(memberIdx)) {
+		auto v = CProgramRuntime::AcquireNewValue<CCallableValue>();
+		METHOD_BIND(v, this->Copy());
+		return v;
 	}
 
 	return CObjectValue::GetAggregate(memberIdx);
 }
 
-IValue* CConsoleValue::Call(CRuntimeContext* const ctx, const IValues& args)
+DEFINE_METHOD(LogConsole)
 {
-	if(!IsCallable())
-		throw CRuntimeError(std::format("a value of type \"{}\" is not callable", TypeAsString()));
-
-	auto ret = CBuiltInMethods<CConsoleValue>::CallMethod(ctx, this, args, GetMethod());
-	CDataTypeMethods::Release();
-	return ret;
-}
-
-IValue* CConsoleValue::Log([[maybe_unused]] CRuntimeContext* const ctx, const IValues& values)
-{
-
 	std::string p;
 
-	for (auto& v : values)
+	for (auto& v : newValues)
 		p += v->ValueAsString();
 
 	std::cout << p << '\n';
 
 	return CProgramRuntime::AcquireNewValue<IValue>();
 }
-
-//IValue* CConsoleValue::Clear([[maybe_unused]] CRuntimeContext* const ctx, [[maybe_unused]] const IValues& values)
-//{
-//#if _WIN32
-//	system("cls");
-//#else
-//	#error "Unsupported OS"
-//#endif
-//	return CProgramRuntime::AcquireNewValue<IValue>();
-//}

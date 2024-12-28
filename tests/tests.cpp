@@ -14,6 +14,7 @@ IValue* TEST_ExecuteFile(const std::string& srcFile)
 {
     try {
         CModule::ResetEverythingStatic();
+        CFileContext::ResetGlobally();
 
         const auto reader = VarjusIOReader("\\scripts\\" + srcFile);
 

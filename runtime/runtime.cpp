@@ -2,7 +2,6 @@
 #include "modules/rtmodule.hpp"
 #include "runtime.hpp"
 #include "structure.hpp"
-#include "values/types/internal/builtin_methods.hpp"
 #include "values/types/internal_objects/console.hpp"
 #include "values/types/internal_objects/math.hpp"
 
@@ -24,8 +23,8 @@ template<> COwningObjectPool<CStringValue>        CProgramRuntime::m_oValuePool<
 template<> COwningObjectPool<CCallableValue>      CProgramRuntime::m_oValuePool<CCallableValue>(VALUEPOOL_INIT_SIZE);
 template<> COwningObjectPool<CArrayValue>         CProgramRuntime::m_oValuePool<CArrayValue>   (VALUEPOOL_INIT_SIZE);
 template<> COwningObjectPool<CObjectValue>        CProgramRuntime::m_oValuePool<CObjectValue>  (VALUEPOOL_INIT_SIZE);
-template<> COwningObjectPool<CConsoleValue>       CProgramRuntime::m_oValuePool<CConsoleValue> (VALUEPOOL_INIT_SIZE);
-template<> COwningObjectPool<CMathValue>          CProgramRuntime::m_oValuePool<CMathValue>(VALUEPOOL_INIT_SIZE);
+template<> COwningObjectPool<CConsoleValue>       CProgramRuntime::m_oValuePool<CConsoleValue> (1);
+template<> COwningObjectPool<CMathValue>          CProgramRuntime::m_oValuePool<CMathValue>(1);
 
 RuntimeModules CProgramRuntime::m_oModules;
 const CodePosition* CProgramRuntime::m_pCodePosition{ nullptr };
@@ -77,9 +76,12 @@ IValue* CProgramRuntime::Execute()
 		throw CRuntimeError("couldn't find the \"main\" function");
 	}
 
-	for (auto& mod : m_oModules) {
-		BuiltInMethods::Setup(mod->GetContext());
+	CArrayValue::ConstructMethods();
+	CStringValue::ConstructMethods();
+	CMathValue::ConstructMethods();
+	CConsoleValue::ConstructMethods();
 
+	for (auto& mod : m_oModules) {
 		mod->SetupGlobalVariables();
 		mod->EvaluateGlobalExpressions();
 	}
@@ -102,9 +104,12 @@ void CProgramRuntime::Execute()
 		throw CRuntimeError("couldn't find the \"main\" function");
 	}
 
-	for (auto& mod : m_oModules) {
-		BuiltInMethods::Setup(mod->GetContext());
+	CArrayValue::ConstructMethods();
+	CStringValue::ConstructMethods();
+	CMathValue::ConstructMethods();
+	CConsoleValue::ConstructMethods();
 
+	for (auto& mod : m_oModules) {
 		mod->SetupGlobalVariables();
 		mod->EvaluateGlobalExpressions();
 	}
@@ -145,7 +150,7 @@ steady_clock CProgramRuntime::BeginExecution(CRuntimeFunction* entryFunc)
 	};
 
 	std::vector<IValue*> args;
-	if (auto returnValue = entryFunc->Execute(&ctx, args, {})) {
+	if (auto returnValue = entryFunc->Execute(&ctx, nullptr, args, {})) {
 #ifdef RUNNING_TESTS
 		return returnValue;
 #else

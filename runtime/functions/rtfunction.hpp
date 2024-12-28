@@ -26,12 +26,13 @@ class CFunction
 	NONCOPYABLE(CFunction);
 	friend class CRuntimeFunction;
 public:
-	CFunction(VectorOf<IValue*>& args,
+	CFunction(IValue* _this, VectorOf<IValue*>& args,
 		const VariableCaptures& captures, const CRuntimeFunction& func);
 
 	[[nodiscard]] CVariable* GetVariableByRef(const CCrossModuleReference& ref) const;
 
 
 private:
+	IValue* m_pThis{ nullptr };
 	std::unordered_map<CCrossModuleReference, CVariable*, CCrossModuleReferenceHasher> m_oStack;
 };

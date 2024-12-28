@@ -29,14 +29,14 @@ CRuntimeFunction::CRuntimeFunction(ElementIndex moduleIndex, CFunctionBlock& lin
 }
 CRuntimeFunction::~CRuntimeFunction() = default;
 
-IValue* CRuntimeFunction::Execute(CRuntimeContext* const ctx,
+IValue* CRuntimeFunction::Execute(CRuntimeContext* const ctx, IValue* _this,
 	VectorOf<IValue*>& args, const VariableCaptures& captures)
 {
 	if (m_uNumParameters != args.size())
 		throw CRuntimeError(std::format("the callable expected {} arguments instead of {}", m_uNumParameters, args.size()));
 
 
-	auto func = CFunction(args, captures, *this);
+	auto func = CFunction(_this, args, captures, *this);
 	const auto isMainFunction = ctx->m_pFunction == nullptr;
 
 	CRuntimeContext thisContext{
@@ -77,8 +77,30 @@ IValue* CRuntimeFunction::Execute(CRuntimeContext* const ctx,
 	return copy;
 }
 
-CFunction::CFunction(VectorOf<IValue*>& args,
+CBuiltInRuntimeFunction::CBuiltInRuntimeFunction(METHOD_AS_VARIABLE(method), std::size_t numArgs)
+	: m_pMethod(method), m_uNumArguments(numArgs) {}
+CBuiltInRuntimeFunction::~CBuiltInRuntimeFunction() = default;
+
+IValue* CBuiltInRuntimeFunction::ExecuteFunction( CRuntimeContext* const ctx, IValue* _this,
+	VectorOf<IValue*>& args, [[maybe_unused]] const VariableCaptures& captures)
+{
+
+	assert(m_pMethod);
+
+	if (m_uNumArguments != UNCHECKED_PARAMETER_COUNT && m_uNumArguments != args.size())
+		throw CRuntimeError(std::format("the method expected {} arguments instead of {}", m_uNumArguments, args.size()));
+
+	auto returnVal = m_pMethod(ctx, _this, args);
+
+	for(auto& val : args)
+		val->Release();
+
+	return returnVal;
+}
+
+CFunction::CFunction(IValue* _this, VectorOf<IValue*>& args,
 	const VariableCaptures& captures, const CRuntimeFunction& func)
+	: m_pThis(_this)
 {
 	
 	for (auto i = std::size_t(0); auto& arg : func.m_oArgumentIndices) {

@@ -1,5 +1,4 @@
-
 fn main()
 {
-	return console.log(console.log("aaaa"));
+	return {a: 50, b: 1, c: 2}.a;
 }

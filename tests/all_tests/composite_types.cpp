@@ -41,9 +41,14 @@ TEST_CASE("Returns a callable") {
 	REQUIRE(internal != nullptr);
 
 	REQUIRE(internal->GetCaptures().empty() == true);
-	REQUIRE(internal->m_pCallable != nullptr);
-	REQUIRE(internal->m_pCallable->GetName() == "main");
-	REQUIRE(internal->m_pCallable->GetModuleIndex() == 0);
+	REQUIRE(internal->GetCaptures().empty() == true);
+	REQUIRE(internal->GetCallable()->FunctionType() == fn_regular);
+
+	auto func = dynamic_cast<CRuntimeFunction*>(internal->GetCallable());
+
+	REQUIRE(func != nullptr);
+	REQUIRE(func->GetName() == "main");
+	REQUIRE(func->GetModuleIndex() == 0);
 
 	REQUIRE(retVal->HasOwner() == false);
 	retVal->Release();
@@ -63,9 +68,13 @@ TEST_CASE("Returns a lambda") {
 	REQUIRE(internal != nullptr);
 
 	REQUIRE(internal->GetCaptures().empty() == true);
-	REQUIRE(internal->m_pCallable != nullptr);
-	REQUIRE(internal->m_pCallable->GetName() == "lambda");
-	REQUIRE(internal->m_pCallable->GetModuleIndex() == 0);
+	REQUIRE(internal->GetCallable()->FunctionType() == fn_regular);
+
+	auto func = dynamic_cast<CRuntimeFunction*>(internal->GetCallable());
+
+	REQUIRE(func != nullptr);
+	REQUIRE(func->GetName() == "lambda");
+	REQUIRE(func->GetModuleIndex() == 0);
 
 	REQUIRE(retVal->HasOwner() == false);
 	retVal->Release();

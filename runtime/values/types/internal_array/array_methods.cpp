@@ -3,47 +3,74 @@
 #include "runtime/variables.hpp"
 #include "runtime/exceptions/exception.hpp"
 #include "runtime/values/simple_operators.hpp"
+#include "runtime/structure.hpp"
 
-CArrayValue::ArrayMethods CArrayValue::ConstructMethods()
+#include "linter/context.hpp"
+
+DECLARE_BUILT_IN_METHODS CArrayValue::m_oMethods;
+
+FORWARD_DECLARE_METHOD(Push);
+FORWARD_DECLARE_METHOD(PushFront);
+FORWARD_DECLARE_METHOD(Pop);
+FORWARD_DECLARE_METHOD(PopFront);
+FORWARD_DECLARE_METHOD(Map);
+FORWARD_DECLARE_METHOD(Find);
+FORWARD_DECLARE_METHOD(FindLast);
+FORWARD_DECLARE_METHOD(Filter);
+FORWARD_DECLARE_METHOD(Contains);
+FORWARD_DECLARE_METHOD(Reversed);
+FORWARD_DECLARE_METHOD(Join);
+
+void CArrayValue::ConstructMethods()
 {
-	return {
-		{"push",       {1u, &CArrayValue::Push}},
-		{"push_front", {1u, &CArrayValue::PushFront}},
-		{"pop",        {0u, &CArrayValue::Pop}},
-		{"pop_front",  {0u, &CArrayValue::PopFront}},
-		{"map",        {1u, &CArrayValue::Map}},
-		{"find",       {1u, &CArrayValue::Find}},
-		{"find_last",  {1u, &CArrayValue::FindLast}},
-		{"filter",     {1u, &CArrayValue::Filter}},
-		{"contains",   {1u, &CArrayValue::Contains}},
-		{"reverse",    {0u, &CArrayValue::Reverse}},
-		{"join",	   {1u, &CArrayValue::Join}},
+	m_oMethods.clear();
 
-	};
+	ADD_METHOD("push",       Push,      1u);
+	ADD_METHOD("push_front", PushFront, 1u);
+	ADD_METHOD("pop",        Pop,       0u);
+	ADD_METHOD("pop_front",  PopFront,  0u);
+	ADD_METHOD("map",        Map,       1u);
+	ADD_METHOD("find",       Find,      1u);
+	ADD_METHOD("find_last",  FindLast,  1u);
+	ADD_METHOD("filter",     Filter,    1u);
+	ADD_METHOD("contains",   Contains,  1u);
+	ADD_METHOD("reversed",   Reversed,  0u);
+	ADD_METHOD("join",       Join,      1u);
+
 }
 
-IValue* CArrayValue::Push([[maybe_unused]] CRuntimeContext* const ctx, const IValues& newValues)
+#define START_METHOD(name) \
+if(!_this)\
+	throw CRuntimeError("attempted to call a method without \"this\" context"); \
+if(_this->Type() != t_array) \
+	throw CRuntimeError(std::format("array.{} expected an array, but got {}", #name, _this->TypeAsString()));\
+auto name = _this->ToArray()
+
+DEFINE_METHOD(Push)
 {
+	START_METHOD(__this);
+
 	assert(newValues.size() == 1);
-	auto& vars = GetShared()->GetVariables();
+	auto& vars = __this->GetShared()->GetVariables();
 	auto& newVar = vars.emplace_back(CProgramRuntime::AcquireNewVariable());
 	newVar->SetValue(newValues.front()->Copy());
 	return newVar->GetValue()->Copy();
 }
-IValue* CArrayValue::PushFront([[maybe_unused]] CRuntimeContext* const ctx, const IValues& newValues)
+DEFINE_METHOD(PushFront)
 {
-	assert(newValues.size() == 1);
-	auto& vars = GetShared()->GetVariables();
+	START_METHOD(__this);
+	auto& vars = __this->GetShared()->GetVariables();
 
 	auto it = vars.insert(vars.begin(), CProgramRuntime::AcquireNewVariable());
 	(*it)->SetValue(newValues.front()->Copy());
 	return (*it)->GetValue()->Copy();
 }
 
-IValue* CArrayValue::Pop([[maybe_unused]] CRuntimeContext* const ctx, [[maybe_unused]] const IValues& newValues)
+DEFINE_METHOD(Pop)
 {
 
-	auto& vars = GetShared()->GetVariables();
+	START_METHOD(__this);
+	auto& vars = __this->GetShared()->GetVariables();
 
 	if (vars.empty())
 		throw CRuntimeError("attempted to pop an empty array");
@@ -56,10 +83,11 @@ IValue* CArrayValue::Pop([[maybe_unused]] CRuntimeContext* const ctx, [[maybe_un
 
 	return copy;
 }
-IValue* CArrayValue::PopFront([[maybe_unused]] CRuntimeContext* const ctx, [[maybe_unused]] const IValues& newValues)
+DEFINE_METHOD(PopFront)
 {
 
-	auto& vars = GetShared()->GetVariables();
+	START_METHOD(__this);
+	auto& vars = __this->GetShared()->GetVariables();
 
 	if (vars.empty())
 		throw CRuntimeError("attempted to pop_front an empty array");
@@ -73,7 +101,7 @@ IValue* CArrayValue::PopFront([[maybe_unused]] CRuntimeContext* const ctx, [[may
 	return copy;
 }
 
-IValue* CArrayValue::Map(CRuntimeContext* const ctx, const IValues& newValues)
+DEFINE_METHOD(Map)
 {
 	assert(newValues.size() == 1);
 	auto& mapFunc = newValues.front();
@@ -81,7 +109,8 @@ IValue* CArrayValue::Map(CRuntimeContext* const ctx, const IValues& newValues)
 	if (!mapFunc->IsCallable())
 		throw CRuntimeError(std::format("array.map expected \"callable\", but got \"{}\"", mapFunc->TypeAsString()));
 
-	auto& vars = GetShared()->GetVariables();
+	START_METHOD(__this);
+	auto& vars = __this->GetShared()->GetVariables();
 
 	IValues results(vars.size());
 	IValues args(1);
@@ -175,15 +204,15 @@ static inline IValue* FindInternal(CArrayValue* _this, CRuntimeContext* const ct
 
 	return result->Copy();
 }
-IValue* CArrayValue::Find(CRuntimeContext* const ctx, const IValues& newValues)
-{
-	return FindInternal(this, ctx, newValues, true);
+DEFINE_METHOD(Find) {
+	START_METHOD(__this);
+	return FindInternal(__this, ctx, newValues, true);
 }
-IValue* CArrayValue::FindLast(CRuntimeContext* const ctx, const IValues& newValues)
-{
-	return FindInternal(this, ctx, newValues, false);
+DEFINE_METHOD(FindLast) {
+	START_METHOD(__this);
+	return FindInternal(__this, ctx, newValues, false);
 }
-IValue* CArrayValue::Filter(CRuntimeContext* const ctx, const IValues& newValues)
+DEFINE_METHOD(Filter) 
 {
 	assert(newValues.size() == 1);
 	auto& mapFunc = newValues.front();
@@ -191,7 +220,8 @@ IValue* CArrayValue::Filter(CRuntimeContext* const ctx, const IValues& newValues
 	if (!mapFunc->IsCallable())
 		throw CRuntimeError(std::format("array.filter expected \"callable\", but got \"{}\"", mapFunc->TypeAsString()));
 
-	auto& vars = GetShared()->GetVariables();
+	START_METHOD(__this);
+	auto& vars = __this->GetShared()->GetVariables();
 
 	IValues results;
 	IValues args(1);
@@ -227,12 +257,13 @@ IValue* CArrayValue::Filter(CRuntimeContext* const ctx, const IValues& newValues
 	return CArrayValue::Construct(std::move(results));
 }
 
-IValue* CArrayValue::Contains([[maybe_unused]] CRuntimeContext* const ctx, const IValues& newValues)
+DEFINE_METHOD(Contains) 
 {
 	assert(newValues.size() == 1);
 	auto& searchElement = newValues.front();
 
-	auto& vars = GetShared()->GetVariables();
+	START_METHOD(__this);
+	auto& vars = __this->GetShared()->GetVariables();
 
 	IValue* result{ nullptr };
 	IValues args(1);
@@ -253,10 +284,10 @@ IValue* CArrayValue::Contains([[maybe_unused]] CRuntimeContext* const ctx, const
 
 	return result;
 }
-IValue* CArrayValue::Reverse([[maybe_unused]] CRuntimeContext* const ctx, [[maybe_unused]] const IValues& newValues)
-{
+DEFINE_METHOD(Reversed) {
 	
-	auto& vars = GetShared()->GetVariables();
+	START_METHOD(__this);
+	auto& vars = __this->GetShared()->GetVariables();
 	IValues valuesAsCopy(vars.size());
 
 	for (auto i = size_t(0); auto& var : vars)
@@ -278,16 +309,15 @@ std::string JoinStrings(const VectorOf<std::string>& strings, const std::string&
 	return result.str();
 }
 
-IValue* CArrayValue::Join([[maybe_unused]] CRuntimeContext* const ctx, [[maybe_unused]] const IValues& newValues)
+DEFINE_METHOD(Join) 
 {
 	auto& delimiterValue = newValues.front();
 	if (delimiterValue->Type() != t_string)
 		throw CRuntimeError(std::format("array.join expected a string parameter, but got \"{}\"", delimiterValue->TypeAsString()));
 
 	VectorOf<std::string> stringValues;
-	auto& vars = GetShared()->GetVariables();
-
-
+	START_METHOD(__this);
+	auto& vars = __this->GetShared()->GetVariables();
 
 	for (auto& var : vars) {
 		auto& value = var->GetValue();

@@ -11,13 +11,16 @@ struct CFileContext
 
 	std::string m_sFilePath;
 
-	CStringIntegerHashMap m_oAllMembers;
+	static CStringIntegerHashMap m_oAllMembers; //cross module...
 	CStringIntegerHashMap m_oAllVariables;
 	CStringIntegerHashMap m_oAllGlobalVariables;
+	
+	static void ResetGlobally() {
+		m_oAllMembers.Clear();
+	}
 
 	void Reset() {
 		m_sFilePath.clear();
-		m_oAllMembers.Clear();
 		m_oAllVariables.Clear();
 		m_oAllGlobalVariables.Clear();
 	}

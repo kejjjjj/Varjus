@@ -7,7 +7,7 @@
 #include <format>
 
 
-class CRuntimeFunction;
+class CRuntimeFunctionBase;
 class CFunction;
 class CVariable;
 
@@ -27,8 +27,12 @@ public:
 	void SetCaptures(CRuntimeContext* const ctx, const VectorOf<CCrossModuleReference>& captures);
 	[[nodiscard]] auto& GetCaptures() { return m_oCaptures; }
 
-	[[nodiscard]] auto& GetCallable() noexcept { return m_pCallable; }
-	[[nodiscard]] auto& GetCallable() const noexcept { return m_pCallable; }
+	void Bind(IValue* target) noexcept { m_pBoundTo = target; }
+	[[nodiscard]] auto GetBinding() noexcept { return m_pBoundTo; }
+
+	constexpr void SetCallable(CRuntimeFunctionBase* c) noexcept { m_pCallable = c; }
+	[[nodiscard]] auto GetCallable() noexcept { return m_pCallable; }
+	[[nodiscard]] auto GetCallable() const noexcept { return m_pCallable; }
 
 	void Release();
 
@@ -36,7 +40,8 @@ public:
 #ifndef RUNNING_TESTS
 private:
 #endif
-	CRuntimeFunction* m_pCallable{ nullptr };
+	CRuntimeFunctionBase* m_pCallable{ nullptr };
+	IValue* m_pBoundTo{ nullptr };
 	std::unordered_map<CCrossModuleReference, CVariable*, CCrossModuleReferenceHasher> m_oCaptures;
 	std::size_t m_uModule{};
 	bool m_bRequiresModuleChange{ false };
@@ -51,11 +56,7 @@ public:
 
 	[[nodiscard]] IValue* Copy() override;
 
-	void Release() override;
-
-	[[nodiscard]] bool ToBoolean() const override { return !!GetShared()->GetCallable(); }
-	[[nodiscard]] std::int64_t ToInt() const override { return static_cast<std::int64_t>(ToBoolean()); }
-	[[nodiscard]] double ToDouble() const override { return static_cast<double>(ToBoolean()); }
+	virtual void Release() override;
 
 	[[nodiscard]] constexpr bool IsCallable() const noexcept override { return true; }
 	[[nodiscard]] constexpr bool IsBooleanConvertible() const noexcept override { return false; }

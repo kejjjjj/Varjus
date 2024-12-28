@@ -1,10 +1,14 @@
 #pragma once
+
+#include "globalDefinitions.hpp"
+#include "linter/modules/references.hpp"
+#include "runtime/values/types/internal/methods.hpp"
+
 #include <vector>
 #include <memory>
 #include <string>
 #include <unordered_map>
-#include "globalDefinitions.hpp"
-#include "linter/modules/references.hpp"
+
 /***********************************************************************
  > represents the runtime execution structure
 ***********************************************************************/
@@ -72,6 +76,7 @@ public:
 
 	[[nodiscard]] virtual IValue* Execute(
 		[[maybe_unused]] CRuntimeContext* const ctx,
+		[[maybe_unused]] IValue* _this,
 		[[maybe_unused]] VectorOf<IValue*>& args,
 		[[maybe_unused]] const VariableCaptures& captures) { return nullptr; };
 
@@ -121,7 +126,25 @@ protected:
 	InstructionSequence m_oInstructions;
 };
 
-class CRuntimeFunction final : public IRuntimeStructureSequence
+enum RuntimeFunctionType
+{
+	fn_regular,
+	fn_built_in,
+};
+
+class CRuntimeFunctionBase
+{
+	NONCOPYABLE(CRuntimeFunctionBase);
+public:
+	CRuntimeFunctionBase() = default;
+	virtual ~CRuntimeFunctionBase() = default;
+	[[nodiscard]] constexpr virtual RuntimeFunctionType FunctionType() const noexcept = 0;
+
+	[[maybe_unused]] virtual IValue* ExecuteFunction(CRuntimeContext* const ctx, IValue* _this, VectorOf<IValue*>& args,
+		const VariableCaptures& captures) = 0;
+};
+
+class CRuntimeFunction final : public CRuntimeFunctionBase, public IRuntimeStructureSequence
 {
 	friend class CFunction;
 	NONCOPYABLE(CRuntimeFunction);
@@ -132,10 +155,18 @@ public:
 		VectorOf<CCrossModuleReference>&& variableIndices);
 	~CRuntimeFunction();
 
+	[[nodiscard]] constexpr RuntimeFunctionType FunctionType() const noexcept override { return fn_regular; }
+
+	[[maybe_unused]] inline IValue* ExecuteFunction(CRuntimeContext* const ctx, IValue* _this, 
+		VectorOf<IValue*>& args, const VariableCaptures& captures) override {
+
+		return Execute(ctx, _this, args, captures);
+	}
+
 	[[nodiscard]] constexpr auto& GetName() const noexcept { return m_sName; }
 	[[nodiscard]] constexpr auto& GetModuleIndex() const noexcept { return m_uModuleIndex; }
 
-	[[maybe_unused]] IValue* Execute(CRuntimeContext* const ctx, VectorOf<IValue*>& args,
+	[[maybe_unused]] IValue* Execute(CRuntimeContext* const ctx, IValue* _this, VectorOf<IValue*>& args,
 		const VariableCaptures& captures) override;
 protected:
 
@@ -150,6 +181,22 @@ protected:
 	VectorOf<CCrossModuleReference> m_oVariableIndices;
 };
 
+class CBuiltInRuntimeFunction : public CRuntimeFunctionBase
+{
+	NONCOPYABLE(CBuiltInRuntimeFunction);
+
+public:
+	CBuiltInRuntimeFunction(METHOD_AS_VARIABLE(method), std::size_t numArgs );
+	~CBuiltInRuntimeFunction();
+
+	[[nodiscard]] constexpr RuntimeFunctionType FunctionType() const noexcept override { return fn_built_in; }
+
+	[[maybe_unused]] IValue* ExecuteFunction(CRuntimeContext* const ctx, IValue* _this, VectorOf<IValue*>& args,
+		const VariableCaptures& captures) override;
+
+	METHOD_AS_VARIABLE(m_pMethod);
+	std::size_t m_uNumArguments{};
+};
 
 class CRuntimeExpression final : public IRuntimeStructure
 {

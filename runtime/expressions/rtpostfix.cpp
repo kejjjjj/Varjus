@@ -35,7 +35,7 @@ IValue* CRuntimeExpression::EvaluatePostfix(CRuntimeContext* const ctx, const Po
 	} else if (node->IsMemberAccess()) {
 		returnVal = EvaluateMemberAccess(operand, node->GetMemberAccess());
 
-		const auto isMethod = !returnVal->IsSharedObject() && returnVal->IsCallable();
+		const auto isMethod = returnVal->IsCallable();
 
 		if (!isMethod && operand->IsHanging()) {
 			returnVal = returnVal->Copy(); //accessing a temporary e.g. [1, 2, 3].length

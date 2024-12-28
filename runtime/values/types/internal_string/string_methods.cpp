@@ -5,44 +5,70 @@
 #include "runtime/exceptions/exception.hpp"
 #include "runtime/values/simple_operators.hpp"
 
+#include "runtime/structure.hpp"
+
+#include "linter/context.hpp"
 #include <algorithm>
 
-CStringValue::StringMethods CStringValue::ConstructMethods()
+
+DECLARE_BUILT_IN_METHODS CStringValue::m_oMethods;
+
+#define START_METHOD(name) \
+if(!_this)\
+	throw CRuntimeError("attempted to call a method without \"this\" context"); \
+if(_this->Type() != t_string) \
+	throw CRuntimeError(std::format("string.{} expected an array, but got {}", #name, _this->TypeAsString()));\
+auto name = _this->ToCString()
+
+FORWARD_DECLARE_METHOD(ToUpper);
+FORWARD_DECLARE_METHOD(ToLower);
+
+FORWARD_DECLARE_METHOD(Substring);
+FORWARD_DECLARE_METHOD(Split);
+
+FORWARD_DECLARE_METHOD(Replace);
+FORWARD_DECLARE_METHOD(Repeat);
+
+FORWARD_DECLARE_METHOD(GetCodeAt);
+
+void CStringValue::ConstructMethods()
 {
-	return {
-		{"toupper",    {0u, &CStringValue::ToUpper}},
-		{"tolower",    {0u, &CStringValue::ToLower}},
-		{"substring",  {2u, &CStringValue::Substring}},
-		{"split",      {1u, &CStringValue::Split}},
-		{"replace",    {2u, &CStringValue::Replace}},
-		{"repeat",     {1u, &CStringValue::Repeat}},
-		{"get_code_at",{1u, &CStringValue::GetCodeAt}},
+	m_oMethods.clear();
 
-	};
-
-
+	ADD_METHOD("toupper",     ToUpper,   0u);
+	ADD_METHOD("tolower",     ToLower,   0u);
+	ADD_METHOD("substring",   Substring, 2u);
+	ADD_METHOD("split",       Split,     1u);
+	ADD_METHOD("replace",     Replace,   2u);
+	ADD_METHOD("repeat",      Repeat,    1u);
+	ADD_METHOD("get_code_at", GetCodeAt, 1u);
 }
 
-IValue* CStringValue::ToUpper([[maybe_unused]] CRuntimeContext* const ctx, [[maybe_unused]] const IValues& newValue)
+DEFINE_METHOD(ToUpper)
 {
-	std::string v = Internal()->GetString();
+	START_METHOD(__this);
+	std::string v = __this->ToString();
+
 	std::ranges::transform(v, v.begin(), [](std::int8_t c) { 
 		return static_cast<std::int8_t>(std::toupper(static_cast<std::int32_t>(c))); });
-	return Construct(v);
+	return CStringValue::Construct(v);
 }
-IValue* CStringValue::ToLower([[maybe_unused]] CRuntimeContext* const ctx, [[maybe_unused]] const IValues& newValue)
+DEFINE_METHOD(ToLower) 
 {
-	std::string v = Internal()->GetString();
+	START_METHOD(__this);
+	std::string v = __this->ToString();
+
 	std::ranges::transform(v, v.begin(), [](std::int8_t c) {
 		return static_cast<std::int8_t>(std::tolower(static_cast<std::int32_t>(c))); });
-	return Construct(v);
+	return CStringValue::Construct(v);
 }
-IValue* CStringValue::Substring([[maybe_unused]] CRuntimeContext* const ctx, const IValues& newValue)
+DEFINE_METHOD(Substring) 
 {
-	std::string& v = Internal()->GetString();
-	
-	auto& a = newValue[0];
-	auto& b = newValue[1];
+	START_METHOD(__this);
+	const auto& v = __this->ToString();
+
+	auto& a = newValues[0];
+	auto& b = newValues[1];
 
 	const auto CheckSanity = [](const IValue* v) {
 		if (!v->IsIntegral())
@@ -89,11 +115,12 @@ std::vector<std::string> SplitString(const std::string& str, const std::string& 
 	return result;
 }
 
-IValue* CStringValue::Split([[maybe_unused]] CRuntimeContext* const ctx, const IValues& newValue)
-{
-	std::string& v = Internal()->GetString();
+DEFINE_METHOD(Split) {
 
-	auto& delimiter = newValue.front();
+	START_METHOD(__this);
+	const auto& v = __this->ToString();
+
+	auto& delimiter = newValues.front();
 
 	if(delimiter->Type() != t_string)
 		throw CRuntimeError(std::format("string.split expected a \"string\", but got \"{}\"", delimiter->TypeAsString()));
@@ -117,17 +144,18 @@ std::string ReplaceAll(const std::string& str, const std::string& oldSub, const 
 	return result;
 }
 
-IValue* CStringValue::Replace([[maybe_unused]] CRuntimeContext* const ctx, const IValues& newValue)
-{
-	std::string& v = Internal()->GetString();
-	
+DEFINE_METHOD(Replace) {
+
+	START_METHOD(__this);
+	const auto& v = __this->ToString();
+
 	const auto CheckSanity = [](const IValue* v) {
 		if (v->Type() != t_string)
 			throw CRuntimeError(std::format("string.substring expected a \"string\", but got \"{}\"", v->TypeAsString()));
 	};
 
-	auto& a = newValue[0];
-	auto& b = newValue[1];
+	auto& a = newValues[0];
+	auto& b = newValues[1];
 
 	CheckSanity(a);
 	CheckSanity(b);
@@ -135,11 +163,12 @@ IValue* CStringValue::Replace([[maybe_unused]] CRuntimeContext* const ctx, const
 	return CStringValue::Construct(ReplaceAll(v, a->AsString(), b->AsString()));
 }
 
-IValue* CStringValue::Repeat([[maybe_unused]] CRuntimeContext* const ctx, const IValues& newValue)
-{
-	std::string& v = Internal()->GetString();
+DEFINE_METHOD(Repeat) {
 
-	auto& countValue = newValue[0];
+	START_METHOD(__this);
+	const auto& v = __this->ToString();
+
+	auto& countValue = newValues[0];
 	if (!countValue->IsIntegral())
 		throw CRuntimeError(std::format("string.repeat expected an integral value, but got \"{}\"", countValue->TypeAsString()));
 
@@ -154,11 +183,11 @@ IValue* CStringValue::Repeat([[maybe_unused]] CRuntimeContext* const ctx, const 
 	return CStringValue::Construct(result);
 }
 
-IValue* CStringValue::GetCodeAt([[maybe_unused]] CRuntimeContext* const ctx, const IValues& newValue)
-{
-	std::string& v = Internal()->GetString();
+DEFINE_METHOD(GetCodeAt) {
+	START_METHOD(__this);
+	const auto& v = __this->ToString();
 
-	auto& idx = newValue[0];
+	auto& idx = newValues[0];
 	if (!idx->IsIntegral())
 		throw CRuntimeError(std::format("string.get_code_at expected an integral value, but got \"{}\"", idx->TypeAsString()));
 

@@ -84,7 +84,7 @@ std::unique_ptr<IPostfixBase> CPostfixLinter::ParseMemberAccess()
 
 	std::advance(m_iterPos, 1); // skip this identifier
 
-	auto& members = m_pOwner->GetContext()->m_oAllMembers;
+	auto& members = CFileContext::m_oAllMembers;
 	return std::make_unique<CPostfixMemberAccess>(members[string]);
 }
 
