@@ -95,15 +95,14 @@ void AbstractSyntaxTree::CreateRecursively(CMemory* const owner,
 		}
 	}
 
-	//really the only smart way to detect a lambda that captures itself
-	
-	if (owner->IsStack() && IsSelfReferencingCapture(left.get(), right.get())) {
-		left->GetVariable()->m_bSelfCapturing = true;
-
-		//this is how desperate I got...
-		//this bug was a piece of shit
-		//CLinterErrors::PushError("self capturing local lambdas aren't supported yet", right->m_oApproximatePosition);
-		//return;
+	if (GetOperator()->m_ePunctuation >= p_assign && GetOperator()->m_ePunctuation <= p_assignment_bitwise_and) {
+		if (left->IsVariable() && left->GetVariable()->m_bIsConst) {
+			CLinterErrors::PushError("lhs is declared const", left->m_oApproximatePosition);
+			return;
+		}
+		if (owner->IsStack() && IsSelfReferencingCapture(left.get(), right.get())) {
+			left->GetVariable()->m_bSelfCapturing = true;
+		}
 	}
 
 }
@@ -158,7 +157,8 @@ bool AbstractSyntaxTree::IsSelfReferencingCapture(const AbstractSyntaxTree* lhs,
 
 VariableASTNode::VariableASTNode(const CodePosition& pos, CLinterVariable* const var)
 	: AbstractSyntaxTree(pos), CCrossModuleReference(*var),
-	m_bGlobalVariable(var->IsGlobal()){}
+	m_bGlobalVariable(var->IsGlobal()),
+	m_bIsConst(var->m_bConst){}
 
 FunctionASTNode::FunctionASTNode(const CodePosition& pos, CLinterFunction* const func) 
 	: AbstractSyntaxTree(pos),

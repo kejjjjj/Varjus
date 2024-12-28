@@ -406,6 +406,7 @@ const std::unordered_map<std::string_view, TokenType> reservedKeywords = {
 	{"false", TokenType::tt_false},
 	{"true", TokenType::tt_true},
 	{"let", TokenType::tt_let},
+	{"const", TokenType::tt_const},
 	{"fn", TokenType::tt_fn},
 	{"if", TokenType::tt_if},
 	{"else", TokenType::tt_else},

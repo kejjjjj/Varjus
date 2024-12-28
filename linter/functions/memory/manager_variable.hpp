@@ -17,6 +17,8 @@ struct CLinterVariable final : public CMemoryIdentifier
 	const CMemory* m_pOwner{};
 	bool m_bCaptured{ false }; //captured by a closure (only lambdas for now)
 	bool m_bParameter{ false };
+	bool m_bConst{ false };
+	bool m_bInitialized{ false };
 };
 
 class CVariableManager

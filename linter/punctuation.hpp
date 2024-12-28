@@ -37,7 +37,6 @@ enum Punctuation : char
 	p_greater_than,
 	p_greater_equal,
 
-	p_assign,
 
 	p_equality,
 	p_unequality,
@@ -54,6 +53,7 @@ enum Punctuation : char
 	p_bitwise_xor,
 	p_bitwise_and,
 
+	p_assign,
 	p_assignment_addition,
 	p_assignment_subtraction,
 	p_assignment_multiplication,

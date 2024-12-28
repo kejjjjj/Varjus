@@ -111,6 +111,7 @@ Success CFileLinter::LintToken(const CLinterContext& ctx)
 
 	switch ((*ctx.m_iterPos)->Type()) {
 	case tt_let:
+	case tt_const:
 		return Lint<CVariableDeclarationLinter>(ctx);
 	case tt_undefined:
 	case tt_false:

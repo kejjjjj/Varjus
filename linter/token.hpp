@@ -16,6 +16,7 @@ enum TokenType : signed char
 	tt_name,
 	tt_operator,
 	tt_let,
+	tt_const,
 	tt_fn,
 	tt_if,
 	tt_else,

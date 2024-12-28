@@ -1,5 +1,7 @@
 fn main()
 {
-	let string = tostring([1,2,3]) + " " + tostring(true);
-	console.log(string);
+	const bruh = [1,2,3];
+	bruh[0] = 0;
+	
+	return bruh;
 }

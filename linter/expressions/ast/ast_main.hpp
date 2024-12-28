@@ -119,6 +119,7 @@ public:
 
 	bool m_bGlobalVariable{ false };
 	bool m_bSelfCapturing{ false };
+	bool m_bIsConst{ false };
 private:
 
 };

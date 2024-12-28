@@ -66,8 +66,6 @@ constexpr std::array<OperatorFunc, NUM_OPERATORS> m_oOperatorTable = { {
 	OP_GREATER_THAN,  // p_greater_than
 	OP_GREATER_EQUAL, // p_greater_equal
 
-	OP_ASSIGNMENT,    // p_assign
-
 	OP_EQUALITY,          // p_equality
 	OP_UNEQUALITY,        // p_unequality
 	OP_STRICT_EQUALITY,   // p_strict_equality
@@ -82,6 +80,8 @@ constexpr std::array<OperatorFunc, NUM_OPERATORS> m_oOperatorTable = { {
 	OP_BITWISE_OR,    // p_bitwise_or
 	OP_BITWISE_XOR,   // p_bitwise_xor
 	OP_BITWISE_AND,   // p_bitwise_and
+
+	OP_ASSIGNMENT,    // p_assign
 
 	OP_ASSIGNMENT_ADDITION,	     // p_assignment_addition
 	OP_ASSIGNMENT_SUBTRACTION,	 // p_assignment_subtraction

@@ -25,6 +25,8 @@ Success CVariableDeclarationLinter::Parse()
 		return failure;
 	}
 
+	const auto isConst = (*m_iterPos)->Type() == tt_const;
+
 	std::advance(m_iterPos, 1);
 
 
@@ -46,6 +48,7 @@ Success CVariableDeclarationLinter::Parse()
 		}
 
 		m_sDeclaredVariable = m_pOwner->m_VariableManager->DeclareVariable(varName);
+
 	} else {
 		CLinterErrors::PushError("!(const auto scope = currentScope.lock())", (*m_iterPos)->m_oSourcePosition);
 		return failure;
@@ -59,8 +62,10 @@ Success CVariableDeclarationLinter::Parse()
 	}
 
 	//let var;
-	if ((*m_iterPos)->IsOperator(p_semicolon))
+	if ((*m_iterPos)->IsOperator(p_semicolon)) {
+		m_sDeclaredVariable->m_bConst = isConst;
 		return success;
+	}
 
 	//let var = expression;
 	if (!(*m_iterPos)->IsOperator(p_assign)) {
@@ -75,11 +80,13 @@ Success CVariableDeclarationLinter::Parse()
 	if (!linter.Parse())
 		return failure;
 
+	m_sDeclaredVariable->m_bConst = isConst;
+
 	m_pInitializerAST = linter.ToMergedAST();
 	return success;
 }
 bool CVariableDeclarationLinter::IsDeclaration(const CToken* token) noexcept{
-	return token && token->Type() == tt_let;
+	return token && (token->Type() == tt_let || token->Type() == tt_const);
 }
 bool CVariableDeclarationLinter::IsIdentifier(const CToken* token) const noexcept{
 	return token && token->Type() == tt_name;

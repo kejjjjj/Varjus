@@ -32,7 +32,7 @@ private:
 
 	WeakScope m_pScope;
 	CMemory* const m_pOwner = 0;
-	const CLinterVariable* m_sDeclaredVariable{ nullptr };
+	CLinterVariable* m_sDeclaredVariable{ nullptr };
 
 	std::unique_ptr<AbstractSyntaxTree> m_pInitializerAST;
 };

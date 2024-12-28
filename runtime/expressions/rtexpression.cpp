@@ -102,7 +102,11 @@ inline IValue* EvaluateVariable(CRuntimeContext* const ctx, const VariableASTNod
 	if (var->m_bSelfCapturing)
 		variable->m_bSelfCapturing = true;
 
-	return variable->GetValue();
+	auto& v = variable->GetValue();
+	if (var->m_bIsConst)
+		v->MakeImmutable();
+
+	return v;
 }
 inline IValue* EvaluateFunction(CRuntimeContext* const ctx, const FunctionASTNode* const var)
 {
