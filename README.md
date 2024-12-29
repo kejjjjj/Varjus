@@ -1,5 +1,5 @@
 ## A scripting language
-
+ - see [all tests](https://github.com/kejjjjj/Varjus/tree/master/tests/all_tests/scripts) for more thorough examples
 ## Implemented
 of course there's a LOT more happening behind the scenes, but here's a quick summary
 - built-in types
