@@ -1,15 +1,16 @@
+
 fn main()
 {
+
 	let i = 0;
 
 	repeat {
-		if(i++ > 10)
+		
+		if(i >= 5)
 			break;
-	}
-	i = 0;
-	repeat {
+
 		i++;
-	} while(i < 10);
+	}
 
 	return i;
 }

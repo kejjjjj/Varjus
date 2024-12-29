@@ -291,6 +291,23 @@ protected:
 private:
 	std::unique_ptr<CRuntimeExpression> m_pCondition;
 };
+
+class CRuntimeRepeatStatement final : public IRuntimeStructureSequence
+{
+	NONCOPYABLE(CRuntimeRepeatStatement);
+public:
+	CRuntimeRepeatStatement(std::unique_ptr<AbstractSyntaxTree>&& condition, InstructionSequence&& insns);
+	~CRuntimeRepeatStatement();
+
+	[[maybe_unused]] IValue* Execute(CRuntimeContext* const ctx) override;
+
+protected:
+	[[nodiscard]] constexpr EStructureType Type() const noexcept override { return st_while; };
+
+private:
+	std::unique_ptr<CRuntimeExpression> m_pCondition;
+};
+
 class CRuntimeReturnStatement final : public IRuntimeStructure
 {
 	NONCOPYABLE(CRuntimeReturnStatement);
@@ -342,6 +359,7 @@ private:
 	std::unique_ptr<AbstractSyntaxTree> m_pAST;
 };
 
+//continue and break
 class CRuntimeLoopControlStatement final : public IRuntimeStructure {
 	NONCOPYABLE(CRuntimeLoopControlStatement);
 public:

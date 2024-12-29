@@ -1,26 +1,27 @@
-#include "linter.hpp"
-#include "token.hpp"
+#include "context.hpp"
 #include "error.hpp"
 #include "globalEnums.hpp"
-#include "context.hpp"
+#include "linter.hpp"
+#include "token.hpp"
 
-#include "hoisting/hoisting.hpp"
-#include "expressions/expression.hpp"
 #include "declarations/variable_declarations.hpp"
-#include "functions/stack.hpp"
+#include "expressions/expression.hpp"
 #include "functions/function.hpp"
-#include "scopes/scope.hpp"
-#include "modules/imports/import.hpp"
+#include "functions/stack.hpp"
+#include "hoisting/hoisting.hpp"
 #include "modules/exports/export.hpp"
+#include "modules/imports/import.hpp"
 #include "modules/module.hpp"
-#include "statements/for/for.hpp"
-#include "statements/while/while.hpp"
-#include "statements/if/if.hpp"
-#include "statements/if/else.hpp"
-#include "statements/return/return.hpp"
+#include "scopes/scope.hpp"
 #include "statements/control/control.hpp"
-#include "statements/try_catch/try_catch.hpp"
+#include "statements/for/for.hpp"
+#include "statements/if/else.hpp"
+#include "statements/if/if.hpp"
+#include "statements/repeat/repeat.hpp"
+#include "statements/return/return.hpp"
 #include "statements/throw/throw.hpp"
+#include "statements/try_catch/try_catch.hpp"
+#include "statements/while/while.hpp"
 
 #include <cassert>
 
@@ -135,6 +136,8 @@ Success CFileLinter::LintToken(const CLinterContext& ctx)
 		return Lint<CForStatementLinter>(ctx);
 	case tt_while:
 		return Lint<CWhileStatementLinter>(ctx);
+	case tt_repeat:
+		return Lint<CRepeatStatementLinter>(ctx);
 	case tt_return:
 		return Lint<CReturnStatementLinter>(ctx);
 	case tt_break:

@@ -412,6 +412,7 @@ const std::unordered_map<std::string_view, TokenType> reservedKeywords = {
 	{"else", TokenType::tt_else},
 	{"for", TokenType::tt_for},
 	{"while", TokenType::tt_while},
+	{"repeat", TokenType::tt_repeat},
 	{"return", TokenType::tt_return},
 	{"break", TokenType::tt_break},
 	{"continue", TokenType::tt_continue},

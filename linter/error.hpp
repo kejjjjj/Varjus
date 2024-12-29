@@ -13,8 +13,7 @@ public:
         : m_oSourcePosition(position) {
 		m_oErrorMessageFormatted = GetStringFormatted(error);
 	}
-    CLinterError(const std::string& error)
-        : m_oErrorMessageFormatted(error) {}
+    CLinterError(const std::string& error);
 
     [[nodiscard]] char const* what() const noexcept override{
         return m_oErrorMessageFormatted.size() ? m_oErrorMessageFormatted.c_str() : "Unknown exception";
@@ -36,6 +35,10 @@ private:
 class CLinterErrors final {
 
 public:
+
+    static void SetExecutionPosition(const CodePosition* pos) noexcept;
+    [[nodiscard]] static const CodePosition* GetExecutionPosition() noexcept;
+
     static void PushError(const CLinterError& error);
     static void PushError(const std::string& error, const CodePosition& position);
     static void PushError(const std::string& error);
@@ -45,6 +48,7 @@ public:
 
 private:
     static std::vector<CLinterError> errorStack;
+    static const CodePosition* m_pCodePosition;
 
 };
 

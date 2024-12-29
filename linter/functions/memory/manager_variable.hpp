@@ -4,12 +4,14 @@
 #include <unordered_map>
 
 class CMemory;
+class IConstEvalValue;
 
 struct CLinterVariable final : public CMemoryIdentifier
 {
-	CLinterVariable() = delete;
-	CLinterVariable(const CMemory* owner, const std::string& name, const CCrossModuleReference& ref)
-		: CMemoryIdentifier(name, ref), m_pOwner(owner) {}
+	NONCOPYABLE(CLinterVariable);
+
+	CLinterVariable(const CMemory* owner, const std::string& name, const CCrossModuleReference& ref);
+	~CLinterVariable();
 
 	[[nodiscard]] virtual constexpr EMemoryIdentifierType Type() const noexcept override { return mi_variable; }
 	[[nodiscard]] bool IsGlobal() const noexcept;
@@ -19,6 +21,10 @@ struct CLinterVariable final : public CMemoryIdentifier
 	bool m_bParameter{ false };
 	bool m_bConst{ false };
 	bool m_bInitialized{ false };
+#ifdef OPTIMIZATIONS
+	bool m_bIsConstEval{ true }; //can be evaluated during linting
+	IConstEvalValue* m_pConstEval{ nullptr };
+#endif
 };
 
 class CVariableManager
@@ -31,6 +37,8 @@ public:
     [[maybe_unused]] CLinterVariable* DeclareVariable(const std::string& var);
     [[nodiscard]] CLinterVariable* GetVariable(const std::string& var);
     [[nodiscard]] bool ContainsVariable(const std::string& name) const;
+	[[nodiscard]] CLinterVariable* GetVariableByIndex(std::size_t i) const;
+
     [[nodiscard]] std::size_t GetVariableCount() const noexcept;
     [[nodiscard]] auto& GetVariableIterator() { return m_oVariables; }
 

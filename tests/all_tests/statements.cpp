@@ -112,3 +112,50 @@ TEST_CASE("while loop iterates to 5 and continues when even") {
 	retVal->Release();
 	REQUIRE(CProgramRuntime::HasLeaks() == false);
 }
+
+TEST_CASE("repeat loop iterates to 5") {
+
+	auto retVal = TEST_ExecuteFile(JP("repeat_until_5.var"));
+
+	REQUIRE(retVal != nullptr);
+	REQUIRE(retVal->Type() == t_int);
+	REQUIRE(retVal->ToInt() == 5);
+
+	REQUIRE(retVal->HasOwner() == false);
+	retVal->Release();
+	REQUIRE(CProgramRuntime::HasLeaks() == false);
+}
+
+TEST_CASE("repeat-while loop iterates to 5") {
+
+	auto retVal = TEST_ExecuteFile(JP("repeat_while_less_than_5.var"));
+
+	REQUIRE(retVal != nullptr);
+	REQUIRE(retVal->Type() == t_int);
+	REQUIRE(retVal->ToInt() == 5);
+
+	REQUIRE(retVal->HasOwner() == false);
+	retVal->Release();
+	REQUIRE(CProgramRuntime::HasLeaks() == false);
+}
+
+TEST_CASE("repeat iterates to 5 and continues when even") {
+
+	auto retVal = TEST_ExecuteFile(JP("repeat_odd_numbers.var"));
+
+	AssertArray(retVal, AssertArrayValue<ASSERT_INT>{t_int, { 1,3,5 }});
+
+	REQUIRE(retVal->HasOwner() == false);
+	retVal->Release();
+	REQUIRE(CProgramRuntime::HasLeaks() == false);
+}
+TEST_CASE("repeat-while iterates to 5 and continues when even") {
+
+	auto retVal = TEST_ExecuteFile(JP("repeat_while_odd_numbers.var"));
+
+	AssertArray(retVal, AssertArrayValue<ASSERT_INT>{t_int, { 1,3,5 }});
+
+	REQUIRE(retVal->HasOwner() == false);
+	retVal->Release();
+	REQUIRE(CProgramRuntime::HasLeaks() == false);
+}

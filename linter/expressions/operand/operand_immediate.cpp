@@ -4,6 +4,10 @@
 #include "linter/token.hpp"
 #include "linter/expressions/ast.hpp"
 
+#ifdef OPTIMIZATIONS
+#include "linter/optimizations/optimizations.hpp"
+#endif
+
 #include <charconv>
 #include <cassert>
 
@@ -17,6 +21,24 @@ std::unique_ptr<IOperand> CLinterOperand::ParseImmediate(){
 
 UniqueAST CImmediateOperand::ToAST(){
 	return std::make_unique<ConstantASTNode>(m_oCodePosition, ToData(), GetImmediateType());
+}
+
+IConstEvalValue* ConstantASTNode::GetConstEval([[maybe_unused]]CMemory* const owner) noexcept
+{
+	switch (m_eDataType) {
+	case t_int:
+		return COptimizationValues::AcquireNewValue<CConstEvalIntValue>(*reinterpret_cast<std::int64_t*>((char*)m_pConstant.data()));
+	case t_undefined:
+	case t_boolean:
+	case t_double:
+	case t_string:
+	case t_callable:
+	case t_array:
+	case t_object:
+	default:
+		assert(false);
+		return nullptr;
+	}
 }
 
 #pragma pack(push)

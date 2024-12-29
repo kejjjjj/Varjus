@@ -11,6 +11,11 @@
 #include "linter/modules/references.hpp"
 #include "linter/error.hpp"
 
+#ifdef OPTIMIZATIONS
+#include "linter/optimizations/values/types/opt_value.hpp"
+#include "linter/optimizations/values/opt_operators.hpp"
+#endif
+
 #include "linter/token.hpp"
 
 #include <cassert>
@@ -85,8 +90,7 @@ void AbstractSyntaxTree::CreateRecursively(CMemory* const owner,
 
 
 		}
-	}
-	if (rhsOperands.size()) {
+	} if (rhsOperands.size()) {
 		if (right = GetLeaf(rhsOperands, rhsOperators), !right) {
 			const OperatorIterator l = FindLowestPriorityOperator(rhsOperators);
 			right = std::make_shared<OperatorASTNode>((*l)->GetToken()->m_oSourcePosition, (*l)->GetPunctuation());
@@ -95,15 +99,19 @@ void AbstractSyntaxTree::CreateRecursively(CMemory* const owner,
 		}
 	}
 
-	if (GetOperator()->m_ePunctuation >= p_assign && GetOperator()->m_ePunctuation <= p_assignment_bitwise_and) {
-		if (left->IsVariable() && left->GetVariable()->m_bIsConst) {
-			CLinterErrors::PushError("lhs is declared const", left->m_oApproximatePosition);
-			return;
-		}
-		if (owner->IsStack() && IsSelfReferencingCapture(left.get(), right.get())) {
-			left->GetVariable()->m_bSelfCapturing = true;
-		}
+	if (IsAssignment()) {
+		CheckConstness();
+		CheckSelfCapture(owner);
 	}
+
+#ifdef OPTIMIZATIONS
+	if (IsConstEval(owner, left.get()) && IsConstEval(owner, right.get())) {
+		auto result = OPT_ADDITION(left->GetConstEval(owner), right->GetConstEval(owner));
+		//now erase this tree so that it can become a leaf
+
+		//implement me
+	}
+#endif
 
 }
 OperatorIterator AbstractSyntaxTree::FindLowestPriorityOperator(VectorOf<CLinterOperator*>& operators)
@@ -124,7 +132,23 @@ OperatorIterator AbstractSyntaxTree::FindLowestPriorityOperator(VectorOf<CLinter
 
 	return lowestPriorityOperatorItr;
 }
-
+bool AbstractSyntaxTree::IsAssignment() const noexcept
+{
+	return GetOperator()->m_ePunctuation >= p_assign && GetOperator()->m_ePunctuation <= p_assignment_bitwise_and;
+}
+void AbstractSyntaxTree::CheckConstness() const
+{
+	if (left->IsVariable() && left->GetVariable()->m_bIsConst) {
+		CLinterErrors::PushError("lhs is declared const", left->m_oApproximatePosition);
+		return;
+	}
+}
+void AbstractSyntaxTree::CheckSelfCapture(CMemory* const owner)
+{
+	if (owner->IsStack() && IsSelfReferencingCapture(left.get(), right.get())) {
+		left->GetVariable()->m_bSelfCapturing = true;
+	}
+}
 bool AbstractSyntaxTree::IsSelfReferencingCapture(const AbstractSyntaxTree* lhs, const AbstractSyntaxTree* rhs)
 {
 	//logic: lhs = rhs and rhs is a lambda and rhs captures lhs
@@ -150,7 +174,25 @@ bool AbstractSyntaxTree::IsSelfReferencingCapture(const AbstractSyntaxTree* lhs,
 
 	return containsLHS;
 }
+#ifdef OPTIMIZATIONS
 
+bool AbstractSyntaxTree::IsConstEval(CMemory* const owner, const AbstractSyntaxTree* operand)
+{
+	if (operand->IsConstant())
+		return true;
+
+	if (!operand->IsVariable())
+		return false;
+
+	const auto& vars = owner->m_VariableManager;
+	
+	if (auto variable = vars->GetVariableByIndex(operand->GetVariable()->m_uIndex)) {
+		return variable->m_bIsConstEval;
+	}
+
+	return false;
+}
+#endif
 /***********************************************************************
  >
 ***********************************************************************/
@@ -159,6 +201,19 @@ VariableASTNode::VariableASTNode(const CodePosition& pos, CLinterVariable* const
 	: AbstractSyntaxTree(pos), CCrossModuleReference(*var),
 	m_bGlobalVariable(var->IsGlobal()),
 	m_bIsConst(var->m_bConst){}
+VariableASTNode::~VariableASTNode() = default;
+
+IConstEvalValue* VariableASTNode::GetConstEval(CMemory* const owner) noexcept {
+	auto& vars = owner->m_VariableManager;
+
+	if (auto variable = vars->GetVariableByIndex(m_uIndex)) {
+		return variable->m_pConstEval;
+	}
+
+	assert(false);
+	return nullptr;
+}
+
 
 FunctionASTNode::FunctionASTNode(const CodePosition& pos, CLinterFunction* const func) 
 	: AbstractSyntaxTree(pos),

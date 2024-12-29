@@ -32,6 +32,7 @@ class LambdaASTNode;
 class OperatorASTNode;
 
 class CMemory;
+class IConstEvalValue;
 
 template<typename T>
 concept Pointer = std::is_pointer_v<T> || std::is_reference_v<T>;
@@ -72,6 +73,8 @@ public:
 	[[nodiscard]] virtual constexpr const TernaryASTNode* GetTernary() const noexcept { return nullptr; }
 	[[nodiscard]] virtual constexpr const LambdaASTNode* GetLambda() const noexcept { return nullptr; }
 
+
+
 	template<Pointer T>
 	[[nodiscard]] inline constexpr T As() const noexcept {
 		return dynamic_cast<T>(this);
@@ -95,9 +98,19 @@ private:
 	[[nodiscard]] static OperatorIterator FindLowestPriorityOperator(VectorOf<CLinterOperator*>& operators);
 
 	void CreateRecursively(CMemory* const owner, VectorOf<CLinterOperand*>& operands, VectorOf<CLinterOperator*>& operators);
-	bool IsSelfReferencingCapture(const AbstractSyntaxTree* lhs, const AbstractSyntaxTree* rhs);
+	[[nodiscard]] bool IsAssignment() const noexcept;
+	
+	void CheckConstness() const;
+	void CheckSelfCapture(CMemory* const owner);
 
+	[[nodiscard]] bool IsSelfReferencingCapture(const AbstractSyntaxTree* lhs, const AbstractSyntaxTree* rhs);
 
+#ifdef OPTIMIZATIONS
+	[[nodiscard]] virtual IConstEvalValue* GetConstEval([[maybe_unused]]CMemory* const owner) noexcept { return nullptr; }
+
+	[[nodiscard]] bool IsConstEval(CMemory* const owner, const AbstractSyntaxTree* operand);
+
+#endif
 	CodePosition m_oApproximatePosition;
 };
 
@@ -110,18 +123,21 @@ class VariableASTNode final : public AbstractSyntaxTree, public CCrossModuleRefe
 	NONCOPYABLE(VariableASTNode);
 public:
 	VariableASTNode(const CodePosition& pos, CLinterVariable* const var);
-
+	~VariableASTNode();
 	[[nodiscard]] constexpr bool IsLeaf() const noexcept override { return true; }
 	[[nodiscard]] constexpr bool IsVariable() const noexcept override { return true; }
 
 	[[nodiscard]] constexpr const VariableASTNode* GetVariable() const noexcept override { return this; }
 	[[nodiscard]] constexpr VariableASTNode* GetVariable() noexcept override { return this; }
 
+#ifdef OPTIMIZATIONS
+	[[nodiscard]] IConstEvalValue* GetConstEval(CMemory* const owner) noexcept override;
+#endif
+
 	bool m_bGlobalVariable{ false };
 	bool m_bSelfCapturing{ false };
 	bool m_bIsConst{ false };
 private:
-
 };
 class FunctionASTNode final : public AbstractSyntaxTree, public CCrossModuleReference
 {
@@ -148,6 +164,9 @@ public:
 	[[nodiscard]] constexpr bool IsConstant() const noexcept override { return true; }
 	[[nodiscard]] constexpr const ConstantASTNode* GetConstant() const noexcept override { return this; }
 
+#ifdef OPTIMIZATIONS
+	[[nodiscard]] IConstEvalValue* GetConstEval(CMemory* const owner) noexcept override;
+#endif
 
 	// contains the raw data for the constant
 	std::string m_pConstant;

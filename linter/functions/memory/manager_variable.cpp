@@ -1,9 +1,14 @@
 #include "manager_variable.hpp"
 #include "linter/functions/stack.hpp"
 #include "linter/context.hpp"
+#include "linter/optimizations/values/types/opt_value.hpp"
 
 #include <cassert>
 
+CLinterVariable::~CLinterVariable() = default;
+CLinterVariable::CLinterVariable(const CMemory* owner, const std::string& name, const CCrossModuleReference& ref)
+	: CMemoryIdentifier(name, ref), m_pOwner(owner) {
+}
 CVariableManager::CVariableManager(class CMemory* const owner)
 	: m_pOwner(owner) {
 }
@@ -31,6 +36,17 @@ CLinterVariable* CVariableManager::GetVariable(const std::string& var) {
 }
 bool CVariableManager::ContainsVariable(const std::string& name) const {
 	return m_oVariables.contains(name);
+}
+CLinterVariable* CVariableManager::GetVariableByIndex(std::size_t i) const
+{
+	for (auto& [_, v] : m_oVariables) {
+
+		if (v->m_uIndex == i)
+			return v.get();
+	}
+
+	return nullptr;
+
 }
 std::size_t CVariableManager::GetVariableCount() const noexcept {
 	return m_oVariables.size();

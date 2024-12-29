@@ -334,6 +334,12 @@ DEFINE_METHOD(Filter)
 	}
 
 	if (CProgramRuntime::ExceptionThrown()) {
+
+		for (auto& r : results) {
+			if (r != exception)
+				r->Release();
+		}
+
 		return exception;
 	}
 

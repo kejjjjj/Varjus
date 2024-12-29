@@ -1,5 +1,23 @@
 #include "error.hpp"
 
+CLinterError::CLinterError(const std::string& error)
+    : m_oErrorMessageFormatted(error) {
+
+    if (!CLinterErrors::GetExecutionPosition()) {
+        m_oErrorMessageFormatted += std::format(" | near beginning");
+        return;
+    }
+
+    auto& [l, c] = *CLinterErrors::GetExecutionPosition();
+    m_oErrorMessageFormatted += std::format(" | near [{}, {}]", l, c);
+}
+
+void CLinterErrors::SetExecutionPosition(const CodePosition* pos) noexcept {
+    m_pCodePosition = pos;
+}
+const CodePosition* CLinterErrors::GetExecutionPosition() noexcept {
+    return m_pCodePosition;
+}
 void CLinterErrors::PushError(const CLinterError& error) {
     errorStack.push_back(error);
     throw errorStack.back();
@@ -23,3 +41,4 @@ const auto& CLinterErrors::GetErrorStack()
 }
 
 std::vector<CLinterError> CLinterErrors::errorStack;
+const CodePosition* CLinterErrors::m_pCodePosition;

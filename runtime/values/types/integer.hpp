@@ -9,7 +9,7 @@ public:
 
 	[[nodiscard]] IValue* Copy() override;
 
-	virtual void Release() override;
+	void Release() override;
 
 	[[nodiscard]] bool ToBoolean() const override { return static_cast<bool>(Get()); }
 	[[nodiscard]] std::int64_t ToInt() const override { return Get(); }
