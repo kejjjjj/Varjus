@@ -3,7 +3,7 @@
 #include "linter/error.hpp"
 
 #include <cassert>
-
+#include <format>
 
 std::tuple<IConstEvalValue*, IConstEvalValue*, IConstEvalValue*> Coerce(IConstEvalValue* lhs, IConstEvalValue* rhs)
 {
@@ -24,16 +24,18 @@ CCoercionOperands CoerceInternal(IConstEvalValue* weaker, IConstEvalValue* stron
 	assert(weaker->Type() != stronger->Type());
 
 	if (!weaker->IsCoerceable() || !stronger->IsCoerceable())
-		throw CLinterError(std::format("cannot coerce from \"{}\" to \"{}\"", weaker->TypeAsString(), stronger->TypeAsString()));
+		return { nullptr, nullptr, nullptr, lhsIsWeak };
 
 	auto [lhs, rhs] = lhsIsWeak ? std::tie(weaker, stronger) : std::tie(stronger, weaker);
 
 	switch (stronger->Type()) {
+	case t_boolean:
+		return { lhs, rhs, COptimizationValues::AcquireNewValue<CConstEvalBooleanValue>(weaker->ToBoolean()), lhsIsWeak };
 	case t_int:
 		return { lhs, rhs, COptimizationValues::AcquireNewValue<CConstEvalIntValue>(weaker->ToInt()), lhsIsWeak };
-	case t_undefined:
-	case t_boolean:
 	case t_double:
+		return { lhs, rhs, COptimizationValues::AcquireNewValue<CConstEvalDoubleValue>(weaker->ToDouble()), lhsIsWeak };
+	case t_undefined:
 	case t_string:
 	case t_callable:
 	case t_array:
@@ -41,6 +43,5 @@ CCoercionOperands CoerceInternal(IConstEvalValue* weaker, IConstEvalValue* stron
 		break;
 	}
 
-	assert(false);
-	return { lhs, rhs, nullptr, lhsIsWeak };
+	return { nullptr, nullptr, nullptr, lhsIsWeak };
 }

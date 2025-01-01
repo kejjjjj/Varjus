@@ -10,7 +10,7 @@
 
 #include <cassert>
 
-CKeyValue::CKeyValue(std::size_t k, UniqueAST&& ast)
+CKeyValue::CKeyValue(std::size_t k, ASTNode&& ast)
 	: m_uKey(k), m_pValue(std::move(ast)) {
 }
 
@@ -74,9 +74,9 @@ std::unique_ptr<IOperand> CLinterOperand::ParseObject()
 
 }
 
-UniqueAST CObjectOperand::ToAST() {
-	return std::make_unique<ObjectASTNode>(m_oCodePosition, std::move(m_oAttributes));
+ASTNode CObjectOperand::ToAST() {
+	return std::make_shared<ObjectASTNode>(m_oCodePosition, std::move(m_oAttributes));
 }
 
-CObjectOperand::CObjectOperand(VectorOf<KeyValue<std::size_t, UniqueAST>>&& ptr) : m_oAttributes(std::move(ptr)) {}
+CObjectOperand::CObjectOperand(VectorOf<KeyValue<std::size_t, ASTNode>>&& ptr) : m_oAttributes(std::move(ptr)) {}
 CObjectOperand::~CObjectOperand() = default;

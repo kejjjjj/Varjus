@@ -9,10 +9,10 @@ struct CKeyValue
 {
 	NONCOPYABLE(CKeyValue);
 
-	CKeyValue(std::size_t k, UniqueAST&& ast);
+	CKeyValue(std::size_t k, ASTNode&& ast);
 
 	std::size_t m_uKey;
-	UniqueAST m_pValue;
+	ASTNode m_pValue;
 };
 
 struct CObjectOperand final : public IOperand
@@ -20,14 +20,14 @@ struct CObjectOperand final : public IOperand
 	NONCOPYABLE(CObjectOperand);
 
 	CObjectOperand() = default;
-	CObjectOperand(VectorOf<KeyValue<std::size_t, UniqueAST>>&& ptr);
+	CObjectOperand(VectorOf<KeyValue<std::size_t, ASTNode>>&& ptr);
 	~CObjectOperand();
 
 	[[nodiscard]] EOperandBaseType Type() const noexcept override {
 		return ot_object;
 	}
 
-	[[nodiscard]] UniqueAST ToAST() override;
+	[[nodiscard]] ASTNode ToAST() override;
 
-	VectorOf<KeyValue<std::size_t, UniqueAST>> m_oAttributes;
+	VectorOf<KeyValue<std::size_t, ASTNode>> m_oAttributes;
 };

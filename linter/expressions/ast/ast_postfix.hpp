@@ -48,27 +48,27 @@ class SubscriptASTNode : public PostfixASTNode
 {
 	NONCOPYABLE(SubscriptASTNode);
 public:
-	SubscriptASTNode(const CodePosition& pos, std::unique_ptr<AbstractSyntaxTree>&& expression)
+	SubscriptASTNode(const CodePosition& pos, ASTNode&& expression)
 		: PostfixASTNode(pos), m_pAST(std::move(expression)) {
 	}
 	
 	[[nodiscard]] constexpr bool IsSubscript() const noexcept override { return true; }
 	[[nodiscard]] constexpr const SubscriptASTNode* GetSubscript() const noexcept override { return this; }
 
-	std::unique_ptr<AbstractSyntaxTree> m_pAST;
+	ASTNode m_pAST;
 };
 
 class FunctionCallASTNode : public PostfixASTNode
 {
 	NONCOPYABLE(FunctionCallASTNode);
 public:
-	FunctionCallASTNode(const CodePosition& pos, VectorOf<std::unique_ptr<AbstractSyntaxTree>>&& args)
+	FunctionCallASTNode(const CodePosition& pos, VectorOf<ASTNode>&& args)
 		: PostfixASTNode(pos), m_oArguments(std::move(args)) {
 	}
 	[[nodiscard]] constexpr bool IsFunctionCall() const noexcept override { return true; }
 	[[nodiscard]] constexpr const FunctionCallASTNode* GetFunctionCall() const noexcept override { return this; }
 
-	VectorOf<std::unique_ptr<AbstractSyntaxTree>> m_oArguments;
+	VectorOf<ASTNode> m_oArguments;
 };
 
 class PostfixIncrementAST : public PostfixASTNode

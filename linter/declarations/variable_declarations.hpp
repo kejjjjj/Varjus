@@ -20,7 +20,7 @@ public:
 
 	[[nodiscard]] Success Parse();
 	[[nodiscard]] RuntimeBlock ToRuntimeObject() const override;
-	[[nodiscard]] std::unique_ptr<AbstractSyntaxTree>&& MoveInitializer();
+	[[nodiscard]] ASTNode&& MoveInitializer();
 
 	[[nodiscard]] constexpr auto& GetIdentifier() const noexcept { return m_sDeclaredVariable; }
 
@@ -34,5 +34,5 @@ private:
 	CMemory* const m_pOwner = 0;
 	CLinterVariable* m_sDeclaredVariable{ nullptr };
 
-	std::unique_ptr<AbstractSyntaxTree> m_pInitializerAST;
+	ASTNode m_pInitializerAST;
 };

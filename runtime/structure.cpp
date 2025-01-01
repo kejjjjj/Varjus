@@ -13,7 +13,7 @@ IRuntimeStructureSequence::IRuntimeStructureSequence(InstructionSequence&& insns
 IRuntimeStructureSequence::~IRuntimeStructureSequence() = default;
 
 
-CRuntimeConditionalStatement::CRuntimeConditionalStatement(std::unique_ptr<AbstractSyntaxTree>&& condition, InstructionSequence&& insns)
+CRuntimeConditionalStatement::CRuntimeConditionalStatement(ASTNode&& condition, InstructionSequence&& insns)
 	: IRuntimeStructureSequence(std::move(insns)), 
 	m_pCondition(condition ? std::make_unique<CRuntimeExpression>(std::move(condition)) : nullptr) {}
 CRuntimeConditionalStatement::~CRuntimeConditionalStatement() = default;

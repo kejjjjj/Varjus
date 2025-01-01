@@ -21,10 +21,10 @@ struct CExpressionList
 	CExpressionList();
 	~CExpressionList();
 
-	[[nodiscard]] std::unique_ptr<AbstractSyntaxTree> ToMergedAST();
+	[[nodiscard]] ASTNode ToMergedAST();
 	[[nodiscard]] ExpressionList ToExpressionList();
 
-	std::unique_ptr<AbstractSyntaxTree> m_pAST;
+	ASTNode m_pAST;
 	std::unique_ptr<CExpressionList> m_pNext;
 };
 
@@ -48,9 +48,9 @@ public:
 		EvaluationType evalType = evaluate_everything);
 
 	// merge all evaluated expressions into one
-	[[nodiscard]] std::unique_ptr<AbstractSyntaxTree> ToMergedAST() const;
+	[[nodiscard]] ASTNode ToMergedAST() const;
 	[[nodiscard]] ExpressionList ToExpressionList() const;
-	[[nodiscard]] std::unique_ptr<AbstractSyntaxTree> ToAST() const;
+	[[nodiscard]] ASTNode ToAST() const;
 
 	[[nodiscard]] RuntimeBlock ToRuntimeObject() const override;
 private:

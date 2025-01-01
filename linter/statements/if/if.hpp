@@ -20,5 +20,5 @@ public:
 	[[nodiscard]] std::unique_ptr<CRuntimeConditionalStatement> ToConditionalObject();
 private:
 
-	std::unique_ptr<AbstractSyntaxTree> m_pCondition;
+	ASTNode m_pCondition;
 };

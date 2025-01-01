@@ -30,11 +30,11 @@ Success CIfStatementLinter::Parse()
 
 RuntimeBlock CIfStatementLinter::ToRuntimeObject() const
 {
-	decltype(auto) tempAST = const_cast<std::unique_ptr<AbstractSyntaxTree>&&>(std::move(m_pCondition));
+	decltype(auto) tempAST = const_cast<ASTNode&&>(std::move(m_pCondition));
 	return tempAST ? std::make_unique<CRuntimeConditionalStatement>(std::move(tempAST), m_pThisScope->MoveInstructions()) : nullptr;
 }
 std::unique_ptr<CRuntimeConditionalStatement> CIfStatementLinter::ToConditionalObject()
 {
-	decltype(auto) tempAST = const_cast<std::unique_ptr<AbstractSyntaxTree>&&>(std::move(m_pCondition));
+	decltype(auto) tempAST = const_cast<ASTNode&&>(std::move(m_pCondition));
 	return tempAST ? std::make_unique<CRuntimeConditionalStatement>(std::move(tempAST), m_pThisScope->MoveInstructions()) : nullptr;
 }

@@ -86,6 +86,9 @@ public:
 protected:
 };
 
+using UniqueAST = std::unique_ptr<AbstractSyntaxTree>;
+using ASTNode = std::shared_ptr<AbstractSyntaxTree>;
+
 using InstructionSequence = VectorOf<std::unique_ptr<IRuntimeStructure>>;
 
 using RuntimeBlock = std::unique_ptr<IRuntimeStructure>;
@@ -93,7 +96,7 @@ using RuntimeFunction = std::unique_ptr<CRuntimeFunction>;
 
 using FunctionArgument = RuntimeBlock;
 using FunctionArguments = VectorOf<FunctionArgument>;
-using ExpressionList = VectorOf<std::unique_ptr<AbstractSyntaxTree>>;
+using ExpressionList = VectorOf<ASTNode>;
 
 template<typename T>
 using VectorOf = std::vector<T>;
@@ -102,9 +105,8 @@ template<typename A, typename B>
 using KeyValue = std::pair<A, B>;
 
 using ElementIndex = std::size_t;
-using UniqueAST = std::unique_ptr<AbstractSyntaxTree>;
 using ObjectInitializer = VectorOf<KeyValue<ElementIndex, IValue*>>;
-using ObjectInitializerData = VectorOf<KeyValue<std::size_t, UniqueAST>>;
+using ObjectInitializerData = VectorOf<KeyValue<std::size_t, ASTNode>>;
 
 // contains more than one instruction
 class IRuntimeStructureSequence : public IRuntimeStructure
@@ -205,7 +207,7 @@ class CRuntimeExpression final : public IRuntimeStructure
 	friend class CRuntimeThrowStatement;
 
 public:
-	CRuntimeExpression(std::unique_ptr<AbstractSyntaxTree>&& ast);
+	CRuntimeExpression(ASTNode&& ast);
 	~CRuntimeExpression();
 
 	[[maybe_unused]] IValue* Execute(CRuntimeContext* const ctx) override;
@@ -229,7 +231,7 @@ private:
 
 	[[nodiscard]] static VectorOf<IValue*> EvaluateList(CRuntimeContext* const ctx, const ExpressionList& list);
 	[[nodiscard]] static ObjectInitializer EvaluateObject(CRuntimeContext* const ctx, const ObjectInitializerData& obj);
-	std::unique_ptr<AbstractSyntaxTree> m_pAST;
+	ASTNode m_pAST;
 
 };
 
@@ -238,7 +240,7 @@ class CRuntimeConditionalStatement final : public IRuntimeStructureSequence
 	NONCOPYABLE(CRuntimeConditionalStatement);
 	friend class CElseStatementLinter; // so that it can add the chaining
 public:
-	CRuntimeConditionalStatement(std::unique_ptr<AbstractSyntaxTree>&& condition, InstructionSequence&& insns);
+	CRuntimeConditionalStatement(ASTNode&& condition, InstructionSequence&& insns);
 	~CRuntimeConditionalStatement();
 
 	[[maybe_unused]] IValue* Execute(CRuntimeContext* const ctx) override;
@@ -260,9 +262,9 @@ class CRuntimeForStatement final : public IRuntimeStructureSequence
 	NONCOPYABLE(CRuntimeForStatement);
 public:
 	CRuntimeForStatement(
-		std::unique_ptr<AbstractSyntaxTree>&& init,
-		std::unique_ptr<AbstractSyntaxTree>&& cond,
-		std::unique_ptr<AbstractSyntaxTree>&& endExpr, InstructionSequence&& insns);
+		ASTNode&& init,
+		ASTNode&& cond,
+		ASTNode&& endExpr, InstructionSequence&& insns);
 	~CRuntimeForStatement();
 
 	[[maybe_unused]] IValue* Execute(CRuntimeContext* const ctx) override;
@@ -280,7 +282,7 @@ class CRuntimeWhileStatement final : public IRuntimeStructureSequence
 {
 	NONCOPYABLE(CRuntimeWhileStatement);
 public:
-	CRuntimeWhileStatement(std::unique_ptr<AbstractSyntaxTree>&& condition, InstructionSequence&& insns);
+	CRuntimeWhileStatement(ASTNode&& condition, InstructionSequence&& insns);
 	~CRuntimeWhileStatement();
 
 	[[maybe_unused]] IValue* Execute(CRuntimeContext* const ctx) override;
@@ -296,7 +298,7 @@ class CRuntimeRepeatStatement final : public IRuntimeStructureSequence
 {
 	NONCOPYABLE(CRuntimeRepeatStatement);
 public:
-	CRuntimeRepeatStatement(std::unique_ptr<AbstractSyntaxTree>&& condition, InstructionSequence&& insns);
+	CRuntimeRepeatStatement(ASTNode&& condition, InstructionSequence&& insns);
 	~CRuntimeRepeatStatement();
 
 	[[maybe_unused]] IValue* Execute(CRuntimeContext* const ctx) override;
@@ -312,7 +314,7 @@ class CRuntimeReturnStatement final : public IRuntimeStructure
 {
 	NONCOPYABLE(CRuntimeReturnStatement);
 public:
-	CRuntimeReturnStatement(std::unique_ptr<AbstractSyntaxTree>&& condition);
+	CRuntimeReturnStatement(ASTNode&& condition);
 	~CRuntimeReturnStatement();
 
 	[[maybe_unused]] IValue* Execute(CRuntimeContext* const ctx) override;
@@ -321,7 +323,7 @@ protected:
 	[[nodiscard]] constexpr EStructureType Type() const noexcept override { return st_return; };
 
 private:
-	std::unique_ptr<AbstractSyntaxTree> m_pAST;
+	ASTNode m_pAST;
 };
 
 class CRuntimeTryCatchStatement final : public IRuntimeStructure
@@ -347,7 +349,7 @@ class CRuntimeThrowStatement final : public IRuntimeStructure
 {
 	NONCOPYABLE(CRuntimeThrowStatement);
 public:
-	CRuntimeThrowStatement(std::unique_ptr<AbstractSyntaxTree>&& condition);
+	CRuntimeThrowStatement(ASTNode&& condition);
 	~CRuntimeThrowStatement();
 
 	[[maybe_unused]] IValue* Execute(CRuntimeContext* const ctx) override;
@@ -356,7 +358,7 @@ protected:
 	[[nodiscard]] constexpr EStructureType Type() const noexcept override { return st_throw; };
 
 private:
-	std::unique_ptr<AbstractSyntaxTree> m_pAST;
+	ASTNode m_pAST;
 };
 
 //continue and break

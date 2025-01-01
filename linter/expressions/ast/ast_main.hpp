@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <utility>
+#include <stdexcept>
 
 #include "globalDefinitions.hpp"
 #include "linter/expressions/definitions.hpp"
@@ -10,7 +11,7 @@
 
 class AbstractSyntaxTree;
 using ASTNode = std::shared_ptr<AbstractSyntaxTree>;
-using ExpressionList = VectorOf<std::unique_ptr<AbstractSyntaxTree>>;
+using ExpressionList = VectorOf<ASTNode>;
 using UniqueAST = std::unique_ptr<AbstractSyntaxTree>;
 template<typename A, typename B>
 using KeyValue = std::pair<A, B>;
@@ -39,7 +40,7 @@ concept Pointer = std::is_pointer_v<T> || std::is_reference_v<T>;
 using RuntimeFunction = std::unique_ptr<CRuntimeFunction>;
 using ElementIndex = std::size_t;
 
-class AbstractSyntaxTree
+class AbstractSyntaxTree : public std::enable_shared_from_this<AbstractSyntaxTree>
 {
 public:
 	AbstractSyntaxTree() = default;
@@ -59,7 +60,6 @@ public:
 	[[nodiscard]] virtual constexpr bool IsObject() const noexcept { return false; }
 	[[nodiscard]] virtual constexpr bool IsTernary() const noexcept { return false; }
 	[[nodiscard]] virtual constexpr bool IsLambda() const noexcept { return false; }
-
 	[[nodiscard]] virtual constexpr bool IsSequence() const noexcept { return false; }
 
 	[[nodiscard]] virtual constexpr const OperatorASTNode* GetOperator() const noexcept { return nullptr; }
@@ -73,28 +73,15 @@ public:
 	[[nodiscard]] virtual constexpr const TernaryASTNode* GetTernary() const noexcept { return nullptr; }
 	[[nodiscard]] virtual constexpr const LambdaASTNode* GetLambda() const noexcept { return nullptr; }
 
-
-
-	template<Pointer T>
-	[[nodiscard]] inline constexpr T As() const noexcept {
-		return dynamic_cast<T>(this);
-	}
-
-	template<Pointer T>
-	[[nodiscard]] inline constexpr T As() noexcept {
-		return dynamic_cast<T>(this);
-	}
-
 	ASTNode left;
 	ASTNode right;
 
 public:
-	[[nodiscard]] static std::unique_ptr<AbstractSyntaxTree> CreateAST(CMemory* const owner,
+	[[nodiscard]] static ASTNode CreateAST(CMemory* const owner,
 		VectorOf<CLinterOperand*>& operands, VectorOf<CLinterOperator*>& operators);
 
 private:
-
-	[[nodiscard]] static std::unique_ptr<AbstractSyntaxTree> GetLeaf(VectorOf<CLinterOperand*>& operands, VectorOf<CLinterOperator*>& operators);
+	[[nodiscard]] static std::shared_ptr<AbstractSyntaxTree> GetLeaf(VectorOf<CLinterOperand*>& operands, VectorOf<CLinterOperator*>& operators);
 	[[nodiscard]] static OperatorIterator FindLowestPriorityOperator(VectorOf<CLinterOperator*>& operators);
 
 	void CreateRecursively(CMemory* const owner, VectorOf<CLinterOperand*>& operands, VectorOf<CLinterOperator*>& operators);
@@ -105,13 +92,19 @@ private:
 
 	[[nodiscard]] bool IsSelfReferencingCapture(const AbstractSyntaxTree* lhs, const AbstractSyntaxTree* rhs);
 
-#ifdef OPTIMIZATIONS
-	[[nodiscard]] virtual IConstEvalValue* GetConstEval([[maybe_unused]]CMemory* const owner) noexcept { return nullptr; }
+	CodePosition m_oApproximatePosition;
 
-	[[nodiscard]] bool IsConstEval(CMemory* const owner, const AbstractSyntaxTree* operand);
+#ifdef OPTIMIZATIONS
+public:
+	std::weak_ptr<AbstractSyntaxTree> parent{};
+
+	[[nodiscard]] virtual IConstEvalValue* GetConstEval([[maybe_unused]]CMemory* const owner) noexcept { return nullptr; }
+	[[nodiscard]] static bool IsConstEval(CMemory* const owner, const AbstractSyntaxTree* operand);
+
+	static void OptimizeBranches(CMemory* const owner, ASTNode& node);
+	static void OptimizeNodes(CMemory* const owner, ASTNode& node);
 
 #endif
-	CodePosition m_oApproximatePosition;
 };
 
 struct CLinterVariable;
@@ -156,7 +149,7 @@ class ConstantASTNode final : public AbstractSyntaxTree
 	NONCOPYABLE(ConstantASTNode);
 
 public:
-
+	ConstantASTNode(ConstantASTNode&& other) = default;
 	ConstantASTNode(const CodePosition& pos, const std::string& data, EValueType datatype);
 	~ConstantASTNode();
 
@@ -195,7 +188,7 @@ class ObjectASTNode final : public AbstractSyntaxTree
 
 public:
 
-	ObjectASTNode(const CodePosition& pos, VectorOf<KeyValue<std::size_t, UniqueAST>>&& expressions);
+	ObjectASTNode(const CodePosition& pos, VectorOf<KeyValue<std::size_t, ASTNode>>&& expressions);
 	~ObjectASTNode();
 
 	[[nodiscard]] constexpr bool IsLeaf() const noexcept override { return true; }
@@ -203,7 +196,7 @@ public:
 
 	[[nodiscard]] constexpr const ObjectASTNode* GetObject() const noexcept override { return this; }
 
-	VectorOf<KeyValue<std::size_t, UniqueAST>> m_oAttributes;
+	VectorOf<KeyValue<std::size_t, ASTNode>> m_oAttributes;
 };
 
 class TernaryASTNode final : public AbstractSyntaxTree
@@ -220,9 +213,9 @@ public:
 
 	[[nodiscard]] constexpr const TernaryASTNode* GetTernary() const noexcept override { return this; }
 
-	UniqueAST m_pOperand;
-	UniqueAST m_pTrue;
-	UniqueAST m_pFalse;
+	ASTNode m_pOperand;
+	ASTNode m_pTrue;
+	ASTNode m_pFalse;
 };
 struct CCrossModuleReference;
 
@@ -255,6 +248,7 @@ public:
 	OperatorASTNode(const CodePosition& pos, Punctuation punc) : AbstractSyntaxTree(pos), m_ePunctuation(punc) {}
 	virtual ~OperatorASTNode() = default;
 
+
 	[[nodiscard]] constexpr const OperatorASTNode* GetOperator() const noexcept override { return this; }
 	[[nodiscard]] constexpr bool IsOperator() const noexcept override { return true; }
 
@@ -263,7 +257,6 @@ public:
 
 	[[nodiscard]] virtual constexpr const PostfixASTNode* GetPostfix() const noexcept { return nullptr; }
 	[[nodiscard]] virtual constexpr const UnaryASTNode* GetUnary() const noexcept { return nullptr; }
-
 
 	[[nodiscard]] virtual constexpr bool IsSequence() const noexcept { return m_ePunctuation == p_comma; }
 

@@ -6,9 +6,7 @@
 #include <string>
 #include <cstdint>
 #include <vector>
-
-template<typename T>
-using VectorOf = std::vector<T>;
+#include "linter/expressions/definitions.hpp"
 
 using namespace std::string_literals;
 
@@ -16,7 +14,15 @@ using namespace std::string_literals;
  > Represents values which can be evaluated during linting
 ***********************************************************************/
 
+inline std::string emptyString;
+
 struct CLinterVariable;
+class ConstantASTNode;
+
+class CConstEvalBooleanValue;
+class CConstEvalIntValue;
+class CConstEvalDoubleValue;
+class CConstEvalStringValue;
 
 class IConstEvalValue
 {
@@ -24,13 +30,16 @@ public:
 	virtual ~IConstEvalValue() = default;
 
 	[[nodiscard]] constexpr virtual EValueType Type() const noexcept { return t_undefined; }
-	[[nodiscard]] virtual std::int64_t ToInt() const { return 0; }
 
 	[[nodiscard]] virtual std::string TypeAsString() const { return "undefined"s; }
 	[[nodiscard]] virtual std::string ValueAsString() const { return "undefined"s; }
 
+	constexpr void SetPosition(const CodePosition& pos) noexcept { m_oApproximatePosition = pos; }
 	virtual void Release();
 	[[nodiscard]] virtual IConstEvalValue* Copy();
+
+	[[nodiscard]] virtual std::shared_ptr<ConstantASTNode> ToAST() const;
+
 
 	constexpr auto SetOwner(CLinterVariable* o) noexcept { m_pOwner = o; }
 	[[nodiscard]] constexpr bool HasOwner() const noexcept { return !!m_pOwner; }
@@ -38,10 +47,26 @@ public:
 
 	[[nodiscard]] constexpr virtual bool IsCoerceable() const noexcept { return false; }
 
+	[[nodiscard]] bool& AsBoolean();
+	[[nodiscard]] std::int64_t& AsInt();
+	[[nodiscard]] double& AsDouble();
+	[[nodiscard]] std::string& AsString();
+
+	[[nodiscard]] virtual bool ToBoolean() const { return false; }
+	[[nodiscard]] virtual std::int64_t ToInt() const { return 0; }
+	[[nodiscard]] virtual double ToDouble() const { return 0.0; }
+	[[nodiscard]] virtual const std::string& ToString() const { return emptyString; }
+
+	[[nodiscard]] virtual CConstEvalBooleanValue* ToCBoolean() { return nullptr; }
+	[[nodiscard]] virtual CConstEvalIntValue* ToCInt() { return nullptr; }
+	[[nodiscard]] virtual CConstEvalDoubleValue* ToCDouble() { return nullptr; }
+	[[nodiscard]] virtual CConstEvalStringValue* ToCString() { return nullptr; }
+
 protected:
 	void ReleaseInternal();
 
 	CLinterVariable* m_pOwner{ nullptr };
+	CodePosition m_oApproximatePosition;
 };
 
 template <typename Value>
@@ -58,6 +83,6 @@ public:
 	void SetStorageValue(const Value& v) { m_oValue = v; }
 
 protected:
-	Value m_oValue;
+	Value m_oValue{};
 };
 

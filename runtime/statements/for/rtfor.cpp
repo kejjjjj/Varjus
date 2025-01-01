@@ -5,9 +5,9 @@
 #include "runtime/exceptions/exception.hpp"
 
 CRuntimeForStatement::CRuntimeForStatement(
-	std::unique_ptr<AbstractSyntaxTree>&& init,
-	std::unique_ptr<AbstractSyntaxTree>&& cond,
-	std::unique_ptr<AbstractSyntaxTree>&& endExpr, InstructionSequence&& insns)
+	ASTNode&& init,
+	ASTNode&& cond,
+	ASTNode&& endExpr, InstructionSequence&& insns)
 	: IRuntimeStructureSequence(std::move(insns)), 
 	m_pInitializer(std::make_unique<CRuntimeExpression>(std::move(init))),
 	m_pCondition(std::make_unique<CRuntimeExpression>(std::move(cond))),

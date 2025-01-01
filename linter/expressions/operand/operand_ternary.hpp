@@ -7,16 +7,16 @@ struct CTernaryOperand final : public IOperand
 	NONCOPYABLE(CTernaryOperand);
 
 	CTernaryOperand() = default;
-	CTernaryOperand(UniqueAST&& value, UniqueAST&& m_true, UniqueAST&& m_false);
+	CTernaryOperand(ASTNode&& value, ASTNode&& m_true, ASTNode&& m_false);
 	~CTernaryOperand();
 
 	[[nodiscard]] EOperandBaseType Type() const noexcept override {
 		return ot_ternary;
 	}
 
-	[[nodiscard]] UniqueAST ToAST() override;
+	[[nodiscard]] ASTNode ToAST() override;
 
-	UniqueAST m_pValue;
-	UniqueAST m_pTrue;
-	UniqueAST m_pFalse;
+	ASTNode m_pValue;
+	ASTNode m_pTrue;
+	ASTNode m_pFalse;
 };

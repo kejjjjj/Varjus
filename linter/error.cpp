@@ -1,5 +1,7 @@
 #include "error.hpp"
 
+#include <format>
+
 CLinterError::CLinterError(const std::string& error)
     : m_oErrorMessageFormatted(error) {
 

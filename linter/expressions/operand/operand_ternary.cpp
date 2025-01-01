@@ -41,11 +41,11 @@ std::unique_ptr<IOperand> CLinterOperand::ParseTernary(std::optional<PairMatcher
 	return ptr;
 }
 
-UniqueAST CTernaryOperand::ToAST() {
-	return std::make_unique<TernaryASTNode>(m_oCodePosition, this);
+ASTNode CTernaryOperand::ToAST() {
+	return std::make_shared<TernaryASTNode>(m_oCodePosition, this);
 }
 
-CTernaryOperand::CTernaryOperand(UniqueAST&& value, UniqueAST&& m_true, UniqueAST&& m_false)
+CTernaryOperand::CTernaryOperand(ASTNode&& value, ASTNode&& m_true, ASTNode&& m_false)
 	: m_pValue(std::move(value)), m_pTrue(std::move(m_true)), m_pFalse(std::move(m_false)) {
 }
 CTernaryOperand::~CTernaryOperand() = default;

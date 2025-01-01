@@ -41,7 +41,7 @@ Success CReturnStatementLinter::Parse()
 	m_pAST = ParseExpression();
 	return success;
 }
-std::unique_ptr<AbstractSyntaxTree> CReturnStatementLinter::ParseExpression()
+ASTNode CReturnStatementLinter::ParseExpression()
 {
 
 	CLinterExpression expr(m_iterPos, m_iterEnd, m_pScope, m_pOwner);
@@ -56,6 +56,6 @@ std::unique_ptr<AbstractSyntaxTree> CReturnStatementLinter::ParseExpression()
 RuntimeBlock CReturnStatementLinter::ToRuntimeObject() const
 {
 
-	decltype(auto) tempAST = const_cast<std::unique_ptr<AbstractSyntaxTree>&&>(std::move(m_pAST));
+	decltype(auto) tempAST = const_cast<ASTNode&&>(std::move(m_pAST));
 	return std::make_unique<CRuntimeReturnStatement>(std::move(tempAST));
 }

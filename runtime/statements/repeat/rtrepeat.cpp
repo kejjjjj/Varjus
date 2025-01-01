@@ -8,7 +8,7 @@
 #include <algorithm>
 
 
-CRuntimeRepeatStatement::CRuntimeRepeatStatement(std::unique_ptr<AbstractSyntaxTree>&& condition, InstructionSequence&& insns)
+CRuntimeRepeatStatement::CRuntimeRepeatStatement(ASTNode&& condition, InstructionSequence&& insns)
 	: IRuntimeStructureSequence(std::move(insns)), m_pCondition(std::make_unique<CRuntimeExpression>(std::move(condition))) {}
 CRuntimeRepeatStatement::~CRuntimeRepeatStatement() = default;
 

@@ -49,7 +49,7 @@ public:
 	virtual ~IPostfixBase() = default;
 
 	[[nodiscard]] virtual constexpr EPostfixType Type() const noexcept = 0;
-	[[nodiscard]] virtual std::unique_ptr<AbstractSyntaxTree> ToAST() = 0;
+	[[nodiscard]] virtual ASTNode ToAST() = 0;
 
 	CodePosition m_oCodePosition;
 };
@@ -62,7 +62,7 @@ public:
 		: m_uGlobalMemberIndex(globalMemberIndex) {}
 
 	[[nodiscard]] constexpr EPostfixType Type() const noexcept override { return pf_subscript; }
-	[[nodiscard]] std::unique_ptr<AbstractSyntaxTree> ToAST() override;
+	[[nodiscard]] ASTNode ToAST() override;
 
 
 private:
@@ -73,15 +73,15 @@ class CPostfixSubscript final : public IPostfixBase
 {
 	NONCOPYABLE(CPostfixSubscript);
 public:
-	CPostfixSubscript(std::unique_ptr<AbstractSyntaxTree>&& ast);
+	CPostfixSubscript(ASTNode&& ast);
 	~CPostfixSubscript();
 
 	[[nodiscard]] constexpr EPostfixType Type() const noexcept override { return pf_subscript; }
-	[[nodiscard]] std::unique_ptr<AbstractSyntaxTree> ToAST() override;
+	[[nodiscard]] ASTNode ToAST() override;
 
 
 private:
-	std::unique_ptr<AbstractSyntaxTree> m_pAST;
+	ASTNode m_pAST;
 };
 
 class CPostfixFunctionCall final : public IPostfixBase
@@ -93,7 +93,7 @@ public:
 	~CPostfixFunctionCall();
 
 	[[nodiscard]] constexpr EPostfixType Type() const noexcept override { return pf_functioncall; }
-	[[nodiscard]] std::unique_ptr<AbstractSyntaxTree> ToAST() override;
+	[[nodiscard]] ASTNode ToAST() override;
 
 private:
 	ExpressionList m_pArgs;
@@ -106,7 +106,7 @@ public:
 	CPostfixIncrement() = default;
 	[[nodiscard]] constexpr EPostfixType Type() const noexcept override { return pf_increment; }
 
-	[[nodiscard]] std::unique_ptr<AbstractSyntaxTree> ToAST() override;
+	[[nodiscard]] ASTNode ToAST() override;
 };
 class CPostfixDecrement final : public IPostfixBase
 {
@@ -115,5 +115,5 @@ public:
 	CPostfixDecrement() = default;
 	[[nodiscard]] constexpr EPostfixType Type() const noexcept override { return pf_decrement; }
 
-	[[nodiscard]] std::unique_ptr<AbstractSyntaxTree> ToAST() override;
+	[[nodiscard]] ASTNode ToAST() override;
 };

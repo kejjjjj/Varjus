@@ -5,16 +5,16 @@
 struct CASTOperand final : public IOperand
 {
 	NONCOPYABLE(CASTOperand);
-	CASTOperand(UniqueAST&& ptr);
+	CASTOperand(ASTNode&& ptr);
 	~CASTOperand();
 
 	[[nodiscard]] EOperandBaseType Type() const noexcept override {
 		return ot_abstract_syntax_tree;
 	}
 
-	[[nodiscard]] UniqueAST ToAST() override;
+	[[nodiscard]] ASTNode ToAST() override;
 
 
-	UniqueAST m_pAST;
+	ASTNode m_pAST;
 };
 

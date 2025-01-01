@@ -61,8 +61,8 @@ CLambdaOperand::CLambdaOperand(RuntimeFunction&& ptr, VectorOf<CCrossModuleRefer
 	: m_pLambda(std::move(ptr)), m_oVariableCaptures(std::move(captures)) {}
 CLambdaOperand::~CLambdaOperand() = default;
 
-UniqueAST CLambdaOperand::ToAST() {
-	return std::make_unique<LambdaASTNode>(m_oCodePosition, std::move(m_pLambda), std::move(m_oVariableCaptures));
+ASTNode CLambdaOperand::ToAST() {
+	return std::make_shared<LambdaASTNode>(m_oCodePosition, std::move(m_pLambda), std::move(m_oVariableCaptures));
 }
 
 /***********************************************************************

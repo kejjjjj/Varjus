@@ -12,7 +12,7 @@ struct CImmediateOperand final : public IOperand
 		return ot_immediate;
 	}
 
-	[[nodiscard]] UniqueAST ToAST() override;
+	[[nodiscard]] ASTNode ToAST() override;
 
 private:
 	[[nodiscard]] EValueType GetImmediateType() const noexcept;

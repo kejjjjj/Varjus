@@ -60,7 +60,7 @@ Success CLinterOperand::ParseOperand(std::optional<PairMatcher>& eoe)
 	return success;
 }
 
-std::unique_ptr<AbstractSyntaxTree> CLinterOperand::OperandToAST() const noexcept{
+ASTNode CLinterOperand::OperandToAST() const noexcept{
 	return m_pOperand->ToAST();
 }
 
@@ -72,9 +72,9 @@ static AbstractSyntaxTree* SeekASTLeftBranch(AbstractSyntaxTree* src) {
 	return end;
 }
 
-std::unique_ptr<AbstractSyntaxTree> CLinterOperand::ToAST()
+ASTNode CLinterOperand::ToAST()
 {
-	UniqueAST m_pEntry{ nullptr };
+	ASTNode m_pEntry{ nullptr };
 
 	if (auto unaries = UnariesToAST()) {
 		m_pEntry = std::move(unaries);
@@ -95,12 +95,12 @@ std::unique_ptr<AbstractSyntaxTree> CLinterOperand::ToAST()
 	return m_pEntry;
 }
 
-std::unique_ptr<AbstractSyntaxTree> CLinterOperand::PostfixesToAST() const noexcept
+ASTNode CLinterOperand::PostfixesToAST() const noexcept
 {
 	if (!m_oPostfixes.size())
 		return nullptr;
 
-	std::unique_ptr<AbstractSyntaxTree> root;
+	ASTNode root;
 	AbstractSyntaxTree* position{ nullptr };
 
 	for (auto& pf : m_oPostfixes) {
@@ -119,7 +119,7 @@ std::unique_ptr<AbstractSyntaxTree> CLinterOperand::PostfixesToAST() const noexc
 
 	return root;
 }
-UniqueAST CLinterOperand::UnariesToAST() const noexcept
+ASTNode CLinterOperand::UnariesToAST() const noexcept
 {
 	if (!m_oUnaryOperators.size())
 		return nullptr;

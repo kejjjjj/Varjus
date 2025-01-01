@@ -2,7 +2,7 @@
 
 #include "operand.hpp"
 
-using ExpressionList = VectorOf<UniqueAST>;
+using ExpressionList = VectorOf<ASTNode>;
 
 struct CArrayOperand final : public IOperand
 {
@@ -16,7 +16,7 @@ struct CArrayOperand final : public IOperand
 		return ot_array;
 	}
 
-	[[nodiscard]] UniqueAST ToAST() override;
+	[[nodiscard]] ASTNode ToAST() override;
 
 
 	ExpressionList m_oExpressions;

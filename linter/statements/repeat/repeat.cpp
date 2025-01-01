@@ -54,6 +54,6 @@ Success CRepeatStatementLinter::Parse()
 RuntimeBlock CRepeatStatementLinter::ToRuntimeObject() const
 {
 
-	decltype(auto) tempAST = const_cast<std::unique_ptr<AbstractSyntaxTree>&&>(std::move(m_pCondition));
+	decltype(auto) tempAST = const_cast<ASTNode&&>(std::move(m_pCondition));
 	return std::make_unique<CRuntimeRepeatStatement>(std::move(tempAST), m_pThisScope->MoveInstructions());
 }

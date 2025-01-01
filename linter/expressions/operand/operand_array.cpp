@@ -28,8 +28,8 @@ std::unique_ptr<IOperand> CLinterOperand::ParseArray()
 	return ptr;
 }
 
-UniqueAST CArrayOperand::ToAST() {
-	return std::make_unique<ArrayASTNode>(m_oCodePosition, std::move(m_oExpressions));
+ASTNode CArrayOperand::ToAST() {
+	return std::make_shared<ArrayASTNode>(m_oCodePosition, std::move(m_oExpressions));
 }
 
 CArrayOperand::CArrayOperand(ExpressionList&& ptr) : m_oExpressions(std::move(ptr)) {}

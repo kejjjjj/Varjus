@@ -26,7 +26,7 @@ CLinterExpression::~CLinterExpression() = default;
 CExpressionList::CExpressionList() = default;
 CExpressionList::~CExpressionList() = default;
 
-std::unique_ptr<AbstractSyntaxTree> CExpressionList::ToMergedAST()
+ASTNode CExpressionList::ToMergedAST()
 {
 	if (!m_pNext)
 		return std::move(m_pAST);
@@ -116,7 +116,7 @@ bool CLinterExpression::EndOfExpression(const std::optional<PairMatcher>& eoe) c
 	return eoe->IsClosing(dynamic_cast<const CPunctuationToken*>(*m_iterPos)->m_ePunctuation);
 }
 
-std::unique_ptr<AbstractSyntaxTree> CLinterExpression::ToAST() const
+ASTNode CLinterExpression::ToAST() const
 {
 	if (m_pOwner->IsHoisting())
 		return nullptr;
@@ -133,7 +133,7 @@ std::unique_ptr<AbstractSyntaxTree> CLinterExpression::ToAST() const
 	assert(operands.size() == operators.size() + 1u);
 	return AbstractSyntaxTree::CreateAST(m_pOwner, operands, operators);
 }
-std::unique_ptr<AbstractSyntaxTree> CLinterExpression::ToMergedAST() const
+ASTNode CLinterExpression::ToMergedAST() const
 {
 	if (m_pOwner->IsHoisting())
 		return nullptr;

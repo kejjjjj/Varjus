@@ -139,23 +139,23 @@ std::unique_ptr<IPostfixBase> CPostfixLinter::ParseDecrement() {
 	return std::move(m_oPostfixes);
 }
 
-std::unique_ptr<AbstractSyntaxTree> CPostfixMemberAccess::ToAST(){
-	return std::make_unique<MemberAccessASTNode>(m_oCodePosition, m_uGlobalMemberIndex);
+ASTNode CPostfixMemberAccess::ToAST(){
+	return std::make_shared<MemberAccessASTNode>(m_oCodePosition, m_uGlobalMemberIndex);
 }
-std::unique_ptr<AbstractSyntaxTree> CPostfixSubscript::ToAST() {
-	return std::make_unique<SubscriptASTNode>(m_oCodePosition, std::move(m_pAST));
+ASTNode CPostfixSubscript::ToAST() {
+	return std::make_shared<SubscriptASTNode>(m_oCodePosition, std::move(m_pAST));
 }
-std::unique_ptr<AbstractSyntaxTree> CPostfixFunctionCall::ToAST() {
-	return std::make_unique<FunctionCallASTNode>(m_oCodePosition, std::move(m_pArgs));
+ASTNode CPostfixFunctionCall::ToAST() {
+	return std::make_shared<FunctionCallASTNode>(m_oCodePosition, std::move(m_pArgs));
 }
-std::unique_ptr<AbstractSyntaxTree> CPostfixIncrement::ToAST() {
-	return std::make_unique<PostfixIncrementAST>(m_oCodePosition);
+ASTNode CPostfixIncrement::ToAST() {
+	return std::make_shared<PostfixIncrementAST>(m_oCodePosition);
 }
-std::unique_ptr<AbstractSyntaxTree> CPostfixDecrement::ToAST() {
-	return std::make_unique<PostfixDecrementAST>(m_oCodePosition);
+ASTNode CPostfixDecrement::ToAST() {
+	return std::make_shared<PostfixDecrementAST>(m_oCodePosition);
 }
 
-CPostfixSubscript::CPostfixSubscript(std::unique_ptr<AbstractSyntaxTree>&& ast) : m_pAST(std::move(ast)){}
+CPostfixSubscript::CPostfixSubscript(ASTNode&& ast) : m_pAST(std::move(ast)){}
 CPostfixSubscript::~CPostfixSubscript() = default;
 
 

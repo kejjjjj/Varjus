@@ -27,9 +27,9 @@ std::unique_ptr<IOperand> CLinterOperand::ParseParentheses(std::optional<PairMat
 	return ptr;
 }
 
-UniqueAST CASTOperand::ToAST(){
+ASTNode CASTOperand::ToAST(){
 	return std::move(m_pAST);
 }
 
-CASTOperand::CASTOperand(std::unique_ptr<AbstractSyntaxTree>&& ptr) : m_pAST(std::move(ptr)) {}
+CASTOperand::CASTOperand(ASTNode&& ptr) : m_pAST(std::move(ptr)) {}
 CASTOperand::~CASTOperand() = default;

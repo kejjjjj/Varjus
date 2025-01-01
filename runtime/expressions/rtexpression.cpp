@@ -12,7 +12,7 @@
 
 #include <cassert>
 
-CRuntimeExpression::CRuntimeExpression(std::unique_ptr<AbstractSyntaxTree>&& ast) :
+CRuntimeExpression::CRuntimeExpression(ASTNode&& ast) :
 	m_pAST(std::move(ast)) {}
 CRuntimeExpression::~CRuntimeExpression() = default;
 

@@ -16,6 +16,7 @@ class CUnaryBase;
 struct CKeyValue;
 
 using UniqueAST = std::unique_ptr<AbstractSyntaxTree>;
+using ASTNode = std::shared_ptr<AbstractSyntaxTree>;
 
 enum EOperandBaseType : char {
 	ot_immediate,
@@ -35,7 +36,7 @@ struct IOperand
 	virtual ~IOperand() = default;
 	
 	[[nodiscard]] virtual EOperandBaseType Type() const noexcept = 0;
-	[[nodiscard]] virtual UniqueAST ToAST() = 0;
+	[[nodiscard]] virtual ASTNode ToAST() = 0;
 
 	CodePosition m_oCodePosition;
 };
@@ -50,7 +51,7 @@ public:
 	~CLinterOperand();
 
 	[[nodiscard]] Success ParseOperand(std::optional<PairMatcher>& eoe);
-	[[nodiscard]] UniqueAST ToAST();
+	[[nodiscard]] ASTNode ToAST();
 
 
 	[[nodiscard]] inline bool IsTernary() const noexcept { 
@@ -69,10 +70,10 @@ private:
 
 	[[nodiscard]] bool EndOfExpression(const std::optional<PairMatcher>& eoe, LinterIterator& pos) const noexcept;
 
-	[[nodiscard]] UniqueAST PostfixesToAST() const noexcept;
-	[[nodiscard]] UniqueAST UnariesToAST() const noexcept;
+	[[nodiscard]] ASTNode PostfixesToAST() const noexcept;
+	[[nodiscard]] ASTNode UnariesToAST() const noexcept;
 
-	[[nodiscard]] UniqueAST OperandToAST() const noexcept;
+	[[nodiscard]] ASTNode OperandToAST() const noexcept;
 
 	std::unique_ptr<IOperand> m_pOperand;
 	VectorOf<std::unique_ptr<IPostfixBase>> m_oPostfixes;

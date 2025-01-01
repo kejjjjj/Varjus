@@ -23,7 +23,7 @@ struct CLambdaOperand final : public IOperand
 		return ot_lambda;
 	}
 
-	[[nodiscard]] UniqueAST ToAST() override;
+	[[nodiscard]] ASTNode ToAST() override;
 
 	RuntimeFunction m_pLambda;
 	VectorOf<CCrossModuleReference> m_oVariableCaptures;

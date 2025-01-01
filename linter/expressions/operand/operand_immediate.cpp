@@ -19,19 +19,25 @@ std::unique_ptr<IOperand> CLinterOperand::ParseImmediate(){
 	return v;
 }
 
-UniqueAST CImmediateOperand::ToAST(){
-	return std::make_unique<ConstantASTNode>(m_oCodePosition, ToData(), GetImmediateType());
+ASTNode CImmediateOperand::ToAST(){
+	return std::make_shared<ConstantASTNode>(m_oCodePosition, ToData(), GetImmediateType());
 }
+
+#ifdef OPTIMIZATIONS
 
 IConstEvalValue* ConstantASTNode::GetConstEval([[maybe_unused]]CMemory* const owner) noexcept
 {
 	switch (m_eDataType) {
+	case t_undefined:
+		return COptimizationValues::AcquireNewValue<IConstEvalValue>();
 	case t_int:
 		return COptimizationValues::AcquireNewValue<CConstEvalIntValue>(*reinterpret_cast<std::int64_t*>((char*)m_pConstant.data()));
-	case t_undefined:
 	case t_boolean:
+		return COptimizationValues::AcquireNewValue<CConstEvalBooleanValue>(m_pConstant[0] == '\x01');
 	case t_double:
+		return COptimizationValues::AcquireNewValue<CConstEvalDoubleValue>(*reinterpret_cast<double*>((char*)m_pConstant.data()));
 	case t_string:
+		return COptimizationValues::AcquireNewValue<CConstEvalStringValue>(m_pConstant);
 	case t_callable:
 	case t_array:
 	case t_object:
@@ -40,6 +46,8 @@ IConstEvalValue* ConstantASTNode::GetConstEval([[maybe_unused]]CMemory* const ow
 		return nullptr;
 	}
 }
+
+#endif
 
 #pragma pack(push)
 #pragma warning(disable : 4061)

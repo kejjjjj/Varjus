@@ -20,7 +20,7 @@ protected:
 	void CreateThisScope();
 
 	[[nodiscard]] Success ParseIdentifier(TokenType tt);
-	[[nodiscard]] virtual std::unique_ptr<AbstractSyntaxTree> ParseExpression();
+	[[nodiscard]] virtual ASTNode ParseExpression();
 	[[nodiscard]] virtual Success ParseScope();
 
 	WeakScope m_pScope;

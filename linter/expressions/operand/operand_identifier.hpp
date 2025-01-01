@@ -16,7 +16,7 @@ struct CIdentifierOperand final : public IOperand
 		return ot_identifier;
 	}
 
-	[[nodiscard]] UniqueAST ToAST() override;
+	[[nodiscard]] ASTNode ToAST() override;
 
 private:
 	[[nodiscard]] CLinterVariable* GetVariable();

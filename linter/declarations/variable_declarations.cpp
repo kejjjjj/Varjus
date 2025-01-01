@@ -94,9 +94,9 @@ bool CVariableDeclarationLinter::IsIdentifier(const CToken* token) const noexcep
 RuntimeBlock CVariableDeclarationLinter::ToRuntimeObject() const
 {
 	// yes this is very not at all undefined behavior :pagman:
-	decltype(auto) tempAST = const_cast<std::unique_ptr<AbstractSyntaxTree>&&>(std::move(m_pInitializerAST));
+	decltype(auto) tempAST = const_cast<ASTNode&&>(std::move(m_pInitializerAST));
 	return tempAST ? std::make_unique<CRuntimeExpression>(std::move(tempAST)) : nullptr;
 }
-std::unique_ptr<AbstractSyntaxTree>&& CVariableDeclarationLinter::MoveInitializer() {
+ASTNode&& CVariableDeclarationLinter::MoveInitializer() {
 	return std::move(m_pInitializerAST);
 }

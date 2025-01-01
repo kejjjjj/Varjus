@@ -11,18 +11,14 @@
 #include "linter/modules/references.hpp"
 #include "linter/error.hpp"
 
-#ifdef OPTIMIZATIONS
-#include "linter/optimizations/values/types/opt_value.hpp"
-#include "linter/optimizations/values/opt_operators.hpp"
-#endif
-
 #include "linter/token.hpp"
 
 #include <cassert>
+#include <iostream>
 
 AbstractSyntaxTree::~AbstractSyntaxTree() = default;
 
-std::unique_ptr<AbstractSyntaxTree> AbstractSyntaxTree::CreateAST(CMemory* const owner,
+ASTNode AbstractSyntaxTree::CreateAST(CMemory* const owner,
 	VectorOf<CLinterOperand*>& operands, VectorOf<CLinterOperator*>& operators)
 {
 	assert(!operands.empty());
@@ -31,16 +27,20 @@ std::unique_ptr<AbstractSyntaxTree> AbstractSyntaxTree::CreateAST(CMemory* const
 
 	if (!root) {
 		auto&& itr = FindLowestPriorityOperator(operators);
-		root = std::make_unique<OperatorASTNode>((*itr)->GetToken()->m_oSourcePosition, (*itr)->GetPunctuation());
+		root = std::make_shared<OperatorASTNode>((*itr)->GetToken()->m_oSourcePosition, (*itr)->GetPunctuation());
 	}
+	
 	root->CreateRecursively(owner, operands, operators);
+#ifdef OPTIMIZATIONS
+	OptimizeBranches(owner, root);
+#endif
 	return root;
 }
 
-std::unique_ptr<AbstractSyntaxTree> AbstractSyntaxTree::GetLeaf(VectorOf<CLinterOperand*>& operands, [[maybe_unused]] VectorOf<CLinterOperator*>& operators)
+ASTNode AbstractSyntaxTree::GetLeaf(VectorOf<CLinterOperand*>& operands, [[maybe_unused]] VectorOf<CLinterOperator*>& operators)
 {
 
-	std::unique_ptr<AbstractSyntaxTree> node;
+	ASTNode node;
 
 	if (operands.size() == 1u) {
 		assert(operators.empty());
@@ -86,16 +86,20 @@ void AbstractSyntaxTree::CreateRecursively(CMemory* const owner,
 		if (left = GetLeaf(lhsOperands, lhsOperators), !left) {
 			const OperatorIterator l = FindLowestPriorityOperator(lhsOperators);
 			left = std::make_shared<OperatorASTNode>((*l)->GetToken()->m_oSourcePosition, (*l)->GetPunctuation());
+#ifdef OPTIMIZATIONS
+			left->parent = shared_from_this();
+#endif
 			left->CreateRecursively(owner, lhsOperands, lhsOperators);
-
 
 		}
 	} if (rhsOperands.size()) {
 		if (right = GetLeaf(rhsOperands, rhsOperators), !right) {
 			const OperatorIterator l = FindLowestPriorityOperator(rhsOperators);
 			right = std::make_shared<OperatorASTNode>((*l)->GetToken()->m_oSourcePosition, (*l)->GetPunctuation());
+#ifdef OPTIMIZATIONS
+			right->parent = shared_from_this();
+#endif
 			right->CreateRecursively(owner, rhsOperands, rhsOperators);
-
 		}
 	}
 
@@ -103,16 +107,6 @@ void AbstractSyntaxTree::CreateRecursively(CMemory* const owner,
 		CheckConstness();
 		CheckSelfCapture(owner);
 	}
-
-#ifdef OPTIMIZATIONS
-	if (IsConstEval(owner, left.get()) && IsConstEval(owner, right.get())) {
-		auto result = OPT_ADDITION(left->GetConstEval(owner), right->GetConstEval(owner));
-		//now erase this tree so that it can become a leaf
-
-		//implement me
-	}
-#endif
-
 }
 OperatorIterator AbstractSyntaxTree::FindLowestPriorityOperator(VectorOf<CLinterOperator*>& operators)
 {
@@ -174,45 +168,13 @@ bool AbstractSyntaxTree::IsSelfReferencingCapture(const AbstractSyntaxTree* lhs,
 
 	return containsLHS;
 }
-#ifdef OPTIMIZATIONS
 
-bool AbstractSyntaxTree::IsConstEval(CMemory* const owner, const AbstractSyntaxTree* operand)
-{
-	if (operand->IsConstant())
-		return true;
-
-	if (!operand->IsVariable())
-		return false;
-
-	const auto& vars = owner->m_VariableManager;
-	
-	if (auto variable = vars->GetVariableByIndex(operand->GetVariable()->m_uIndex)) {
-		return variable->m_bIsConstEval;
-	}
-
-	return false;
-}
-#endif
-/***********************************************************************
- >
-***********************************************************************/
 
 VariableASTNode::VariableASTNode(const CodePosition& pos, CLinterVariable* const var)
 	: AbstractSyntaxTree(pos), CCrossModuleReference(*var),
 	m_bGlobalVariable(var->IsGlobal()),
 	m_bIsConst(var->m_bConst){}
 VariableASTNode::~VariableASTNode() = default;
-
-IConstEvalValue* VariableASTNode::GetConstEval(CMemory* const owner) noexcept {
-	auto& vars = owner->m_VariableManager;
-
-	if (auto variable = vars->GetVariableByIndex(m_uIndex)) {
-		return variable->m_pConstEval;
-	}
-
-	assert(false);
-	return nullptr;
-}
 
 
 FunctionASTNode::FunctionASTNode(const CodePosition& pos, CLinterFunction* const func) 
@@ -229,7 +191,7 @@ ArrayASTNode::ArrayASTNode(const CodePosition& pos, ExpressionList&& expressions
 }
 ArrayASTNode::~ArrayASTNode() = default;
 
-ObjectASTNode::ObjectASTNode(const CodePosition& pos, VectorOf<KeyValue<std::size_t, UniqueAST>>&& expressions)
+ObjectASTNode::ObjectASTNode(const CodePosition& pos, VectorOf<KeyValue<std::size_t, ASTNode>>&& expressions)
 	: AbstractSyntaxTree(pos), m_oAttributes(std::move(expressions)) {
 }
 ObjectASTNode::~ObjectASTNode() = default;
@@ -247,3 +209,6 @@ LambdaASTNode::LambdaASTNode(const CodePosition& pos, RuntimeFunction&& operand,
 	m_pLambda(std::move(operand)), m_oVariableCaptures(std::move(captures)) {
 }
 LambdaASTNode::~LambdaASTNode() = default;
+
+
+

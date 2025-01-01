@@ -117,9 +117,9 @@ Success CForStatementLinter::ParseEndExpression() {
 
 RuntimeBlock CForStatementLinter::ToRuntimeObject() const
 {
-	decltype(auto) init = const_cast<UniqueAST&&>(std::move(m_pInitializer));
-	decltype(auto) cond = const_cast<UniqueAST&&>(std::move(m_pCondition));
-	decltype(auto) endExpr = const_cast<UniqueAST&&>(std::move(m_pOnEnd));
+	decltype(auto) init = const_cast<ASTNode&&>(std::move(m_pInitializer));
+	decltype(auto) cond = const_cast<ASTNode&&>(std::move(m_pCondition));
+	decltype(auto) endExpr = const_cast<ASTNode&&>(std::move(m_pOnEnd));
 
 	return std::make_unique<CRuntimeForStatement>(
 		std::move(init),

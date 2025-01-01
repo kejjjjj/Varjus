@@ -26,7 +26,7 @@ private:
 	[[nodiscard]] Success ParseEndExpression();
 
 
-	std::unique_ptr<AbstractSyntaxTree> m_pInitializer;
-	std::unique_ptr<AbstractSyntaxTree> m_pCondition;
-	std::unique_ptr<AbstractSyntaxTree> m_pOnEnd;
+	ASTNode m_pInitializer;
+	ASTNode m_pCondition;
+	ASTNode m_pOnEnd;
 };

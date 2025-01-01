@@ -27,15 +27,15 @@ CLinterFunction* CIdentifierOperand::GetFunction() {
 	return dynamic_cast<CLinterFunction*>(m_pIdentifier);
 }
 
-[[nodiscard]] UniqueAST CIdentifierOperand::ToAST()
+[[nodiscard]] ASTNode CIdentifierOperand::ToAST()
 {
 	assert(m_pIdentifier);
 
 	if (m_pIdentifier->Type() == mi_variable) {
-		return std::make_unique<VariableASTNode>(m_oCodePosition, GetVariable());
+		return std::make_shared<VariableASTNode>(m_oCodePosition, GetVariable());
 	}
 	if(m_pIdentifier->Type() == mi_function)
-		return std::make_unique<FunctionASTNode>(m_oCodePosition, GetFunction());
+		return std::make_shared<FunctionASTNode>(m_oCodePosition, GetFunction());
 
 	assert(false);
 	return nullptr;

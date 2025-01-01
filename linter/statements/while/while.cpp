@@ -31,7 +31,6 @@ Success CWhileStatementLinter::Parse()
 
 RuntimeBlock CWhileStatementLinter::ToRuntimeObject() const
 {
-
-	decltype(auto) tempAST = const_cast<std::unique_ptr<AbstractSyntaxTree>&&>(std::move(m_pCondition));
+	decltype(auto) tempAST = const_cast<ASTNode&&>(std::move(m_pCondition));
 	return tempAST ? std::make_unique<CRuntimeWhileStatement>(std::move(tempAST), m_pThisScope->MoveInstructions()) : nullptr;
 }

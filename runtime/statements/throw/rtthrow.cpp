@@ -3,7 +3,7 @@
 
 #include "linter/expressions/ast.hpp"
 
-CRuntimeThrowStatement::CRuntimeThrowStatement(std::unique_ptr<AbstractSyntaxTree>&& condition)
+CRuntimeThrowStatement::CRuntimeThrowStatement(ASTNode&& condition)
 	: m_pAST(std::move(condition)) {
 }
 CRuntimeThrowStatement::~CRuntimeThrowStatement() = default;;

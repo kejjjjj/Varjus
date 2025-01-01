@@ -39,7 +39,7 @@ Success CStatementLinter::ParseIdentifier(TokenType tt)
 	return success;
 }
 
-std::unique_ptr<AbstractSyntaxTree> CStatementLinter::ParseExpression()
+ASTNode CStatementLinter::ParseExpression()
 {
 	if (IsEndOfBuffer() || !(*m_iterPos)->IsOperator(p_par_open)) {
 		CLinterErrors::PushError("expected a \"(\"", GetIteratorSafe()->m_oSourcePosition);
@@ -50,7 +50,7 @@ std::unique_ptr<AbstractSyntaxTree> CStatementLinter::ParseExpression()
 
 	CLinterExpression expr(m_iterPos, m_iterEnd, m_pScope, m_pOwner);
 
-	std::unique_ptr<AbstractSyntaxTree>&& temp = nullptr;
+	ASTNode&& temp = nullptr;
 
 	if (expr.Parse(PairMatcher(p_par_open))) {
 		temp = expr.ToMergedAST();

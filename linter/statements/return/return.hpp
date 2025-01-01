@@ -16,11 +16,11 @@ public:
 	~CReturnStatementLinter();
 	[[nodiscard]] Success Parse();
 
-	[[nodiscard]] std::unique_ptr<AbstractSyntaxTree> ParseExpression() override;
+	[[nodiscard]] ASTNode ParseExpression() override;
 
 	[[nodiscard]] RuntimeBlock ToRuntimeObject() const override;
 
 private:
 
-	std::unique_ptr<AbstractSyntaxTree> m_pAST;
+	ASTNode m_pAST;
 };
