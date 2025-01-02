@@ -25,16 +25,16 @@ IValue* OP_ASSIGNMENT(IValue* lhs, IValue* rhs)
 			variable->SetValue(CProgramRuntime::AcquireNewValue<IValue>());
 			break;
 		case t_boolean:
-			variable->SetValue(CProgramRuntime::AcquireNewValue<CBooleanValue>(rhs->AsBoolean()));
+			variable->SetValue(CProgramRuntime::AcquireNewValue<CBooleanValue>(rhs->ToBoolean()));
 			break;
 		case t_int:
-			variable->SetValue(CProgramRuntime::AcquireNewValue<CIntValue>(rhs->AsInt()));
+			variable->SetValue(CProgramRuntime::AcquireNewValue<CIntValue>(rhs->ToInt()));
 			break;
 		case t_double:
-			variable->SetValue(CProgramRuntime::AcquireNewValue<CDoubleValue>(rhs->AsDouble()));
+			variable->SetValue(CProgramRuntime::AcquireNewValue<CDoubleValue>(rhs->ToDouble()));
 			break;
 		case t_string:
-			variable->SetValue(CStringValue::Construct(rhs->AsString()));
+			variable->SetValue(CStringValue::Construct(rhs->ToString()));
 			break;
 		case t_callable:
 			assert(rhs->ToCallable());

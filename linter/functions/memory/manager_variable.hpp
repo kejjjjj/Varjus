@@ -4,14 +4,14 @@
 #include <unordered_map>
 
 class CMemory;
-class IConstEvalValue;
+class CConstEvalVariable;
 
-struct CLinterVariable final : public CMemoryIdentifier
+struct CLinterVariable : public CMemoryIdentifier
 {
 	NONCOPYABLE(CLinterVariable);
 
 	CLinterVariable(const CMemory* owner, const std::string& name, const CCrossModuleReference& ref);
-	~CLinterVariable();
+	virtual ~CLinterVariable();
 
 	[[nodiscard]] virtual constexpr EMemoryIdentifierType Type() const noexcept override { return mi_variable; }
 	[[nodiscard]] bool IsGlobal() const noexcept;
@@ -21,11 +21,20 @@ struct CLinterVariable final : public CMemoryIdentifier
 	bool m_bParameter{ false };
 	bool m_bConst{ false };
 	bool m_bInitialized{ false };
-#ifdef OPTIMIZATIONS
-	bool m_bIsConstEval{ true }; //can be evaluated during linting
-	IConstEvalValue* m_pConstEval{ nullptr };
-#endif
+
 };
+
+#ifdef OPTIMIZATIONS
+struct CConstEvalLinterVariable final : public CLinterVariable
+{
+	NONCOPYABLE(CConstEvalLinterVariable);
+
+	CConstEvalLinterVariable(const CMemory* owner, const std::string& name, const CCrossModuleReference& ref);
+	~CConstEvalLinterVariable();
+
+	CConstEvalVariable* m_pConstEval{ nullptr }; //can be evaluated during linting
+};
+#endif
 
 class CVariableManager
 {
@@ -44,5 +53,10 @@ public:
 
 private:
     std::unordered_map<std::string, std::unique_ptr<CLinterVariable>> m_oVariables;
+#ifdef OPTIMIZATIONS
+	// these get converted to m_oVariables after they can no longer be used in a consteval context
+	std::unordered_map<std::string, std::unique_ptr<CConstEvalLinterVariable>> m_oConstEvalVariables;
+#endif
+
 	CMemory* const m_pOwner;
 };

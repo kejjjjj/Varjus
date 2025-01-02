@@ -10,6 +10,10 @@
 #include <cassert>
 #include <format>
 
+#ifdef OPTIMIZATIONS
+#include "linter/optimizations/optimizations.hpp"
+#endif
+
 CVariableDeclarationLinter::CVariableDeclarationLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack) :
 	CLinterSingle(pos, end), m_pScope(scope), m_pOwner(stack)
 {
@@ -60,6 +64,12 @@ Success CVariableDeclarationLinter::Parse()
 		CLinterErrors::PushError("expected \";\"", GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
+
+#ifdef OPTIMIZATIONS
+	//start of with a simple consteval undefined
+	m_sDeclaredVariable->m_pConstEval = COptimizationValues::AcquireNewVariable();
+	m_sDeclaredVariable->m_pConstEval->SetValue(COptimizationValues::AcquireNewValue<IConstEvalValue>());
+#endif
 
 	//let var;
 	if ((*m_iterPos)->IsOperator(p_semicolon)) {

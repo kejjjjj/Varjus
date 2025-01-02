@@ -6,15 +6,18 @@
 
 #include "linter/optimizations/values/types/opt_value.hpp"
 #include "linter/optimizations/values/opt_operators.hpp"
+#include "linter/optimizations/variables/opt_variables.hpp"
+
 
 #include <iostream>
 #include <cassert>
 
 IConstEvalValue* VariableASTNode::GetConstEval(CMemory* const owner) noexcept {
 	auto& vars = owner->m_VariableManager;
-
+	assert(vars);
 	if (auto variable = vars->GetVariableByIndex(m_uIndex)) {
-		return variable->m_pConstEval;
+		assert(variable->m_pConstEval);
+		return variable->m_pConstEval->GetValue();
 	}
 
 	assert(false);
@@ -30,9 +33,9 @@ bool AbstractSyntaxTree::IsConstEval(CMemory* const owner, const AbstractSyntaxT
 		return false;
 
 	const auto& vars = owner->m_VariableManager;
-
+	assert(vars);
 	if (auto variable = vars->GetVariableByIndex(operand->GetVariable()->m_uIndex)) {
-		return variable->m_bIsConstEval;
+		return !!variable->m_pConstEval;
 	}
 
 	return false;
@@ -53,6 +56,8 @@ void AbstractSyntaxTree::OptimizeBranches(CMemory* const owner, ASTNode& node)
 	// Call OptimizeNodes on the current branch after processing its children
 	OptimizeNodes(owner, node);
 }
+
+// AKA fold constants
 void AbstractSyntaxTree::OptimizeNodes(CMemory* const owner, std::shared_ptr<AbstractSyntaxTree>& node)
 {
 	if (!node || node->IsLeaf())
@@ -65,10 +70,18 @@ void AbstractSyntaxTree::OptimizeNodes(CMemory* const owner, std::shared_ptr<Abs
 		auto lhs = left->GetConstEval(owner);
 		auto rhs = right->GetConstEval(owner);
 
-		auto result = OPT_ADDITION(lhs, rhs);
+		auto& op = m_oOptOperatorTable[node->GetOperator()->m_ePunctuation];
 
-		lhs->Release();
-		rhs->Release();
+		if (!op) {
+			if(!lhs->HasOwner()) lhs->Release();
+			if(!rhs->HasOwner()) rhs->Release();
+			return;
+		}
+
+		auto result = op(lhs, rhs);
+
+		if (!lhs->HasOwner()) lhs->Release();
+		if (!rhs->HasOwner()) rhs->Release();
 		
 		if (!result) //something that cannot be determined at this point
 			return;
@@ -82,7 +95,8 @@ void AbstractSyntaxTree::OptimizeNodes(CMemory* const owner, std::shared_ptr<Abs
 		
 		node = newValue;
 
-		result->Release();
+		if(!result->HasOwner())
+			result->Release();
 	}
 
 	if (auto parent = node->parent.lock()) { 

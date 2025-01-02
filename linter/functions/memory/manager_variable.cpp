@@ -51,3 +51,7 @@ CLinterVariable* CVariableManager::GetVariableByIndex(std::size_t i) const
 std::size_t CVariableManager::GetVariableCount() const noexcept {
 	return m_oVariables.size();
 }
+
+CConstEvalLinterVariable::CConstEvalLinterVariable(const CMemory* owner, const std::string& name, const CCrossModuleReference& ref)
+	: CLinterVariable(owner, name, ref){ }
+CConstEvalLinterVariable::~CConstEvalLinterVariable() = default;

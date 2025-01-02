@@ -14,9 +14,9 @@ using namespace std::string_literals;
  > Represents values which can be evaluated during linting
 ***********************************************************************/
 
-inline std::string emptyString;
+inline std::string opt_emptyString;
 
-struct CLinterVariable;
+class CConstEvalVariable;
 class ConstantASTNode;
 
 class CConstEvalBooleanValue;
@@ -41,9 +41,9 @@ public:
 	[[nodiscard]] virtual std::shared_ptr<ConstantASTNode> ToAST() const;
 
 
-	constexpr auto SetOwner(CLinterVariable* o) noexcept { m_pOwner = o; }
+	constexpr auto SetOwner(CConstEvalVariable* o) noexcept { m_pOwner = o; }
 	[[nodiscard]] constexpr bool HasOwner() const noexcept { return !!m_pOwner; }
-	[[nodiscard]] constexpr auto& GetOwner() const noexcept { return m_pOwner; }
+	[[nodiscard]] constexpr auto GetOwner() const noexcept { return m_pOwner; }
 
 	[[nodiscard]] constexpr virtual bool IsCoerceable() const noexcept { return false; }
 
@@ -55,7 +55,7 @@ public:
 	[[nodiscard]] virtual bool ToBoolean() const { return false; }
 	[[nodiscard]] virtual std::int64_t ToInt() const { return 0; }
 	[[nodiscard]] virtual double ToDouble() const { return 0.0; }
-	[[nodiscard]] virtual const std::string& ToString() const { return emptyString; }
+	[[nodiscard]] virtual const std::string& ToString() const { return opt_emptyString; }
 
 	[[nodiscard]] virtual CConstEvalBooleanValue* ToCBoolean() { return nullptr; }
 	[[nodiscard]] virtual CConstEvalIntValue* ToCInt() { return nullptr; }
@@ -65,7 +65,7 @@ public:
 protected:
 	void ReleaseInternal();
 
-	CLinterVariable* m_pOwner{ nullptr };
+	CConstEvalVariable* m_pOwner{ nullptr };
 	CodePosition m_oApproximatePosition;
 };
 

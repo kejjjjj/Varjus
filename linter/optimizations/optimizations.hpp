@@ -1,10 +1,16 @@
 #pragma once
 
+#ifdef OPTIMIZATIONS
+
+
 #include "values/types/opt_types.hpp"
 #include "runtime/pools/object_pool_owning.hpp"
+#include "variables/opt_variables.hpp"
 
 template<typename T>
-concept IConstEvalChild = std::is_base_of_v<IConstEvalValue, T>;
+concept IConstEvalChild = std::is_base_of_v<IConstEvalValue, T> || std::is_same_v<CConstEvalVariable, T>;
+
+class CConstEvalVariable;
 
 class COptimizationValues
 {
@@ -18,6 +24,10 @@ public:
 	[[nodiscard]] static constexpr COwningObjectPool<T>& GetPool() {
 		return m_oValuePool<T>;
 	}
+
+	[[nodiscard]] static CConstEvalVariable* AcquireNewVariable();
+	[[nodiscard]] static VectorOf<CConstEvalVariable*> AcquireNewVariables(std::size_t count);
+	[[nodiscard]] static void FreeVariable(CConstEvalVariable* var);
 
 	template <IConstEvalChild T>
 	[[nodiscard]] static constexpr T* AcquireNewValue() {
@@ -64,3 +74,4 @@ public:
 	}
 };
 
+#endif

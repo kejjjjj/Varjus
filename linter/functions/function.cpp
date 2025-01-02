@@ -14,6 +14,10 @@
 
 #include "runtime/structure.hpp"
 
+#ifdef OPTIMIZATIONS
+#include "linter/optimizations/optimizations.hpp"
+#endif
+
 #include <format>
 #include <algorithm>
 
@@ -32,7 +36,19 @@ CFunctionLinter::CFunctionLinter(LinterIterator& pos, LinterIterator& end, const
 	m_pThisStack->m_pLowerRegion = m_pOwner;
 	assert(m_iterPos != m_iterEnd);
 }
+CFunctionLinter::~CFunctionLinter()
+{
+#ifdef OPTIMIZATIONS
 
+	if (m_pThisStack && m_pThisStack->m_VariableManager) {
+		for (auto& [name, value] : m_pThisStack->m_VariableManager->GetVariableIterator()) {
+			assert(value);
+			if (value->m_pConstEval)
+				value->m_pConstEval->Release();
+		}
+	}
+#endif
+}
 Success CFunctionLinter::Parse()
 {
 	if (!ParseFunctionDeclaration())

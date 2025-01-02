@@ -21,7 +21,7 @@ class CFunctionLinter final : public CLinterSingle<CToken>, protected IRuntimeBl
 
 public:
 	explicit CFunctionLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const owner);
-
+	~CFunctionLinter();
 	[[nodiscard]] Success Parse();
 	[[nodiscard]] Success ParseFunctionParameters();
 	[[nodiscard]] Success ParseFunctionScope();

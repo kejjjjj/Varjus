@@ -1,5 +1,6 @@
 
 fn main()
 {
-	return 3.0 - 2.0;
+	const bleh = 2 + 3;
+	return bleh;
 }
