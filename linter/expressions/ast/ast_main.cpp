@@ -32,7 +32,11 @@ ASTNode AbstractSyntaxTree::CreateAST(CMemory* const owner,
 	
 	root->CreateRecursively(owner, operands, operators);
 #ifdef OPTIMIZATIONS
-	OptimizeBranches(owner, root);
+
+	if (root->IsLeaf())
+		return OptimizeLeaf(owner, root);
+	else
+		OptimizeBranches(owner, root);
 #endif
 	return root;
 }

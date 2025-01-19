@@ -6,7 +6,7 @@
 class CMemory;
 class CConstEvalVariable;
 
-struct CLinterVariable : public CMemoryIdentifier
+struct CLinterVariable final : public CMemoryIdentifier
 {
 	NONCOPYABLE(CLinterVariable);
 
@@ -21,20 +21,14 @@ struct CLinterVariable : public CMemoryIdentifier
 	bool m_bParameter{ false };
 	bool m_bConst{ false };
 	bool m_bInitialized{ false };
-
-};
-
 #ifdef OPTIMIZATIONS
-struct CConstEvalLinterVariable final : public CLinterVariable
-{
-	NONCOPYABLE(CConstEvalLinterVariable);
-
-	CConstEvalLinterVariable(const CMemory* owner, const std::string& name, const CCrossModuleReference& ref);
-	~CConstEvalLinterVariable();
-
+	[[nodiscard]] constexpr bool IsConstEval() const noexcept { return !!m_pConstEval; }
+	void MakeConstEval();
+	void ReleaseConstEval();
 	CConstEvalVariable* m_pConstEval{ nullptr }; //can be evaluated during linting
-};
 #endif
+
+};
 
 class CVariableManager
 {
@@ -53,10 +47,5 @@ public:
 
 private:
     std::unordered_map<std::string, std::unique_ptr<CLinterVariable>> m_oVariables;
-#ifdef OPTIMIZATIONS
-	// these get converted to m_oVariables after they can no longer be used in a consteval context
-	std::unordered_map<std::string, std::unique_ptr<CConstEvalLinterVariable>> m_oConstEvalVariables;
-#endif
-
 	CMemory* const m_pOwner;
 };

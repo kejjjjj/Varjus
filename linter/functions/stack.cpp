@@ -12,6 +12,23 @@ bool CLinterVariable::IsGlobal() const noexcept {
 	return m_pOwner == m_pOwner->GetGlobalMemory();
 }
 
+#ifdef OPTIMIZATIONS
+#include "linter/optimizations/optimizations.hpp"
+void CLinterVariable::MakeConstEval()
+{
+	assert(!IsConstEval());
+
+	m_pConstEval = COptimizationValues::AcquireNewVariable();
+	m_pConstEval->SetValue(COptimizationValues::AcquireNewValue<IConstEvalValue>());
+
+}
+void CLinterVariable::ReleaseConstEval()
+{
+	assert(IsConstEval());
+	m_pConstEval->Release();
+}
+#endif
+
 CMemory::CMemory(CMemory* globalMemory, CModule* const file)
 	: m_pModule(file), m_pGlobal(globalMemory) {
 	assert(m_pModule);

@@ -103,6 +103,18 @@ void AbstractSyntaxTree::OptimizeNodes(CMemory* const owner, std::shared_ptr<Abs
 		return OptimizeNodes(owner, parent);
 	}
 }
+ASTNode AbstractSyntaxTree::OptimizeLeaf(CMemory* const owner, const ASTNode& node)
+{
+	assert(node && node->IsLeaf());
 
+
+	if (!node->IsVariable() || !node->IsConstEval(owner, node.get()))
+		return node;
+
+	auto constEval = node->GetConstEval(owner);
+	assert(constEval);
+
+	return constEval->ToAST();
+}
 
 #endif

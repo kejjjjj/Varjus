@@ -66,7 +66,7 @@ Success CVariableDeclarationLinter::Parse()
 	}
 
 #ifdef OPTIMIZATIONS
-	//start of with a simple consteval undefined
+	//start off with a simple consteval undefined
 	m_sDeclaredVariable->m_pConstEval = COptimizationValues::AcquireNewVariable();
 	m_sDeclaredVariable->m_pConstEval->SetValue(COptimizationValues::AcquireNewValue<IConstEvalValue>());
 #endif

@@ -52,6 +52,12 @@ std::size_t CVariableManager::GetVariableCount() const noexcept {
 	return m_oVariables.size();
 }
 
-CConstEvalLinterVariable::CConstEvalLinterVariable(const CMemory* owner, const std::string& name, const CCrossModuleReference& ref)
-	: CLinterVariable(owner, name, ref){ }
-CConstEvalLinterVariable::~CConstEvalLinterVariable() = default;
+//#ifdef OPTIMIZATIONS
+//CConstEvalLinterVariable* CVariableManager::DeclareConstEvalVariable(const std::string& var)
+//{
+//
+//}
+//#endif
+//CConstEvalLinterVariable::CConstEvalLinterVariable(const CMemory* owner, const std::string& name, const CCrossModuleReference& ref)
+//	: CLinterVariable(owner, name, ref){ }
+//CConstEvalLinterVariable::~CConstEvalLinterVariable() = default;

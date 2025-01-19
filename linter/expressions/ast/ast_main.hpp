@@ -104,6 +104,8 @@ public:
 	static void OptimizeBranches(CMemory* const owner, ASTNode& node);
 	static void OptimizeNodes(CMemory* const owner, ASTNode& node);
 
+	static ASTNode OptimizeLeaf(CMemory* const owner, const ASTNode& node);
+
 #endif
 };
 
