@@ -21,6 +21,8 @@ template<typename T>
 using VectorOf = std::vector<T>;
 using RuntimeBlock = std::unique_ptr<IRuntimeStructure>;
 
+template<typename T>
+using VarManager = std::unique_ptr<CVariableManager<T>>;
 
 class CMemory
 {
@@ -56,7 +58,10 @@ public:
 	[[nodiscard]] bool HasHoistedData() const noexcept { return !!m_pGlobal->m_pHoister; }
 	[[nodiscard]] auto& GetHoister() const noexcept { return m_pGlobal->m_pHoister; }
 
-	std::unique_ptr<CVariableManager> m_VariableManager;
+	VarManager<CLinterVariable> m_VariableManager;
+#ifdef OPTIMIZATIONS
+	VarManager<CConstEvalLinterVariable> m_ConstEvalVariableManager;
+#endif
 	std::unique_ptr<CFunctionManager> m_FunctionManager;
 
 protected:

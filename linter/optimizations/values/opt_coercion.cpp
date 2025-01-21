@@ -1,3 +1,5 @@
+
+#ifdef OPTIMIZATIONS
 #include "opt_coercion.hpp"
 #include "linter/optimizations/optimizations.hpp"
 #include "linter/error.hpp"
@@ -45,3 +47,5 @@ CCoercionOperands CoerceInternal(IConstEvalValue* weaker, IConstEvalValue* stron
 
 	return { nullptr, nullptr, nullptr, lhsIsWeak };
 }
+
+#endif

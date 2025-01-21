@@ -24,7 +24,10 @@ private:
 
 	[[nodiscard]] bool ContainsFunction(const std::string& str) const noexcept;
 
+
+	template<typename T>
 	[[nodiscard]] CLinterVariable* GetVariableByIdentifier(const std::string& str) const noexcept;
+
 	[[nodiscard]] CLinterFunction* GetFunctionByIdentifier(const std::string& str) const noexcept;
 
 

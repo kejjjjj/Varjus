@@ -1,5 +1,7 @@
 #pragma once
 
+#ifdef OPTIMIZATIONS
+
 #include "globalDefinitions.hpp"
 
 
@@ -86,3 +88,4 @@ protected:
 	Value m_oValue{};
 };
 
+#endif

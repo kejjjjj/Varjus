@@ -1,4 +1,7 @@
 #pragma once
+
+#ifdef OPTIMIZATIONS
+
 #include <tuple>
 
 #include "types/opt_value.hpp"
@@ -33,3 +36,5 @@ private:
 
 std::tuple<IConstEvalValue*, IConstEvalValue*, IConstEvalValue*> Coerce(IConstEvalValue* lhs, IConstEvalValue* rhs);
 CCoercionOperands CoerceInternal(IConstEvalValue* lhs, IConstEvalValue* rhs, bool lhsIsWeak);
+
+#endif

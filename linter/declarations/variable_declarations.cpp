@@ -50,9 +50,11 @@ Success CVariableDeclarationLinter::Parse()
 			CLinterErrors::PushError(std::format("\"{}\" already declared", (*m_iterPos)->Source()), (*m_iterPos)->m_oSourcePosition);
 			return failure;
 		}
-
+#ifdef OPTIMIZATIONS
+		m_sDeclaredVariable = m_pOwner->m_ConstEvalVariableManager->DeclareVariable(varName);
+#else
 		m_sDeclaredVariable = m_pOwner->m_VariableManager->DeclareVariable(varName);
-
+#endif
 	} else {
 		CLinterErrors::PushError("!(const auto scope = currentScope.lock())", (*m_iterPos)->m_oSourcePosition);
 		return failure;

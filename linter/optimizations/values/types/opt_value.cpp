@@ -1,3 +1,5 @@
+#ifdef OPTIMIZATIONS
+
 #include "opt_value.hpp"
 #include "linter/optimizations/optimizations.hpp"
 #include "linter/expressions/ast/ast_main.hpp"
@@ -33,3 +35,5 @@ double& IConstEvalValue::AsDouble() {
 std::string& IConstEvalValue::AsString() {
 	return ToCString()->Get();
 }
+
+#endif

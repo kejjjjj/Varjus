@@ -18,6 +18,7 @@
 
 AbstractSyntaxTree::~AbstractSyntaxTree() = default;
 
+//TODO -> add a parameter called "can discard meaningless expression"
 ASTNode AbstractSyntaxTree::CreateAST(CMemory* const owner,
 	VectorOf<CLinterOperand*>& operands, VectorOf<CLinterOperator*>& operators)
 {
@@ -32,12 +33,19 @@ ASTNode AbstractSyntaxTree::CreateAST(CMemory* const owner,
 	
 	root->CreateRecursively(owner, operands, operators);
 #ifdef OPTIMIZATIONS
-
 	if (root->IsLeaf())
-		return OptimizeLeaf(owner, root);
+		OptimizeLeaf(owner, root);
 	else
 		OptimizeBranches(owner, root);
+
+	/*
+	if(canDiscard){
+		//todo -> remove meaningless expressions
+		//but do this AFTER everything works to avoid BUGS!!!!!
+	}
+	*/
 #endif
+
 	return root;
 }
 

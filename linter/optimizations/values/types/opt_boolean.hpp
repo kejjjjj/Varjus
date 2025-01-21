@@ -1,5 +1,7 @@
 #pragma once
 
+#ifdef OPTIMIZATIONS
+
 #include "opt_value.hpp"
 
 class CConstEvalBooleanValue final : public CConstEvalValue<bool>
@@ -27,3 +29,4 @@ private:
 	[[nodiscard]] std::string ValueAsString() const override { return std::to_string(Get()); }
 };
 
+#endif

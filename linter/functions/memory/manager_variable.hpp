@@ -6,7 +6,7 @@
 class CMemory;
 class CConstEvalVariable;
 
-struct CLinterVariable final : public CMemoryIdentifier
+struct CLinterVariable : public CMemoryIdentifier
 {
 	NONCOPYABLE(CLinterVariable);
 
@@ -16,20 +16,35 @@ struct CLinterVariable final : public CMemoryIdentifier
 	[[nodiscard]] virtual constexpr EMemoryIdentifierType Type() const noexcept override { return mi_variable; }
 	[[nodiscard]] bool IsGlobal() const noexcept;
 
+#ifdef OPTIMIZATIONS
+	[[nodiscard]] constexpr virtual bool IsConstEval() const noexcept { return false; }
+#endif
+
 	const CMemory* m_pOwner{};
 	bool m_bCaptured{ false }; //captured by a closure (only lambdas for now)
 	bool m_bParameter{ false };
 	bool m_bConst{ false };
 	bool m_bInitialized{ false };
-#ifdef OPTIMIZATIONS
-	[[nodiscard]] constexpr bool IsConstEval() const noexcept { return !!m_pConstEval; }
-	void MakeConstEval();
-	void ReleaseConstEval();
-	CConstEvalVariable* m_pConstEval{ nullptr }; //can be evaluated during linting
-#endif
 
 };
 
+#ifdef OPTIMIZATIONS
+struct CConstEvalLinterVariable final : public CLinterVariable
+{
+	NONCOPYABLE(CConstEvalLinterVariable);
+
+	CConstEvalLinterVariable(const CMemory* owner, const std::string& name, const CCrossModuleReference& ref);
+	~CConstEvalLinterVariable();
+
+	[[nodiscard]] constexpr bool IsConstEval() const noexcept override { return !!m_pConstEval; }
+	void MakeConstEval();
+	void ReleaseConstEval();
+
+	CConstEvalVariable* m_pConstEval{ nullptr }; //can be evaluated during linting
+};
+#endif
+
+template <typename T1, typename T2 = void>
 class CVariableManager
 {
 	NONCOPYABLE(CVariableManager);
@@ -37,15 +52,15 @@ class CVariableManager
 public:
 	CVariableManager(CMemory* const m_pOwner);
 
-    [[maybe_unused]] CLinterVariable* DeclareVariable(const std::string& var);
-    [[nodiscard]] CLinterVariable* GetVariable(const std::string& var);
+    [[maybe_unused]] T1* DeclareVariable(const std::string& var);
+    [[nodiscard]] T1* GetVariable(const std::string& var);
     [[nodiscard]] bool ContainsVariable(const std::string& name) const;
-	[[nodiscard]] CLinterVariable* GetVariableByIndex(std::size_t i) const;
+	[[nodiscard]] T1* GetVariableByIndex(std::size_t i) const;
 
     [[nodiscard]] std::size_t GetVariableCount() const noexcept;
     [[nodiscard]] auto& GetVariableIterator() { return m_oVariables; }
 
 private:
-    std::unordered_map<std::string, std::unique_ptr<CLinterVariable>> m_oVariables;
+    std::unordered_map<std::string, std::unique_ptr<T1>> m_oVariables;
 	CMemory* const m_pOwner;
 };

@@ -1,8 +1,7 @@
 
 fn main()
 {
-	const bleh = 2;
-	const bleh2 = bleh + 5;
-	
-	return bleh2;
+	const a = 5;
+	const b = 5;
+	return a + b + a;
 }

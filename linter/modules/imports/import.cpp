@@ -222,8 +222,3 @@ Success CImportLinter::DeclareFunction(const std::string& symbolName,
 
 	return success;
 }
-
-void CImportLinter::BuildDependencyGraph()
-{
-
-}

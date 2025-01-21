@@ -40,8 +40,8 @@ CFunctionLinter::~CFunctionLinter()
 {
 #ifdef OPTIMIZATIONS
 
-	if (m_pThisStack && m_pThisStack->m_VariableManager) {
-		for (auto& [name, value] : m_pThisStack->m_VariableManager->GetVariableIterator()) {
+	if (m_pThisStack && m_pThisStack->m_ConstEvalVariableManager) {
+		for (auto& [name, value] : m_pThisStack->m_ConstEvalVariableManager->GetVariableIterator()) {
 			assert(value);
 			if (value->m_pConstEval)
 				value->m_pConstEval->Release();

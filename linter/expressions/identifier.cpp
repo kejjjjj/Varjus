@@ -42,8 +42,17 @@ Success CIdentifierLinter::ParseIdentifier()
 		return failure;
 
 	auto& str = m_pToken->Source();
-	if(scope->VariableExists(str))
-		m_pIdentifier = GetVariableByIdentifier(str);
+	if (scope->VariableExists(str)) {
+
+#ifdef OPTIMIZATIONS
+		m_pIdentifier = GetVariableByIdentifier<CConstEvalLinterVariable>(str);
+
+		if(!m_pIdentifier) //not in the consteval list, find it from non consteval
+			m_pIdentifier = GetVariableByIdentifier<CLinterVariable>(str);
+#else
+		m_pIdentifier = GetVariableByIdentifier<CLinterVariable>(str);
+#endif
+	}
 	else if(ContainsFunction(str))
 		m_pIdentifier = GetFunctionByIdentifier(str);
 
@@ -56,29 +65,48 @@ Success CIdentifierLinter::ParseIdentifier()
 	std::advance(m_iterPos, 1);
 	return success;
 }
+
+template CLinterVariable* CIdentifierLinter::GetVariableByIdentifier<CLinterVariable>(const std::string& str) const noexcept;
+#ifdef OPTIMIZATIONS
+template CLinterVariable* CIdentifierLinter::GetVariableByIdentifier<CConstEvalLinterVariable>(const std::string& str) const noexcept;
+#endif
+
+template<typename T>
+[[nodiscard]] constexpr CVariableManager<T>* GetVariableManager(CMemory* memory) noexcept {
+	if constexpr (std::is_same_v<T, CLinterVariable>)
+		return memory->m_VariableManager.get();
+	else
+#ifndef OPTIMIZATIONS
+		static_assert(false, "if constexpr (std::is_same_v<T, CLinterVariable>");
+#else
+		return memory->m_ConstEvalVariableManager.get();
+#endif
+}
+
+template<typename T>
 CLinterVariable* CIdentifierLinter::GetVariableByIdentifier(const std::string& str) const noexcept
 {
+
 	//find the global variable first... unlike some languages :)
-	auto var = m_pOwner->GetGlobalMemory()->m_VariableManager->GetVariable(str);
+	CLinterVariable* var = GetVariableManager<T>(m_pOwner->GetGlobalMemory())->GetVariable(str);
 
 	if (var)
 		return var;
 
 	//find the variable from a local function if it exists
-
 	if (m_pOwner->IsLocalFunction()) {
 		const auto globalFunc = m_pOwner->ToStack()->GetGlobalFunction();
-		var = globalFunc->m_VariableManager->GetVariable(str);
+
+		var = GetVariableManager<T>(globalFunc)->GetVariable(str);
 
 		if (var) {
-			// this variable is being accessed in a lambda function
-			// capture it
+			// this variable is being accessed in a lambda function -> capture it
 			var->m_bCaptured = true;
 			return var;
 		}
 	}
 
-	return m_pOwner->m_VariableManager->GetVariable(str);
+	return GetVariableManager<T>(m_pOwner)->GetVariable(str);
 }
 
 bool CIdentifierLinter::ContainsFunction(const std::string& str) const noexcept

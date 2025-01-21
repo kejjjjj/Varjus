@@ -9,11 +9,10 @@
 #include "linter/optimizations/variables/opt_variables.hpp"
 
 
-#include <iostream>
 #include <cassert>
 
 IConstEvalValue* VariableASTNode::GetConstEval(CMemory* const owner) noexcept {
-	auto& vars = owner->m_VariableManager;
+	auto& vars = owner->m_ConstEvalVariableManager;
 	assert(vars);
 	if (auto variable = vars->GetVariableByIndex(m_uIndex)) {
 		assert(variable->m_pConstEval);
@@ -32,7 +31,7 @@ bool AbstractSyntaxTree::IsConstEval(CMemory* const owner, const AbstractSyntaxT
 	if (!operand->IsVariable())
 		return false;
 
-	const auto& vars = owner->m_VariableManager;
+	const auto& vars = owner->m_ConstEvalVariableManager;
 	assert(vars);
 	if (auto variable = vars->GetVariableByIndex(operand->GetVariable()->m_uIndex)) {
 		return !!variable->m_pConstEval;
@@ -42,18 +41,16 @@ bool AbstractSyntaxTree::IsConstEval(CMemory* const owner, const AbstractSyntaxT
 }
 void AbstractSyntaxTree::OptimizeBranches(CMemory* const owner, ASTNode& node)
 {
-	if (!node || node->IsLeaf())
+	assert(node);
+
+	//pretty much just CRuntimeExpression::Evaluate
+
+	if (node->IsLeaf())
 		return;
 
-	// Recursively process children first
-	if (node->left) {
-		OptimizeBranches(owner, node->left);
-	}
-	if (node->right) {
-		OptimizeBranches(owner, node->right);
-	}
+	OptimizeBranches(owner, node->left);
+	OptimizeBranches(owner, node->right);
 
-	// Call OptimizeNodes on the current branch after processing its children
 	OptimizeNodes(owner, node);
 }
 
@@ -89,32 +86,26 @@ void AbstractSyntaxTree::OptimizeNodes(CMemory* const owner, std::shared_ptr<Abs
 		// Create the new constant node
 		auto newValue = result->ToAST();
 
-		// Transfer ownership of left and right children to the new node
-		newValue->left = std::move(node->left->left);
-		newValue->right = std::move(node->right->right);
+		assert(!left->left);
+		assert(!right->right);
 		
 		node = newValue;
 
 		if(!result->HasOwner())
 			result->Release();
 	}
-
-	if (auto parent = node->parent.lock()) { 
-		return OptimizeNodes(owner, parent);
-	}
 }
-ASTNode AbstractSyntaxTree::OptimizeLeaf(CMemory* const owner, const ASTNode& node)
+void AbstractSyntaxTree::OptimizeLeaf(CMemory* const owner, ASTNode& node)
 {
 	assert(node && node->IsLeaf());
 
-
 	if (!node->IsVariable() || !node->IsConstEval(owner, node.get()))
-		return node;
+		return;
 
 	auto constEval = node->GetConstEval(owner);
-	assert(constEval);
+	assert(constEval && constEval->HasOwner());
 
-	return constEval->ToAST();
+	node = constEval->ToAST();
 }
 
 #endif

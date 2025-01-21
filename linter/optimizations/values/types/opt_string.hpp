@@ -1,5 +1,7 @@
 #pragma once
 
+#ifdef OPTIMIZATIONS
+
 #include "opt_value.hpp"
 
 class CConstEvalStringValue final : public CConstEvalValue<std::string>
@@ -28,3 +30,4 @@ private:
 	[[nodiscard]] std::string ValueAsString() const override { return m_oValue; }
 };
 
+#endif

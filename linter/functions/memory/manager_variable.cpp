@@ -9,11 +9,14 @@ CLinterVariable::~CLinterVariable() = default;
 CLinterVariable::CLinterVariable(const CMemory* owner, const std::string& name, const CCrossModuleReference& ref)
 	: CMemoryIdentifier(name, ref), m_pOwner(owner) {
 }
-CVariableManager::CVariableManager(class CMemory* const owner)
+
+template <typename T1, typename T2>
+CVariableManager<typename T1, typename T2>::CVariableManager(class CMemory* const owner)
 	: m_pOwner(owner) {
 }
 
-CLinterVariable* CVariableManager::DeclareVariable(const std::string& var) {
+template <typename T1, typename T2>
+T1* CVariableManager<typename T1, typename T2>::DeclareVariable(const std::string& var) {
 	assert(!var.empty());
 
 	if (ContainsVariable(var))
@@ -27,17 +30,22 @@ CLinterVariable* CVariableManager::DeclareVariable(const std::string& var) {
 
 	CCrossModuleReference ref(map[var]);
 
-	m_oVariables[var] = std::make_unique<CLinterVariable>(m_pOwner, var, ref);
+	m_oVariables[var] = std::make_unique<T1>(m_pOwner, var, ref);
 	return m_oVariables[var].get();
 }
 
-CLinterVariable* CVariableManager::GetVariable(const std::string& var) {
+template <typename T1, typename T2>
+T1* CVariableManager<typename T1, typename T2>::GetVariable(const std::string& var) {
 	return ContainsVariable(var) ? m_oVariables[var].get() : nullptr;
 }
-bool CVariableManager::ContainsVariable(const std::string& name) const {
+
+template <typename T1, typename T2>
+bool CVariableManager<typename T1, typename T2>::ContainsVariable(const std::string& name) const {
 	return m_oVariables.contains(name);
 }
-CLinterVariable* CVariableManager::GetVariableByIndex(std::size_t i) const
+
+template <typename T1, typename T2>
+T1* CVariableManager<typename T1, typename T2>::GetVariableByIndex(std::size_t i) const
 {
 	for (auto& [_, v] : m_oVariables) {
 
@@ -48,16 +56,13 @@ CLinterVariable* CVariableManager::GetVariableByIndex(std::size_t i) const
 	return nullptr;
 
 }
-std::size_t CVariableManager::GetVariableCount() const noexcept {
+
+template <typename T1, typename T2>
+std::size_t CVariableManager<typename T1, typename T2>::GetVariableCount() const noexcept {
 	return m_oVariables.size();
 }
 
-//#ifdef OPTIMIZATIONS
-//CConstEvalLinterVariable* CVariableManager::DeclareConstEvalVariable(const std::string& var)
-//{
-//
-//}
-//#endif
-//CConstEvalLinterVariable::CConstEvalLinterVariable(const CMemory* owner, const std::string& name, const CCrossModuleReference& ref)
-//	: CLinterVariable(owner, name, ref){ }
-//CConstEvalLinterVariable::~CConstEvalLinterVariable() = default;
+template class CVariableManager<CLinterVariable>;
+#ifdef OPTIMIZATIONS
+template class CVariableManager<CConstEvalLinterVariable>;
+#endif

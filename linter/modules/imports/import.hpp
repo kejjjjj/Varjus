@@ -18,8 +18,6 @@ public:
 
 private:
 
-	[[nodiscard]] void BuildDependencyGraph();
-
 	[[nodiscard]] Success ParseIdentifierRecursively();
 	[[nodiscard]] Success ParseFilePath();
 
