@@ -14,7 +14,17 @@ std::size_t CStringIntegerHashMap::operator[](const std::string& key){
 
 	return m_oStringToId[key];
 }
+void CStringIntegerHashMap::Erase(const std::string& key)
+{
+	if (!Contains(key))
+		return;
 
+	auto id = At(key);
+
+	m_oStringToId.erase(key);
+	m_oIdToString.erase(id);
+
+}
 bool CStringIntegerHashMap::Contains(const std::string& key) const{
 	return m_oStringToId.contains(key);
 }

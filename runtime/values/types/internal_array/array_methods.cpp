@@ -592,8 +592,6 @@ struct SortContext
 
 [[nodiscard]] auto Partition(SortContext& ctx, IValues& arr, std::size_t low, std::size_t high)
 {
-	
-
 	auto pivot = arr[low];
 	std::size_t left = low + 1;
 	std::size_t right = high;
@@ -603,25 +601,22 @@ struct SortContext
 
 	while (true) {
 
-		while (left <= high && doSort(ctx.ctx, arr[left], pivot, ctx.callback)) left++;
-		while (right > low && doSort(ctx.ctx, pivot, arr[right], ctx.callback)) right--;
+		while (left <= high && (arr[left] == pivot || doSort(ctx.ctx, arr[left], pivot, ctx.callback))) left++;
+		while (right > low && (arr[right] == pivot || doSort(ctx.ctx, pivot, arr[right], ctx.callback))) right--;
 
-		if (left < right) {
-			std::swap(arr[left], arr[right]);
-		} else {
+		if (left >= right) 
 			break;
+
+		std::swap(arr[left], arr[right]);
+
+		if (left == prev_left && right == prev_right) {
+			throw CRuntimeError("array.sort wasn't making any progress due to a repeating condition.. probably an internal bug");
 		}
 
-		// Check if the partition is stuck (no progress)
-        if (left == prev_left && right == prev_right) {
-			throw CRuntimeError("array.sort wasn't making any progress due to a bad callback");
-        }
-
-        prev_left = left;
-        prev_right = right;
-
+		prev_left = left;
+		prev_right = right;
 	}
-	
+
 	std::swap(arr[low], arr[right]);
 	return right;
 }
@@ -633,8 +628,10 @@ struct SortContext
 
 	if (low < high) {
 		auto pi = Partition(ctx, values, low, high);
-		QuickSort(ctx, values, low, pi);
-		QuickSort(ctx, values, pi + 1, high);
+		if (pi > low) 
+			QuickSort(ctx, values, low, pi - 1);
+		if (pi + 1 < high) 
+			QuickSort(ctx, values, pi + 1, high);
 	}
 }
 

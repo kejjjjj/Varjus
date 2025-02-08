@@ -31,6 +31,7 @@ T1* CVariableManager<typename T1, typename T2>::DeclareVariable(const std::strin
 	CCrossModuleReference ref(map[var]);
 
 	m_oVariables[var] = std::make_unique<T1>(m_pOwner, var, ref);
+
 	return m_oVariables[var].get();
 }
 

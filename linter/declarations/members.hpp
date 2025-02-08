@@ -1,3 +1,5 @@
+#pragma once
+
 #include <unordered_map>
 #include <string>
 
@@ -20,6 +22,7 @@ public:
 	[[nodiscard]] auto& StringToIntIterator() const noexcept { return m_oStringToId; }
 
 	void Clear() { m_oStringToId.clear(); m_oIdToString.clear(); }
+	void Erase(const std::string& key);
 
 private:
 	[[nodiscard]] GlobalMemberIndex GetCurrentIndex() const;

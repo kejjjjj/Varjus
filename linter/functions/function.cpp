@@ -10,8 +10,8 @@
 #include "linter/functions/stack.hpp"
 #include "linter/context.hpp"
 #include "linter/modules/module.hpp"
+#include "linter/declarations/members.hpp"
 #include "globalEnums.hpp"
-
 #include "runtime/structure.hpp"
 
 #ifdef OPTIMIZATIONS
@@ -48,6 +48,17 @@ CFunctionLinter::~CFunctionLinter()
 		}
 	}
 #endif
+
+	if (m_pThisStack && m_pThisStack->m_VariableManager) {
+		auto context = m_pOwner->GetContext();
+
+		for (const auto& [name, value] : m_pThisStack->m_VariableManager->GetVariableIterator()) {
+			if (context->m_oAllVariables.Contains(name)) {
+				context->m_oAllVariables.Erase(name);
+			}
+		}
+	}
+
 }
 Success CFunctionLinter::Parse()
 {

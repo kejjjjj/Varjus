@@ -169,3 +169,15 @@ TEST_CASE("MergeSort([38, 27, 43, 3, 9, 82, 10])") {
 	retVal->Release();
 	REQUIRE(CProgramRuntime::HasLeaks() == false);
 }
+TEST_CASE("KMPStringMatch(ababcababcabc, abc)") {
+
+	auto retVal = TEST_ExecuteFile(JP("kmp_string_match.var"));
+
+	REQUIRE(retVal != nullptr);
+	REQUIRE(retVal->Type() == t_int);
+	REQUIRE(retVal->ToInt() == 2);
+
+	REQUIRE(retVal->HasOwner() == false);
+	retVal->Release();
+	REQUIRE(CProgramRuntime::HasLeaks() == false);
+}

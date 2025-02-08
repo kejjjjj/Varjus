@@ -62,5 +62,6 @@ public:
 
 private:
     std::unordered_map<std::string, std::unique_ptr<T1>> m_oVariables;
+
 	CMemory* const m_pOwner;
 };
