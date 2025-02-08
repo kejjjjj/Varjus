@@ -91,8 +91,7 @@ inline IValue* EvaluateVariable(CRuntimeContext* const ctx, const VariableASTNod
 
 		assert(activeModule);
 		variable = activeModule->GetGlobalVariableByIndex(var->m_uIndex);
-	}
-	else {
+	} else {
 		assert(ctx->m_pFunction);
 		variable = ctx->m_pFunction->GetVariableByRef(*var);
 	}

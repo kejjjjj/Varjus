@@ -42,18 +42,12 @@ void CAggregate::Release()
 }
 IValue* CAggregate::ElementLookup(GlobalMemberIndex index) const
 {
-
-	try {
-		return m_oIndexLookup.at(index)->GetValue();
-	}
-	catch ([[maybe_unused]]std::out_of_range& ex) {
-
-		//const auto modulePtr = CProgramRuntime::GetModuleByIndex(m_uModuleIndex);
+	if (!m_oIndexLookup.contains(index)) {
 		throw CRuntimeError(std::format("this aggregate doesn't have the attribute \"{}\"",
 			CFileContext::m_oAllMembers.At(index)
 		));
 	}
-
+	return m_oIndexLookup.at(index)->GetValue();
 }
 
 #ifdef RUNNING_TESTS

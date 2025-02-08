@@ -60,12 +60,12 @@ public:
 
 	static void ResetEverythingStatic();
 
-	static CModule* CreateNewModule(const std::string& filePath);
-	static CModule* FindCachedModule(const std::string& filePath);
-	static RuntimeModules ToRuntimeModules();
+	[[nodiscard]] static CModule* CreateNewModule(const std::string& filePath);
+	[[nodiscard]] static CModule* FindCachedModule(const std::string& filePath);
+	[[nodiscard]] static RuntimeModules ToRuntimeModules();
 
-	static std::string DependencyGraphToString() noexcept;
-	static void CheckCircularDependencies(const std::string& src, const DependencyGraph& graph);
+	[[nodiscard]] static std::string DependencyGraphToString() noexcept;
+	[[nodiscard]] static Success CheckCircularDependencies(const std::string& src, const DependencyGraph& graph);
 
 	static DependencyGraph m_oDependencyGraph;
 	static std::unordered_set<std::string> m_oVisitedModules;

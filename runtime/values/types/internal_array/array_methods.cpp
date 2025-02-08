@@ -7,6 +7,8 @@
 
 #include "linter/context.hpp"
 
+#include <algorithm>
+
 DECLARE_BUILT_IN_METHODS CArrayValue::m_oMethods;
 
 FORWARD_DECLARE_METHOD(Push);
@@ -24,6 +26,10 @@ FORWARD_DECLARE_METHOD(Reversed);
 FORWARD_DECLARE_METHOD(Join);
 FORWARD_DECLARE_METHOD(All);
 FORWARD_DECLARE_METHOD(Any);
+FORWARD_DECLARE_METHOD(Slice);
+FORWARD_DECLARE_METHOD(Sort);
+FORWARD_DECLARE_METHOD(Resize);
+FORWARD_DECLARE_METHOD(Fill);
 
 void CArrayValue::ConstructMethods()
 {
@@ -44,6 +50,10 @@ void CArrayValue::ConstructMethods()
 	ADD_METHOD("join",            Join,          1u);
 	ADD_METHOD("all",             All,           1u);
 	ADD_METHOD("any",             Any,           1u);
+	ADD_METHOD("slice",	          Slice,         2u);
+	ADD_METHOD("sort",            Sort,          1u);
+	ADD_METHOD("resize",          Resize,        1u);
+	ADD_METHOD("fill",            Fill,          1u);
 
 }
 
@@ -387,6 +397,7 @@ DEFINE_METHOD(Reversed) {
 	return CArrayValue::Construct(std::move(valuesAsCopy));
 }
 
+
 std::string JoinStrings(const VectorOf<std::string>& strings, const std::string& delimiter) {
 	std::ostringstream result;
 	for (auto i = std::size_t(0); i < strings.size(); ++i) {
@@ -509,4 +520,200 @@ DEFINE_METHOD(Any)
 	}
 
 	return CProgramRuntime::AcquireNewValue<CBooleanValue>(any);
+}
+
+DEFINE_METHOD(Slice) {
+
+	START_METHOD(__this);
+	auto& vars = __this->GetShared()->GetVariables();
+
+	auto& a = newValues[0];
+	auto& b = newValues[1];
+
+	const auto CheckSanity = [](const IValue* v) {
+		if (!v->IsIntegral())
+			throw CRuntimeError(std::format("array.slice expected an integral value, but got \"{}\"", v->TypeAsString()));
+		};
+
+	CheckSanity(a);
+	CheckSanity(b);
+
+	auto start = a->ToInt();
+	auto end = b->ToInt();
+
+	auto len = vars.size();
+
+	if (start >= end)
+		throw CRuntimeError("array.slice expected start < end");
+
+	end -= 1;
+
+	const auto CheckRange = [&len](const auto value) {
+		if (value < 0 || value >= static_cast<std::int64_t>(len))
+			throw CRuntimeError("array.slice index out of range");
+	};
+
+	CheckRange(start);
+	CheckRange(end);
+
+
+	IValues valuesAsCopy;
+
+	end += 1;
+	for (auto i : std::views::iota(start, end))
+		valuesAsCopy.push_back(vars[static_cast<std::size_t>(i)]->GetValue()->Copy()); //THE CAST IS SAFE!!!
+
+	return CArrayValue::Construct(std::move(valuesAsCopy));
+}
+
+[[nodiscard]] bool doSort(CRuntimeContext* const ctx, IValue*& left, IValue*& right, IValue* const callback)
+{
+
+	IValues args = { left->Copy(), right->Copy() };
+	auto returnValue = callback->Call(ctx, args);  // Call callback on swap
+
+	if (!returnValue->IsBooleanConvertible())
+		throw CRuntimeError(std::format("array.sort expected a boolean return value", returnValue->TypeAsString()));
+
+	const auto rtVal = returnValue->ToBoolean();
+	returnValue->Release(); // nothing meaningful, release it
+
+	return rtVal;
+}
+struct SortContext
+{
+	NONCOPYABLE(SortContext);
+	SortContext(CRuntimeContext* const c, IValue* v) : ctx(c), callback(v){}
+
+	CRuntimeContext* const ctx;
+	std::size_t failedIterations{};
+	IValue* const callback;
+};
+
+[[nodiscard]] auto Partition(SortContext& ctx, IValues& arr, std::size_t low, std::size_t high)
+{
+	
+
+	auto pivot = arr[low];
+	std::size_t left = low + 1;
+	std::size_t right = high;
+
+	std::size_t prev_left = left;
+	std::size_t prev_right = right;
+
+	while (true) {
+
+		while (left <= high && doSort(ctx.ctx, arr[left], pivot, ctx.callback)) left++;
+		while (right > low && doSort(ctx.ctx, pivot, arr[right], ctx.callback)) right--;
+
+		if (left < right) {
+			std::swap(arr[left], arr[right]);
+		} else {
+			break;
+		}
+
+		// Check if the partition is stuck (no progress)
+        if (left == prev_left && right == prev_right) {
+			throw CRuntimeError("array.sort wasn't making any progress due to a bad callback");
+        }
+
+        prev_left = left;
+        prev_right = right;
+
+	}
+	
+	std::swap(arr[low], arr[right]);
+	return right;
+}
+
+
+
+[[nodiscard]] void QuickSort(SortContext& ctx, IValues& values, std::size_t low, std::size_t high)
+{
+
+	if (low < high) {
+		auto pi = Partition(ctx, values, low, high);
+		QuickSort(ctx, values, low, pi);
+		QuickSort(ctx, values, pi + 1, high);
+	}
+}
+
+DEFINE_METHOD(Sort)
+{
+	assert(newValues.size() == 1);
+	auto& mapFunc = newValues.front();
+
+	if (!mapFunc->IsCallable())
+		throw CRuntimeError(std::format("array.all expected \"callable\", but got \"{}\"", mapFunc->TypeAsString()));
+
+	START_METHOD(__this);
+	auto& vars = __this->GetShared()->GetVariables();
+
+	IValues valuesAsCopy(vars.size());
+
+	for (auto i = size_t(0); auto & var : vars)
+		valuesAsCopy[i++] = var->GetValue()->Copy();
+
+	SortContext context(ctx, mapFunc);
+	QuickSort(context, valuesAsCopy, 0, valuesAsCopy.size() - 1);
+
+	return CArrayValue::Construct(std::move(valuesAsCopy));
+}
+
+DEFINE_METHOD(Resize)
+{
+	assert(newValues.size() == 1);
+	auto& value = newValues.front();
+
+	if (!value->IsIntegral())
+		throw CRuntimeError(std::format("array.resize expected \"integer\", but got \"{}\"", value->TypeAsString()));
+
+
+	START_METHOD(__this);
+	auto& vars = __this->GetShared()->GetVariables();
+
+	auto intVal = value->ToInt();
+
+	if(intVal <= 0)
+		throw CRuntimeError(std::format("array.resize out of range <= 0 ({})", value->TypeAsString()));
+
+	const auto uintval = static_cast<std::size_t>(intVal);
+	const auto oldSize = vars.size();
+	if (uintval > oldSize) {
+		//allocate new 
+		vars.reserve(uintval);
+
+		const auto delta = uintval - oldSize;
+
+		for ([[maybe_unused]] auto i : std::views::iota(0u, delta)) {
+			auto v = CProgramRuntime::AcquireNewVariable();
+			v->SetValue(CProgramRuntime::AcquireNewValue<IValue>());
+			vars.push_back(v);
+		}
+	} else if (uintval < oldSize) {
+		//shrink me :3
+
+		for (const auto i : std::views::iota(uintval, oldSize)) {
+			vars[i]->Release();
+		}
+
+		vars.resize(uintval);
+	}
+
+	return __this->Copy();
+}
+
+DEFINE_METHOD(Fill)
+{
+	assert(newValues.size() == 1);
+	auto& value = newValues.front();
+
+	START_METHOD(__this);
+	auto& vars = __this->GetShared()->GetVariables();
+
+	for (auto& v : vars) {
+		v->SetValue(value->Copy());
+	}
+
+	return __this->Copy();
 }

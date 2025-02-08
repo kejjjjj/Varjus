@@ -73,7 +73,7 @@ Success CForStatementLinter::ParseInitializer() {
 	if (!linter.Parse())
 		return failure;
 
-	m_pInitializer = linter.ToAST();
+	m_pInitializer = linter.ToMergedAST();
 	std::advance(m_iterPos, 1);
 	return success;
 }
@@ -92,7 +92,7 @@ Success CForStatementLinter::ParseCondition() {
 	if (!linter.Parse())
 		return failure;
 
-	m_pCondition = linter.ToAST();
+	m_pCondition = linter.ToMergedAST();
 	std::advance(m_iterPos, 1);
 	return success;
 }
@@ -111,7 +111,7 @@ Success CForStatementLinter::ParseEndExpression() {
 	if (!linter.Parse(PairMatcher(p_par_open))) // match the )
 		return failure;
 
-	m_pOnEnd = linter.ToAST();
+	m_pOnEnd = linter.ToMergedAST();
 	return success;
 }
 

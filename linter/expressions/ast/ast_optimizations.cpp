@@ -54,6 +54,8 @@ void AbstractSyntaxTree::OptimizeBranches(CMemory* const owner, ASTNode& node)
 	OptimizeNodes(owner, node);
 }
 
+static void OptimizeConstEvalNodes(CMemory* const owner, std::shared_ptr<AbstractSyntaxTree>& node);
+
 // AKA fold constants
 void AbstractSyntaxTree::OptimizeNodes(CMemory* const owner, std::shared_ptr<AbstractSyntaxTree>& node)
 {
@@ -64,37 +66,60 @@ void AbstractSyntaxTree::OptimizeNodes(CMemory* const owner, std::shared_ptr<Abs
 	auto right = node->right.get();
 
 	if (IsConstEval(owner, left) && IsConstEval(owner, right)) {
-		auto lhs = left->GetConstEval(owner);
-		auto rhs = right->GetConstEval(owner);
+		return OptimizeConstEvalNodes(owner, node);
+	}
 
-		auto& op = m_oOptOperatorTable[node->GetOperator()->m_ePunctuation];
+	//lhs or rhs is not consteval
+	if (node->IsAssignment()) {
 
-		if (!op) {
-			if(!lhs->HasOwner()) lhs->Release();
-			if(!rhs->HasOwner()) rhs->Release();
-			return;
+		//assigning a non consteval value to a variable
+		//gotta make the variable non consteval
+		if (IsConstEval(owner, left) && left->IsVariable()) {
+			const auto var = left->GetVariable();
+			auto variableName = owner->m_ConstEvalVariableManager->GetVariableByIndex(var->m_uIndex);
+			assert(variableName);
+
+			owner->m_VariableManager->DeclareVariable(variableName->m_sName);
 		}
-
-		auto result = op(lhs, rhs);
-
-		if (!lhs->HasOwner()) lhs->Release();
-		if (!rhs->HasOwner()) rhs->Release();
-		
-		if (!result) //something that cannot be determined at this point
-			return;
-
-		// Create the new constant node
-		auto newValue = result->ToAST();
-
-		assert(!left->left);
-		assert(!right->right);
-		
-		node = newValue;
-
-		if(!result->HasOwner())
-			result->Release();
 	}
 }
+void OptimizeConstEvalNodes(CMemory* const owner, std::shared_ptr<AbstractSyntaxTree>& node)
+{
+	auto left = node->left.get();
+	auto right = node->right.get();
+
+	auto lhs = left->GetConstEval(owner);
+	auto rhs = right->GetConstEval(owner);
+
+	auto& op = m_oOptOperatorTable[node->GetOperator()->m_ePunctuation];
+
+	if (!op) {
+		if (!lhs->HasOwner()) lhs->Release();
+		if (!rhs->HasOwner()) rhs->Release();
+		return;
+	}
+
+	auto result = op(lhs, rhs);
+
+	if (!lhs->HasOwner()) lhs->Release();
+	if (!rhs->HasOwner()) rhs->Release();
+
+	if (!result) //something that cannot be determined at this point
+		return;
+
+	// Create the new constant node
+	auto newValue = result->ToAST();
+
+	assert(!left->left);
+	assert(!right->right);
+
+	node = newValue;
+
+	if (!result->HasOwner())
+		result->Release();
+
+}
+
 void AbstractSyntaxTree::OptimizeLeaf(CMemory* const owner, ASTNode& node)
 {
 	assert(node && node->IsLeaf());

@@ -22,7 +22,7 @@ public:
 	[[nodiscard]] constexpr CVariable* Copy() noexcept { m_uRefCount++; return this; }
 	[[nodiscard]] constexpr std::size_t& RefCount() noexcept { return m_uRefCount; }
 
-	bool m_bSelfCapturing{ false };
+	bool m_bSelfCapturing{ false }; //not exactly the most efficient way to include this here
 
 protected:
 	IValue* m_pValue{};

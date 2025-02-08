@@ -88,10 +88,10 @@ RuntimeModules CModule::ToRuntimeModules()
 	return modules;
 }
 
-void CModule::CheckCircularDependencies(const std::string& src, const DependencyGraph& graph)
+Success CModule::CheckCircularDependencies(const std::string& src, const DependencyGraph& graph)
 {
 	if (graph.empty())
-		return;
+		return success;
 
 	std::unordered_set<std::string> visited;
 	VectorOf<std::string> recursionStack;
@@ -130,8 +130,11 @@ void CModule::CheckCircularDependencies(const std::string& src, const Dependency
 		for (const auto& [source, target] : conflictDetails)
 			ss << " - " << source << " <-> " << target << '\n';
 
-		return CLinterErrors::PushError(ss.str());
+		CLinterErrors::PushError(ss.str());
+		return failure;
 	}
+
+	return success;
 }
 
 std::string CModule::DependencyGraphToString() noexcept
@@ -142,7 +145,7 @@ std::string CModule::DependencyGraphToString() noexcept
 		ss << sourceFile << " imports:\n";
 
 		if (dependencies.empty()) {
-			ss << " - None\n"; // Handle case where there are no imports
+			ss << " - None\n"; 
 		}
 		else {
 			for (const auto& dependency : dependencies) {

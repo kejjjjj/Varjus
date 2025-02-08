@@ -1,7 +1,10 @@
 
+
+
 fn main()
 {
-	const a = 5;
-	const b = 5;
-	return a + b + a;
+	return [].resize(10).fill("seppo varjus").map((v) => { 
+		const split = v.split(' '); 
+		return { a: split[0], b: split[1] }; 
+	});
 }

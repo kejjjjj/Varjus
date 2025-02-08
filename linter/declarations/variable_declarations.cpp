@@ -51,7 +51,10 @@ Success CVariableDeclarationLinter::Parse()
 			return failure;
 		}
 #ifdef OPTIMIZATIONS
-		m_sDeclaredVariable = m_pOwner->m_ConstEvalVariableManager->DeclareVariable(varName);
+		//blah blah too lazy don't want to implement
+		//only optimize local variables
+		//if(m_pOwner->IsStack())
+		//	m_sDeclaredVariable = m_pOwner->m_ConstEvalVariableManager->DeclareVariable(varName);
 #else
 		m_sDeclaredVariable = m_pOwner->m_VariableManager->DeclareVariable(varName);
 #endif

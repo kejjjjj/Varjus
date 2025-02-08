@@ -50,10 +50,10 @@ public:
 	// merge all evaluated expressions into one
 	[[nodiscard]] ASTNode ToMergedAST() const;
 	[[nodiscard]] ExpressionList ToExpressionList() const;
-	[[nodiscard]] ASTNode ToAST() const;
 
 	[[nodiscard]] RuntimeBlock ToRuntimeObject() const override;
 private:
+	[[nodiscard]] ASTNode ToAST() const;
 
 	[[nodiscard]] bool EndOfExpression(const std::optional<PairMatcher>& eoe) const noexcept;
 

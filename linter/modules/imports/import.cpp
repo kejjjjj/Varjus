@@ -62,9 +62,11 @@ Success CImportLinter::ParseIdentifierRecursively()
 		return failure;
 	}
 
-	if (m_pOwner->GetContext()->m_sFilePath.empty())
-		CLinterErrors::PushError("imports are not supported when there is no working directory", 
+	if (m_pOwner->GetContext()->m_sFilePath.empty()) {
+		CLinterErrors::PushError("imports are not supported when there is no working directory",
 			GetIteratorSafe()->m_oSourcePosition);
+		return failure;
+	}
 
 	auto scope = m_pScope.lock();
 
@@ -120,15 +122,16 @@ Success CImportLinter::ParseFile()
 		CModule* thisModule = CModule::FindCachedModule(m_oTargetFile);
 
 		if (!thisModule) { // means this file hasn't been parsed yet
-			CModule::CheckCircularDependencies(sourceFile, CModule::m_oDependencyGraph);
+			if (!CModule::CheckCircularDependencies(sourceFile, CModule::m_oDependencyGraph))
+				return failure;
 		}
-	}
-	else {
+	} else {
 		CModule::m_oVisitedModules.insert(m_oTargetFile);
 	}
 
 	CModule::m_oDependencyGraph[sourceFile].push_back(m_oTargetFile);
-	CModule::CheckCircularDependencies(sourceFile, CModule::m_oDependencyGraph);
+	if (!CModule::CheckCircularDependencies(sourceFile, CModule::m_oDependencyGraph))
+		return failure;
 
 	CModule* thisModule = GetFileModule();
 

@@ -137,3 +137,35 @@ TEST_CASE("SumArray([10, 15, 20])") {
 	retVal->Release();
 	REQUIRE(CProgramRuntime::HasLeaks() == false);
 }
+
+TEST_CASE("IsPrime() with 29 and 12") {
+
+	auto retVal = TEST_ExecuteFile(JP("is_prime.var"));
+
+	AssertArray(retVal, AssertArrayValue<ASSERT_BOOL>(t_boolean, { true, false }));
+
+	REQUIRE(retVal->HasOwner() == false);
+	retVal->Release();
+	REQUIRE(CProgramRuntime::HasLeaks() == false);
+}
+
+TEST_CASE("isPalindrome() with 29 and 12") {
+
+	auto retVal = TEST_ExecuteFile(JP("is_palindrome.var"));
+
+	AssertArray(retVal, AssertArrayValue<ASSERT_BOOL>(t_boolean, { true, false, true }));
+
+	REQUIRE(retVal->HasOwner() == false);
+	retVal->Release();
+	REQUIRE(CProgramRuntime::HasLeaks() == false);
+}
+TEST_CASE("MergeSort([38, 27, 43, 3, 9, 82, 10])") {
+
+	auto retVal = TEST_ExecuteFile(JP("merge_sort.var"));
+
+	AssertArray(retVal, AssertArrayValue<ASSERT_INT>(t_int, { 3, 9, 10, 27, 38, 43, 82 }));
+
+	REQUIRE(retVal->HasOwner() == false);
+	retVal->Release();
+	REQUIRE(CProgramRuntime::HasLeaks() == false);
+}
