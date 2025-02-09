@@ -25,13 +25,13 @@ std::unique_ptr<IOperand> CLinterOperand::ParseTernary(std::optional<PairMatcher
 
 	auto ifFalse = CLinterExpression(m_iterPos, m_iterEnd, m_pScope, m_pOwner);
 
-	const auto hadEoe = eoe != std::nullopt;
+	//const auto hadEoe = eoe != std::nullopt;
 
-	if (!ifFalse.Parse(eoe))
+	if (!ifFalse.Parse(eoe, nullptr, evaluate_singular))
 		return nullptr;
 
-	if (hadEoe)
-		std::advance(m_iterPos, -1);
+	//if (hadEoe)
+	//	std::advance(m_iterPos, -1);
 
 	if (m_pOwner->IsHoisting())
 		return nullptr;

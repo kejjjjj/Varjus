@@ -120,6 +120,14 @@ void AbstractSyntaxTree::CreateRecursively(CMemory* const owner,
 		CheckSelfCapture(owner);
 	}
 }
+//void AbstractSyntaxTree::CreateTernary(CMemory* const owner, VectorOf<CLinterOperand*>& operands, VectorOf<CLinterOperator*>& operators)
+//{
+//	assert(operators.front()->GetPunctuation() == p_question_mark);
+//
+//
+//
+//
+//}
 OperatorIterator AbstractSyntaxTree::FindLowestPriorityOperator(VectorOf<CLinterOperator*>& operators)
 {
 	assert(!operators.empty());

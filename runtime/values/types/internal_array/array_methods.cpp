@@ -609,9 +609,9 @@ struct SortContext
 
 		std::swap(arr[left], arr[right]);
 
-		if (left == prev_left && right == prev_right) {
-			throw CRuntimeError("array.sort wasn't making any progress due to a repeating condition.. probably an internal bug");
-		}
+		//if (left == prev_left && right == prev_right) {
+		//	throw CRuntimeError("array.sort wasn't making any progress due to a repeating condition.. probably an internal bug");
+		//}
 
 		prev_left = left;
 		prev_right = right;
@@ -641,7 +641,7 @@ DEFINE_METHOD(Sort)
 	auto& mapFunc = newValues.front();
 
 	if (!mapFunc->IsCallable())
-		throw CRuntimeError(std::format("array.all expected \"callable\", but got \"{}\"", mapFunc->TypeAsString()));
+		throw CRuntimeError(std::format("array.sort expected \"callable\", but got \"{}\"", mapFunc->TypeAsString()));
 
 	START_METHOD(__this);
 	auto& vars = __this->GetShared()->GetVariables();

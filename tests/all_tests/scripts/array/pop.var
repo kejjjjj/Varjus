@@ -1,0 +1,8 @@
+fn main()
+{
+
+	const arr = [1,2,3];
+	const back = arr.pop();
+	
+	return [back, arr[0], arr[1], arr.length];
+}

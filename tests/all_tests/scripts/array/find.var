@@ -1,0 +1,10 @@
+
+fn main()
+{
+	const array = [1,2,3,4,5,6];
+	return [ 
+		(array.find((v) => v === 5) !== undefined) ? true : false,
+		(array.find((v) => v === 7) !== undefined) ? true : false
+	];
+
+}

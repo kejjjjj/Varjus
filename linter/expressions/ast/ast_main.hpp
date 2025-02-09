@@ -85,6 +85,8 @@ private:
 	[[nodiscard]] static OperatorIterator FindLowestPriorityOperator(VectorOf<CLinterOperator*>& operators);
 
 	void CreateRecursively(CMemory* const owner, VectorOf<CLinterOperand*>& operands, VectorOf<CLinterOperator*>& operators);
+	void CreateTernary(CMemory* const owner, VectorOf<CLinterOperand*>& operands, VectorOf<CLinterOperator*>& operators);
+
 	[[nodiscard]] bool IsAssignment() const noexcept;
 	
 	void CheckConstness() const;

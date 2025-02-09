@@ -1,0 +1,13 @@
+
+import throwFunc from "a.var";
+
+fn main()
+{
+    try{
+        return throwFunc();
+    }catch(ex){
+        return ex;
+    }
+
+	return "hmm?";
+}

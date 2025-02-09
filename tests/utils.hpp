@@ -36,7 +36,7 @@ struct AssertArrayValue
 template<typename T> 
 constexpr auto GetTemplatedValue(IValue* t)
 {
-	if constexpr (std::is_same_v<ASSERT_BOOL, T>)
+	if constexpr (std::is_same_v<ASSERT_BOOL, T> || std::is_same_v<ASSERT_UNDEFINED, T>)
 		return t->ToBoolean();
 	else if constexpr (std::is_same_v<ASSERT_INT, T>)
 		return t->ToInt();

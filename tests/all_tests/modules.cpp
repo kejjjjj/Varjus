@@ -102,3 +102,13 @@ TEST_CASE("Main and other call array methods") {
 	retVal->Release();
 	REQUIRE(CProgramRuntime::HasLeaks() == false);
 }
+TEST_CASE("Module throws and main catches it") {
+
+	auto retVal = TEST_ExecuteFile(JP("module_throws_and_main_catches\\main.var"));
+
+	AssertArray(retVal, AssertArrayValue<ASSERT_INT>(t_int, { 1, 2, 3 }));
+
+	REQUIRE(retVal->HasOwner() == false);
+	retVal->Release();
+	REQUIRE(CProgramRuntime::HasLeaks() == false);
+}
