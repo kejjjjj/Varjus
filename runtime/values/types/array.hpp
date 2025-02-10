@@ -84,7 +84,7 @@ private:
 	[[nodiscard]] std::string TypeAsString() const override { return "array"s; }
 	[[nodiscard]] std::string ValueAsString() const override;
 	
-	static DECLARE_BUILT_IN_METHODS m_oMethods;
+	static BuiltInMethod_t m_oMethods;
 };
 
 

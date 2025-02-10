@@ -4,6 +4,7 @@
 #include "structure.hpp"
 #include "values/types/internal_objects/console.hpp"
 #include "values/types/internal_objects/math.hpp"
+#include "values/types/internal_objects/internal_objects.hpp"
 
 #include "values/types/types.hpp"
 #include "variables.hpp"
@@ -23,8 +24,7 @@ template<> COwningObjectPool<CStringValue>        CProgramRuntime::m_oValuePool<
 template<> COwningObjectPool<CCallableValue>      CProgramRuntime::m_oValuePool<CCallableValue>(VALUEPOOL_INIT_SIZE);
 template<> COwningObjectPool<CArrayValue>         CProgramRuntime::m_oValuePool<CArrayValue>   (VALUEPOOL_INIT_SIZE);
 template<> COwningObjectPool<CObjectValue>        CProgramRuntime::m_oValuePool<CObjectValue>  (VALUEPOOL_INIT_SIZE);
-template<> COwningObjectPool<CConsoleValue>       CProgramRuntime::m_oValuePool<CConsoleValue> (1);
-template<> COwningObjectPool<CMathValue>          CProgramRuntime::m_oValuePool<CMathValue>(1);
+template<> COwningObjectPool<CBuiltInObject>      CProgramRuntime::m_oValuePool<CBuiltInObject>(VALUEPOOL_INIT_SIZE);
 
 RuntimeModules CProgramRuntime::m_oModules;
 const CodePosition* CProgramRuntime::m_pCodePosition{ nullptr };
@@ -106,8 +106,13 @@ void CProgramRuntime::Execute()
 
 	CArrayValue::ConstructMethods();
 	CStringValue::ConstructMethods();
+
+
+
 	CMathValue::ConstructMethods();
 	CConsoleValue::ConstructMethods();
+
+	
 
 	for (auto& mod : m_oModules) {
 		mod->SetupGlobalVariables();
@@ -203,7 +208,7 @@ bool CProgramRuntime::HasLeaks()
 		HasLeak<CArrayValue>() ||
 		HasLeak<CObjectValue>() ||
 		HasLeak<CVariable>() || 
-		HasLeak<CConsoleValue>()
+		HasLeak<CBuiltInObject>()
 	);
 }
 void CProgramRuntime::FreeAllValues()
@@ -218,5 +223,5 @@ void CProgramRuntime::FreeAllValues()
 	ClearPool<CArrayValue>();
 	ClearPool<CObjectValue>();
 	ClearPool<CVariable>();
-	ClearPool<CConsoleValue>();
+	ClearPool<CBuiltInObject>();
 }

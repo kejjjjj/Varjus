@@ -5,9 +5,6 @@
 #include "runtime/exceptions/exception.hpp"
 #include "linter/context.hpp"
 
-
-DECLARE_BUILT_IN_METHODS CMathValue::m_oMethods;
-
 FORWARD_DECLARE_METHOD(Sqrt);
 FORWARD_DECLARE_METHOD(Abs);
 FORWARD_DECLARE_METHOD(Acos);
@@ -43,9 +40,9 @@ FORWARD_DECLARE_METHOD(Min);
 #define TWO_ARG_METHOD(name, func) ADD_METHOD(name, func, 2u)
 
 
-void CMathValue::ConstructMethods()
+BuiltInMethod_t CMathValue::ConstructMethods()
 {
-	m_oMethods.clear();
+	BuiltInMethod_t m_oMethods;
 
 	SINGLE_ARG_METHOD("sqrt", Sqrt);
 	SINGLE_ARG_METHOD("abs", Abs);
@@ -76,42 +73,8 @@ void CMathValue::ConstructMethods()
 	TWO_ARG_METHOD("hypot", Hypot);
 	TWO_ARG_METHOD("max", Max);
 	TWO_ARG_METHOD("min", Min);
-}
-CMathValue* CMathValue::Construct()
-{
-	auto ptr = CProgramRuntime::AcquireNewValue<CMathValue>();
-	ptr->MakeShared();
-	return ptr;
-}
 
-void CMathValue::Release() {
-
-	if (SharedRefCount() == 1) {
-		Get().Release();
-	}
-
-	ReleaseInternal();
-	CProgramRuntime::FreeValue<CMathValue>(this);
-	ReleaseShared();
-}
-
-IValue* CMathValue::Copy() {
-	CMathValue* ptr = CProgramRuntime::AcquireNewValue<CMathValue>();
-	ptr->MakeShared();
-	ptr->GetShared() = GetShared();
-
-	return ptr;
-}
-
-IValue* CMathValue::GetAggregate(std::size_t memberIdx) {
-
-	if (m_oMethods.contains(memberIdx)) {
-		auto v = CProgramRuntime::AcquireNewValue<CCallableValue>();
-		METHOD_BIND(v, this->Copy());
-		return v;
-	}
-
-	return CObjectValue::GetAggregate(memberIdx);
+	return m_oMethods;
 }
 
 #define DEFINE_SINGLE_ARG_GENERIC_MATH_FUNC(name, func) \

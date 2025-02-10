@@ -1,35 +1,12 @@
 
-fn generateKV(count, postfix)
+fn editFunc(thing)
 {
-    const kvs = [];
-
-    for(let i = count - 1; i >= 0; i--){
-        kvs.push({k: i, v: tostring(i) + postfix});
-    }
-
-    return kvs;
-}
-
-fn sortAlphabeticallyCallback(a_obj, b_obj)
-{
-    const a = a_obj.v;
-    const b = b_obj.v;
-
-    const shorter = math.min(a.length, b.length);
-
-    for(let i = 0; i < shorter; i++){
-        if(a[i] !== b[i]){
-            return a.get_code_at(i) < b.get_code_at(i);
-        }
-
-    }
-
-    return true;
+    const wrapper = [ thing ];
+    return wrapper[0](5.5);
 }
 
 fn main()
 {
-    const kv = generateKV(100, " dicks");
-
-    return kv.sort(sortAlphabeticallyCallback);
+    let obj = math;
+    return editFunc(obj.trunc);
 }

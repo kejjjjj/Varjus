@@ -12,12 +12,26 @@ IValue*(*)(CRuntimeContext* const, IValue*, const IValues&)
 #define METHOD_AS_VARIABLE(name) \
 IValue*(*name)(CRuntimeContext* const, IValue*, const std::vector<IValue*>&)
 
-#define DECLARE_BUILT_IN_METHODS \
-std::unordered_map<std::size_t, std::unique_ptr<class CBuiltInRuntimeFunction>>
+#include <unordered_map>
+#include <memory>
+struct BuiltInMethod_t : std::unordered_map<std::size_t, std::unique_ptr<class CBuiltInRuntimeFunction>>
+{
+	using unordered_map::unordered_map;
+	BuiltInMethod_t(const BuiltInMethod_t&) = delete;
+	BuiltInMethod_t(BuiltInMethod_t&&) = default;
+	BuiltInMethod_t& operator=(const BuiltInMethod_t&) = delete;
+	BuiltInMethod_t& operator=(BuiltInMethod_t&&) = default;
+};
 
 #define METHOD_BIND(v, value) \
 v->MakeShared();\
 v->Internal()->SetCallable(m_oMethods.at(memberIdx).get());\
+v->MakeImmutable();\
+v->Internal()->Bind(value);\
+
+#define METHOD_BIND_PTR(v, value) \
+v->MakeShared();\
+v->Internal()->SetCallable(m_oMethods->at(memberIdx).get());\
 v->MakeImmutable();\
 v->Internal()->Bind(value);\
 

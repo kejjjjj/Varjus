@@ -7,6 +7,7 @@
 #include "runtime/structure.hpp"
 #include "runtime/values/types/internal_objects/console.hpp"
 #include "runtime/values/types/internal_objects/math.hpp"
+#include "runtime/values/types/internal_objects/internal_objects.hpp"
 
 CRuntimeModule::CRuntimeModule(CModule& ctx) :
 	m_oGlobalScopeInstructions(std::move(ctx.m_oGlobalScopeInstructions)),
@@ -17,18 +18,24 @@ CRuntimeModule::CRuntimeModule(CModule& ctx) :
 
 CRuntimeModule::~CRuntimeModule() = default;
 
+
 void CRuntimeModule::SetupGlobalVariables() {
 
 	//create global variables
 	m_oGlobalVariables = CProgramRuntime::AcquireNewVariables(m_uNumGlobalVariables);
-	assert(m_oGlobalVariables.size() >= rto_count);
 
-	//setup the console object
-	m_oGlobalVariables[rto_console]->SetValue(CConsoleValue::Construct());
-	m_oGlobalVariables[rto_console]->GetValue()->MakeImmutable();
+	std::vector<BuiltInMethod_t> methods;
+	methods.emplace_back(CConsoleValue::ConstructMethods());
+	methods.emplace_back(CMathValue::ConstructMethods());
 
-	m_oGlobalVariables[rto_math]->SetValue(CMathValue::Construct());
-	m_oGlobalVariables[rto_math]->GetValue()->MakeImmutable();
+	assert(methods.size() == rto_count);
+	assert(m_oGlobalVariables.size() >= methods.size());
+
+	for (size_t i{}; auto& method : methods) {
+		m_oGlobalVariables[i]->SetValue(CBuiltInObject::Construct(std::move(method)));
+		m_oGlobalVariables[i]->GetValue()->MakeImmutable();
+		i++;
+	}
 
 	for (auto& var : m_oGlobalVariables | std::views::drop(rto_count)) {
 		var->SetValue(CProgramRuntime::AcquireNewValue<IValue>());

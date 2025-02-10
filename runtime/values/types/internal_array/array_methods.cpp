@@ -9,7 +9,7 @@
 
 #include <algorithm>
 
-DECLARE_BUILT_IN_METHODS CArrayValue::m_oMethods;
+BuiltInMethod_t CArrayValue::m_oMethods;
 
 FORWARD_DECLARE_METHOD(Push);
 FORWARD_DECLARE_METHOD(PushFront);

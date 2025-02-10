@@ -11,7 +11,7 @@
 #include <algorithm>
 
 
-DECLARE_BUILT_IN_METHODS CStringValue::m_oMethods;
+BuiltInMethod_t CStringValue::m_oMethods;
 
 #define START_METHOD(name) \
 if(!_this)\
