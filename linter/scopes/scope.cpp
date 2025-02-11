@@ -47,6 +47,16 @@ Success CScopeLinter::Parse()
 	return success;
 }
 CScope::CScope(CMemory* const owner) : m_pOwner(owner){}
+CScope::~CScope() {
+
+	for (auto& var : m_oLocalVariables) {
+		//died in current scope, can't be const anymore
+		if(auto actualVariable = m_pOwner->m_VariableManager->GetVariable(var))
+			actualVariable->m_bConst = false;
+	}
+
+}
+
 std::shared_ptr<CScope> CScope::CreateScope()
 {
 	auto scope = std::make_shared<CScope>(m_pOwner);

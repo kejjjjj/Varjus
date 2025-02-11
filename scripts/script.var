@@ -1,14 +1,9 @@
 
-fn editFunc(data, value)
-{
-    const wrapper = [ data ];
-    wrapper[0].log(wrapper[0].func(value));
-}
-
 fn main()
 {
-    const obj = math;
-    const data = {log: console.log, func: obj.trunc };
 
-    return editFunc(data, 5.5);
+    for(let i = 0; i < 10; i++){
+        const aaa = i * 2;
+    }
+
 }

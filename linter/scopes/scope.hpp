@@ -31,7 +31,7 @@ class CScope final
 public:
 	CScope() = delete;
 	CScope(CMemory* const owner);
-
+	~CScope();
 
 	[[nodiscard]] constexpr bool IsGlobalScope() const noexcept { return !m_pLowerScope; }
 	[[nodiscard]] std::shared_ptr<CScope> CreateScope();

@@ -66,6 +66,10 @@ IValue* EvaluateIncrement(IValue* operand)
 	if (!operand->HasOwner())
 		throw CRuntimeError("cannot increment a temporary value");
 
+	if (operand->IsImmutable()) 
+		throw CRuntimeError("cannot increment a const value");
+	
+
 	++operand->AsInt();
 	return operand;
 }
@@ -78,6 +82,9 @@ IValue* EvaluateDecrement(IValue* operand)
 	if (!operand->HasOwner())
 		throw CRuntimeError("cannot decrement a temporary value");
 
+	if (operand->IsImmutable()) 
+		throw CRuntimeError("cannot decrement a const value");
+	
 	--operand->AsInt();
 	return operand;
 }

@@ -101,6 +101,9 @@ IValue* EvaluateIncrement(IValue* operand)
 	if (!operand->HasOwner())
 		throw CRuntimeError("cannot increment a temporary value");
 
+	if (operand->IsImmutable()) 
+		throw CRuntimeError("cannot increment a const value");
+	
 	auto v = CProgramRuntime::AcquireNewValue<CIntValue>(operand->AsInt()); //create temp old value
 	++operand->AsInt(); //but increment this value
 
@@ -114,6 +117,10 @@ IValue* EvaluateDecrement(IValue* operand)
 
 	if (!operand->HasOwner())
 		throw CRuntimeError("cannot decrement a temporary value");
+
+	if (operand->IsImmutable()) 
+		throw CRuntimeError("cannot decrement a const value");
+	
 
 	auto v = CProgramRuntime::AcquireNewValue<CIntValue>(operand->AsInt()); //create temp old value
 	--operand->AsInt(); //but decrement this value

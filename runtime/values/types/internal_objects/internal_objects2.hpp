@@ -21,7 +21,7 @@ public:
 	static void AddNewGlobalObject(const std::string& name, const std::function<BuiltInMethod_t()>& createMethods);
 
 	[[nodiscard]] static auto& Iterator() noexcept { return m_arrMethods; }
-
+	static void Reset() noexcept { m_arrMethods.clear(); }
 private:
 	static std::vector<std::pair<std::string, std::function<BuiltInMethod_t()>>> m_arrMethods;
 };

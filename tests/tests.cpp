@@ -15,6 +15,10 @@ IValue* TEST_ExecuteFile(const std::string& srcFile)
     try {
         CModule::ResetEverythingStatic();
         CFileContext::ResetGlobally();
+        CBuiltInObjects::Reset();
+
+        CBuiltInObjects::AddNewGlobalObject("console", CConsoleValue::ConstructMethods);
+        CBuiltInObjects::AddNewGlobalObject("math", CMathValue::ConstructMethods);
 
         const auto reader = VarjusIOReader("\\scripts\\" + srcFile);
 
