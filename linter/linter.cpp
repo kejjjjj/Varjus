@@ -23,6 +23,9 @@
 #include "statements/try_catch/try_catch.hpp"
 #include "statements/while/while.hpp"
 
+#include "runtime/values/types/internal_objects/internal_objects2.hpp"
+
+
 #include <cassert>
 
 CFileLinter::CFileLinter(LinterIterator& start, LinterIterator& end, const std::string& filePath)
@@ -175,11 +178,9 @@ Success CFileLinter::ParseFile()
 
 static void DeclareGlobalObjects(CMemory* m_pOwner, CScope* const scope)
 {
-	VectorOf<std::string> keys = { "console", "math" };
-
-	for (auto& key : keys) {
-		m_pOwner->m_VariableManager->DeclareVariable(key);
-		if (!scope->DeclareVariable(key))
+	for (auto& [k, v] : CBuiltInObjects::Iterator()) {
+		m_pOwner->m_VariableManager->DeclareVariable(k);
+		if (!scope->DeclareVariable(k))
 			return CLinterErrors::PushError("internal bug in DeclareGlobalObjects", {});
 	}
 }

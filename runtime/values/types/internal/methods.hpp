@@ -14,6 +14,7 @@ IValue*(*name)(CRuntimeContext* const, IValue*, const std::vector<IValue*>&)
 
 #include <unordered_map>
 #include <memory>
+//msvc is unable to use the move constructor for the unique_ptr, so it has to be explicitly defined pagman
 struct BuiltInMethod_t : std::unordered_map<std::size_t, std::unique_ptr<class CBuiltInRuntimeFunction>>
 {
 	using unordered_map::unordered_map;

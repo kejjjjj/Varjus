@@ -8,15 +8,21 @@
 #include "runtime/runtime.hpp"
 #include "runtime/modules/rtmodule.hpp"
 #include "runtime/exceptions/exception.hpp"
+#include "runtime/values/types/internal_objects/internal_objects2.hpp"
+#include "runtime/values/types/internal/methods.hpp"
 
 #include "fs/fs_io.hpp"
 #include "fs/fs_globals.hpp"
+
 int main()
 {
 
     try {
 
         const auto reader = VarjusIOReader("scripts\\script.var");
+
+        CBuiltInObjects::AddNewGlobalObject("console", CConsoleValue::ConstructMethods);
+        CBuiltInObjects::AddNewGlobalObject("math", CMathValue::ConstructMethods);
 
         auto uniqueTokens = CBufferTokenizer::ParseFileFromFilePath(reader.GetFilePath());
         auto tokens = CBufferTokenizer::ConvertTokensToReadOnly(uniqueTokens);

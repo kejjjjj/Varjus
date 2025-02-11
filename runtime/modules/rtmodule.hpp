@@ -5,7 +5,7 @@
 
 #include "globalDefinitions.hpp"
 #include "linter/context.hpp"
-#include "runtime/values/types/internal_objects/internal_methods.hpp"
+#include "runtime/values/types/internal_objects/internal_objects2.hpp"
 
 class CVariable;
 class CRuntimeFunction;
@@ -35,7 +35,7 @@ public:
 	void EvaluateGlobalExpressions();
 	void FreeGlobalVariables();
 
-	CFileContext* GetContext() noexcept { return &m_oContext; }
+	[[nodiscard]] CFileContext* GetContext() noexcept { return &m_oContext; }
 	[[nodiscard]] constexpr auto GetIndex() const noexcept { return m_uModuleIndex; }
 private:
 	VectorOf<RuntimeBlock> m_oGlobalScopeInstructions;

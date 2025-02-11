@@ -1,12 +1,14 @@
 
-fn editFunc(thing)
+fn editFunc(data, value)
 {
-    const wrapper = [ thing ];
-    return wrapper[0](5.5);
+    const wrapper = [ data ];
+    wrapper[0].log(wrapper[0].func(value));
 }
 
 fn main()
 {
-    let obj = math;
-    return editFunc(obj.trunc);
+    const obj = math;
+    const data = {log: console.log, func: obj.trunc };
+
+    return editFunc(data, 5.5);
 }

@@ -8,6 +8,7 @@
 #include "runtime/values/types/internal_objects/console.hpp"
 #include "runtime/values/types/internal_objects/math.hpp"
 #include "runtime/values/types/internal_objects/internal_objects.hpp"
+#include "runtime/values/types/internal_objects/internal_objects2.hpp"
 
 CRuntimeModule::CRuntimeModule(CModule& ctx) :
 	m_oGlobalScopeInstructions(std::move(ctx.m_oGlobalScopeInstructions)),
@@ -25,10 +26,11 @@ void CRuntimeModule::SetupGlobalVariables() {
 	m_oGlobalVariables = CProgramRuntime::AcquireNewVariables(m_uNumGlobalVariables);
 
 	std::vector<BuiltInMethod_t> methods;
-	methods.emplace_back(CConsoleValue::ConstructMethods());
-	methods.emplace_back(CMathValue::ConstructMethods());
 
-	assert(methods.size() == rto_count);
+	for (auto& [k, v] : CBuiltInObjects::Iterator()) {
+		methods.emplace_back(v());
+	}
+
 	assert(m_oGlobalVariables.size() >= methods.size());
 
 	for (size_t i{}; auto& method : methods) {
@@ -37,7 +39,7 @@ void CRuntimeModule::SetupGlobalVariables() {
 		i++;
 	}
 
-	for (auto& var : m_oGlobalVariables | std::views::drop(rto_count)) {
+	for (auto& var : m_oGlobalVariables | std::views::drop(methods.size())) {
 		var->SetValue(CProgramRuntime::AcquireNewValue<IValue>());
 	}
 }
