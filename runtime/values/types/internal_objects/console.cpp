@@ -19,7 +19,7 @@ DEFINE_METHOD(LogConsole)
 {
 	std::string p;
 
-	for (auto& v : newValues)
+	for (auto& v : args)
 		p += v->ValueAsString();
 
 	std::cout << p << '\n';

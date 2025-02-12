@@ -4,7 +4,7 @@
 [[nodiscard]] IValue* Name(CRuntimeContext* const ctx, IValue* _this, const IValues& values)
 
 #define DEFINE_METHOD(Name)\
-IValue* Name([[maybe_unused]] CRuntimeContext* const ctx, [[maybe_unused]] IValue* _this, [[maybe_unused]] const IValues& newValues)
+IValue* Name([[maybe_unused]] CRuntimeContext* const ctx, [[maybe_unused]] IValue* _this, [[maybe_unused]] const IValues& args)
 
 #define METHOD_TYPEDEF \
 IValue*(*)(CRuntimeContext* const, IValue*, const IValues&)

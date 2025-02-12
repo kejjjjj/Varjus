@@ -21,7 +21,7 @@ public:
 	[[maybe_unused]] std::size_t Insert(const std::string& key);
 	[[nodiscard]] auto& StringToIntIterator() const noexcept { return m_oStringToId; }
 
-	void Clear() { m_oStringToId.clear(); m_oIdToString.clear(); }
+	void Clear() noexcept { m_oStringToId.clear(); m_oIdToString.clear(); }
 	void Erase(const std::string& key);
 
 private:

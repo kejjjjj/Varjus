@@ -15,11 +15,11 @@ struct CFileContext
 	CStringIntegerHashMap m_oAllVariables;
 	CStringIntegerHashMap m_oAllGlobalVariables;
 	
-	static void ResetGlobally() {
+	static void ResetGlobally() noexcept {
 		m_oAllMembers.Clear();
 	}
 
-	void Reset() {
+	void Reset() noexcept {
 		m_sFilePath.clear();
 		m_oAllVariables.Clear();
 		m_oAllGlobalVariables.Clear();

@@ -5,6 +5,8 @@
 #include "runtime/exceptions/exception.hpp"
 #include "linter/context.hpp"
 
+#include <random>
+
 FORWARD_DECLARE_METHOD(Sqrt);
 FORWARD_DECLARE_METHOD(Abs);
 FORWARD_DECLARE_METHOD(Acos);
@@ -34,6 +36,7 @@ FORWARD_DECLARE_METHOD(Fmod);
 FORWARD_DECLARE_METHOD(Hypot);
 FORWARD_DECLARE_METHOD(Max);
 FORWARD_DECLARE_METHOD(Min);
+FORWARD_DECLARE_METHOD(Random);
 
 
 #define SINGLE_ARG_METHOD(name, func) ADD_METHOD(name, func, 1u)
@@ -74,27 +77,30 @@ BuiltInMethod_t CMathValue::ConstructMethods()
 	TWO_ARG_METHOD("max", Max);
 	TWO_ARG_METHOD("min", Min);
 
+	TWO_ARG_METHOD("random", Random);
+
+
 	return m_oMethods;
 }
 
 #define DEFINE_SINGLE_ARG_GENERIC_MATH_FUNC(name, func) \
 DEFINE_METHOD(name){\
-	const auto& v = newValues.front(); \
+	const auto& v = args.front(); \
 	if (!v->IsArithmetic()) \
 		throw CRuntimeError(std::format("math.{} expected an arithmetic value, but got \"{}\"", #name, v->TypeAsString())); \
 	return CProgramRuntime::AcquireNewValue<CDoubleValue>(func(v->ToDouble())); }\
 
 #define DEFINE_SINGLE_ARG_GENERIC_MATH_FUNC_TYPE(name, func, type, T) \
 DEFINE_METHOD(name){\
-	const auto& v = newValues.front(); \
+	const auto& v = args.front(); \
 	if (!v->IsArithmetic()) \
 		throw CRuntimeError(std::format("math.{} expected an arithmetic value, but got \"{}\"", #name, v->TypeAsString())); \
 	return CProgramRuntime::AcquireNewValue<type>(static_cast<T>(func(v->ToDouble()))); }\
 
 #define DEFINE_TWO_ARG_GENERIC_MATH_FUNC(name, func) \
 DEFINE_METHOD(name){\
-	const auto& lhs = newValues[0]; \
-	const auto& rhs = newValues[1]; \
+	const auto& lhs = args[0]; \
+	const auto& rhs = args[1]; \
 	if (!lhs->IsArithmetic()) \
 		throw CRuntimeError(std::format("math.{} expected an arithmetic value, but got \"{}\"", #name, lhs->TypeAsString())); \
 	if (!rhs->IsArithmetic()) \
@@ -130,8 +136,8 @@ DEFINE_TWO_ARG_GENERIC_MATH_FUNC(Fmod, std::fmod);
 DEFINE_TWO_ARG_GENERIC_MATH_FUNC(Hypot, std::hypot);
 
 DEFINE_METHOD(Max){
-	const auto& lhs = newValues[0]; 
-	const auto& rhs = newValues[1];
+	const auto& lhs = args[0]; 
+	const auto& rhs = args[1];
 	if (!lhs->IsArithmetic()) 
 		throw CRuntimeError(std::format("math.{} expected an arithmetic value, but got \"{}\"", "max", lhs->TypeAsString()));
 	if (!rhs->IsArithmetic()) 
@@ -140,11 +146,37 @@ DEFINE_METHOD(Max){
 }
 DEFINE_METHOD(Min) {
 
-	const auto& lhs = newValues[0];
-	const auto& rhs = newValues[1];
+	const auto& lhs = args[0];
+	const auto& rhs = args[1];
 	if (!lhs->IsArithmetic())
 		throw CRuntimeError(std::format("math.{} expected an arithmetic value, but got \"{}\"", "min", lhs->TypeAsString()));
 	if (!rhs->IsArithmetic())
 		throw CRuntimeError(std::format("math.{} expected an arithmetic value, but got \"{}\"", "min", rhs->TypeAsString()));
 	return rhs->ToDouble() > lhs->ToDouble() ? lhs->Copy() : rhs->Copy();
+}
+
+inline double GetRandomDouble(double min, double max) {
+	static std::random_device rd;
+	static std::mt19937 gen(rd());
+	std::uniform_real_distribution<> dis(min, max);
+	return dis(gen);
+}
+
+
+DEFINE_METHOD(Random) {
+
+	const auto& lhs = args[0];
+	const auto& rhs = args[1];
+	if (!lhs->IsArithmetic())
+		throw CRuntimeError(std::format("math.{} expected an arithmetic value, but got \"{}\"", "random", lhs->TypeAsString()));
+	if (!rhs->IsArithmetic())
+		throw CRuntimeError(std::format("math.{} expected an arithmetic value, but got \"{}\"", "random", rhs->TypeAsString()));
+	
+	const auto a = lhs->ToDouble();
+	const auto b = rhs->ToDouble();
+
+	if(b <= a)
+		throw CRuntimeError(std::format("math.{} min >= max", "random"));
+
+	return CProgramRuntime::AcquireNewValue<CDoubleValue>(GetRandomDouble(a, b));
 }

@@ -1,9 +1,17 @@
 
+fn generateRandomNums(min, max, count)
+{
+    let arr = [].resize(count);
+    for(let i = 0; i < count; i++){
+        arr[i] = math.trunc(math.random(min, max));
+    }
+
+    return arr;
+}
+
 fn main()
 {
 
-    for(let i = 0; i < 10; i++){
-        const aaa = i * 2;
-    }
+    return generateRandomNums(0, 300, 10);
 
 }

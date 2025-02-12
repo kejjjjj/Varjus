@@ -68,10 +68,10 @@ DEFINE_METHOD(Push)
 {
 	START_METHOD(__this);
 
-	assert(newValues.size() == 1);
+	assert(args.size() == 1);
 	auto& vars = __this->GetShared()->GetVariables();
 	auto& newVar = vars.emplace_back(CProgramRuntime::AcquireNewVariable());
-	newVar->SetValue(newValues.front()->Copy());
+	newVar->SetValue(args.front()->Copy());
 	return newVar->GetValue()->Copy();
 }
 DEFINE_METHOD(PushFront)
@@ -80,7 +80,7 @@ DEFINE_METHOD(PushFront)
 	auto& vars = __this->GetShared()->GetVariables();
 
 	auto it = vars.insert(vars.begin(), CProgramRuntime::AcquireNewVariable());
-	(*it)->SetValue(newValues.front()->Copy());
+	(*it)->SetValue(args.front()->Copy());
 	return (*it)->GetValue()->Copy();
 }
 
@@ -121,8 +121,8 @@ DEFINE_METHOD(PopFront)
 
 DEFINE_METHOD(Map)
 {
-	assert(newValues.size() == 1);
-	auto& mapFunc = newValues.front();
+	assert(args.size() == 1);
+	auto& mapFunc = args.front();
 
 	if (!mapFunc->IsCallable())
 		throw CRuntimeError(std::format("array.map expected \"callable\", but got \"{}\"", mapFunc->TypeAsString()));
@@ -131,13 +131,13 @@ DEFINE_METHOD(Map)
 	auto& vars = __this->GetShared()->GetVariables();
 
 	IValues results(vars.size());
-	IValues args(1);
+	IValues call_args(1);
 	IValue* exceptionValue{ nullptr };
 
 	//result array
 	for (auto i = std::size_t(0); const auto& var : vars) {
-		args[0] = var->GetValue()->Copy();
-		results[i++] = mapFunc->Call(ctx, args);
+		call_args[0] = var->GetValue()->Copy();
+		results[i++] = mapFunc->Call(ctx, call_args);
 
 		//because of course someone will throw an exception :x
 		if (CProgramRuntime::ExceptionThrown()) {
@@ -183,10 +183,10 @@ static inline IValue* FindTestValue(CRuntimeContext* const ctx, IValue* const ma
 	thisIteration->Release(); // nothing meaningful, release it
 	return result;
 }
-static inline IValue* FindInternal(CArrayValue* _this, CRuntimeContext* const ctx, const IValues& newValues, bool findFirst)
+static inline IValue* FindInternal(CArrayValue* _this, CRuntimeContext* const ctx, const IValues& args, bool findFirst)
 {
-	assert(newValues.size() == 1);
-	auto& mapFunc = newValues.front();
+	assert(args.size() == 1);
+	auto& mapFunc = args.front();
 
 	if (!mapFunc->IsCallable())
 		throw CRuntimeError(std::format("array.find expected \"callable\", but got \"{}\"", mapFunc->TypeAsString()));
@@ -194,8 +194,6 @@ static inline IValue* FindInternal(CArrayValue* _this, CRuntimeContext* const ct
 	auto& vars = _this->GetShared()->GetVariables();
 
 	IValue* result{ nullptr };
-
-	IValues args(1);
 
 	if (findFirst) {
 		for (const auto& var : vars) {
@@ -225,11 +223,11 @@ static inline IValue* FindInternal(CArrayValue* _this, CRuntimeContext* const ct
 
 DEFINE_METHOD(Find) {
 	START_METHOD(__this);
-	return FindInternal(__this, ctx, newValues, true);
+	return FindInternal(__this, ctx, args, true);
 }
 DEFINE_METHOD(FindLast) {
 	START_METHOD(__this);
-	return FindInternal(__this, ctx, newValues, false);
+	return FindInternal(__this, ctx, args, false);
 }
 
 static inline IValue* FindTestValueIndex(CRuntimeContext* const ctx, IValue* const mapFunc, CVariable* const var, std::size_t i)
@@ -254,10 +252,10 @@ static inline IValue* FindTestValueIndex(CRuntimeContext* const ctx, IValue* con
 	thisIteration->Release(); // nothing meaningful, release it
 	return result;
 }
-static inline IValue* FindIndexInternal(CArrayValue* _this, CRuntimeContext* const ctx, const IValues& newValues, bool findFirst)
+static inline IValue* FindIndexInternal(CArrayValue* _this, CRuntimeContext* const ctx, const IValues& args, bool findFirst)
 {
-	assert(newValues.size() == 1);
-	auto& mapFunc = newValues.front();
+	assert(args.size() == 1);
+	auto& mapFunc = args.front();
 
 	if (!mapFunc->IsCallable())
 		throw CRuntimeError(std::format("array.findindex expected \"callable\", but got \"{}\"", mapFunc->TypeAsString()));
@@ -265,7 +263,6 @@ static inline IValue* FindIndexInternal(CArrayValue* _this, CRuntimeContext* con
 	auto& vars = _this->GetShared()->GetVariables();
 
 	IValue* result{ nullptr };
-	IValues args(1);
 
 	if (findFirst) {
 		std::size_t i = 0u;
@@ -298,17 +295,17 @@ static inline IValue* FindIndexInternal(CArrayValue* _this, CRuntimeContext* con
 }
 DEFINE_METHOD(FindIndex) {
 	START_METHOD(__this);
-	return FindIndexInternal(__this, ctx, newValues, true);
+	return FindIndexInternal(__this, ctx, args, true);
 }
 DEFINE_METHOD(FindLastIndex) {
 	START_METHOD(__this);
-	return FindIndexInternal(__this, ctx, newValues, false);
+	return FindIndexInternal(__this, ctx, args, false);
 }
 
 DEFINE_METHOD(Filter) 
 {
-	assert(newValues.size() == 1);
-	auto& mapFunc = newValues.front();
+	assert(args.size() == 1);
+	auto& mapFunc = args.front();
 
 	if (!mapFunc->IsCallable())
 		throw CRuntimeError(std::format("array.filter expected \"callable\", but got \"{}\"", mapFunc->TypeAsString()));
@@ -317,14 +314,14 @@ DEFINE_METHOD(Filter)
 	auto& vars = __this->GetShared()->GetVariables();
 
 	IValues results;
-	IValues args(1);
+	IValues call_args(1);
 	IValue* exception{ nullptr };
 
 	//result array
 	for (const auto & var : vars) {
-		args[0] = var->GetValue()->Copy();
+		call_args[0] = var->GetValue()->Copy();
 
-		IValue* thisIteration = mapFunc->Call(ctx, args);
+		IValue* thisIteration = mapFunc->Call(ctx, call_args);
 
 		if (CProgramRuntime::ExceptionThrown()) {
 			exception = thisIteration;
@@ -358,14 +355,13 @@ DEFINE_METHOD(Filter)
 
 DEFINE_METHOD(Contains) 
 {
-	assert(newValues.size() == 1);
-	auto& searchElement = newValues.front();
+	assert(args.size() == 1);
+	auto& searchElement = args.front();
 
 	START_METHOD(__this);
 	auto& vars = __this->GetShared()->GetVariables();
 
 	IValue* result{ nullptr };
-	IValues args(1);
 
 	for (const auto& var : vars) {
 		IValue* thisIteration = OP_STRICT_EQUALITY(var->GetValue(), searchElement);
@@ -411,7 +407,7 @@ std::string JoinStrings(const VectorOf<std::string>& strings, const std::string&
 
 DEFINE_METHOD(Join) 
 {
-	auto& delimiterValue = newValues.front();
+	auto& delimiterValue = args.front();
 	if (delimiterValue->Type() != t_string)
 		throw CRuntimeError(std::format("array.join expected a string parameter, but got \"{}\"", delimiterValue->TypeAsString()));
 
@@ -433,8 +429,8 @@ DEFINE_METHOD(Join)
 
 DEFINE_METHOD(All)
 {
-	assert(newValues.size() == 1);
-	auto& mapFunc = newValues.front();
+	assert(args.size() == 1);
+	auto& mapFunc = args.front();
 
 	if (!mapFunc->IsCallable())
 		throw CRuntimeError(std::format("array.all expected \"callable\", but got \"{}\"", mapFunc->TypeAsString()));
@@ -442,16 +438,16 @@ DEFINE_METHOD(All)
 	START_METHOD(__this);
 	auto& vars = __this->GetShared()->GetVariables();
 
-	IValues args(1);
+	IValues call_args(1);
 	IValue* exception{ nullptr };
 
 	bool all = true;
 
 	//result array
 	for (const auto& var : vars) {
-		args[0] = var->GetValue()->Copy();
+		call_args[0] = var->GetValue()->Copy();
 
-		IValue* thisIteration = mapFunc->Call(ctx, args);
+		IValue* thisIteration = mapFunc->Call(ctx, call_args);
 
 		if (CProgramRuntime::ExceptionThrown()) {
 			exception = thisIteration;
@@ -478,8 +474,8 @@ DEFINE_METHOD(All)
 }
 DEFINE_METHOD(Any)
 {
-	assert(newValues.size() == 1);
-	auto& mapFunc = newValues.front();
+	assert(args.size() == 1);
+	auto& mapFunc = args.front();
 
 	if (!mapFunc->IsCallable())
 		throw CRuntimeError(std::format("array.all expected \"callable\", but got \"{}\"", mapFunc->TypeAsString()));
@@ -487,16 +483,16 @@ DEFINE_METHOD(Any)
 	START_METHOD(__this);
 	auto& vars = __this->GetShared()->GetVariables();
 
-	IValues args(1);
+	IValues call_args(1);
 	IValue* exception{ nullptr };
 
 	bool any = false;
 
 	//result array
 	for (const auto& var : vars) {
-		args[0] = var->GetValue()->Copy();
+		call_args[0] = var->GetValue()->Copy();
 
-		IValue* thisIteration = mapFunc->Call(ctx, args);
+		IValue* thisIteration = mapFunc->Call(ctx, call_args);
 
 		if (CProgramRuntime::ExceptionThrown()) {
 			exception = thisIteration;
@@ -527,8 +523,8 @@ DEFINE_METHOD(Slice) {
 	START_METHOD(__this);
 	auto& vars = __this->GetShared()->GetVariables();
 
-	auto& a = newValues[0];
-	auto& b = newValues[1];
+	auto& a = args[0];
+	auto& b = args[1];
 
 	const auto CheckSanity = [](const IValue* v) {
 		if (!v->IsIntegral())
@@ -596,8 +592,8 @@ struct SortContext
 	std::size_t left = low + 1;
 	std::size_t right = high;
 
-	std::size_t prev_left = left;
-	std::size_t prev_right = right;
+	//std::size_t prev_left = left;
+	//std::size_t prev_right = right;
 
 	while (true) {
 
@@ -613,8 +609,8 @@ struct SortContext
 		//	throw CRuntimeError("array.sort wasn't making any progress due to a repeating condition.. probably an internal bug");
 		//}
 
-		prev_left = left;
-		prev_right = right;
+		//prev_left = left;
+		//prev_right = right;
 	}
 
 	std::swap(arr[low], arr[right]);
@@ -637,8 +633,8 @@ struct SortContext
 
 DEFINE_METHOD(Sort)
 {
-	assert(newValues.size() == 1);
-	auto& mapFunc = newValues.front();
+	assert(args.size() == 1);
+	auto& mapFunc = args.front();
 
 	if (!mapFunc->IsCallable())
 		throw CRuntimeError(std::format("array.sort expected \"callable\", but got \"{}\"", mapFunc->TypeAsString()));
@@ -659,8 +655,8 @@ DEFINE_METHOD(Sort)
 
 DEFINE_METHOD(Resize)
 {
-	assert(newValues.size() == 1);
-	auto& value = newValues.front();
+	assert(args.size() == 1);
+	auto& value = args.front();
 
 	if (!value->IsIntegral())
 		throw CRuntimeError(std::format("array.resize expected \"integer\", but got \"{}\"", value->TypeAsString()));
@@ -671,8 +667,8 @@ DEFINE_METHOD(Resize)
 
 	auto intVal = value->ToInt();
 
-	if(intVal <= 0)
-		throw CRuntimeError(std::format("array.resize out of range <= 0 ({})", value->TypeAsString()));
+	if(intVal < 0)
+		throw CRuntimeError(std::format("array.resize out of range < 0 ({})", value->TypeAsString()));
 
 	const auto uintval = static_cast<std::size_t>(intVal);
 	const auto oldSize = vars.size();
@@ -702,8 +698,8 @@ DEFINE_METHOD(Resize)
 
 DEFINE_METHOD(Fill)
 {
-	assert(newValues.size() == 1);
-	auto& value = newValues.front();
+	assert(args.size() == 1);
+	auto& value = args.front();
 
 	START_METHOD(__this);
 	auto& vars = __this->GetShared()->GetVariables();

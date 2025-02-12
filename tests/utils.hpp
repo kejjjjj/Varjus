@@ -64,7 +64,6 @@ void AssertObject(IValue* retVal, const AssertObjectValue<T>& assertValue)
 
 	REQUIRE(items.size() == assertValue.m_targetValues.size());
 
-	auto m = CProgramRuntime::GetModuleByIndex(assertValue.m_moduleIndex);
 	auto& allMembers = CFileContext::m_oAllMembers;
 
 	for (auto& [name, value] : assertValue.m_targetValues) {

@@ -67,8 +67,8 @@ DEFINE_METHOD(Substring)
 	START_METHOD(__this);
 	const auto& v = __this->ToString();
 
-	auto& a = newValues[0];
-	auto& b = newValues[1];
+	auto& a = args[0];
+	auto& b = args[1];
 
 	const auto CheckSanity = [](const IValue* v) {
 		if (!v->IsIntegral())
@@ -120,7 +120,7 @@ DEFINE_METHOD(Split) {
 	START_METHOD(__this);
 	const auto& v = __this->ToString();
 
-	auto& delimiter = newValues.front();
+	auto& delimiter = args.front();
 
 	if(delimiter->Type() != t_string)
 		throw CRuntimeError(std::format("string.split expected a \"string\", but got \"{}\"", delimiter->TypeAsString()));
@@ -154,8 +154,8 @@ DEFINE_METHOD(Replace) {
 			throw CRuntimeError(std::format("string.substring expected a \"string\", but got \"{}\"", v->TypeAsString()));
 	};
 
-	auto& a = newValues[0];
-	auto& b = newValues[1];
+	auto& a = args[0];
+	auto& b = args[1];
 
 	CheckSanity(a);
 	CheckSanity(b);
@@ -168,7 +168,7 @@ DEFINE_METHOD(Repeat) {
 	START_METHOD(__this);
 	const auto& v = __this->ToString();
 
-	auto& countValue = newValues[0];
+	auto& countValue = args[0];
 	if (!countValue->IsIntegral())
 		throw CRuntimeError(std::format("string.repeat expected an integral value, but got \"{}\"", countValue->TypeAsString()));
 
@@ -187,7 +187,7 @@ DEFINE_METHOD(GetCodeAt) {
 	START_METHOD(__this);
 	const auto& v = __this->ToString();
 
-	auto& idx = newValues[0];
+	auto& idx = args[0];
 	if (!idx->IsIntegral())
 		throw CRuntimeError(std::format("string.get_code_at expected an integral value, but got \"{}\"", idx->TypeAsString()));
 
