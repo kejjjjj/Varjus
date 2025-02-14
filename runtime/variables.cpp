@@ -1,9 +1,6 @@
 #include "variables.hpp"
-#include "values/types/types.hpp"
+#include "api/types/types.hpp"
 #include "runtime/runtime.hpp"
-#include <iostream>
-
-
 
 CVariable::CVariable() {}
 CVariable::~CVariable() = default;
@@ -12,8 +9,6 @@ void CVariable::SetValue(IValue* v)
 {
 	assert(v);
 	assert(m_pValue != v);
-
-
 
 	// give the value back to the pool
 	if (m_pValue) {

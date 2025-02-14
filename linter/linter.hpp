@@ -25,18 +25,18 @@ struct CLinterContext
 };
 #pragma warning(pop)
 
-class CFileLinter final : public CLinter<CToken>
+class CBufferLinter final : public CLinter<CToken>
 {
-	NONCOPYABLE(CFileLinter)
+	NONCOPYABLE(CBufferLinter)
 public:
-	CFileLinter(LinterIterator& start, LinterIterator& end, const std::string& filePath);
-	~CFileLinter();
+	CBufferLinter(LinterIterator& start, LinterIterator& end, const std::string& filePath="");
+	~CBufferLinter();
 	[[nodiscard]] static Success LintToken(const CLinterContext& ctx);
 	[[nodiscard]] static Success LintOperator(const CLinterContext& ctx);
 	[[nodiscard]] static Success LintScope(const CLinterContext& ctx);
 	[[nodiscard]] static Success LintFunctionAmbiguity(const CLinterContext& ctx);
 
-	[[nodiscard]] Success ParseFile();
+	[[nodiscard]] Success Parse();
 
 	constexpr auto& GetModule() const noexcept { return m_pModule; }
 

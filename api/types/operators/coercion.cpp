@@ -1,6 +1,7 @@
 #include "coercion.hpp"
+
+#include "api/types/types.hpp"
 #include "runtime/runtime.hpp"
-#include "types/types.hpp"
 
 #include "runtime/exceptions/exception.hpp"
 

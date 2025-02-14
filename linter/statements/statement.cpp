@@ -77,7 +77,7 @@ Success CStatementLinter::ParseScope()
 
 	// no curlybracket? only add one instruction :)
 	if (!(*m_iterPos)->IsOperator(p_curlybracket_open)) {
-		return CFileLinter::LintToken(ctx);
+		return CBufferLinter::LintToken(ctx);
 	}
 
 	auto scope = CScopeLinter(m_iterPos, m_iterEnd, m_pThisScope, m_pOwner);

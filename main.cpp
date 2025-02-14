@@ -1,5 +1,7 @@
 #include <iostream>
 
+#include "api/varjus_api.hpp"
+
 #include "linter/tokenizer.hpp"
 #include "linter/error.hpp"
 #include "linter/linter.hpp"
@@ -8,8 +10,6 @@
 #include "runtime/runtime.hpp"
 #include "runtime/modules/rtmodule.hpp"
 #include "runtime/exceptions/exception.hpp"
-#include "runtime/values/types/internal_objects/internal_objects2.hpp"
-#include "runtime/values/types/internal/methods.hpp"
 
 #include "fs/fs_io.hpp"
 #include "fs/fs_globals.hpp"
@@ -19,19 +19,19 @@ int main()
 
     try {
 
-        const auto reader = VarjusIOReader("scripts\\script.var");
+        Varjus::Init();
+        Varjus::UseStdLibrary();
 
-        CBuiltInObjects::AddNewGlobalObject("console", CConsoleValue::ConstructMethods);
-        CBuiltInObjects::AddNewGlobalObject("math", CMathValue::ConstructMethods);
+        const auto reader = VarjusIOReader("scripts\\script.var");
 
         auto uniqueTokens = CBufferTokenizer::ParseFileFromFilePath(reader.GetFilePath());
         auto tokens = CBufferTokenizer::ConvertTokensToReadOnly(uniqueTokens);
 		auto begin = tokens.begin();
         auto end = tokens.end();
 
-		CFileLinter linter(begin, end, reader.GetFilePath());
+		CBufferLinter linter(begin, end, reader.GetFilePath());
 
-        if (!linter.ParseFile())
+        if (!linter.Parse())
             throw std::exception("couldn't parse the input file");
 
         CProgramRuntime runtime(CModule::ToRuntimeModules());

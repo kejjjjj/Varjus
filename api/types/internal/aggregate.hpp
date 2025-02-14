@@ -53,9 +53,6 @@ class CArrayAggregate : public CAggregate
 {
 public:
 	[[nodiscard]] constexpr AggregateType Type() const noexcept override { return at_array; }
-
 	[[maybe_unused]] CVariable* AddAttribute(ElementIndex elem) override;
-
-
 private:
 };

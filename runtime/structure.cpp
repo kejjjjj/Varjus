@@ -1,9 +1,9 @@
-#include <algorithm>
-#include <ranges>
-
-#include "runtime/structure.hpp"
 #include "linter/expressions/ast.hpp"
+#include "runtime/structure.hpp"
+
+#include <algorithm>
 #include <cassert>
+#include <ranges>
 
 IRuntimeStructure::IRuntimeStructure() = default;
 IRuntimeStructure::~IRuntimeStructure() = default;

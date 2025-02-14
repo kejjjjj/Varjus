@@ -23,14 +23,14 @@
 #include "statements/try_catch/try_catch.hpp"
 #include "statements/while/while.hpp"
 
-#include "runtime/values/types/internal_objects/internal_objects2.hpp"
+#include "api/types/internal/internal_objects.hpp"
 
 
 #include <cassert>
 
-CFileLinter::CFileLinter(LinterIterator& start, LinterIterator& end, const std::string& filePath)
+CBufferLinter::CBufferLinter(LinterIterator& start, LinterIterator& end, const std::string& filePath)
 	: CLinter(start, end), m_oInitialPosition(start), m_sFilePath(filePath) {}
-CFileLinter::~CFileLinter() = default;
+CBufferLinter::~CBufferLinter() = default;
 
 static Success AddInstruction(LinterIterator& pos, RuntimeBlock&& block, const WeakScope& scope)
 {
@@ -66,7 +66,7 @@ template<typename Linter> Success Lint(const CLinterContext& ctx)
 		return success;
 }
 
-Success CFileLinter::LintOperator(const CLinterContext& ctx)
+Success CBufferLinter::LintOperator(const CLinterContext& ctx)
 {
 	// a new scope
 	if ((*ctx.m_iterPos)->IsOperator(p_curlybracket_open)) {
@@ -76,7 +76,7 @@ Success CFileLinter::LintOperator(const CLinterContext& ctx)
 	// otherwise a normal expression
 	return Lint<CLinterExpression>(ctx);
 }
-Success CFileLinter::LintScope(const CLinterContext& ctx)
+Success CBufferLinter::LintScope(const CLinterContext& ctx)
 {
 
 	if (ctx.memory->IsGlobalMemory()) {
@@ -99,7 +99,7 @@ Success CFileLinter::LintScope(const CLinterContext& ctx)
 	return success;
 
 }
-Success CFileLinter::LintFunctionAmbiguity(const CLinterContext& ctx)
+Success CBufferLinter::LintFunctionAmbiguity(const CLinterContext& ctx)
 {
 	// a new function
 	if(!ctx.memory->IsStack())
@@ -108,7 +108,7 @@ Success CFileLinter::LintFunctionAmbiguity(const CLinterContext& ctx)
 	// otherwise a lambda
 	return Lint<CLinterExpression>(ctx);
 }
-Success CFileLinter::LintToken(const CLinterContext& ctx)
+Success CBufferLinter::LintToken(const CLinterContext& ctx)
 {
 	if (ctx.m_iterPos == ctx.m_iterEnd)
 		return failure;
@@ -166,7 +166,7 @@ Success CFileLinter::LintToken(const CLinterContext& ctx)
 }
 
 
-Success CFileLinter::ParseFile()
+Success CBufferLinter::Parse()
 {
 	if (!HoistFile())
 		return failure;
@@ -185,7 +185,7 @@ static void DeclareGlobalObjects(CMemory* m_pOwner, CScope* const scope)
 	}
 }
 
-Success CFileLinter::HoistFile()
+Success CBufferLinter::HoistFile()
 {
 	m_pHoister = std::make_unique<CHoister>();
 
@@ -222,7 +222,7 @@ Success CFileLinter::HoistFile()
 	return success;
 }
 
-Success CFileLinter::LintFile()
+Success CBufferLinter::LintFile()
 {
 	m_pModule = CModule::CreateNewModule(m_sFilePath);
 	CMemory globalMemory(nullptr, m_pModule);

@@ -1,5 +1,5 @@
 #pragma once
-#include "simple.hpp"
+#include "default.hpp"
 #include "linter/modules/references.hpp"
 
 #include <unordered_map>

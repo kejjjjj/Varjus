@@ -1,8 +1,9 @@
-#include "runtime/values/types/types.hpp"
+#include "api/types/types.hpp"
+#include "api/types/operators/default_operators.hpp"
+
 #include "runtime/runtime.hpp"
 #include "runtime/variables.hpp"
 #include "runtime/exceptions/exception.hpp"
-#include "runtime/values/simple_operators.hpp"
 #include "runtime/structure.hpp"
 
 #include "linter/context.hpp"
@@ -35,25 +36,25 @@ void CArrayValue::ConstructMethods()
 {
 	m_oMethods.clear();
 
-	ADD_METHOD("push",            Push,          1u);
-	ADD_METHOD("push_front",      PushFront,     1u);
-	ADD_METHOD("pop",             Pop,           0u);
-	ADD_METHOD("pop_front",       PopFront,      0u);
-	ADD_METHOD("map",             Map,           1u);
-	ADD_METHOD("find",            Find,          1u);
-	ADD_METHOD("find_last",       FindLast,      1u);
-	ADD_METHOD("find_index",      FindIndex,     1u);
-	ADD_METHOD("find_last_index", FindLastIndex, 1u);
-	ADD_METHOD("filter",          Filter,        1u);
-	ADD_METHOD("contains",        Contains,      1u);
-	ADD_METHOD("reversed",        Reversed,      0u);
-	ADD_METHOD("join",            Join,          1u);
-	ADD_METHOD("all",             All,           1u);
-	ADD_METHOD("any",             Any,           1u);
-	ADD_METHOD("slice",	          Slice,         2u);
-	ADD_METHOD("sort",            Sort,          1u);
-	ADD_METHOD("resize",          Resize,        1u);
-	ADD_METHOD("fill",            Fill,          1u);
+	m_oMethods.AddMethod("push",            Push,          1u);
+	m_oMethods.AddMethod("push_front",      PushFront,     1u);
+	m_oMethods.AddMethod("pop",             Pop,           0u);
+	m_oMethods.AddMethod("pop_front",       PopFront,      0u);
+	m_oMethods.AddMethod("map",             Map,           1u);
+	m_oMethods.AddMethod("find",            Find,          1u);
+	m_oMethods.AddMethod("find_last",       FindLast,      1u);
+	m_oMethods.AddMethod("find_index",      FindIndex,     1u);
+	m_oMethods.AddMethod("find_last_index", FindLastIndex, 1u);
+	m_oMethods.AddMethod("filter",          Filter,        1u);
+	m_oMethods.AddMethod("contains",        Contains,      1u);
+	m_oMethods.AddMethod("reversed",        Reversed,      0u);
+	m_oMethods.AddMethod("join",            Join,          1u);
+	m_oMethods.AddMethod("all",             All,           1u);
+	m_oMethods.AddMethod("any",             Any,           1u);
+	m_oMethods.AddMethod("slice",	        Slice,         2u);
+	m_oMethods.AddMethod("sort",            Sort,          1u);
+	m_oMethods.AddMethod("resize",          Resize,        1u);
+	m_oMethods.AddMethod("fill",            Fill,          1u);
 
 }
 

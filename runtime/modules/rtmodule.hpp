@@ -5,7 +5,6 @@
 
 #include "globalDefinitions.hpp"
 #include "linter/context.hpp"
-#include "runtime/values/types/internal_objects/internal_objects2.hpp"
 
 class CVariable;
 class CRuntimeFunction;
@@ -18,7 +17,7 @@ using RuntimeBlock = std::unique_ptr<IRuntimeStructure>;
 template<typename T>
 using VectorOf = std::vector<T>;
 
-class CRuntimeModule : public CModuleMethods
+class CRuntimeModule
 {
 	NONCOPYABLE(CRuntimeModule);
 

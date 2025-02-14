@@ -1,13 +1,14 @@
 
-#include "runtime/values/types/types.hpp"
+#include "api/types/operators/default_operators.hpp"
+#include "api/types/types.hpp"
+
+#include "runtime/exceptions/exception.hpp"
 #include "runtime/runtime.hpp"
 #include "runtime/variables.hpp"
-#include "runtime/exceptions/exception.hpp"
-#include "runtime/values/simple_operators.hpp"
-
 #include "runtime/structure.hpp"
 
 #include "linter/context.hpp"
+
 #include <algorithm>
 
 
@@ -35,13 +36,13 @@ void CStringValue::ConstructMethods()
 {
 	m_oMethods.clear();
 
-	ADD_METHOD("toupper",     ToUpper,   0u);
-	ADD_METHOD("tolower",     ToLower,   0u);
-	ADD_METHOD("substring",   Substring, 2u);
-	ADD_METHOD("split",       Split,     1u);
-	ADD_METHOD("replace",     Replace,   2u);
-	ADD_METHOD("repeat",      Repeat,    1u);
-	ADD_METHOD("get_code_at", GetCodeAt, 1u);
+	m_oMethods.AddMethod("toupper",     ToUpper,   0u);
+	m_oMethods.AddMethod("tolower",     ToLower,   0u);
+	m_oMethods.AddMethod("substring",   Substring, 2u);
+	m_oMethods.AddMethod("split",       Split,     1u);
+	m_oMethods.AddMethod("replace",     Replace,   2u);
+	m_oMethods.AddMethod("repeat",      Repeat,    1u);
+	m_oMethods.AddMethod("get_code_at", GetCodeAt, 1u);
 }
 
 DEFINE_METHOD(ToUpper)

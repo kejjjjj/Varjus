@@ -1,6 +1,6 @@
 #pragma once
 
-#include "simple.hpp"
+#include "default.hpp"
 #include "boolean.hpp"
 #include "integer.hpp"
 #include "double.hpp"

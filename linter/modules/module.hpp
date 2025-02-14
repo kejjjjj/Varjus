@@ -23,7 +23,7 @@ class CModule
 {
 	NONCOPYABLE(CModule);
 
-	friend class CFileLinter;
+	friend class CBufferLinter;
 	friend class CRuntimeModule;
 
 public:

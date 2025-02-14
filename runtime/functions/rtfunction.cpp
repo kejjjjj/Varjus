@@ -1,17 +1,16 @@
+#include "api/types/types.hpp"
 #include "rtfunction.hpp"
+#include "runtime/modules/rtmodule.hpp"
 #include "runtime/runtime.hpp"
 #include "runtime/structure.hpp"
 #include "runtime/variables.hpp"
-#include "runtime/values/types/types.hpp"
-#include "runtime/modules/rtmodule.hpp"
 
 #include "linter/functions/function.hpp"
 
-#include <ranges>
-#include <algorithm>
+#include "runtime/exceptions/exception.hpp"
 
-#include <iostream>
-#include <runtime/exceptions/exception.hpp>
+#include <algorithm>
+#include <ranges>
 
 CRuntimeFunction::CRuntimeFunction(ElementIndex moduleIndex, CFunctionBlock& linterFunction,
 	VectorOf<CCrossModuleReference>&& args,
@@ -77,7 +76,7 @@ IValue* CRuntimeFunction::Execute(CRuntimeContext* const ctx, IValue* _this,
 	return copy;
 }
 
-CBuiltInRuntimeFunction::CBuiltInRuntimeFunction(METHOD_AS_VARIABLE(method), std::size_t numArgs)
+CBuiltInRuntimeFunction::CBuiltInRuntimeFunction(Method_t method, std::size_t numArgs)
 	: m_pMethod(method), m_uNumArguments(numArgs) {}
 CBuiltInRuntimeFunction::~CBuiltInRuntimeFunction() = default;
 

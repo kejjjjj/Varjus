@@ -1,12 +1,11 @@
+#include "api/types/internal/internal_objects.hpp"
+#include "api/types/types.hpp"
+
 #include "exceptions/exception.hpp"
 #include "modules/rtmodule.hpp"
 #include "runtime.hpp"
 #include "structure.hpp"
-#include "values/types/internal_objects/console.hpp"
-#include "values/types/internal_objects/math.hpp"
-#include "values/types/internal_objects/internal_objects.hpp"
 
-#include "values/types/types.hpp"
 #include "variables.hpp"
 
 #include <chrono>
@@ -78,8 +77,6 @@ IValue* CProgramRuntime::Execute()
 
 	CArrayValue::ConstructMethods();
 	CStringValue::ConstructMethods();
-	CMathValue::ConstructMethods();
-	CConsoleValue::ConstructMethods();
 
 	for (auto& mod : m_oModules) {
 		mod->SetupGlobalVariables();
@@ -106,13 +103,6 @@ void CProgramRuntime::Execute()
 
 	CArrayValue::ConstructMethods();
 	CStringValue::ConstructMethods();
-
-
-
-	CMathValue::ConstructMethods();
-	CConsoleValue::ConstructMethods();
-
-	
 
 	for (auto& mod : m_oModules) {
 		mod->SetupGlobalVariables();

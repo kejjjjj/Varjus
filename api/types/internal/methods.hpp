@@ -1,19 +1,24 @@
 #pragma once
 
-#define FORWARD_DECLARE_METHOD(Name) \
+#define FORWARD_DECLARE_FUNCTION(Name) \
 [[nodiscard]] IValue* Name(CRuntimeContext* const ctx, IValue* _this, const IValues& values)
+#define FORWARD_DECLARE_METHOD(Name) FORWARD_DECLARE_FUNCTION(Name)
 
-#define DEFINE_METHOD(Name)\
+#define DEFINE_FUNCTION(Name)\
 IValue* Name([[maybe_unused]] CRuntimeContext* const ctx, [[maybe_unused]] IValue* _this, [[maybe_unused]] const IValues& args)
-
-#define METHOD_TYPEDEF \
-IValue*(*)(CRuntimeContext* const, IValue*, const IValues&)
-
-#define METHOD_AS_VARIABLE(name) \
-IValue*(*name)(CRuntimeContext* const, IValue*, const std::vector<IValue*>&)
+#define DEFINE_METHOD(Name) DEFINE_FUNCTION(Name)
 
 #include <unordered_map>
 #include <memory>
+#include <string>
+#include <vector>
+
+class IValue;
+template<typename T>
+using VectorOf = std::vector<T>;
+using IValues = VectorOf<IValue*>;
+using Method_t = IValue*(*)(struct CRuntimeContext* const, IValue*, const IValues&);
+
 //msvc is unable to use the move constructor for the unique_ptr, so it has to be explicitly defined pagman
 struct BuiltInMethod_t : std::unordered_map<std::size_t, std::unique_ptr<class CBuiltInRuntimeFunction>>
 {
@@ -22,6 +27,8 @@ struct BuiltInMethod_t : std::unordered_map<std::size_t, std::unique_ptr<class C
 	BuiltInMethod_t(BuiltInMethod_t&&) = default;
 	BuiltInMethod_t& operator=(const BuiltInMethod_t&) = delete;
 	BuiltInMethod_t& operator=(BuiltInMethod_t&&) = default;
+
+	void AddMethod(const std::string& name, Method_t method, std::size_t numArgs);
 };
 
 #define METHOD_BIND(v, value) \
@@ -36,11 +43,5 @@ v->Internal()->SetCallable(m_oMethods->at(memberIdx).get());\
 v->MakeImmutable();\
 v->Internal()->Bind(value);\
 
-#define ADD_METHOD(name, method, numArgs)\
-if(CFileContext::m_oAllMembers.Contains(name)){\
-	const auto id = CFileContext::m_oAllMembers.At(name);\
-	if(!m_oMethods.contains(id))\
-		m_oMethods[id] = std::make_unique<CBuiltInRuntimeFunction>(method, numArgs);\
-}\
-
 constexpr auto UNCHECKED_PARAMETER_COUNT = std::numeric_limits<std::size_t>::max();
+

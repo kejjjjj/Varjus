@@ -1,7 +1,7 @@
 #pragma once
 
 #include "internal/aggregate.hpp"
-#include "runtime/values/types/simple.hpp"
+#include "default.hpp"
 #include "internal/methods.hpp"
 
 #include <vector>

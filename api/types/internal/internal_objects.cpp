@@ -46,3 +46,10 @@ IValue* CBuiltInObject::GetAggregate(std::size_t memberIdx) {
 
 	return CObjectValue::GetAggregate(memberIdx);
 }
+
+
+std::vector<std::pair<std::string, std::function<BuiltInMethod_t()>>> CBuiltInObjects::m_arrMethods;
+void CBuiltInObjects::AddNewGlobalObject(const std::string& name, const std::function<BuiltInMethod_t()>& createMethods)
+{
+	m_arrMethods.push_back({ name, createMethods });
+}

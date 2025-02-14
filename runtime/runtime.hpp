@@ -8,7 +8,7 @@
 #include "pools/object_pool_non_owning.hpp"
 #include "pools/object_pool_owning.hpp"
 
-#include "values/types/types.hpp"
+#include "api/types/types.hpp"
 
 class CVariable;
 class CRuntimeFunction;

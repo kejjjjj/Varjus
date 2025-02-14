@@ -173,9 +173,9 @@ CModule* CImportLinter::GetFileModule() const
 	auto begin = tokens.begin();
 	auto end = tokens.end();
 
-	CFileLinter l(begin, end, m_oTargetFile);
+	CBufferLinter l(begin, end, m_oTargetFile);
 
-	if (!l.ParseFile())
+	if (!l.Parse())
 		return nullptr;
 
 

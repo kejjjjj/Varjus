@@ -1,5 +1,5 @@
 #pragma once
-#include "simple.hpp"
+#include "default.hpp"
 
 class CIntValue final : public CValue<std::int64_t>
 {

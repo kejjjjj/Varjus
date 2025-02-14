@@ -1,9 +1,12 @@
 #include "math.hpp"
-#include "runtime/runtime.hpp"
-#include "runtime/values/simple_operators.hpp"
-#include "runtime/structure.hpp"
-#include "runtime/exceptions/exception.hpp"
+
+#include "api/types/operators/default_operators.hpp"
+
 #include "linter/context.hpp"
+
+#include "runtime/exceptions/exception.hpp"
+#include "runtime/runtime.hpp"
+#include "runtime/structure.hpp"
 
 #include <random>
 
@@ -39,8 +42,8 @@ FORWARD_DECLARE_METHOD(Min);
 FORWARD_DECLARE_METHOD(Random);
 
 
-#define SINGLE_ARG_METHOD(name, func) ADD_METHOD(name, func, 1u)
-#define TWO_ARG_METHOD(name, func) ADD_METHOD(name, func, 2u)
+#define SINGLE_ARG_METHOD(name, func) m_oMethods.AddMethod(name, func, 1u)
+#define TWO_ARG_METHOD(name, func) m_oMethods.AddMethod(name, func, 2u)
 
 
 BuiltInMethod_t CMathValue::ConstructMethods()

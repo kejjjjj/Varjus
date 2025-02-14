@@ -1,5 +1,5 @@
 #pragma once
-#include "simple.hpp"
+#include "default.hpp"
 #include "internal/aggregate.hpp"
 #include "internal/methods.hpp"
 
@@ -19,8 +19,8 @@ public:
 	void Release();
 
 	void Set(const std::string& value);
-	constexpr auto& Get() noexcept { return m_oValue; }
-	constexpr auto& Get() const noexcept { return m_oValue; }
+	[[nodiscard]] constexpr auto& Get() noexcept { return m_oValue; }
+	[[nodiscard]] constexpr auto& Get() const noexcept { return m_oValue; }
 
 	[[nodiscard]] constexpr auto& GetString() noexcept { return Get().m_sString; }
 	[[nodiscard]] constexpr auto& GetString() const noexcept { return Get().m_sString; }
@@ -42,7 +42,7 @@ public:
 
 	[[nodiscard]] IValue* Copy() override;
 
-	static CStringValue* Construct(const std::string& v);
+	[[nodiscard]] static CStringValue* Construct(const std::string& v);
 	static void ConstructMethods(); //only called once during init
 
 	virtual void Release() override;

@@ -34,7 +34,7 @@ Success CScopeLinter::Parse()
 	};
 
 	do {
-		if (!CFileLinter::LintToken(ctx))
+		if (!CBufferLinter::LintToken(ctx))
 			break;
 
 		std::advance(m_iterPos, 1);

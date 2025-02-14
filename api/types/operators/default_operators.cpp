@@ -1,10 +1,10 @@
 #include "coercion.hpp"
-#include "simple_operators.hpp"
+#include "default_operators.hpp"
 
-#include "types/types.hpp"
-#include "runtime/variables.hpp"
-#include "runtime/runtime.hpp"
+#include "api/types/types.hpp"
 #include "runtime/exceptions/exception.hpp"
+#include "runtime/runtime.hpp"
+#include "runtime/variables.hpp"
 
 IValue* OP_ASSIGNMENT(IValue* lhs, IValue* rhs)
 {

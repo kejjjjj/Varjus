@@ -1,5 +1,5 @@
 #pragma once
-#include "simple.hpp"
+#include "default.hpp"
 
 class CBooleanValue final : public CValue<bool>
 {

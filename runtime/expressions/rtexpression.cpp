@@ -1,12 +1,12 @@
-#include "runtime/structure.hpp"
-#include "runtime/functions/rtfunction.hpp"
-#include "runtime/values/types/types.hpp"
-#include "runtime/values/simple_operators.hpp"
+#include "api/types/operators/default_operators.hpp"
+#include "api/types/types.hpp"
 
-#include "runtime/variables.hpp"
-#include "runtime/runtime.hpp"
+#include "runtime/functions/rtfunction.hpp"
+#include "runtime/structure.hpp"
 #include "runtime/exceptions/exception.hpp"
 #include "runtime/modules/rtmodule.hpp"
+#include "runtime/runtime.hpp"
+#include "runtime/variables.hpp"
 
 #include "linter/expressions/ast.hpp"
 

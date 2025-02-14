@@ -1,7 +1,7 @@
 #pragma once
 #include <tuple>
 
-#include "types/simple.hpp"
+#include "api/types/default.hpp"
 
 struct CCoercionOperands final
 {
@@ -30,5 +30,5 @@ private:
 	bool allocatedIsLHS = false;
 };
 
-std::tuple<IValue*, IValue*, IValue*> Coerce(IValue* lhs, IValue* rhs);
-CCoercionOperands CoerceInternal(IValue* lhs, IValue* rhs, bool lhsIsWeak);
+[[nodiscard]] std::tuple<IValue*, IValue*, IValue*> Coerce(IValue* lhs, IValue* rhs);
+[[nodiscard]] CCoercionOperands CoerceInternal(IValue* lhs, IValue* rhs, bool lhsIsWeak);

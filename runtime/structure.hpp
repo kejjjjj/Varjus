@@ -2,7 +2,7 @@
 
 #include "globalDefinitions.hpp"
 #include "linter/modules/references.hpp"
-#include "runtime/values/types/internal/methods.hpp"
+#include "api/types/internal/methods.hpp"
 
 #include <vector>
 #include <memory>
@@ -188,7 +188,7 @@ class CBuiltInRuntimeFunction : public CRuntimeFunctionBase
 	NONCOPYABLE(CBuiltInRuntimeFunction);
 
 public:
-	CBuiltInRuntimeFunction(METHOD_AS_VARIABLE(method), std::size_t numArgs );
+	CBuiltInRuntimeFunction(Method_t method, std::size_t numArgs );
 	~CBuiltInRuntimeFunction();
 
 	[[nodiscard]] constexpr RuntimeFunctionType FunctionType() const noexcept override { return fn_built_in; }
@@ -196,7 +196,7 @@ public:
 	[[maybe_unused]] IValue* ExecuteFunction(CRuntimeContext* const ctx, IValue* _this, VectorOf<IValue*>& args,
 		const VariableCaptures& captures) override;
 
-	METHOD_AS_VARIABLE(m_pMethod);
+	Method_t m_pMethod;
 	std::size_t m_uNumArguments{};
 };
 

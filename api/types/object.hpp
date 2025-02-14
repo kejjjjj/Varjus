@@ -1,11 +1,11 @@
 #pragma once
 
+#include "api/types/default.hpp"
 #include "internal/aggregate.hpp"
-#include "runtime/values/types/simple.hpp"
 
-#include <vector>
 #include <memory>
 #include <string>
+#include <vector>
 
 template<typename T>
 using VectorOf = std::vector<T>;

@@ -1,8 +1,9 @@
-#include "runtime/structure.hpp"
-#include "runtime/values/types/types.hpp"
-#include "runtime/runtime.hpp"
+#include "api/types/types.hpp"
 #include "runtime/functions/rtfunction.hpp"
+#include "runtime/runtime.hpp"
+#include "runtime/structure.hpp"
 #include "runtime/variables.hpp"
+
 CRuntimeTryCatchStatement::CRuntimeTryCatchStatement(const CCrossModuleReference& catchVariable,
 	InstructionSequence&& tryBlock, InstructionSequence&& catchBlock)
 	: m_uCatchVariable(catchVariable),

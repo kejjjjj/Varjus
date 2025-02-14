@@ -32,7 +32,7 @@ class CMemory
 	friend class CIdentifierLinter;
 	friend class CFunctionManager;
 	friend class CVariableDeclarationLinter;
-	friend class CFileLinter;
+	friend class CBufferLinter;
 
 public:
 	CMemory(CMemory* globalMemory, CModule* const file);

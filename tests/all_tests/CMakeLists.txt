@@ -18,6 +18,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 file(GLOB_RECURSE PROJECT_SOURCES 
     "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/../*.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/../../api/*.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/../../fs/*.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/../../linter/*.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/../../runtime/*.cpp"

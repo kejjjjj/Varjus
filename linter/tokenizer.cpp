@@ -502,6 +502,9 @@ std::vector<std::unique_ptr<CToken>> CBufferTokenizer::ParseFileFromFilePath(con
 		throw CLinterError("couldn't read the file buffer");
 	}
 
+	if(fileBuf->size() >= fileBuf->max_size() - 1ull)
+		throw CLinterError("buffer size is too big");
+
 	fileBuf->push_back('\n'); // fixes a crash lol
 
 	auto tokenizer = CBufferTokenizer(*fileBuf);

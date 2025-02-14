@@ -1,6 +1,15 @@
 #include "varjus_api.hpp"
 #include "linter/modules/module.hpp"
-#include "runtime/values/types/internal_objects/internal_objects2.hpp"
+#include "types/internal/internal_objects.hpp"
+
+#include "types/std/console.hpp"
+#include "types/std/math.hpp"
+
+void Varjus::UseStdLibrary()
+{
+    CBuiltInObjects::AddNewGlobalObject("console", CConsoleValue::ConstructMethods);
+    CBuiltInObjects::AddNewGlobalObject("math", CMathValue::ConstructMethods);
+}
 
 void Varjus::Init()
 {

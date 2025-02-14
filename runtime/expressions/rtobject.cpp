@@ -1,5 +1,5 @@
 #include "runtime/structure.hpp"
-#include "runtime/values/types/simple.hpp"
+#include "api/types/default.hpp"
 
 ObjectInitializer CRuntimeExpression::EvaluateObject(CRuntimeContext* const ctx, const ObjectInitializerData& obj)
 {

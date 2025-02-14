@@ -1,14 +1,12 @@
 #include "rtmodule.hpp"
 
+#include "api/types/internal/internal_objects.hpp"
+
 #include "linter/modules/module.hpp"
 
 #include "runtime/runtime.hpp"
 #include "runtime/variables.hpp"
 #include "runtime/structure.hpp"
-#include "runtime/values/types/internal_objects/console.hpp"
-#include "runtime/values/types/internal_objects/math.hpp"
-#include "runtime/values/types/internal_objects/internal_objects.hpp"
-#include "runtime/values/types/internal_objects/internal_objects2.hpp"
 
 CRuntimeModule::CRuntimeModule(CModule& ctx) :
 	m_oGlobalScopeInstructions(std::move(ctx.m_oGlobalScopeInstructions)),
@@ -27,7 +25,7 @@ void CRuntimeModule::SetupGlobalVariables() {
 
 	std::vector<BuiltInMethod_t> methods;
 
-	for (auto& [k, v] : CBuiltInObjects::Iterator()) {
+	for (auto& [_, v] : CBuiltInObjects::Iterator()) {
 		methods.emplace_back(v());
 	}
 

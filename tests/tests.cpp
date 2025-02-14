@@ -7,18 +7,17 @@
 #include "linter/linter.hpp"
 #include "linter/modules/module.hpp"
 
+#include "api/varjus_api.hpp"
+
 #include "runtime/runtime.hpp"
 #include "runtime/modules/rtmodule.hpp"
 
 IValue* TEST_ExecuteFile(const std::string& srcFile)
 {
     try {
-        CModule::ResetEverythingStatic();
-        CFileContext::ResetGlobally();
-        CBuiltInObjects::Reset();
 
-        CBuiltInObjects::AddNewGlobalObject("console", CConsoleValue::ConstructMethods);
-        CBuiltInObjects::AddNewGlobalObject("math", CMathValue::ConstructMethods);
+        Varjus::Init();
+        Varjus::UseStdLibrary();
 
         const auto reader = VarjusIOReader("\\scripts\\" + srcFile);
 
@@ -29,9 +28,9 @@ IValue* TEST_ExecuteFile(const std::string& srcFile)
         auto begin = tokens.begin();
         auto end = tokens.end();
 
-        CFileLinter linter(begin, end, reader.GetFilePath());
+        CBufferLinter linter(begin, end, reader.GetFilePath());
 
-        if (!linter.ParseFile())
+        if (!linter.Parse())
             return nullptr;
 
         CProgramRuntime runtime(CModule::ToRuntimeModules());
