@@ -14,7 +14,7 @@ CStringValue* CStringValue::Construct(const std::string& v)
 	auto internal = str->Internal();
 	str->MakeUnique();
 	internal->Set(v);
-	internal->GetAggregateValue().AddAttribute(LENGTH_PROPERTY);
+	//internal->GetAggregateValue().AddAttribute(LENGTH_PROPERTY);
 	return str;
 }
 
@@ -54,14 +54,12 @@ IValue* CStringValue::GetAggregate(std::size_t memberIdx)
 		return v;
 	}
 
-	auto value = Internal()->GetAggregateValue().ElementLookup(memberIdx);
-
-	if (memberIdx == LENGTH_PROPERTY) {
-		assert(value->IsIntegral());
-		value->AsInt() = static_cast<std::int64_t>(Internal()->Length());
+	if (m_oProperties.contains(memberIdx)) {
+		return m_oProperties.at(memberIdx)(this);
 	}
 
-	return value;
+	assert(false);
+	return nullptr;
 
 }
 CInternalStringValue::~CInternalStringValue() = default;

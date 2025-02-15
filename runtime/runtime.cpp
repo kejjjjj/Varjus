@@ -65,6 +65,15 @@ void ClearPool() {
 	CProgramRuntime::GetPool<T>().ResetPool();
 }
 
+static void InitGlobals()
+{
+	CArrayValue::ConstructMethods();
+	CArrayValue::ConstructProperties();
+
+	CStringValue::ConstructMethods();
+	CStringValue::ConstructProperties();
+}
+
 #ifdef RUNNING_TESTS
 IValue* CProgramRuntime::Execute()
 {
@@ -75,8 +84,7 @@ IValue* CProgramRuntime::Execute()
 		throw CRuntimeError("couldn't find the \"main\" function");
 	}
 
-	CArrayValue::ConstructMethods();
-	CStringValue::ConstructMethods();
+	InitGlobals();
 
 	for (auto& mod : m_oModules) {
 		mod->SetupGlobalVariables();
@@ -101,8 +109,7 @@ void CProgramRuntime::Execute()
 		throw CRuntimeError("couldn't find the \"main\" function");
 	}
 
-	CArrayValue::ConstructMethods();
-	CStringValue::ConstructMethods();
+	InitGlobals();
 
 	for (auto& mod : m_oModules) {
 		mod->SetupGlobalVariables();
@@ -127,6 +134,8 @@ void CProgramRuntime::Execute()
 	PrintLeaks<CArrayValue>   ("array");
 	PrintLeaks<CObjectValue>  ("object");
 	PrintLeaks<CVariable>     ("variable");
+	PrintLeaks<CBuiltInObject>("built-in object");
+
 }
 
 #endif

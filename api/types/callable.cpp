@@ -5,7 +5,7 @@
 #include "runtime/modules/rtmodule.hpp"
 #include "callable.hpp"
 
-#include "linter/modules/references.hpp"
+#include "api/types/internal/references.hpp"
 
 IValue* CCallableValue::Copy()
 {

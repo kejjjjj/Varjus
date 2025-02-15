@@ -5,4 +5,6 @@
 
 struct CMathValue final {
 	static BuiltInMethod_t ConstructMethods(); //only called once during init
+	static BuiltInProperty_t ConstructProperties(); //only called once during init
+
 };

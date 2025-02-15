@@ -5,4 +5,5 @@
 
 struct CConsoleValue final {
 	static BuiltInMethod_t ConstructMethods(); //only called once during init
+
 };

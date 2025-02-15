@@ -18,7 +18,7 @@ VectorOf<ElementIndex>& runtime::__internal::GetAggregateArrayData()
 	if (!once)
 		return elems;
 
-	elems.push_back(LENGTH_PROPERTY);
+	//elems.push_back(LENGTH_PROPERTY);
 	once = false;
 	return elems;
 }
@@ -28,7 +28,7 @@ CArrayValue* CArrayValue::Construct(IValues&& values)
 	ptr->MakeShared();
 	auto internal = ptr->Internal();
 	internal->Set(std::move(values));
-	internal->GetAggregateValue().Setup(0, runtime::__internal::GetAggregateArrayData());
+	//internal->GetAggregateValue().Setup(0, runtime::__internal::GetAggregateArrayData());
 	return ptr;
 }
 
@@ -82,14 +82,12 @@ IValue* CArrayValue::GetAggregate(std::size_t memberIdx)
 		return v;
 	}
 
-	auto property = Internal()->GetAggregateValue().ElementLookup(memberIdx);
-
-	if (memberIdx == LENGTH_PROPERTY) {
-		assert(property->IsIntegral());
-		property->AsInt() = static_cast<std::int64_t>(Internal()->Length());
+	if (m_oProperties.contains(memberIdx)) {
+		return m_oProperties.at(memberIdx)(this);
 	}
 
-	return property;
+	assert(false);
+	return nullptr;
 }
 
 CInternalArrayValue::~CInternalArrayValue() = default;

@@ -2,7 +2,7 @@
 
 #include "operand.hpp"
 
-#include "linter/modules/references.hpp"
+#include "api/types/internal/references.hpp"
 #include "runtime/structure.hpp"
 
 class CRuntimeFunction;

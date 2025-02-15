@@ -3,7 +3,7 @@
 #include <memory>
 
 #include "globalDefinitions.hpp"
-#include "linter/modules/references.hpp"
+#include "api/types/internal/references.hpp"
 
 enum EMemoryIdentifierType
 {

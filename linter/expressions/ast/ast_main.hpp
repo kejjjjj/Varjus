@@ -7,7 +7,7 @@
 #include "globalDefinitions.hpp"
 #include "linter/expressions/definitions.hpp"
 #include "linter/punctuation.hpp"
-#include "linter/modules/references.hpp"
+#include "api/types/internal/references.hpp"
 
 class AbstractSyntaxTree;
 using ASTNode = std::shared_ptr<AbstractSyntaxTree>;

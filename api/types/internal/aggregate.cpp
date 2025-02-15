@@ -67,13 +67,8 @@ IValue* CAggregate::ElementLookupNoExcept(GlobalMemberIndex index) const noexcep
 CVariable* CArrayAggregate::AddAttribute(ElementIndex elem)
 {
 	auto& var = m_oIndexLookup[elem] = CProgramRuntime::AcquireNewVariable();
-
-	if (elem == LENGTH_PROPERTY) {
-		var->SetValue(CProgramRuntime::AcquireNewValue<CIntValue>(0));
-		var->GetValue()->MakeImmutable();
-	} else {
-		var->SetValue(CProgramRuntime::AcquireNewValue<IValue>());
-	}
+	var->SetValue(CProgramRuntime::AcquireNewValue<IValue>());
+	
 
 	return var;
 }

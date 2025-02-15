@@ -4,10 +4,8 @@
 
 struct CFileContext
 {
-	CFileContext() { m_oAllMembers.Insert("length"); }
-	CFileContext(const std::string& wd) : m_sFilePath(wd){
-		m_oAllMembers.Insert("length");
-	}
+	CFileContext() = default;
+	CFileContext(const std::string& wd) : m_sFilePath(wd){}
 
 	std::string m_sFilePath;
 

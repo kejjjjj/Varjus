@@ -11,6 +11,7 @@
 #include <algorithm>
 
 BuiltInMethod_t CArrayValue::m_oMethods;
+BuiltInProperty_t CArrayValue::m_oProperties;
 
 FORWARD_DECLARE_METHOD(Push);
 FORWARD_DECLARE_METHOD(PushFront);
@@ -58,12 +59,28 @@ void CArrayValue::ConstructMethods()
 
 }
 
+FORWARD_DECLARE_PROPERTY(ArrayLength);
+
+void CArrayValue::ConstructProperties()
+{
+	m_oProperties.clear();
+
+	m_oProperties.AddProperty("length", ArrayLength);
+}
+
+
+
 #define START_METHOD(name) \
 if(!_this)\
 	throw CRuntimeError("attempted to call a method without \"this\" context"); \
 if(_this->Type() != t_array) \
 	throw CRuntimeError(std::format("array.{} expected an array, but got {}", #name, _this->TypeAsString()));\
 auto name = _this->ToArray()
+
+DEFINE_PROPERTY(ArrayLength) {
+	START_METHOD(__this);
+	return CProgramRuntime::AcquireNewValue<CIntValue>(static_cast<std::int64_t>(__this->Internal()->Length()));
+}
 
 DEFINE_METHOD(Push)
 {

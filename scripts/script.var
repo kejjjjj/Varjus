@@ -1,17 +1,4 @@
-
-fn generateRandomNums(min, max, count)
-{
-    let arr = [].resize(count);
-    for(let i = 0; i < count; i++){
-        arr[i] = math.trunc(math.random(min, max));
-    }
-
-    return arr;
-}
-
 fn main()
 {
-
-    return generateRandomNums(0, 300, 10);
-
+    return [ math.sqrt(64), math.PI ];
 }

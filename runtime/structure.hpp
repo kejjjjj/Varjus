@@ -1,7 +1,7 @@
 #pragma once
 
 #include "globalDefinitions.hpp"
-#include "linter/modules/references.hpp"
+#include "api/types/internal/references.hpp"
 #include "api/types/internal/methods.hpp"
 
 #include <vector>

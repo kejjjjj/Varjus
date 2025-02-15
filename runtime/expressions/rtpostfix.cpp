@@ -34,10 +34,8 @@ IValue* CRuntimeExpression::EvaluatePostfix(CRuntimeContext* const ctx, const Po
 	} else if (node->IsMemberAccess()) {
 		returnVal = EvaluateMemberAccess(operand, node->GetMemberAccess());
 
-		const auto isMethod = returnVal->IsCallable();
-
-		if (!isMethod && operand->IsHanging()) {
-			returnVal = returnVal->Copy(); //accessing a temporary e.g. [1, 2, 3].length
+		if (operand->IsHanging() && operand->Type() == t_object) {
+			returnVal = returnVal->Copy(); //accessing a temporary e.g. {a: 50, b: 1, c: 2}.a
 		}
 
 	} else if (node->IsIncrement()) {

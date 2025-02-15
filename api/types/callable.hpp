@@ -1,6 +1,6 @@
 #pragma once
 #include "default.hpp"
-#include "linter/modules/references.hpp"
+#include "api/types/internal/references.hpp"
 
 #include <unordered_map>
 #include <vector>

@@ -8,7 +8,7 @@
 void Varjus::UseStdLibrary()
 {
     CBuiltInObjects::AddNewGlobalObject("console", CConsoleValue::ConstructMethods);
-    CBuiltInObjects::AddNewGlobalObject("math", CMathValue::ConstructMethods);
+    CBuiltInObjects::AddNewGlobalObject("math", CMathValue::ConstructMethods, CMathValue::ConstructProperties);
 }
 
 void Varjus::Init()

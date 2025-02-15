@@ -8,11 +8,12 @@
 CBuiltInObject::CBuiltInObject() : CObjectValue() {}
 CBuiltInObject::~CBuiltInObject() = default;
 
-CBuiltInObject* CBuiltInObject::Construct([[maybe_unused]] BuiltInMethod_t&& methods)
+CBuiltInObject* CBuiltInObject::Construct(BuiltInMethod_t&& methods, BuiltInProperty_t&& properties)
 {
 	auto ptr = CProgramRuntime::AcquireNewValue<CBuiltInObject>();
 	ptr->MakeShared();
 	ptr->m_oMethods = std::make_shared<BuiltInMethod_t>(std::move(methods));
+	ptr->m_oProperties = std::make_shared<BuiltInProperty_t>(std::move(properties));
 	return ptr;
 }
 
@@ -33,6 +34,7 @@ IValue* CBuiltInObject::Copy() {
 	ptr->MakeShared();
 	ptr->GetShared() = GetShared();
 	ptr->m_oMethods = m_oMethods;
+	ptr->m_oProperties = m_oProperties;
 	return ptr;
 }
 
@@ -44,12 +46,18 @@ IValue* CBuiltInObject::GetAggregate(std::size_t memberIdx) {
 		return v;
 	}
 
+	if (m_oProperties->contains(memberIdx)) {
+		return m_oProperties->at(memberIdx)(this);
+	}
+
 	return CObjectValue::GetAggregate(memberIdx);
 }
 
 
-std::vector<std::pair<std::string, std::function<BuiltInMethod_t()>>> CBuiltInObjects::m_arrMethods;
-void CBuiltInObjects::AddNewGlobalObject(const std::string& name, const std::function<BuiltInMethod_t()>& createMethods)
+std::vector<std::pair<std::string, CBuiltInObjectPairs>> CBuiltInObjects::m_arrData;
+void CBuiltInObjects::AddNewGlobalObject(const std::string& name,
+	const OptionalCtor<BuiltInMethod_t>& createMethods,
+	const OptionalCtor<BuiltInProperty_t>& createProperties)
 {
-	m_arrMethods.push_back({ name, createMethods });
+	m_arrData.push_back({ name, { createMethods, createProperties} });
 }

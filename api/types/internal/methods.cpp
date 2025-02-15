@@ -11,3 +11,12 @@ void BuiltInMethod_t::AddMethod(const std::string& name, Method_t method, std::s
 			(*this)[id] = std::make_unique<CBuiltInRuntimeFunction>(method, numArgs); 
 	}
 }
+
+void BuiltInProperty_t::AddProperty(const std::string& name, Property_t property)
+{
+	if (CFileContext::m_oAllMembers.Contains(name)) {
+		const auto id = CFileContext::m_oAllMembers.At(name);
+		if (!contains(id))
+			(*this)[id] = property;
+	}
+}

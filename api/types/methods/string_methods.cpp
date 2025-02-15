@@ -13,6 +13,7 @@
 
 
 BuiltInMethod_t CStringValue::m_oMethods;
+BuiltInProperty_t CStringValue::m_oProperties;
 
 #define START_METHOD(name) \
 if(!_this)\
@@ -43,6 +44,19 @@ void CStringValue::ConstructMethods()
 	m_oMethods.AddMethod("replace",     Replace,   2u);
 	m_oMethods.AddMethod("repeat",      Repeat,    1u);
 	m_oMethods.AddMethod("get_code_at", GetCodeAt, 1u);
+}
+
+FORWARD_DECLARE_PROPERTY(StringLength);
+
+void CStringValue::ConstructProperties()
+{
+	m_oProperties.clear();
+	m_oProperties.AddProperty("length", StringLength);
+}
+
+DEFINE_PROPERTY(StringLength) {
+	START_METHOD(__this);
+	return CProgramRuntime::AcquireNewValue<CIntValue>(static_cast<std::int64_t>(__this->Internal()->Length()));
 }
 
 DEFINE_METHOD(ToUpper)

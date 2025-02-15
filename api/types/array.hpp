@@ -1,7 +1,7 @@
 #pragma once
 
-#include "internal/aggregate.hpp"
 #include "default.hpp"
+#include "internal/aggregate.hpp"
 #include "internal/methods.hpp"
 
 #include <vector>
@@ -57,6 +57,7 @@ public:
 	
 	static CArrayValue* Construct(IValues&& values);
 	static void ConstructMethods(); //only called once during init
+	static void ConstructProperties(); //only called once during init
 
 	[[nodiscard]] EValueType Type() const noexcept override { return t_array; };
 
@@ -85,6 +86,7 @@ private:
 	[[nodiscard]] std::string ValueAsString() const override;
 	
 	static BuiltInMethod_t m_oMethods;
+	static BuiltInProperty_t m_oProperties;
 };
 
 

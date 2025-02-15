@@ -38,12 +38,13 @@ class CStringValue final : public CValue<CInternalStringValue>
 {
 public:
 	CStringValue() = default;
-	[[nodiscard]] EValueType Type() const noexcept override { return t_string; };
-
-	[[nodiscard]] IValue* Copy() override;
 
 	[[nodiscard]] static CStringValue* Construct(const std::string& v);
 	static void ConstructMethods(); //only called once during init
+	static void ConstructProperties(); //only called once during init
+
+	[[nodiscard]] EValueType Type() const noexcept override { return t_string; };
+	[[nodiscard]] IValue* Copy() override;
 
 	virtual void Release() override;
 
@@ -70,6 +71,7 @@ private:
 	[[nodiscard]] std::string ValueAsString() const override { return Internal()->GetString(); }
 
 	static BuiltInMethod_t m_oMethods;
+	static BuiltInProperty_t m_oProperties;
 
 
 };

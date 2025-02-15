@@ -8,7 +8,7 @@
 #include "linter/expressions/postfix.hpp"
 #include "linter/functions/stack.hpp"
 #include "linter/functions/function.hpp"
-#include "linter/modules/references.hpp"
+#include "api/types/internal/references.hpp"
 #include "linter/error.hpp"
 
 #include "linter/token.hpp"

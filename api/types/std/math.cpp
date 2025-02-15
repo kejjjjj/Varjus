@@ -86,6 +86,61 @@ BuiltInMethod_t CMathValue::ConstructMethods()
 	return m_oMethods;
 }
 
+FORWARD_DECLARE_PROPERTY(Math_PI);
+FORWARD_DECLARE_PROPERTY(Math_TAU);
+FORWARD_DECLARE_PROPERTY(Math_E);
+FORWARD_DECLARE_PROPERTY(Math_SQRT2);
+FORWARD_DECLARE_PROPERTY(Math_SQRT3);
+FORWARD_DECLARE_PROPERTY(Math_SQRT5);
+FORWARD_DECLARE_PROPERTY(Math_GOLDEN);
+FORWARD_DECLARE_PROPERTY(Math_LN2);
+FORWARD_DECLARE_PROPERTY(Math_LN10);
+FORWARD_DECLARE_PROPERTY(Math_LOG2E);
+FORWARD_DECLARE_PROPERTY(Math_LOG10E);
+FORWARD_DECLARE_PROPERTY(Math_INV_PI);
+FORWARD_DECLARE_PROPERTY(Math_INV_SQRT2);
+FORWARD_DECLARE_PROPERTY(Math_DEG2RAD);
+FORWARD_DECLARE_PROPERTY(Math_RAD2DEG);
+
+BuiltInProperty_t CMathValue::ConstructProperties()
+{
+	BuiltInProperty_t m_oProperties;
+
+	m_oProperties.AddProperty("PI", Math_PI);
+	m_oProperties.AddProperty("TAU", Math_TAU);
+	m_oProperties.AddProperty("E", Math_E);
+	m_oProperties.AddProperty("SQRT2", Math_SQRT2);
+	m_oProperties.AddProperty("SQRT3", Math_SQRT3);
+	m_oProperties.AddProperty("SQRT5", Math_SQRT5);
+	m_oProperties.AddProperty("GOLDEN", Math_GOLDEN);
+	m_oProperties.AddProperty("LN2", Math_LN2);
+	m_oProperties.AddProperty("LN10", Math_LN10);
+	m_oProperties.AddProperty("LOG2E", Math_LOG2E);
+	m_oProperties.AddProperty("LOG10E", Math_LOG10E);
+	m_oProperties.AddProperty("INV_PI", Math_INV_PI);
+	m_oProperties.AddProperty("INV_SQRT2", Math_INV_SQRT2);
+	m_oProperties.AddProperty("DEG2RAD", Math_DEG2RAD);
+	m_oProperties.AddProperty("RAD2DEG", Math_RAD2DEG);
+
+	return m_oProperties;
+}
+
+DEFINE_PROPERTY(Math_PI) { return CProgramRuntime::AcquireNewValue<CDoubleValue>(3.141592653589793); }
+DEFINE_PROPERTY(Math_TAU) { return CProgramRuntime::AcquireNewValue<CDoubleValue>(6.283185307179586); }
+DEFINE_PROPERTY(Math_E) { return CProgramRuntime::AcquireNewValue<CDoubleValue>(2.718281828459045); }
+DEFINE_PROPERTY(Math_SQRT2) { return CProgramRuntime::AcquireNewValue<CDoubleValue>(1.414213562373095); }
+DEFINE_PROPERTY(Math_SQRT3) { return CProgramRuntime::AcquireNewValue<CDoubleValue>(1.732050807568877); }
+DEFINE_PROPERTY(Math_SQRT5) { return CProgramRuntime::AcquireNewValue<CDoubleValue>(2.236067977499790); }
+DEFINE_PROPERTY(Math_GOLDEN) { return CProgramRuntime::AcquireNewValue<CDoubleValue>(1.618033988749895); }
+DEFINE_PROPERTY(Math_LN2) { return CProgramRuntime::AcquireNewValue<CDoubleValue>(0.693147180559945); }
+DEFINE_PROPERTY(Math_LN10) { return CProgramRuntime::AcquireNewValue<CDoubleValue>(2.302585092994046); }
+DEFINE_PROPERTY(Math_LOG2E) { return CProgramRuntime::AcquireNewValue<CDoubleValue>(1.442695040888963); }
+DEFINE_PROPERTY(Math_LOG10E) { return CProgramRuntime::AcquireNewValue<CDoubleValue>(0.434294481903252); }
+DEFINE_PROPERTY(Math_INV_PI) { return CProgramRuntime::AcquireNewValue<CDoubleValue>(0.318309886183790); }
+DEFINE_PROPERTY(Math_INV_SQRT2) { return CProgramRuntime::AcquireNewValue<CDoubleValue>(0.707106781186548); }
+DEFINE_PROPERTY(Math_DEG2RAD) { return CProgramRuntime::AcquireNewValue<CDoubleValue>(0.017453292519943); }
+DEFINE_PROPERTY(Math_RAD2DEG) { return CProgramRuntime::AcquireNewValue<CDoubleValue>(57.29577951308232); }
+
 #define DEFINE_SINGLE_ARG_GENERIC_MATH_FUNC(name, func) \
 DEFINE_METHOD(name){\
 	const auto& v = args.front(); \

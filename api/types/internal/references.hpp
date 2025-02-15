@@ -3,6 +3,7 @@
 #include <cstddef>
 #include <unordered_map>
 
+// a way to identify where this has been declared
 struct CCrossModuleReference
 {
 	CCrossModuleReference() = default;
