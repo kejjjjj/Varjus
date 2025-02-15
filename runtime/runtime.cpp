@@ -70,6 +70,9 @@ static void InitGlobals()
 	CArrayValue::ConstructMethods();
 	CArrayValue::ConstructProperties();
 
+	CObjectValue::ConstructMethods();
+	CObjectValue::ConstructProperties();
+
 	CStringValue::ConstructMethods();
 	CStringValue::ConstructProperties();
 }

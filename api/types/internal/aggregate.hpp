@@ -28,6 +28,7 @@ public:
 	void AddAttribute(ElementIndex elem, IValue* value);
 
 	[[nodiscard]] IValue* ElementLookup(GlobalMemberIndex index) const;
+	[[nodiscard]] auto Length() const noexcept { return m_oIndexLookup.size(); }
 
 #ifdef RUNNING_TESTS
 	[[nodiscard]] IValue* ElementLookupNoExcept(GlobalMemberIndex index) const noexcept;

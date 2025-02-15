@@ -1,4 +1,13 @@
+
 fn main()
 {
-    return { "hello world": "second value" }["hello world"];
+    const data = { key1: "hello", key2: "world", key3: "bitch" };
+    const grouped = [data.keys(), data.values()];
+    const results = [].resize(data.length);
+
+    for(let i = 0; i < results.length; i++){
+        results[i] = grouped[0][i] + " = " + grouped[1][i];
+    }
+
+    return results;
 }

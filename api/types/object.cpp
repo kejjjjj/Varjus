@@ -1,8 +1,9 @@
 #include "object.hpp"
 #include "runtime/runtime.hpp"
 #include "runtime/variables.hpp"
-#include "runtime/exceptions/exception.hpp"
+#include "runtime/structure.hpp"
 
+#include "runtime/exceptions/exception.hpp"
 #include "linter/context.hpp"
 
 #include <sstream>
@@ -49,12 +50,23 @@ IValue* CObjectValue::Index(IValue* index) {
 	const auto key = index->ValueAsString();
 
 	if (!CFileContext::m_oAllMembers.Contains(key)) {
-		throw CRuntimeError(std::format("this aggregate doesn't have the attribute \"{}\"", CFileContext::m_oAllMembers.At(key)));
+		throw CRuntimeError(std::format("this aggregate doesn't have the attribute \"{}\"", key));
 	}
 
 	return Internal()->GetAggregateValue().ElementLookup(CFileContext::m_oAllMembers.At(key));
 }
 IValue* CObjectValue::GetAggregate(std::size_t memberIdx) {
+
+	if (m_oMethods.contains(memberIdx)) {
+		auto v = CProgramRuntime::AcquireNewValue<CCallableValue>();
+		METHOD_BIND(v, this->Copy());
+		return v;
+	}
+
+	if (m_oProperties.contains(memberIdx)) {
+		return m_oProperties.at(memberIdx)(this);
+	}
+
 	return Internal()->GetAggregateValue().ElementLookup(memberIdx);
 }
 

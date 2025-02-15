@@ -22,6 +22,7 @@ int main()
         Varjus::Init();
         Varjus::UseStdLibrary();
 
+
         const auto reader = VarjusIOReader("scripts\\script.var");
 
         auto uniqueTokens = CBufferTokenizer::ParseFileFromFilePath(reader.GetFilePath());

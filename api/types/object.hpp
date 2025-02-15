@@ -2,6 +2,7 @@
 
 #include "api/types/default.hpp"
 #include "internal/aggregate.hpp"
+#include "internal/methods.hpp"
 
 #include <memory>
 #include <string>
@@ -43,6 +44,8 @@ public:
 	~CObjectValue();
 
 	static CObjectValue* Construct(std::size_t moduleIndex, ObjectInitializer&& values);
+	static void ConstructMethods(); //only called once during init
+	static void ConstructProperties(); //only called once during init
 
 	//copy constructor
 	[[nodiscard]] EValueType Type() const noexcept override { return t_object; };
@@ -70,5 +73,7 @@ protected:
 	[[nodiscard]] std::string TypeAsString() const override { return "object"s; }
 	[[nodiscard]] std::string ValueAsString() const override;
 
+	static BuiltInMethod_t m_oMethods;
+	static BuiltInProperty_t m_oProperties;
 };
 

@@ -1,7 +1,4 @@
-
-const globalVariable = [1,2,3];
-
-export fn throwFunc()
+export fn whattheFuck(yea)
 {
-	throw globalVariable;
+    return yea[false] +  " " + "yeo";
 }
