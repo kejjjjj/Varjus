@@ -66,10 +66,7 @@ IValue* CRuntimeExpression::EvaluateSubscript(CRuntimeContext* const ctx, IValue
 
 	auto accessor = Evaluate(ctx, node->m_pAST.get());
 
-	if (!accessor->IsIntegral())
-		throw CRuntimeError(std::format("array accessor must be integral, but is \"{}\"", accessor->TypeAsString()));
-
-	auto index = operand->Index(accessor->ToInt());
+	auto index = operand->Index(accessor);
 
 	if (!accessor->HasOwner())
 		accessor->Release();

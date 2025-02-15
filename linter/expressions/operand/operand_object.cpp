@@ -20,10 +20,15 @@ std::unique_ptr<CKeyValue> CLinterOperand::ParseKeyValue(std::optional<PairMatch
 		return nullptr;
 	}
 
-	if (IsEndOfBuffer() || (*m_iterPos)->Type() != tt_name) {
+	const auto isValidKey = [](const CToken* token) {
+		return token->Type() >= tt_undefined && token->Type() <= tt_name;
+	};
+
+	if (IsEndOfBuffer() || !isValidKey(*m_iterPos)) {
 		CLinterErrors::PushError("expected an identifier", GetIteratorSafe()->m_oSourcePosition);
 		return nullptr;
 	}
+
 	auto& identifier = (*m_iterPos)->Source();
 
 	std::advance(m_iterPos, 1); // skip identifier

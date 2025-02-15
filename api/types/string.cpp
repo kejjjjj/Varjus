@@ -35,8 +35,13 @@ CInternalStringValue* CStringValue::Internal() {
 const CInternalStringValue* CStringValue::Internal() const {
 	return &Get();
 }
-IValue* CStringValue::Index(std::int64_t index)
+IValue* CStringValue::Index(IValue* vIndex)
 {
+	if (!vIndex->IsIntegral())
+		throw CRuntimeError(std::format("array accessor must be integral, but is \"{}\"", vIndex->TypeAsString()));
+
+	auto index = vIndex->ToInt();
+
 	if (index < 0 || static_cast<size_t>(index) >= Internal()->Length())
 		throw CRuntimeError("string index out of bounds");
 
@@ -66,7 +71,6 @@ CInternalStringValue::~CInternalStringValue() = default;
 
 void CInternalStringValue::Release()
 {
-	GetAggregateValue().Release();
 }
 void CInternalStringValue::Set(const std::string& value) {
 	m_oValue.m_sString = value;

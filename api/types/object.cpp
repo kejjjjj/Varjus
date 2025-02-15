@@ -44,6 +44,16 @@ CInternalObjectValue* CObjectValue::Internal() {
 CInternalObjectValue* CObjectValue::Internal() const {
 	return GetShared().get();
 }
+IValue* CObjectValue::Index(IValue* index) {
+
+	const auto key = index->ValueAsString();
+
+	if (!CFileContext::m_oAllMembers.Contains(key)) {
+		throw CRuntimeError(std::format("this aggregate doesn't have the attribute \"{}\"", CFileContext::m_oAllMembers.At(key)));
+	}
+
+	return Internal()->GetAggregateValue().ElementLookup(CFileContext::m_oAllMembers.At(key));
+}
 IValue* CObjectValue::GetAggregate(std::size_t memberIdx) {
 	return Internal()->GetAggregateValue().ElementLookup(memberIdx);
 }

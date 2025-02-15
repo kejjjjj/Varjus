@@ -15,7 +15,7 @@ using KeyValue = std::pair<A, B>;
 
 class CInternalObjectValue;
 
-using ObjectInitializer = VectorOf<KeyValue<ElementIndex, IValue*>>;
+using ObjectInitializer = VectorOf<KeyValue<std::size_t, IValue*>>;
 
 class CInternalObjectValue final
 {
@@ -51,11 +51,13 @@ public:
 
 	[[nodiscard]] constexpr bool IsAggregate() const noexcept override { return true; }
 	[[nodiscard]] constexpr bool IsBooleanConvertible() const noexcept override { return false; }
+	[[nodiscard]] constexpr bool IsIndexable() const noexcept override { return true; }
 
 	[[nodiscard]] virtual IValue* Copy() override;
 	[[nodiscard]] CInternalObjectValue* Internal();
 	[[nodiscard]] CInternalObjectValue* Internal() const;
 
+	[[nodiscard]] IValue* Index(IValue* index) override;
 	[[nodiscard]] virtual IValue* GetAggregate(std::size_t memberIdx) override;
 
 	[[nodiscard]] CObjectValue* ToObject() override { return this; }

@@ -20,7 +20,6 @@ namespace runtime::__internal {
 
 struct CArrayContent final
 {
-	CArrayAggregate m_oAggregate;
 	VectorOf<CVariable*> m_oVariables;
 };
 
@@ -38,9 +37,6 @@ public:
 
 	[[nodiscard]] constexpr auto& GetVariables() noexcept { return Get().m_oVariables; }
 	[[nodiscard]] constexpr auto& GetVariables() const noexcept { return Get().m_oVariables; }
-
-	[[nodiscard]] constexpr auto& GetAggregateValue() const noexcept { return Get().m_oAggregate; }
-	[[nodiscard]] constexpr auto& GetAggregateValue() noexcept { return Get().m_oAggregate; }
 
 	[[nodiscard]] std::size_t Length() const noexcept;
 
@@ -72,7 +68,7 @@ public:
 	[[nodiscard]] CInternalArrayValue* Internal();
 	[[nodiscard]] CInternalArrayValue* Internal() const;
 	
-	[[nodiscard]] IValue* Index(std::int64_t index) override;
+	[[nodiscard]] IValue* Index(IValue* index) override;
 	[[nodiscard]] IValue* GetAggregate(std::size_t memberIdx) override;
 
 	[[nodiscard]] std::size_t AddressOf() const noexcept override { 

@@ -77,6 +77,7 @@ public:
 	[[nodiscard]] static constexpr T* AcquireNewValue() {
 		auto v = GetPool<T>().Acquire();
 		v->SetOwner(nullptr);
+
 		assert(!v->HasOwner());
 		return v;
 	}

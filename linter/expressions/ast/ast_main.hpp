@@ -192,7 +192,7 @@ class ObjectASTNode final : public AbstractSyntaxTree
 
 public:
 
-	ObjectASTNode(const CodePosition& pos, VectorOf<KeyValue<std::size_t, ASTNode>>&& expressions);
+	ObjectASTNode(const CodePosition& pos, VectorOf<KeyValue<std::size_t, ASTNode >> && expressions);
 	~ObjectASTNode();
 
 	[[nodiscard]] constexpr bool IsLeaf() const noexcept override { return true; }

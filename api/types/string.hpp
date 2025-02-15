@@ -6,7 +6,6 @@
 
 struct CStringContent final
 {
-	CArrayAggregate m_oAggregate;
 	std::string m_sString;
 };
 
@@ -24,9 +23,6 @@ public:
 
 	[[nodiscard]] constexpr auto& GetString() noexcept { return Get().m_sString; }
 	[[nodiscard]] constexpr auto& GetString() const noexcept { return Get().m_sString; }
-
-	[[nodiscard]] constexpr auto& GetAggregateValue() const noexcept { return Get().m_oAggregate; }
-	[[nodiscard]] constexpr auto& GetAggregateValue() noexcept { return Get().m_oAggregate; }
 
 	[[nodiscard]] std::size_t Length() const noexcept;
 
@@ -63,7 +59,7 @@ public:
 	[[nodiscard]] CInternalStringValue* Internal();
 	[[nodiscard]] const CInternalStringValue* Internal() const;
 
-	[[nodiscard]] IValue* Index(std::int64_t index) override;
+	[[nodiscard]] IValue* Index(IValue* index) override;
 	[[nodiscard]] IValue* GetAggregate(std::size_t memberIdx) override;
 
 private:

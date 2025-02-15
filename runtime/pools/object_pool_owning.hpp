@@ -56,6 +56,8 @@ public:
         pool.clear();
     }
 
+    [[nodiscard]] constexpr auto GetPoolSize() { return pool.size(); }
+
 private:
     std::vector<std::unique_ptr<T>> pool;
     std::stack<T*> available;

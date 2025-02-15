@@ -11,12 +11,6 @@ class AbstractSyntaxTree;
 using GlobalMemberIndex = std::size_t;
 using ElementIndex = std::size_t;
 
-enum AggregateType
-{
-	at_object,
-	at_array
-};
-
 
 class CAggregate
 {
@@ -24,7 +18,6 @@ public:
 	CAggregate() = default;
 	virtual ~CAggregate() = default;
 
-	[[nodiscard]] virtual constexpr AggregateType Type() const noexcept { return at_object; }
 
 	constexpr void SetModuleIndex(std::size_t i) noexcept { m_uModuleIndex = i; }
 
@@ -44,13 +37,4 @@ public:
 protected:
 	std::unordered_map<ElementIndex, CVariable*> m_oIndexLookup;
 	std::size_t m_uModuleIndex{};
-};
-
-
-class CArrayAggregate : public CAggregate
-{
-public:
-	[[nodiscard]] constexpr AggregateType Type() const noexcept override { return at_array; }
-	[[maybe_unused]] CVariable* AddAttribute(ElementIndex elem) override;
-private:
 };

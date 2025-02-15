@@ -63,8 +63,12 @@ CInternalArrayValue* CArrayValue::Internal() const {
 	return GetShared().get();
 }
 
-IValue* CArrayValue::Index(std::int64_t index)
+IValue* CArrayValue::Index(IValue* vIndex)
 {
+	if (!vIndex->IsIntegral())
+		throw CRuntimeError(std::format("array accessor must be integral, but is \"{}\"", vIndex->TypeAsString()));
+
+	auto index = vIndex->ToInt();
 
 	auto& vec = GetShared()->GetVariables();
 
@@ -94,8 +98,6 @@ CInternalArrayValue::~CInternalArrayValue() = default;
 
 void CInternalArrayValue::Release()
 {
-	GetAggregateValue().Release();
-
 	for (auto& v : GetVariables()) {
 		v->Release();
 	}

@@ -35,11 +35,9 @@ std::string IValue::ToPrintableString() const
 	return std::format("{}: {}", ValueAsString(), TypeAsString());
 }
 
-IValue* IValue::Index([[maybe_unused]]std::int64_t index)
+IValue* IValue::Index([[maybe_unused]]IValue* index)
 {
+	assert(false);
 	return nullptr;
 }
-
-
-
 

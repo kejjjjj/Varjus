@@ -106,7 +106,7 @@ using KeyValue = std::pair<A, B>;
 
 using ElementIndex = std::size_t;
 using ObjectInitializer = VectorOf<KeyValue<ElementIndex, IValue*>>;
-using ObjectInitializerData = VectorOf<KeyValue<std::size_t, ASTNode>>;
+using ObjectInitializerData = VectorOf<KeyValue<ElementIndex, ASTNode>>;
 
 // contains more than one instruction
 class IRuntimeStructureSequence : public IRuntimeStructure

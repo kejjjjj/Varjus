@@ -1,4 +1,4 @@
 fn main()
 {
-    return [ math.sqrt(64), math.PI ];
+    return { "hello world": "second value" }["hello world"];
 }

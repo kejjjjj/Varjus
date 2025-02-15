@@ -60,17 +60,4 @@ IValue* CAggregate::ElementLookupNoExcept(GlobalMemberIndex index) const noexcep
 	return m_oIndexLookup.at(index)->GetValue();
 }
 #endif
-/***********************************************************************
- > 
-***********************************************************************/
-
-CVariable* CArrayAggregate::AddAttribute(ElementIndex elem)
-{
-	auto& var = m_oIndexLookup[elem] = CProgramRuntime::AcquireNewVariable();
-	var->SetValue(CProgramRuntime::AcquireNewValue<IValue>());
-	
-
-	return var;
-}
-
 
