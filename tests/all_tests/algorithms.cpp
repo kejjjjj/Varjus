@@ -181,3 +181,15 @@ TEST_CASE("KMPStringMatch(ababcababcabc, abc)") {
 	retVal->Release();
 	REQUIRE(CProgramRuntime::HasLeaks() == false);
 }
+
+TEST_CASE("ArrayToString([ 1, [ 2, [3, [] ] ], 4 ])") {
+
+	auto retVal = TEST_ExecuteFile(JP("array_to_string.var"));
+
+	REQUIRE(retVal->Type() == t_string);
+	REQUIRE(retVal->ToString() == "123empty4");
+
+	REQUIRE(retVal->HasOwner() == false);
+	retVal->Release();
+	REQUIRE(CProgramRuntime::HasLeaks() == false);
+}

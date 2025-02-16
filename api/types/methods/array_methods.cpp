@@ -586,6 +586,10 @@ DEFINE_METHOD(Slice) {
 	IValues args = { left->Copy(), right->Copy() };
 	auto returnValue = callback->Call(ctx, args);  // Call callback on swap
 
+	if (CProgramRuntime::ExceptionThrown()) {
+		throw CRuntimeError(std::format("array.sort callback must not throw"));
+	}
+
 	if (!returnValue->IsBooleanConvertible())
 		throw CRuntimeError(std::format("array.sort expected a boolean return value", returnValue->TypeAsString()));
 

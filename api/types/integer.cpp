@@ -1,6 +1,10 @@
 #include "runtime/runtime.hpp"
 #include "integer.hpp"
 
+CIntValue* CIntValue::Construct(std::int64_t v) {
+	return CProgramRuntime::AcquireNewValue<CIntValue>(v);
+}
+
 IValue* CIntValue::Copy()
 {
 	if (IsShared()) {

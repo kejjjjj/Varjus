@@ -1,6 +1,10 @@
 #include "runtime/runtime.hpp"
 #include "boolean.hpp"
 
+CBooleanValue* CBooleanValue::Construct(bool v) {
+	return CProgramRuntime::AcquireNewValue<CBooleanValue>(v);
+}
+
 IValue* CBooleanValue::Copy()
 {
 	if (IsShared()) {

@@ -20,16 +20,23 @@ BuiltInProperty_t CObjectValue::m_oProperties;
 
 FORWARD_DECLARE_METHOD(Object_Keys);
 FORWARD_DECLARE_METHOD(Object_Values);
+FORWARD_DECLARE_METHOD(Object_Set);
+FORWARD_DECLARE_METHOD(Object_Remove);
+FORWARD_DECLARE_METHOD(Object_Contains);
+FORWARD_DECLARE_METHOD(Object_ToArray);
 
 void CObjectValue::ConstructMethods()
 {
 	m_oMethods.clear();
 
-	m_oMethods.AddMethod("keys", Object_Keys, 0u);
-	m_oMethods.AddMethod("values", Object_Values, 0u);
+	m_oMethods.AddMethod("keys",     Object_Keys,     0u);
+	m_oMethods.AddMethod("values",   Object_Values,   0u);
+	m_oMethods.AddMethod("set",      Object_Set,      2u);
+	m_oMethods.AddMethod("remove",   Object_Remove,   1u);
+	m_oMethods.AddMethod("contains", Object_Contains, 1u);
+	m_oMethods.AddMethod("to_array", Object_ToArray,  0u);
 
 }
-
 
 FORWARD_DECLARE_PROPERTY(ObjectLength);
 void CObjectValue::ConstructProperties()
@@ -71,4 +78,79 @@ DEFINE_METHOD(Object_Values)
 	}
 
 	return CArrayValue::Construct(std::move(results));
+}
+
+static auto GetAttribute(CObjectValue* obj, IValue* const key)
+{
+	const auto& aggregate = obj->Internal()->GetAggregateValue();
+	return aggregate.Get(key->ValueAsString());
+}
+static void AddAttribute(CObjectValue* obj, IValue* const key, IValue* value)
+{
+	auto& aggregate = obj->Internal()->GetAggregateValue();
+
+	//insert the member if necessary
+	auto var = aggregate.AddAttribute(CFileContext::m_oAllMembers[key->ValueAsString()]);
+	var->SetValue(value->Copy());
+}
+
+DEFINE_METHOD(Object_Set)
+{
+	START_METHOD(__this);
+
+	const auto& key = args[0];
+	auto& value = args[1];
+	
+
+	//known key
+	if (auto objKey = GetAttribute(__this, key)) {
+		auto var = objKey->GetOwner();
+		var->SetValue(value->Copy());
+	} else {
+		 AddAttribute(__this, key, value);
+	}
+
+	return __this->Copy();
+}
+DEFINE_METHOD(Object_Remove)
+{
+	START_METHOD(__this);
+
+	const auto& key = args[0];
+	auto& aggregate = __this->Internal()->GetAggregateValue();
+	auto keyStr = key->ValueAsString();
+
+	if(!CFileContext::m_oAllMembers.Contains(keyStr))
+		return CBooleanValue::Construct(false);
+
+	return CBooleanValue::Construct(aggregate.RemoveAttribute(CFileContext::m_oAllMembers.At(keyStr)));
+}
+
+static auto Contains(CObjectValue* obj, IValue* const key)
+{
+	const auto& aggregate = obj->Internal()->GetAggregateValue();
+	return aggregate.Contains(key->ValueAsString());
+}
+DEFINE_METHOD(Object_Contains)
+{
+	START_METHOD(__this);
+	return CBooleanValue::Construct(Contains(__this, args[0]));
+}
+DEFINE_METHOD(Object_ToArray)
+{
+	START_METHOD(__this);
+
+	const auto& aggregate = __this->Internal()->GetAggregateValue().Iterator();
+
+	IValues values;
+
+	for (const auto& [i, var] : aggregate) {
+
+		auto key = CStringValue::Construct(CFileContext::m_oAllMembers.At(i));
+		auto value = var->GetValue()->Copy();
+
+		values.push_back(CArrayValue::Construct({ key, value }));
+	}
+
+	return CArrayValue::Construct(std::move(values));
 }

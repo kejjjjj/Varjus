@@ -4,8 +4,11 @@
 class CBooleanValue final : public CValue<bool>
 {
 public:
+
 	CBooleanValue() = default;
 	[[nodiscard]] EValueType Type() const noexcept override { return t_boolean; };
+
+	[[nodiscard]] static CBooleanValue* Construct(bool v);
 
 	[[nodiscard]] IValue* Copy() override;
 

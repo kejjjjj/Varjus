@@ -1,6 +1,10 @@
 #include "runtime/runtime.hpp"
 #include "double.hpp"
 
+CDoubleValue* CDoubleValue::Construct(double v) {
+	return CProgramRuntime::AcquireNewValue<CDoubleValue>(v);
+}
+
 IValue* CDoubleValue::Copy()
 {
 	if (IsShared()) {

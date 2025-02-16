@@ -29,6 +29,16 @@ CVariable* CAggregate::AddAttribute(ElementIndex elem)
 void CAggregate::AddAttribute(ElementIndex elem, IValue* value){
 	return AddAttribute(elem)->SetValue(value);
 }
+bool CAggregate::RemoveAttribute(ElementIndex elem)
+{
+	if (!m_oIndexLookup.contains(elem))
+		return false;
+
+	auto var = m_oIndexLookup.at(elem);
+	var->Release();
+	m_oIndexLookup.erase(elem);
+	return true;
+}
 void CAggregate::Release()
 {
 
@@ -50,7 +60,27 @@ IValue* CAggregate::ElementLookup(GlobalMemberIndex index) const
 	}
 	return m_oIndexLookup.at(index)->GetValue();
 }
+bool CAggregate::Contains(const std::string& item) const {
+	
+	if (!CFileContext::m_oAllMembers.Contains(item))
+		return false;
 
+	const auto key = CFileContext::m_oAllMembers.At(item);
+
+	return m_oIndexLookup.contains(key);
+}
+IValue* CAggregate::Get(const std::string& item) const
+{
+	if (!CFileContext::m_oAllMembers.Contains(item))
+		return nullptr;
+
+	const auto key = CFileContext::m_oAllMembers.At(item);
+
+	if (!m_oIndexLookup.contains(key))
+		return nullptr;
+
+	return m_oIndexLookup.at(key)->GetValue();
+}
 #ifdef RUNNING_TESTS
 IValue* CAggregate::ElementLookupNoExcept(GlobalMemberIndex index) const noexcept {
 

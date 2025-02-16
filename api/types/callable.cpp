@@ -7,6 +7,15 @@
 
 #include "api/types/internal/references.hpp"
 
+
+CCallableValue* CCallableValue::Construct(CRuntimeFunctionBase* v)
+{
+	auto ptr = CProgramRuntime::AcquireNewValue<CCallableValue>();
+	ptr->MakeShared();
+	ptr->Internal()->SetCallable(v);
+	return ptr;
+}
+
 IValue* CCallableValue::Copy()
 {
 	auto ptr = CProgramRuntime::AcquireNewValue<CCallableValue>();
@@ -15,9 +24,6 @@ IValue* CCallableValue::Copy()
 
 	for (auto& [k, va] : var->GetCaptures())
 		va->RefCount()++; //increase ref count so that these don't get destroyed
-
-	//if (m_pOwner && m_pOwner->m_bSelfCapturing)
-	//	m_pOwner->RefCount()++;
 
 	return ptr;
 

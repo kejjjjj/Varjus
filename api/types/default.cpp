@@ -3,6 +3,9 @@
 
 #include <format>
 
+IValue* IValue::Construct() {
+	return CProgramRuntime::AcquireNewValue<IValue>();
+}
 void IValue::ReleaseInternal()
 {
 	RemoveConstness();

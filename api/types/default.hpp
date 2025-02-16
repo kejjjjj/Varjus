@@ -50,6 +50,8 @@ public:
 	IValue() = default;
 	virtual ~IValue() = default;
 
+	[[nodiscard]] static IValue* Construct();
+
 	[[nodiscard]] virtual EValueType Type() const noexcept { return t_undefined; };
 
 	constexpr auto SetOwner(CVariable* o) noexcept { m_pOwner = o; }

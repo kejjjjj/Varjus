@@ -52,6 +52,9 @@ class CCallableValue final : public CValue<CInternalCallableValue>
 {
 public:
 	CCallableValue() = default;
+
+	[[nodiscard]] static CCallableValue* Construct(CRuntimeFunctionBase* v);
+
 	[[nodiscard]] EValueType Type() const noexcept override { return t_callable; };
 
 	[[nodiscard]] IValue* Copy() override;

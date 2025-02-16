@@ -3,6 +3,7 @@
 #include <unordered_map>
 #include <vector>
 #include <memory>
+#include <string>
 
 class IValue;
 class CVariable;
@@ -26,8 +27,12 @@ public:
 
 	[[maybe_unused]] virtual CVariable* AddAttribute(ElementIndex elem);
 	void AddAttribute(ElementIndex elem, IValue* value);
+	[[nodiscard]] bool RemoveAttribute(ElementIndex elem);
 
 	[[nodiscard]] IValue* ElementLookup(GlobalMemberIndex index) const;
+	[[nodiscard]] bool Contains(const std::string& item) const;
+	[[nodiscard]] IValue* Get(const std::string& item) const;
+
 	[[nodiscard]] auto Length() const noexcept { return m_oIndexLookup.size(); }
 
 #ifdef RUNNING_TESTS
