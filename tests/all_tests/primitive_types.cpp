@@ -42,9 +42,9 @@ TEST_CASE("Returns an integer 64") {
 	REQUIRE(CProgramRuntime::HasLeaks() == false);
 }
 
-TEST_CASE("Returns a double 64.0") {
+TEST_CASE("Returns a VarjusDouble 64.0") {
 
-	auto retVal = TEST_ExecuteFile(JP("double.var"));
+	auto retVal = TEST_ExecuteFile(JP("VarjusDouble.var"));
 
 	REQUIRE(retVal != nullptr);
 	REQUIRE(retVal->Type() == t_double);

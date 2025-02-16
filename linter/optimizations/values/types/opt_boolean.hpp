@@ -19,8 +19,8 @@ public:
 	[[nodiscard]] constexpr bool IsCoerceable() const noexcept override { return true; }
 
 	[[nodiscard]] bool ToBoolean() const override { return Get(); }
-	[[nodiscard]] std::int64_t ToInt() const override { return static_cast<std::int64_t>(Get()); }
-	[[nodiscard]] double ToDouble() const override { return static_cast<double>(Get()); } 
+	[[nodiscard]] VarjusInt ToInt() const override { return static_cast<VarjusInt>(Get()); }
+	[[nodiscard]] VarjusDouble ToDouble() const override { return static_cast<VarjusDouble>(Get()); } 
 
 	[[nodiscard]] CConstEvalBooleanValue* ToCBoolean() override { return this; }
 

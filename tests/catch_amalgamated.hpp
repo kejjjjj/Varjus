@@ -172,7 +172,7 @@
 #endif
 
 // clang-cl defines _MSC_VER as well as __clang__, which could cause the
-// start/stop internal suppression macros to be double defined.
+// start/stop internal suppression macros to be VarjusDouble defined.
 #if defined(__clang__) && !defined(_MSC_VER)
 
 #    define CATCH_INTERNAL_START_WARNINGS_SUPPRESSION _Pragma( "clang diagnostic push" )
@@ -983,7 +983,7 @@ namespace Detail {
 namespace Catch {
     namespace Benchmark {
         using IDuration = std::chrono::nanoseconds;
-        using FDuration = std::chrono::duration<double, std::nano>;
+        using FDuration = std::chrono::duration<VarjusDouble, std::nano>;
 
         template <typename Clock>
         using TimePoint = typename Clock::time_point;
@@ -1192,7 +1192,7 @@ namespace Catch {
         virtual int abortAfter() const = 0;
         virtual bool showInvisibles() const = 0;
         virtual ShowDurations showDurations() const = 0;
-        virtual double minDuration() const = 0;
+        virtual VarjusDouble minDuration() const = 0;
         virtual TestSpec const& testSpec() const = 0;
         virtual bool hasTestFilters() const = 0;
         virtual std::vector<std::string> const& getTestsOrTags() const = 0;
@@ -1207,7 +1207,7 @@ namespace Catch {
         virtual bool skipBenchmarks() const = 0;
         virtual bool benchmarkNoAnalysis() const = 0;
         virtual unsigned int benchmarkSamples() const = 0;
-        virtual double benchmarkConfidenceInterval() const = 0;
+        virtual VarjusDouble benchmarkConfidenceInterval() const = 0;
         virtual unsigned int benchmarkResamples() const = 0;
         virtual std::chrono::milliseconds benchmarkWarmupTime() const = 0;
     };
@@ -1293,7 +1293,7 @@ namespace Catch {
             Type point;
             Type lower_bound;
             Type upper_bound;
-            double confidence_interval;
+            VarjusDouble confidence_interval;
         };
     } // namespace Benchmark
 } // namespace Catch
@@ -1333,12 +1333,12 @@ namespace Catch {
 
     struct BenchmarkInfo {
         std::string name;
-        double estimatedDuration;
+        VarjusDouble estimatedDuration;
         int iterations;
         unsigned int samples;
         unsigned int resamples;
-        double clockResolution;
-        double clockCost;
+        VarjusDouble clockResolution;
+        VarjusDouble clockCost;
     };
 
     // We need to keep template parameter for backwards compatibility,
@@ -1351,7 +1351,7 @@ namespace Catch {
         Benchmark::Estimate<Benchmark::FDuration> mean;
         Benchmark::Estimate<Benchmark::FDuration> standardDeviation;
         Benchmark::OutlierClassification outliers;
-        double outlierVariance;
+        VarjusDouble outlierVariance;
     };
 
 
@@ -1890,41 +1890,41 @@ namespace Catch {
 namespace Catch {
     namespace Benchmark {
         namespace Detail {
-            using sample = std::vector<double>;
+            using sample = std::vector<VarjusDouble>;
 
-            double weighted_average_quantile( int k,
+            VarjusDouble weighted_average_quantile( int k,
                                               int q,
-                                              double* first,
-                                              double* last );
+                                              VarjusDouble* first,
+                                              VarjusDouble* last );
 
             OutlierClassification
-            classify_outliers( double const* first, double const* last );
+            classify_outliers( VarjusDouble const* first, VarjusDouble const* last );
 
-            double mean( double const* first, double const* last );
+            VarjusDouble mean( VarjusDouble const* first, VarjusDouble const* last );
 
-            double normal_cdf( double x );
+            VarjusDouble normal_cdf( VarjusDouble x );
 
-            double erfc_inv(double x);
+            VarjusDouble erfc_inv(VarjusDouble x);
 
-            double normal_quantile(double p);
+            VarjusDouble normal_quantile(VarjusDouble p);
 
-            Estimate<double>
-            bootstrap( double confidence_level,
-                       double* first,
-                       double* last,
+            Estimate<VarjusDouble>
+            bootstrap( VarjusDouble confidence_level,
+                       VarjusDouble* first,
+                       VarjusDouble* last,
                        sample const& resample,
-                       double ( *estimator )( double const*, double const* ) );
+                       VarjusDouble ( *estimator )( VarjusDouble const*, VarjusDouble const* ) );
 
             struct bootstrap_analysis {
-                Estimate<double> mean;
-                Estimate<double> standard_deviation;
-                double outlier_variance;
+                Estimate<VarjusDouble> mean;
+                Estimate<VarjusDouble> standard_deviation;
+                VarjusDouble outlier_variance;
             };
 
-            bootstrap_analysis analyse_samples(double confidence_level,
+            bootstrap_analysis analyse_samples(VarjusDouble confidence_level,
                                                unsigned int n_resamples,
-                                               double* first,
-                                               double* last);
+                                               VarjusDouble* first,
+                                               VarjusDouble* last);
         } // namespace Detail
     } // namespace Benchmark
 } // namespace Catch
@@ -1939,7 +1939,7 @@ namespace Catch {
     namespace Benchmark {
         namespace Detail {
             template <typename Clock>
-            std::vector<double> resolution(int k) {
+            std::vector<VarjusDouble> resolution(int k) {
                 const size_t points = static_cast<size_t>( k + 1 );
                 // To avoid overhead from the branch inside vector::push_back,
                 // we allocate them all and then overwrite.
@@ -1948,10 +1948,10 @@ namespace Catch {
                     time = Clock::now();
                 }
 
-                std::vector<double> deltas;
+                std::vector<VarjusDouble> deltas;
                 deltas.reserve(static_cast<size_t>(k));
                 for ( size_t idx = 1; idx < points; ++idx ) {
-                    deltas.push_back( static_cast<double>(
+                    deltas.push_back( static_cast<VarjusDouble>(
                         ( times[idx] - times[idx - 1] ).count() ) );
                 }
 
@@ -1998,11 +1998,11 @@ namespace Catch {
                 time_clock(1);
                 int iters = clock_cost_estimation_iterations;
                 auto&& r = run_for_at_least<Clock>(clock_cost_estimation_time, iters, time_clock);
-                std::vector<double> times;
+                std::vector<VarjusDouble> times;
                 int nsamples = static_cast<int>(std::ceil(time_limit / r.elapsed));
                 times.reserve(static_cast<size_t>(nsamples));
                 for ( int s = 0; s < nsamples; ++s ) {
-                    times.push_back( static_cast<double>(
+                    times.push_back( static_cast<VarjusDouble>(
                         ( time_clock( r.iterations ) / r.iterations )
                             .count() ) );
                 }
@@ -2062,7 +2062,7 @@ namespace Catch {
             Estimate<FDuration> mean;
             Estimate<FDuration> standard_deviation;
             OutlierClassification outliers;
-            double outlier_variance;
+            VarjusDouble outlier_variance;
         };
     } // namespace Benchmark
 } // namespace Catch
@@ -2717,8 +2717,8 @@ namespace Catch {
     };
 
     template<>
-    struct StringMaker<double> {
-        static std::string convert(double value);
+    struct StringMaker<VarjusDouble> {
+        static std::string convert(VarjusDouble value);
         CATCH_EXPORT static int precision;
     };
 
@@ -3094,105 +3094,105 @@ namespace Catch {
 
     class Approx {
     private:
-        bool equalityComparisonImpl(double other) const;
+        bool equalityComparisonImpl(VarjusDouble other) const;
         // Sets and validates the new margin (margin >= 0)
-        void setMargin(double margin);
+        void setMargin(VarjusDouble margin);
         // Sets and validates the new epsilon (0 < epsilon < 1)
-        void setEpsilon(double epsilon);
+        void setEpsilon(VarjusDouble epsilon);
 
     public:
-        explicit Approx ( double value );
+        explicit Approx ( VarjusDouble value );
 
         static Approx custom();
 
         Approx operator-() const;
 
-        template <typename T, typename = std::enable_if_t<std::is_constructible<double, T>::value>>
+        template <typename T, typename = std::enable_if_t<std::is_constructible<VarjusDouble, T>::value>>
         Approx operator()( T const& value ) const {
-            Approx approx( static_cast<double>(value) );
+            Approx approx( static_cast<VarjusDouble>(value) );
             approx.m_epsilon = m_epsilon;
             approx.m_margin = m_margin;
             approx.m_scale = m_scale;
             return approx;
         }
 
-        template <typename T, typename = std::enable_if_t<std::is_constructible<double, T>::value>>
-        explicit Approx( T const& value ): Approx(static_cast<double>(value))
+        template <typename T, typename = std::enable_if_t<std::is_constructible<VarjusDouble, T>::value>>
+        explicit Approx( T const& value ): Approx(static_cast<VarjusDouble>(value))
         {}
 
 
-        template <typename T, typename = std::enable_if_t<std::is_constructible<double, T>::value>>
+        template <typename T, typename = std::enable_if_t<std::is_constructible<VarjusDouble, T>::value>>
         friend bool operator == ( const T& lhs, Approx const& rhs ) {
-            auto lhs_v = static_cast<double>(lhs);
+            auto lhs_v = static_cast<VarjusDouble>(lhs);
             return rhs.equalityComparisonImpl(lhs_v);
         }
 
-        template <typename T, typename = std::enable_if_t<std::is_constructible<double, T>::value>>
+        template <typename T, typename = std::enable_if_t<std::is_constructible<VarjusDouble, T>::value>>
         friend bool operator == ( Approx const& lhs, const T& rhs ) {
             return operator==( rhs, lhs );
         }
 
-        template <typename T, typename = std::enable_if_t<std::is_constructible<double, T>::value>>
+        template <typename T, typename = std::enable_if_t<std::is_constructible<VarjusDouble, T>::value>>
         friend bool operator != ( T const& lhs, Approx const& rhs ) {
             return !operator==( lhs, rhs );
         }
 
-        template <typename T, typename = std::enable_if_t<std::is_constructible<double, T>::value>>
+        template <typename T, typename = std::enable_if_t<std::is_constructible<VarjusDouble, T>::value>>
         friend bool operator != ( Approx const& lhs, T const& rhs ) {
             return !operator==( rhs, lhs );
         }
 
-        template <typename T, typename = std::enable_if_t<std::is_constructible<double, T>::value>>
+        template <typename T, typename = std::enable_if_t<std::is_constructible<VarjusDouble, T>::value>>
         friend bool operator <= ( T const& lhs, Approx const& rhs ) {
-            return static_cast<double>(lhs) < rhs.m_value || lhs == rhs;
+            return static_cast<VarjusDouble>(lhs) < rhs.m_value || lhs == rhs;
         }
 
-        template <typename T, typename = std::enable_if_t<std::is_constructible<double, T>::value>>
+        template <typename T, typename = std::enable_if_t<std::is_constructible<VarjusDouble, T>::value>>
         friend bool operator <= ( Approx const& lhs, T const& rhs ) {
-            return lhs.m_value < static_cast<double>(rhs) || lhs == rhs;
+            return lhs.m_value < static_cast<VarjusDouble>(rhs) || lhs == rhs;
         }
 
-        template <typename T, typename = std::enable_if_t<std::is_constructible<double, T>::value>>
+        template <typename T, typename = std::enable_if_t<std::is_constructible<VarjusDouble, T>::value>>
         friend bool operator >= ( T const& lhs, Approx const& rhs ) {
-            return static_cast<double>(lhs) > rhs.m_value || lhs == rhs;
+            return static_cast<VarjusDouble>(lhs) > rhs.m_value || lhs == rhs;
         }
 
-        template <typename T, typename = std::enable_if_t<std::is_constructible<double, T>::value>>
+        template <typename T, typename = std::enable_if_t<std::is_constructible<VarjusDouble, T>::value>>
         friend bool operator >= ( Approx const& lhs, T const& rhs ) {
-            return lhs.m_value > static_cast<double>(rhs) || lhs == rhs;
+            return lhs.m_value > static_cast<VarjusDouble>(rhs) || lhs == rhs;
         }
 
-        template <typename T, typename = std::enable_if_t<std::is_constructible<double, T>::value>>
+        template <typename T, typename = std::enable_if_t<std::is_constructible<VarjusDouble, T>::value>>
         Approx& epsilon( T const& newEpsilon ) {
-            const auto epsilonAsDouble = static_cast<double>(newEpsilon);
+            const auto epsilonAsDouble = static_cast<VarjusDouble>(newEpsilon);
             setEpsilon(epsilonAsDouble);
             return *this;
         }
 
-        template <typename T, typename = std::enable_if_t<std::is_constructible<double, T>::value>>
+        template <typename T, typename = std::enable_if_t<std::is_constructible<VarjusDouble, T>::value>>
         Approx& margin( T const& newMargin ) {
-            const auto marginAsDouble = static_cast<double>(newMargin);
+            const auto marginAsDouble = static_cast<VarjusDouble>(newMargin);
             setMargin(marginAsDouble);
             return *this;
         }
 
-        template <typename T, typename = std::enable_if_t<std::is_constructible<double, T>::value>>
+        template <typename T, typename = std::enable_if_t<std::is_constructible<VarjusDouble, T>::value>>
         Approx& scale( T const& newScale ) {
-            m_scale = static_cast<double>(newScale);
+            m_scale = static_cast<VarjusDouble>(newScale);
             return *this;
         }
 
         std::string toString() const;
 
     private:
-        double m_epsilon;
-        double m_margin;
-        double m_scale;
-        double m_value;
+        VarjusDouble m_epsilon;
+        VarjusDouble m_margin;
+        VarjusDouble m_scale;
+        VarjusDouble m_value;
     };
 
 namespace literals {
-    Approx operator ""_a(long double val);
+    Approx operator ""_a(long VarjusDouble val);
     Approx operator ""_a(unsigned long long val);
 } // end namespace literals
 
@@ -3764,14 +3764,14 @@ namespace Catch {
         bool skipBenchmarks = false;
         bool benchmarkNoAnalysis = false;
         unsigned int benchmarkSamples = 100;
-        double benchmarkConfidenceInterval = 0.95;
+        VarjusDouble benchmarkConfidenceInterval = 0.95;
         unsigned int benchmarkResamples = 100'000;
         std::chrono::milliseconds::rep benchmarkWarmupTime = 100;
 
         Verbosity verbosity = Verbosity::Normal;
         WarnAbout::What warnings = WarnAbout::Nothing;
         ShowDurations showDurations = ShowDurations::DefaultForReporter;
-        double minDuration = -1;
+        VarjusDouble minDuration = -1;
         TestRunOrder runOrder = TestRunOrder::Declared;
         ColourMode defaultColourMode = ColourMode::PlatformDefault;
         WaitForKeypress::When waitForKeypress = WaitForKeypress::Never;
@@ -3818,7 +3818,7 @@ namespace Catch {
         bool warnAboutUnmatchedTestSpecs() const override;
         bool zeroTestsCountAsSuccess() const override;
         ShowDurations showDurations() const override;
-        double minDuration() const override;
+        VarjusDouble minDuration() const override;
         TestRunOrder runOrder() const override;
         uint32_t rngSeed() const override;
         unsigned int shardCount() const override;
@@ -3831,7 +3831,7 @@ namespace Catch {
         bool skipBenchmarks() const override;
         bool benchmarkNoAnalysis() const override;
         unsigned int benchmarkSamples() const override;
-        double benchmarkConfidenceInterval() const override;
+        VarjusDouble benchmarkConfidenceInterval() const override;
         unsigned int benchmarkResamples() const override;
         std::chrono::milliseconds benchmarkWarmupTime() const override;
 
@@ -4142,7 +4142,7 @@ namespace Catch {
     struct SectionEndInfo {
         SectionInfo sectionInfo;
         Counts prevAssertions;
-        double durationInSeconds;
+        VarjusDouble durationInSeconds;
     };
 
 } // end namespace Catch
@@ -5689,7 +5689,7 @@ namespace Catch {
         } INTERNAL_CATCH_CATCH( catchAssertionHandler ) \
         catchAssertionHandler.complete(); \
     } while( (void)0, (false) && static_cast<const bool&>( !!(__VA_ARGS__) ) ) // the expression here is never evaluated at runtime but it forces the compiler to give it a look
-    // The double negation silences MSVC's C4800 warning, the static_cast forces short-circuit evaluation if the type has overloaded &&.
+    // The VarjusDouble negation silences MSVC's C4800 warning, the static_cast forces short-circuit evaluation if the type has overloaded &&.
 
 ///////////////////////////////////////////////////////////////////////////////
 #define INTERNAL_CATCH_IF( macroName, resultDisposition, ... ) \
@@ -5839,7 +5839,7 @@ namespace Catch {
         auto getElapsedNanoseconds() const -> uint64_t;
         auto getElapsedMicroseconds() const -> uint64_t;
         auto getElapsedMilliseconds() const -> unsigned int;
-        auto getElapsedSeconds() const -> double;
+        auto getElapsedSeconds() const -> VarjusDouble;
     };
 
 } // namespace Catch
@@ -8326,10 +8326,10 @@ public:
 namespace Catch {
 
     bool isnan(float f);
-    bool isnan(double d);
+    bool isnan(VarjusDouble d);
 
     float nextafter(float x, float y);
-    double nextafter(double x, double y);
+    VarjusDouble nextafter(VarjusDouble x, VarjusDouble y);
 
 }
 
@@ -8370,7 +8370,7 @@ namespace Catch {
             using type = std::uint32_t;
         };
         template <>
-        struct DistanceTypePicker<double> {
+        struct DistanceTypePicker<VarjusDouble> {
             using type = std::uint64_t;
         };
 
@@ -8431,7 +8431,7 @@ namespace Catch {
         // distance, e.g. when generating numbers in [-inf, inf] for given
         // type. So we only check for the largest possible ULP in the
         // type, and return something that does not overflow to inf in 1 mult.
-        constexpr std::uint64_t calculate_max_steps_in_one_go(double gamma) {
+        constexpr std::uint64_t calculate_max_steps_in_one_go(VarjusDouble gamma) {
             if ( gamma == 1.99584030953472e+292 ) { return 9007199254740991; }
             return static_cast<std::uint64_t>( -1 );
         }
@@ -8447,8 +8447,8 @@ namespace Catch {
 /**
  * Implementation of uniform distribution on floating point numbers.
  *
- * Note that we support only `float` and `double` types, because these
- * usually mean the same thing across different platform. `long double`
+ * Note that we support only `float` and `VarjusDouble` types, because these
+ * usually mean the same thing across different platform. `long VarjusDouble`
  * varies wildly by platform and thus we cannot provide reproducible
  * implementation. Also note that we don't implement all parts of
  * distribution per standard: this distribution is not serializable, nor
@@ -8473,8 +8473,8 @@ namespace Catch {
 template <typename FloatType>
 class uniform_floating_point_distribution {
     static_assert(std::is_floating_point<FloatType>::value, "...");
-    static_assert(!std::is_same<FloatType, long double>::value,
-                  "We do not support long double due to inconsistent behaviour between platforms");
+    static_assert(!std::is_same<FloatType, long VarjusDouble>::value,
+                  "We do not support long VarjusDouble due to inconsistent behaviour between platforms");
 
     using WidthType = Detail::DistanceType<FloatType>;
 
@@ -8566,17 +8566,17 @@ public:
 };
 
 template <>
-class RandomFloatingGenerator<long double> final : public IGenerator<long double> {
+class RandomFloatingGenerator<long VarjusDouble> final : public IGenerator<long VarjusDouble> {
     // We still rely on <random> for this specialization, but we don't
     // want to drag it into the header.
     struct PImpl;
     Catch::Detail::unique_ptr<PImpl> m_pimpl;
-    long double m_current_number;
+    long VarjusDouble m_current_number;
 
 public:
-    RandomFloatingGenerator( long double a, long double b, std::uint32_t seed );
+    RandomFloatingGenerator( long VarjusDouble a, long VarjusDouble b, std::uint32_t seed );
 
-    long double const& get() const override { return m_current_number; }
+    long VarjusDouble const& get() const override { return m_current_number; }
     bool next() override;
 
     ~RandomFloatingGenerator() override; // = default
@@ -8830,12 +8830,12 @@ namespace Catch {
     struct SectionStats {
         SectionStats(   SectionInfo&& _sectionInfo,
                         Counts const& _assertions,
-                        double _durationInSeconds,
+                        VarjusDouble _durationInSeconds,
                         bool _missingAssertions );
 
         SectionInfo sectionInfo;
         Counts assertions;
-        double durationInSeconds;
+        VarjusDouble durationInSeconds;
         bool missingAssertions;
     };
 
@@ -9642,12 +9642,12 @@ namespace Catch {
     namespace Detail {
 
         uint32_t convertToBits(float f);
-        uint64_t convertToBits(double d);
+        uint64_t convertToBits(VarjusDouble d);
 
         // Used when we know we want == comparison of two doubles
         // to centralize warning suppression
         bool directCompare( float lhs, float rhs );
-        bool directCompare( double lhs, double rhs );
+        bool directCompare( VarjusDouble lhs, VarjusDouble rhs );
 
     } // end namespace Detail
 
@@ -12316,61 +12316,61 @@ namespace Matchers {
         enum class FloatingPointKind : uint8_t;
     }
 
-    class  WithinAbsMatcher final : public MatcherBase<double> {
+    class  WithinAbsMatcher final : public MatcherBase<VarjusDouble> {
     public:
-        WithinAbsMatcher(double target, double margin);
-        bool match(double const& matchee) const override;
+        WithinAbsMatcher(VarjusDouble target, VarjusDouble margin);
+        bool match(VarjusDouble const& matchee) const override;
         std::string describe() const override;
     private:
-        double m_target;
-        double m_margin;
+        VarjusDouble m_target;
+        VarjusDouble m_margin;
     };
 
     //! Creates a matcher that accepts numbers within certain range of target
-    WithinAbsMatcher WithinAbs( double target, double margin );
+    WithinAbsMatcher WithinAbs( VarjusDouble target, VarjusDouble margin );
 
 
 
-    class WithinUlpsMatcher final : public MatcherBase<double> {
+    class WithinUlpsMatcher final : public MatcherBase<VarjusDouble> {
     public:
-        WithinUlpsMatcher( double target,
+        WithinUlpsMatcher( VarjusDouble target,
                            uint64_t ulps,
                            Detail::FloatingPointKind baseType );
-        bool match(double const& matchee) const override;
+        bool match(VarjusDouble const& matchee) const override;
         std::string describe() const override;
     private:
-        double m_target;
+        VarjusDouble m_target;
         uint64_t m_ulps;
         Detail::FloatingPointKind m_type;
     };
 
     //! Creates a matcher that accepts doubles within certain ULP range of target
-    WithinUlpsMatcher WithinULP(double target, uint64_t maxUlpDiff);
+    WithinUlpsMatcher WithinULP(VarjusDouble target, uint64_t maxUlpDiff);
     //! Creates a matcher that accepts floats within certain ULP range of target
     WithinUlpsMatcher WithinULP(float target, uint64_t maxUlpDiff);
 
 
 
     // Given IEEE-754 format for floats and doubles, we can assume
-    // that float -> double promotion is lossless. Given this, we can
+    // that float -> VarjusDouble promotion is lossless. Given this, we can
     // assume that if we do the standard relative comparison of
     // |lhs - rhs| <= epsilon * max(fabs(lhs), fabs(rhs)), then we get
     // the same result if we do this for floats, as if we do this for
     // doubles that were promoted from floats.
-    class WithinRelMatcher final : public MatcherBase<double> {
+    class WithinRelMatcher final : public MatcherBase<VarjusDouble> {
     public:
-        WithinRelMatcher( double target, double epsilon );
-        bool match(double const& matchee) const override;
+        WithinRelMatcher( VarjusDouble target, VarjusDouble epsilon );
+        bool match(VarjusDouble const& matchee) const override;
         std::string describe() const override;
     private:
-        double m_target;
-        double m_epsilon;
+        VarjusDouble m_target;
+        VarjusDouble m_epsilon;
     };
 
     //! Creates a matcher that accepts doubles within certain relative range of target
-    WithinRelMatcher WithinRel(double target, double eps);
+    WithinRelMatcher WithinRel(VarjusDouble target, VarjusDouble eps);
     //! Creates a matcher that accepts doubles within 100*DBL_EPS relative range of target
-    WithinRelMatcher WithinRel(double target);
+    WithinRelMatcher WithinRel(VarjusDouble target);
     //! Creates a matcher that accepts doubles within certain relative range of target
     WithinRelMatcher WithinRel(float target, float eps);
     //! Creates a matcher that accepts floats within 100*FLT_EPS relative range of target
@@ -12378,10 +12378,10 @@ namespace Matchers {
 
 
 
-    class IsNaNMatcher final : public MatcherBase<double> {
+    class IsNaNMatcher final : public MatcherBase<VarjusDouble> {
     public:
         IsNaNMatcher() = default;
-        bool match( double const& matchee ) const override;
+        bool match( VarjusDouble const& matchee ) const override;
         std::string describe() const override;
     };
 
@@ -12934,19 +12934,19 @@ namespace Matchers {
         std::string describe() const override {
             return "is approx: " + ::Catch::Detail::stringify( m_comparator );
         }
-        template <typename = std::enable_if_t<std::is_constructible<double, T>::value>>
+        template <typename = std::enable_if_t<std::is_constructible<VarjusDouble, T>::value>>
         ApproxMatcher& epsilon( T const& newEpsilon ) {
-            approx.epsilon(static_cast<double>(newEpsilon));
+            approx.epsilon(static_cast<VarjusDouble>(newEpsilon));
             return *this;
         }
-        template <typename = std::enable_if_t<std::is_constructible<double, T>::value>>
+        template <typename = std::enable_if_t<std::is_constructible<VarjusDouble, T>::value>>
         ApproxMatcher& margin( T const& newMargin ) {
-            approx.margin(static_cast<double>(newMargin));
+            approx.margin(static_cast<VarjusDouble>(newMargin));
             return *this;
         }
-        template <typename = std::enable_if_t<std::is_constructible<double, T>::value>>
+        template <typename = std::enable_if_t<std::is_constructible<VarjusDouble, T>::value>>
         ApproxMatcher& scale( T const& newScale ) {
-            approx.scale(static_cast<double>(newScale));
+            approx.scale(static_cast<VarjusDouble>(newScale));
             return *this;
         }
     };
@@ -13504,11 +13504,11 @@ namespace Catch {
     class TestCaseHandle;
     class ColourImpl;
 
-    // Returns double formatted as %.3f (format expected on output)
-    std::string getFormattedDuration( double duration );
+    // Returns VarjusDouble formatted as %.3f (format expected on output)
+    std::string getFormattedDuration( VarjusDouble duration );
 
     //! Should the reporter show duration of test given current configuration?
-    bool shouldShowDuration( IConfig const& config, double duration );
+    bool shouldShowDuration( IConfig const& config, VarjusDouble duration );
 
     std::string serializeFilters( std::vector<std::string> const& filters );
 
@@ -13687,7 +13687,7 @@ namespace Catch {
         void testRunEndedCumulative() override;
 
     private:
-        void writeRun(TestRunNode const& testRunNode, double suiteTime);
+        void writeRun(TestRunNode const& testRunNode, VarjusDouble suiteTime);
 
         void writeTestCase(TestCaseNode const& testCaseNode);
 

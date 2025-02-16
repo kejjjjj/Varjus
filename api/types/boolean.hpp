@@ -15,8 +15,9 @@ public:
 	virtual void Release() override;
 
 	[[nodiscard]] bool ToBoolean() const override { return Get(); }
-	[[nodiscard]] std::int64_t ToInt() const override { return static_cast<std::int64_t>(Get()); }
-	[[nodiscard]] double ToDouble() const override { return static_cast<double>(Get()); }
+	[[nodiscard]] VarjusInt ToInt() const override { return static_cast<VarjusInt>(Get()); }
+	[[nodiscard]] VarjusUInt ToUInt() const override { return static_cast<VarjusUInt>(Get()); }
+	[[nodiscard]] VarjusDouble ToDouble() const override { return static_cast<VarjusDouble>(Get()); }
 
 	[[nodiscard]] constexpr bool IsIntegral() const noexcept override { return true; }
 	[[nodiscard]] constexpr bool IsCoerceable() const noexcept override { return true; }

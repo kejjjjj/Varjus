@@ -234,15 +234,16 @@ Success CBufferTokenizer::ReadNumber(CToken& token)
 		if (EndOfBuffer())
 			return success;
 
+		const auto isFloat = *m_oScriptPos == '.';
+
 		if (token.m_sSource[0] == '0' && (*m_oScriptPos == 'x' || *m_oScriptPos == 'X')) {
 			m_oScriptPos++; // skip x
 			if (!ReadHex(token))
 				return failure;
 
 		}
-
 		//floating point decimal
-		else if (*m_oScriptPos == '.') {
+		else if (isFloat) {
 			token.m_sSource.push_back(*m_oScriptPos++);
 			token.m_eTokenType = TokenType::tt_double;
 
@@ -253,6 +254,17 @@ Success CBufferTokenizer::ReadNumber(CToken& token)
 		}
 
 		//todo -> suffixes
+		if (!isFloat) {
+			switch (*m_oScriptPos) {
+			case 'u':
+			case 'U':
+				token.m_eTokenType = tt_uint;
+				m_oScriptPos++;
+				break;
+			default:
+				break;
+			}
+		}
 	}
 
 	assert(token.m_sSource.length());
@@ -314,9 +326,20 @@ Success CBufferTokenizer::ReadHex(CToken& token)
 	}
 
 
-
-	auto intValue = std::stoll(hexStr, nullptr, 16);
-	token.m_sSource = std::to_string(intValue);
+	try {
+		auto intValue = std::stoll(hexStr, nullptr, 16);
+		token.m_sSource = std::to_string(intValue);
+	}
+	catch ([[maybe_unused]]std::out_of_range& ex) {
+		try {
+			auto uintValue = std::stoull(hexStr, nullptr, 16);
+			token.m_sSource = std::to_string(uintValue);
+		}
+		catch ([[maybe_unused]] std::out_of_range& ex) {
+			CLinterErrors::PushError("constant value is out of range", m_oParserPosition);
+			return failure;
+		}
+	}
 	column += hexStr.length();
 
 	return success;

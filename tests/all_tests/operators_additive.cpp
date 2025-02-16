@@ -21,9 +21,9 @@ TEST_CASE("integer additive operations") {
 	REQUIRE(CProgramRuntime::HasLeaks() == false);
 }
 
-TEST_CASE("double additive operations") {
+TEST_CASE("VarjusDouble additive operations") {
 
-	auto retVal = TEST_ExecuteFile(JP("double.var"));
+	auto retVal = TEST_ExecuteFile(JP("VarjusDouble.var"));
 
 	AssertArray(retVal, AssertArrayValue<ASSERT_DOUBLE>(t_double, { 
 		1.2 + 2.6,

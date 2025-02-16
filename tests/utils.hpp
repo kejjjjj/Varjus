@@ -14,8 +14,8 @@
 #include <vector>
 
 using ASSERT_BOOL = bool;
-using ASSERT_INT = std::int64_t;
-using ASSERT_DOUBLE = double;
+using ASSERT_INT = VarjusInt;
+using ASSERT_DOUBLE = VarjusDouble;
 using ASSERT_STRING = std::string;
 using ASSERT_UNDEFINED = void;
 

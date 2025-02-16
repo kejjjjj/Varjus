@@ -4,7 +4,7 @@
 
 #include "opt_value.hpp"
 
-class CConstEvalDoubleValue final : public CConstEvalValue<double>
+class CConstEvalDoubleValue final : public CConstEvalValue<VarjusDouble>
 {
 public:
 	CConstEvalDoubleValue() = default;
@@ -19,13 +19,13 @@ public:
 	[[nodiscard]] constexpr bool IsCoerceable() const noexcept override { return true; }
 
 	[[nodiscard]] bool ToBoolean() const override { return static_cast<bool>(Get()); }
-	[[nodiscard]] std::int64_t ToInt() const override { return static_cast<std::int64_t>(Get()); }
-	[[nodiscard]] double ToDouble() const override { return Get(); }
+	[[nodiscard]] VarjusInt ToInt() const override { return static_cast<VarjusInt>(Get()); }
+	[[nodiscard]] VarjusDouble ToDouble() const override { return Get(); }
 
 	[[nodiscard]] CConstEvalDoubleValue* ToCDouble() override { return this; }
 
 private:
-	[[nodiscard]] std::string TypeAsString() const override { return "double"s; }
+	[[nodiscard]] std::string TypeAsString() const override { return "VarjusDouble"s; }
 	[[nodiscard]] std::string ValueAsString() const override { return std::to_string(Get()); }
 };
 

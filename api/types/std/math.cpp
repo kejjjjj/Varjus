@@ -185,8 +185,8 @@ DEFINE_SINGLE_ARG_GENERIC_MATH_FUNC(Tanh, std::tanh);
 DEFINE_SINGLE_ARG_GENERIC_MATH_FUNC(Atanh, std::atanh);
 DEFINE_SINGLE_ARG_GENERIC_MATH_FUNC(Acosh, std::acosh);
 DEFINE_SINGLE_ARG_GENERIC_MATH_FUNC(Asinh, std::asinh);
-DEFINE_SINGLE_ARG_GENERIC_MATH_FUNC_TYPE(Trunc, std::trunc, CIntValue, std::int64_t);
-DEFINE_SINGLE_ARG_GENERIC_MATH_FUNC_TYPE(Sign, std::signbit, CIntValue, std::int64_t);
+DEFINE_SINGLE_ARG_GENERIC_MATH_FUNC_TYPE(Trunc, std::trunc, CIntValue, VarjusInt);
+DEFINE_SINGLE_ARG_GENERIC_MATH_FUNC_TYPE(Sign, std::signbit, CIntValue, VarjusInt);
 
 DEFINE_TWO_ARG_GENERIC_MATH_FUNC(Pow, std::pow);
 DEFINE_TWO_ARG_GENERIC_MATH_FUNC(Atan2, std::atan2);
@@ -213,7 +213,7 @@ DEFINE_METHOD(Min) {
 	return rhs->ToDouble() > lhs->ToDouble() ? lhs->Copy() : rhs->Copy();
 }
 
-inline double GetRandomDouble(double min, double max) {
+inline VarjusDouble GetRandomDouble(VarjusDouble min, VarjusDouble max) {
 	static std::random_device rd;
 	static std::mt19937 gen(rd());
 	std::uniform_real_distribution<> dis(min, max);

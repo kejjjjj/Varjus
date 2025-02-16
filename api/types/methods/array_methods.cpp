@@ -79,7 +79,7 @@ auto name = _this->ToArray()
 
 DEFINE_PROPERTY(ArrayLength) {
 	START_METHOD(__this);
-	return CProgramRuntime::AcquireNewValue<CIntValue>(static_cast<std::int64_t>(__this->Internal()->Length()));
+	return CProgramRuntime::AcquireNewValue<CIntValue>(static_cast<VarjusInt>(__this->Internal()->Length()));
 }
 
 DEFINE_METHOD(Push)
@@ -264,7 +264,7 @@ static inline IValue* FindTestValueIndex(CRuntimeContext* const ctx, IValue* con
 		throw CRuntimeError(std::format("array.find expected a boolean return value", mapFunc->TypeAsString()));
 
 	if (thisIteration->ToBoolean()) {
-		result = CProgramRuntime::AcquireNewValue<CIntValue>(static_cast<std::int64_t>(i));
+		result = CProgramRuntime::AcquireNewValue<CIntValue>(static_cast<VarjusInt>(i));
 	}
 
 	thisIteration->Release(); // nothing meaningful, release it
@@ -563,7 +563,7 @@ DEFINE_METHOD(Slice) {
 	end -= 1;
 
 	const auto CheckRange = [&len](const auto value) {
-		if (value < 0 || value >= static_cast<std::int64_t>(len))
+		if (value < 0 || value >= static_cast<VarjusInt>(len))
 			throw CRuntimeError("array.slice index out of range");
 	};
 

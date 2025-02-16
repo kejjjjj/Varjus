@@ -1,7 +1,7 @@
 #include "runtime/runtime.hpp"
 #include "integer.hpp"
 
-CIntValue* CIntValue::Construct(std::int64_t v) {
+CIntValue* CIntValue::Construct(VarjusInt v) {
 	return CProgramRuntime::AcquireNewValue<CIntValue>(v);
 }
 

@@ -59,8 +59,8 @@ IValue* EvaluateNegation(IValue* operand)
 IValue* EvaluateIncrement(IValue* operand)
 {
 
-	if (operand->Type() != t_int)
-		throw CRuntimeError(std::format("the increment operand must have an int type, but is \"{}\"", operand->TypeAsString()));
+	if (operand->Type() != t_int && operand->Type() != t_uint)
+		throw CRuntimeError(std::format("the increment operand must have an (u)int type, but is \"{}\"", operand->TypeAsString()));
 	
 	if (!operand->HasOwner())
 		throw CRuntimeError("cannot increment a temporary value");
@@ -68,15 +68,18 @@ IValue* EvaluateIncrement(IValue* operand)
 	if (operand->IsImmutable()) 
 		throw CRuntimeError("cannot increment a const value");
 	
+	if(operand->Type() == t_int)
+		++operand->AsInt();
+	else
+		++operand->AsUInt();
 
-	++operand->AsInt();
 	return operand;
 }
 IValue* EvaluateDecrement(IValue* operand)
 {
 
-	if (operand->Type() != t_int)
-		throw CRuntimeError(std::format("the decrement operand must have an int type, but is \"{}\"", operand->TypeAsString()));
+	if (operand->Type() != t_int && operand->Type() != t_uint)
+		throw CRuntimeError(std::format("the decrement operand must have an (u)int type, but is \"{}\"", operand->TypeAsString()));
 	
 	if (!operand->HasOwner())
 		throw CRuntimeError("cannot decrement a temporary value");
@@ -84,7 +87,11 @@ IValue* EvaluateDecrement(IValue* operand)
 	if (operand->IsImmutable()) 
 		throw CRuntimeError("cannot decrement a const value");
 	
-	--operand->AsInt();
+	if (operand->Type() == t_int)
+		--operand->AsInt();
+	else
+		--operand->AsUInt();
+
 	return operand;
 }
 IValue* EvaluateLogicalNot(IValue* operand)

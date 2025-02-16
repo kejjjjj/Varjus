@@ -39,6 +39,8 @@ CCoercionOperands CoerceInternal(IValue* weaker, IValue* stronger, bool lhsIsWea
 		return { lhs, rhs, CProgramRuntime::AcquireNewValue<CBooleanValue>(weaker->ToBoolean()), lhsIsWeak };
 	case t_int:
 		return { lhs, rhs, CProgramRuntime::AcquireNewValue<CIntValue>(weaker->ToInt()), lhsIsWeak };
+	case t_uint:
+		return { lhs, rhs, CProgramRuntime::AcquireNewValue<CUIntValue>(weaker->ToUInt()), lhsIsWeak };
 	case t_double:
 		return { lhs, rhs, CProgramRuntime::AcquireNewValue<CDoubleValue>(weaker->ToDouble()), lhsIsWeak };
 	case t_string:

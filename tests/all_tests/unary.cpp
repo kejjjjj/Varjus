@@ -13,7 +13,7 @@ TEST_CASE("Unary typeof") {
 		"undefined",
 		"boolean",
 		"int",
-		"double",
+		"VarjusDouble",
 		"string",
 		"callable",
 		"callable",

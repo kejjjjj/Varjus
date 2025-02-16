@@ -56,7 +56,7 @@ void CStringValue::ConstructProperties()
 
 DEFINE_PROPERTY(StringLength) {
 	START_METHOD(__this);
-	return CProgramRuntime::AcquireNewValue<CIntValue>(static_cast<std::int64_t>(__this->Internal()->Length()));
+	return CProgramRuntime::AcquireNewValue<CIntValue>(static_cast<VarjusInt>(__this->Internal()->Length()));
 }
 
 DEFINE_METHOD(ToUpper)
@@ -97,7 +97,7 @@ DEFINE_METHOD(Substring)
 	auto end = b->ToInt();
 
 	const auto CheckRange = [&v](const auto value) {
-		if(value < 0 || value >= static_cast<std::int64_t>(v.length()))
+		if(value < 0 || value >= static_cast<VarjusInt>(v.length()))
 			throw CRuntimeError("string.substring index out of range");
 	};
 
@@ -208,10 +208,10 @@ DEFINE_METHOD(GetCodeAt) {
 
 	const auto index = idx->ToInt();
 
-	if (index < 0 || index >= static_cast<std::int64_t>(v.length()))
+	if (index < 0 || index >= static_cast<VarjusInt>(v.length()))
 		throw CRuntimeError("string.get_code_at index out of range");
 
 	const auto asUnsigned = static_cast<std::size_t>(index);
 
-	return CProgramRuntime::AcquireNewValue<CIntValue>(static_cast<std::int64_t>(v[asUnsigned]));
+	return CProgramRuntime::AcquireNewValue<CIntValue>(static_cast<VarjusInt>(v[asUnsigned]));
 }

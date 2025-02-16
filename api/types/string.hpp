@@ -50,8 +50,8 @@ public:
 	[[nodiscard]] constexpr bool IsAggregate() const noexcept override { return true; }
 
 	[[nodiscard]] bool ToBoolean() const override { return !Internal()->GetString().empty(); }
-	[[nodiscard]] std::int64_t ToInt() const override { return static_cast<std::int64_t>(ToBoolean()); }
-	[[nodiscard]] double ToDouble() const override { return static_cast<double>(ToBoolean()); }
+	[[nodiscard]] VarjusInt ToInt() const override { return static_cast<VarjusInt>(ToBoolean()); }
+	[[nodiscard]] VarjusDouble ToDouble() const override { return static_cast<VarjusDouble>(ToBoolean()); }
 	[[nodiscard]] const std::string& ToString() const override { return Internal()->GetString(); }
 
 	[[nodiscard]] CStringValue* ToCString() override { return this; }

@@ -42,9 +42,9 @@ TEST_CASE("Returns an integer 64 in variable context") {
 	REQUIRE(CProgramRuntime::HasLeaks() == false);
 }
 
-TEST_CASE("Returns a double 64.0 in variable context") {
+TEST_CASE("Returns a VarjusDouble 64.0 in variable context") {
 
-	auto retVal = TEST_ExecuteFile(JP("double.var"));
+	auto retVal = TEST_ExecuteFile(JP("VarjusDouble.var"));
 
 	REQUIRE(retVal != nullptr);
 	REQUIRE(retVal->Type() == t_double);

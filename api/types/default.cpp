@@ -23,10 +23,13 @@ IValue* IValue::Copy()
 bool& IValue::AsBoolean(){
 	return ToCBoolean()->Get(); 
 }
-std::int64_t& IValue::AsInt() {
+VarjusInt& IValue::AsInt() {
 	return ToCInt()->Get();
 }
-double& IValue::AsDouble() {
+VarjusUInt& IValue::AsUInt() {
+	return ToCUInt()->Get();
+}
+VarjusDouble& IValue::AsDouble() {
 	return ToCDouble()->Get();
 }
 std::string& IValue::AsString(){

@@ -26,10 +26,10 @@ std::shared_ptr<ConstantASTNode> IConstEvalValue::ToAST() const
 bool& IConstEvalValue::AsBoolean() {
 	return ToCBoolean()->Get();
 }
-std::int64_t& IConstEvalValue::AsInt() {
+VarjusInt& IConstEvalValue::AsInt() {
 	return ToCInt()->Get();
 }
-double& IConstEvalValue::AsDouble() {
+VarjusDouble& IConstEvalValue::AsDouble() {
 	return ToCDouble()->Get();
 }
 std::string& IConstEvalValue::AsString() {

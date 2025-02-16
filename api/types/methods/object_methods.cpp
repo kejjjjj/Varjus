@@ -47,7 +47,7 @@ void CObjectValue::ConstructProperties()
 
 DEFINE_PROPERTY(ObjectLength) {
 	START_METHOD(__this);
-	return CProgramRuntime::AcquireNewValue<CIntValue>(static_cast<std::int64_t>(__this->Internal()->GetAggregateValue().Length()));
+	return CProgramRuntime::AcquireNewValue<CIntValue>(static_cast<VarjusInt>(__this->Internal()->GetAggregateValue().Length()));
 }
 
 

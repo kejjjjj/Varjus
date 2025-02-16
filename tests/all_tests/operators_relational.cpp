@@ -53,9 +53,9 @@ TEST_CASE("integer relational operations") {
 	REQUIRE(CProgramRuntime::HasLeaks() == false);
 }
 
-TEST_CASE("double relational operations") {
+TEST_CASE("VarjusDouble relational operations") {
 
-	auto retVal = TEST_ExecuteFile(JP("double.var"));
+	auto retVal = TEST_ExecuteFile(JP("VarjusDouble.var"));
 
 	AssertArray(retVal, AssertArrayValue<ASSERT_BOOL>(t_boolean, {
 		100.1 < 101.1,

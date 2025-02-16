@@ -30,6 +30,9 @@ IValue* OP_ASSIGNMENT(IValue* lhs, IValue* rhs)
 		case t_int:
 			variable->SetValue(CProgramRuntime::AcquireNewValue<CIntValue>(rhs->ToInt()));
 			break;
+		case t_uint:
+			variable->SetValue(CProgramRuntime::AcquireNewValue<CUIntValue>(rhs->ToUInt()));
+			break;
 		case t_double:
 			variable->SetValue(CProgramRuntime::AcquireNewValue<CDoubleValue>(rhs->ToDouble()));
 			break;
@@ -67,6 +70,9 @@ IValue* OP_ADDITION(IValue* _lhs, IValue* _rhs)
 	case t_int:
 		result = CProgramRuntime::AcquireNewValue<CIntValue>(lhs->ToInt() + rhs->ToInt());
 		break;
+	case t_uint:
+		result = CProgramRuntime::AcquireNewValue<CUIntValue>(lhs->ToUInt() + rhs->ToUInt());
+		break;
 	case t_double:
 		result = CProgramRuntime::AcquireNewValue<CDoubleValue>(lhs->ToDouble() + rhs->ToDouble());
 		break;
@@ -98,6 +104,9 @@ IValue* OP_SUBTRACTION(IValue* _lhs, IValue* _rhs)
 	case t_int:
 		result = CProgramRuntime::AcquireNewValue<CIntValue>(lhs->ToInt() - rhs->ToInt());
 		break;
+	case t_uint:
+		result = CProgramRuntime::AcquireNewValue<CUIntValue>(lhs->ToUInt() - rhs->ToUInt());
+		break;
 	case t_double:
 		result = CProgramRuntime::AcquireNewValue<CDoubleValue>(lhs->ToDouble() - rhs->ToDouble());
 		break;
@@ -127,6 +136,9 @@ IValue* OP_MULTIPLICATION(IValue* _lhs, IValue* _rhs)
 	case t_int:
 		result = CProgramRuntime::AcquireNewValue<CIntValue>(lhs->ToInt() * rhs->ToInt());
 		break;
+	case t_uint:
+		result = CProgramRuntime::AcquireNewValue<CUIntValue>(lhs->ToUInt() * rhs->ToUInt());
+		break;
 	case t_double:
 		result = CProgramRuntime::AcquireNewValue<CDoubleValue>(lhs->ToDouble() * rhs->ToDouble());
 		break;
@@ -152,10 +164,18 @@ IValue* OP_DIVISION(IValue* _lhs, IValue* _rhs)
 	switch (lhs->Type()) {
 	case t_int:
 
-		if(rhs->ToInt() == std::int64_t(0))
+		if(rhs->ToInt() == VarjusInt(0))
 			throw CRuntimeError("division by 0");
 
 		result = CProgramRuntime::AcquireNewValue<CIntValue>(lhs->ToInt() / rhs->ToInt());
+		break;
+
+	case t_uint:
+
+		if (rhs->ToUInt() == VarjusUInt(0))
+			throw CRuntimeError("division by 0");
+
+		result = CProgramRuntime::AcquireNewValue<CUIntValue>(lhs->ToUInt() / rhs->ToUInt());
 		break;
 	case t_double:
 
@@ -193,6 +213,13 @@ IValue* OP_MODULO(IValue* _lhs, IValue* _rhs)
 
 		result = CProgramRuntime::AcquireNewValue<CIntValue>(lhs->ToInt() % rhs->ToInt());
 		break;
+	case t_uint:
+
+		if (rhs->ToUInt() == VarjusUInt(0))
+			throw CRuntimeError("division by 0");
+
+		result = CProgramRuntime::AcquireNewValue<CUIntValue>(lhs->ToUInt() & rhs->ToUInt());
+		break;
 	case t_double:
 
 		if (rhs->ToDouble() == 0.0)
@@ -228,6 +255,9 @@ IValue* OP_LESS_THAN(IValue* _lhs, IValue* _rhs)
 	case t_int:
 		result = CProgramRuntime::AcquireNewValue<CBooleanValue>(lhs->AsInt() < rhs->AsInt());
 		break;
+	case t_uint:
+		result = CProgramRuntime::AcquireNewValue<CBooleanValue>(lhs->AsUInt() < rhs->AsUInt());
+		break;
 	case t_double:
 		result = CProgramRuntime::AcquireNewValue<CBooleanValue>(lhs->AsDouble() < rhs->AsDouble());
 		break;
@@ -256,6 +286,9 @@ IValue* OP_LESS_EQUAL(IValue* _lhs, IValue* _rhs)
 		break;
 	case t_int:
 		result = CProgramRuntime::AcquireNewValue<CBooleanValue>(lhs->AsInt() <= rhs->AsInt());
+		break;
+	case t_uint:
+		result = CProgramRuntime::AcquireNewValue<CBooleanValue>(lhs->AsUInt() <= rhs->AsUInt());
 		break;
 	case t_double:
 		result = CProgramRuntime::AcquireNewValue<CBooleanValue>(lhs->AsDouble() <= rhs->AsDouble());
@@ -286,6 +319,9 @@ IValue* OP_GREATER_THAN(IValue* _lhs, IValue* _rhs)
 	case t_int:
 		result = CProgramRuntime::AcquireNewValue<CBooleanValue>(lhs->AsInt() > rhs->AsInt());
 		break;
+	case t_uint:
+		result = CProgramRuntime::AcquireNewValue<CBooleanValue>(lhs->AsUInt() > rhs->AsUInt());
+		break;
 	case t_double:
 		result = CProgramRuntime::AcquireNewValue<CBooleanValue>(lhs->AsDouble() > rhs->AsDouble());
 		break;
@@ -314,6 +350,9 @@ IValue* OP_GREATER_EQUAL(IValue* _lhs, IValue* _rhs)
 		break;
 	case t_int:
 		result = CProgramRuntime::AcquireNewValue<CBooleanValue>(lhs->AsInt() >= rhs->AsInt());
+		break;
+	case t_uint:
+		result = CProgramRuntime::AcquireNewValue<CBooleanValue>(lhs->AsUInt() >= rhs->AsUInt());
 		break;
 	case t_double:
 		result = CProgramRuntime::AcquireNewValue<CBooleanValue>(lhs->AsDouble() >= rhs->AsDouble());
@@ -346,6 +385,9 @@ IValue* OP_EQUALITY(IValue* _lhs, IValue* _rhs)
 		break;
 	case t_int:
 		result = CProgramRuntime::AcquireNewValue<CBooleanValue>(lhs->AsInt() == rhs->AsInt());
+		break;
+	case t_uint:
+		result = CProgramRuntime::AcquireNewValue<CBooleanValue>(lhs->AsUInt() == rhs->AsUInt());
 		break;
 	case t_double:
 		result = CProgramRuntime::AcquireNewValue<CBooleanValue>(lhs->AsDouble() == rhs->AsDouble());
@@ -381,6 +423,9 @@ IValue* OP_UNEQUALITY(IValue* _lhs, IValue* _rhs)
 		break;
 	case t_int:
 		result = CProgramRuntime::AcquireNewValue<CBooleanValue>(lhs->AsInt() != rhs->AsInt());
+		break;
+	case t_uint:
+		result = CProgramRuntime::AcquireNewValue<CBooleanValue>(lhs->AsUInt() != rhs->AsUInt());
 		break;
 	case t_double:
 		result = CProgramRuntime::AcquireNewValue<CBooleanValue>(lhs->AsDouble() != rhs->AsDouble());
@@ -446,6 +491,9 @@ IValue* OP_LEFT_SHIFT(IValue* _lhs, IValue* _rhs)
 	case t_int:
 		result = CProgramRuntime::AcquireNewValue<CIntValue>(lhs->AsInt() << rhs->AsInt());
 		break;
+	case t_uint:
+		result = CProgramRuntime::AcquireNewValue<CUIntValue>(lhs->AsUInt() << rhs->AsUInt());
+		break;
 	case t_undefined:
 	case t_boolean:
 	case t_double:
@@ -471,6 +519,9 @@ IValue* OP_RIGHT_SHIFT(IValue* _lhs, IValue* _rhs)
 	switch (lhs->Type()) {
 	case t_int:
 		result = CProgramRuntime::AcquireNewValue<CIntValue>(lhs->AsInt() >> rhs->AsInt());
+		break;
+	case t_uint:
+		result = CProgramRuntime::AcquireNewValue<CUIntValue>(lhs->AsUInt() >> rhs->AsUInt());
 		break;
 	case t_undefined:
 	case t_boolean:
@@ -498,6 +549,9 @@ IValue* OP_BITWISE_OR(IValue* _lhs, IValue* _rhs)
 	case t_int:
 		result = CProgramRuntime::AcquireNewValue<CIntValue>(lhs->AsInt() | rhs->AsInt());
 		break;
+	case t_uint:
+		result = CProgramRuntime::AcquireNewValue<CUIntValue>(lhs->AsUInt() | rhs->AsUInt());
+		break;
 	case t_undefined:
 	case t_boolean:
 	case t_double:
@@ -524,6 +578,9 @@ IValue* OP_BITWISE_XOR(IValue* _lhs, IValue* _rhs)
 	case t_int:
 		result = CProgramRuntime::AcquireNewValue<CIntValue>(lhs->AsInt() ^ rhs->AsInt());
 		break;
+	case t_uint:
+		result = CProgramRuntime::AcquireNewValue<CUIntValue>(lhs->AsUInt() ^ rhs->AsUInt());
+		break;
 	case t_undefined:
 	case t_boolean:
 	case t_double:
@@ -549,6 +606,9 @@ IValue* OP_BITWISE_AND(IValue* _lhs, IValue* _rhs)
 	switch (lhs->Type()) {
 	case t_int:
 		result = CProgramRuntime::AcquireNewValue<CIntValue>(lhs->AsInt() & rhs->AsInt());
+		break;
+	case t_uint:
+		result = CProgramRuntime::AcquireNewValue<CUIntValue>(lhs->AsUInt() & rhs->AsUInt());
 		break;
 	case t_undefined:
 	case t_boolean:
@@ -589,6 +649,9 @@ IValue* OP_ASSIGNMENT_ADDITION(IValue* lhs, IValue* rhs)
 	case t_int:
 		lhs->AsInt() += rhs->AsInt();
 		break;
+	case t_uint:
+		lhs->AsUInt() += rhs->AsUInt();
+		break;
 	case t_double:
 		lhs->AsDouble() += rhs->AsDouble();
 		break;
@@ -614,6 +677,9 @@ IValue* OP_ASSIGNMENT_SUBTRACTION(IValue* lhs, IValue* rhs)
 	case t_int:
 		lhs->AsInt() -= rhs->AsInt();
 		break;
+	case t_uint:
+		lhs->AsUInt() -= rhs->AsUInt();
+		break;
 	case t_double:
 		lhs->AsDouble() -= rhs->AsDouble();
 		break;
@@ -637,6 +703,9 @@ IValue* OP_ASSIGNMENT_MULTIPLICATION(IValue* lhs, IValue* rhs)
 	case t_int:
 		lhs->AsInt() *= rhs->AsInt();
 		break;
+	case t_uint:
+		lhs->AsUInt() *= rhs->AsUInt();
+		break;
 	case t_double:
 		lhs->AsDouble() *= rhs->AsDouble();
 		break;
@@ -659,10 +728,18 @@ IValue* OP_ASSIGNMENT_DIVISION(IValue* lhs, IValue* rhs)
 
 	case t_int:
 
-		if (rhs->ToInt() == std::int64_t(0))
+		if (rhs->ToInt() == VarjusInt(0))
 			throw CRuntimeError("division by 0");
 
 		lhs->AsInt() /= rhs->AsInt();
+
+		break;
+	case t_uint:
+
+		if (rhs->ToUInt() == VarjusUInt(0))
+			throw CRuntimeError("division by 0");
+
+		lhs->AsUInt() /= rhs->AsUInt();
 
 		break;
 	case t_double:
@@ -691,10 +768,18 @@ IValue* OP_ASSIGNMENT_MODULO(IValue* lhs, IValue* rhs)
 
 	case t_int:
 
-		if (rhs->ToInt() == std::int64_t(0))
+		if (rhs->ToInt() == VarjusInt(0))
 			throw CRuntimeError("division by 0");
 
 		lhs->AsInt() %= rhs->AsInt();
+
+		break;
+	case t_uint:
+
+		if (rhs->ToUInt() == VarjusUInt(0))
+			throw CRuntimeError("division by 0");
+
+		lhs->AsUInt() %= rhs->AsUInt();
 
 		break;
 	case t_double:
@@ -724,6 +809,9 @@ IValue* OP_ASSIGNMENT_LEFT_SHIFT(IValue* lhs, IValue* rhs)
 	case t_int:
 		lhs->AsInt() <<= rhs->AsInt();
 		break;
+	case t_uint:
+		lhs->AsUInt() <<= rhs->AsUInt();
+		break;
 	case t_double:
 	case t_string:
 	case t_boolean: //unsafe
@@ -745,6 +833,9 @@ IValue* OP_ASSIGNMENT_RIGHT_SHIFT(IValue* lhs, IValue* rhs)
 
 	case t_int:
 		lhs->AsInt() >>= rhs->AsInt();
+		break;
+	case t_uint:
+		lhs->AsUInt() >>= rhs->AsUInt();
 		break;
 	case t_double:
 	case t_string:
@@ -769,6 +860,9 @@ IValue* OP_ASSIGNMENT_BITWISE_OR(IValue* lhs, IValue* rhs)
 	case t_int:
 		lhs->AsInt() |= rhs->AsInt();
 		break;
+	case t_uint:
+		lhs->AsUInt() |= rhs->AsUInt();
+		break;
 	case t_double:
 	case t_string:
 	case t_boolean: //unsafe
@@ -792,6 +886,9 @@ IValue* OP_ASSIGNMENT_BITWISE_XOR(IValue* lhs, IValue* rhs)
 	case t_int:
 		lhs->AsInt() ^= rhs->AsInt();
 		break;
+	case t_uint:
+		lhs->AsUInt() ^= rhs->AsUInt();
+		break;
 	case t_double:
 	case t_string:
 	case t_boolean: //unsafe
@@ -814,6 +911,9 @@ IValue* OP_ASSIGNMENT_BITWISE_AND(IValue* lhs, IValue* rhs)
 
 	case t_int:
 		lhs->AsInt() &= rhs->AsInt();
+		break;
+	case t_uint:
+		lhs->AsUInt() &= rhs->AsUInt();
 		break;
 	case t_double:
 	case t_string:

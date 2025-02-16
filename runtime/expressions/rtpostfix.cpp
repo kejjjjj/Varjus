@@ -88,9 +88,9 @@ IValue* CRuntimeExpression::EvaluateFunctionCall(CRuntimeContext* const ctx, IVa
 
 IValue* EvaluateIncrement(IValue* operand)
 {
-
-	if (operand->Type() != t_int)
-		throw CRuntimeError(std::format("the increment operand must have an int type, but is \"{}\"", operand->TypeAsString()));
+	
+	if (operand->Type() != t_int && operand->Type() != t_uint)
+		throw CRuntimeError(std::format("the increment operand must have an (u)int type, but is \"{}\"", operand->TypeAsString()));
 	
 	if (!operand->HasOwner())
 		throw CRuntimeError("cannot increment a temporary value");
@@ -98,16 +98,20 @@ IValue* EvaluateIncrement(IValue* operand)
 	if (operand->IsImmutable()) 
 		throw CRuntimeError("cannot increment a const value");
 	
-	auto v = CProgramRuntime::AcquireNewValue<CIntValue>(operand->AsInt()); //create temp old value
-	++operand->AsInt(); //but increment this value
-
+	if (operand->Type() == t_int) {
+		auto v = CProgramRuntime::AcquireNewValue<CIntValue>(operand->AsInt()); //create temp old value
+		++operand->AsInt(); //but increment this value
+		return v;
+	} 
+	
+	auto v = CProgramRuntime::AcquireNewValue<CUIntValue>(operand->AsUInt()); //create temp old value
+	++operand->AsUInt(); //but increment this value
 	return v;
 }
 IValue* EvaluateDecrement(IValue* operand)
 {
-
-	if (operand->Type() != t_int)
-		throw CRuntimeError(std::format("the decrement operand must have an int type, but is \"{}\"", operand->TypeAsString()));
+	if (operand->Type() != t_int && operand->Type() != t_uint)
+		throw CRuntimeError(std::format("the decrement operand must have an (u)int type, but is \"{}\"", operand->TypeAsString()));
 
 	if (!operand->HasOwner())
 		throw CRuntimeError("cannot decrement a temporary value");
@@ -116,7 +120,13 @@ IValue* EvaluateDecrement(IValue* operand)
 		throw CRuntimeError("cannot decrement a const value");
 	
 
-	auto v = CProgramRuntime::AcquireNewValue<CIntValue>(operand->AsInt()); //create temp old value
-	--operand->AsInt(); //but decrement this value
+	if (operand->Type() == t_int) {
+		auto v = CProgramRuntime::AcquireNewValue<CIntValue>(operand->AsInt()); //create temp old value
+		--operand->AsInt(); //but decrement this value
+		return v;
+	}
+
+	auto v = CProgramRuntime::AcquireNewValue<CUIntValue>(operand->AsUInt()); //create temp old value
+	--operand->AsUInt(); //but decrement this value
 	return v;
 }

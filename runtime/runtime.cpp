@@ -18,6 +18,7 @@ template<> COwningObjectPool<CVariable>           CProgramRuntime::m_oValuePool<
 template<> COwningObjectPool<IValue>              CProgramRuntime::m_oValuePool<IValue>        (VALUEPOOL_INIT_SIZE);
 template<> COwningObjectPool<CBooleanValue>       CProgramRuntime::m_oValuePool<CBooleanValue> (VALUEPOOL_INIT_SIZE);
 template<> COwningObjectPool<CIntValue>           CProgramRuntime::m_oValuePool<CIntValue>     (VALUEPOOL_INIT_SIZE);
+template<> COwningObjectPool<CUIntValue>          CProgramRuntime::m_oValuePool<CUIntValue>    (VALUEPOOL_INIT_SIZE);
 template<> COwningObjectPool<CDoubleValue>        CProgramRuntime::m_oValuePool<CDoubleValue>  (VALUEPOOL_INIT_SIZE);
 template<> COwningObjectPool<CStringValue>        CProgramRuntime::m_oValuePool<CStringValue>  (VALUEPOOL_INIT_SIZE);
 template<> COwningObjectPool<CCallableValue>      CProgramRuntime::m_oValuePool<CCallableValue>(VALUEPOOL_INIT_SIZE);
@@ -131,7 +132,8 @@ void CProgramRuntime::Execute()
 	PrintLeaks<IValue>        ("undefined");
 	PrintLeaks<CBooleanValue> ("boolean");
 	PrintLeaks<CIntValue>     ("int");
-	PrintLeaks<CDoubleValue>  ("double");
+	PrintLeaks<CUIntValue>    ("uint");
+	PrintLeaks<CDoubleValue>  ("VarjusDouble");
 	PrintLeaks<CStringValue>  ("string");
 	PrintLeaks<CCallableValue>("callable");
 	PrintLeaks<CArrayValue>   ("array");
@@ -204,6 +206,7 @@ bool CProgramRuntime::HasLeaks()
 		HasLeak<IValue>() ||
 		HasLeak<CBooleanValue>() ||
 		HasLeak<CIntValue>() ||
+		HasLeak<CUIntValue>() ||
 		HasLeak<CDoubleValue>() ||
 		HasLeak<CStringValue>() ||
 		HasLeak<CCallableValue>() ||
@@ -219,6 +222,7 @@ void CProgramRuntime::FreeAllValues()
 	ClearPool<IValue>();
 	ClearPool<CBooleanValue>();
 	ClearPool<CIntValue>();
+	ClearPool<CUIntValue>();
 	ClearPool<CDoubleValue>();
 	ClearPool<CStringValue>();
 	ClearPool<CCallableValue>();

@@ -1,12 +1,12 @@
 #pragma once
 #include "default.hpp"
 
-class CIntValue final : public CValue<std::int64_t>
+class CIntValue final : public CValue<VarjusInt>
 {
 public:
 	CIntValue() = default;
 
-	[[nodiscard]] static CIntValue* Construct(std::int64_t v);
+	[[nodiscard]] static CIntValue* Construct(VarjusInt v);
 
 	[[nodiscard]] EValueType Type() const noexcept override { return t_int; };
 
@@ -15,8 +15,9 @@ public:
 	void Release() override;
 
 	[[nodiscard]] bool ToBoolean() const override { return static_cast<bool>(Get()); }
-	[[nodiscard]] std::int64_t ToInt() const override { return Get(); }
-	[[nodiscard]] double ToDouble() const override { return static_cast<double>(Get()); }
+	[[nodiscard]] VarjusInt ToInt() const override { return Get(); }
+	[[nodiscard]] VarjusUInt ToUInt() const override { return static_cast<VarjusUInt>(Get()); }
+	[[nodiscard]] VarjusDouble ToDouble() const override { return static_cast<VarjusDouble>(Get()); }
 
 	[[nodiscard]] constexpr bool IsIntegral() const noexcept override { return true; }
 	[[nodiscard]] constexpr bool IsCoerceable() const noexcept override { return true; }

@@ -1,27 +1,27 @@
 
-fn arrayToString(value)
+fn funnyThing(sortFunc)
 {
-    if(typeof value !== "array")
-        return tostring value;
+    const capture = 3;
+    const ref = {key: capture };
 
-    if(value.length === 0)
-        return "empty";
-
-    let str = "";
-    for(let i = 0; i < value.length; i++){
-
-        let result = arrayToString(value[i]);
-
-        if(result.length === 0)
-            continue;
-
-        str += result;
-    }
-
-    return str;
+    return {}
+    .set("callable", (v) => v * ref.key)
+    .set("weird_ref", ref)
+    .set("sort", sortFunc);
 }
+
+fn randomNumbers(min, max, count, randomizer){
+    const arr = [].resize(count);
+    for(let i = 0; i < count; i++)
+        arr[i] = randomizer(min, max);
+    return arr;
+}       
 
 fn main()
 {
-    return arrayToString([ 1, [ 2, [3, [] ] ], 4 ]);
+    const sortCallback = (a, b) => a < b;
+    const obj = funnyThing(sortCallback);
+    obj.weird_ref.key = obj.callable(5);
+    const numbers = randomNumbers(25, 75, 10, math.random);
+    return [ obj["callable"](5), numbers.sort(obj.sort) ];
 }

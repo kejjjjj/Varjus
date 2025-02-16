@@ -167,9 +167,11 @@ IValue* CRuntimeExpression::EvaluateLeaf(CRuntimeContext* const ctx, const Abstr
 			case t_boolean:
 				return CProgramRuntime::AcquireNewValue<CBooleanValue>(static_cast<bool>(constant->m_pConstant[0]));
 			case t_int:
-				return CProgramRuntime::AcquireNewValue<CIntValue>(*reinterpret_cast<std::int64_t*>((char*)constant->m_pConstant.data()));
+				return CProgramRuntime::AcquireNewValue<CIntValue>(*reinterpret_cast<VarjusInt*>((char*)constant->m_pConstant.data()));
+			case t_uint:
+				return CProgramRuntime::AcquireNewValue<CUIntValue>(*reinterpret_cast<VarjusUInt*>((char*)constant->m_pConstant.data()));
 			case t_double:
-				return CProgramRuntime::AcquireNewValue<CDoubleValue>(*reinterpret_cast<double*>((char*)constant->m_pConstant.data()));
+				return CProgramRuntime::AcquireNewValue<CDoubleValue>(*reinterpret_cast<VarjusDouble*>((char*)constant->m_pConstant.data()));
 			case t_string:
 				return CStringValue::Construct(constant->m_pConstant);
 		}

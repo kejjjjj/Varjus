@@ -16,7 +16,7 @@ TEST_CASE("Boolean gets coerced to int") {
 	retVal->Release();
 	REQUIRE(CProgramRuntime::HasLeaks() == false);
 }
-TEST_CASE("Boolean gets coerced to double") {
+TEST_CASE("Boolean gets coerced to VarjusDouble") {
 
 	auto retVal = TEST_ExecuteFile(JP("boolean_to_double.var"));
 
@@ -28,7 +28,7 @@ TEST_CASE("Boolean gets coerced to double") {
 	retVal->Release();
 	REQUIRE(CProgramRuntime::HasLeaks() == false);
 }
-TEST_CASE("Int gets coerced to double") {
+TEST_CASE("Int gets coerced to VarjusDouble") {
 
 	auto retVal = TEST_ExecuteFile(JP("int_to_double.var"));
 

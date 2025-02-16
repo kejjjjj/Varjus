@@ -50,13 +50,13 @@ public:
 	[[nodiscard]] constexpr virtual bool IsCoerceable() const noexcept { return false; }
 
 	[[nodiscard]] bool& AsBoolean();
-	[[nodiscard]] std::int64_t& AsInt();
-	[[nodiscard]] double& AsDouble();
+	[[nodiscard]] VarjusInt& AsInt();
+	[[nodiscard]] VarjusDouble& AsDouble();
 	[[nodiscard]] std::string& AsString();
 
 	[[nodiscard]] virtual bool ToBoolean() const { return false; }
-	[[nodiscard]] virtual std::int64_t ToInt() const { return 0; }
-	[[nodiscard]] virtual double ToDouble() const { return 0.0; }
+	[[nodiscard]] virtual VarjusInt ToInt() const { return 0; }
+	[[nodiscard]] virtual VarjusDouble ToDouble() const { return 0.0; }
 	[[nodiscard]] virtual const std::string& ToString() const { return opt_emptyString; }
 
 	[[nodiscard]] virtual CConstEvalBooleanValue* ToCBoolean() { return nullptr; }

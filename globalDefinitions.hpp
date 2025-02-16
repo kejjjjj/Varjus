@@ -9,4 +9,7 @@
 
 #define IS_IMMEDIATE(v) v >= TokenType::tt_undefined && v <= TokenType::tt_string
 
+using VarjusInt = long long;
+using VarjusUInt = unsigned long long;
+using VarjusDouble = double;
 

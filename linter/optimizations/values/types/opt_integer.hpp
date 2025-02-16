@@ -5,7 +5,7 @@
 
 #include "opt_value.hpp"
 
-class CConstEvalIntValue final : public CConstEvalValue<std::int64_t>
+class CConstEvalIntValue final : public CConstEvalValue<VarjusInt>
 {
 public:
 	CConstEvalIntValue() = default;
@@ -20,8 +20,8 @@ public:
 	[[nodiscard]] constexpr bool IsCoerceable() const noexcept override { return true; }
 
 	[[nodiscard]] bool ToBoolean() const override { return static_cast<bool>(Get()); }
-	[[nodiscard]] std::int64_t ToInt() const override { return Get(); }
-	[[nodiscard]] double ToDouble() const override { return static_cast<double>(Get()); }
+	[[nodiscard]] VarjusInt ToInt() const override { return Get(); }
+	[[nodiscard]] VarjusDouble ToDouble() const override { return static_cast<VarjusDouble>(Get()); }
 
 	[[nodiscard]] CConstEvalIntValue* ToCInt() override { return this; }
 

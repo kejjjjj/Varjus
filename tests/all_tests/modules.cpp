@@ -68,7 +68,7 @@ TEST_CASE("Imported function edits lambda capture") {
 }
 
 
-TEST_CASE("Double import (main imports from a and a imports from b)") {
+TEST_CASE("VarjusDouble import (main imports from a and a imports from b)") {
 
 	auto retVal = TEST_ExecuteFile(JP("double_import\\main.var"));
 

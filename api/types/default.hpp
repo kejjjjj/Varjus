@@ -15,12 +15,12 @@ class CRuntimeFunction;
 class IValue;
 class CBooleanValue;
 class CIntValue;
+class CUIntValue;
 class CDoubleValue;
 class CStringValue;
 class CInternalArrayValue;
 class CArrayValue;
 class CCallableValue;
-class CBuiltInMemberCallableValue;
 class CObjectValue;
 struct CRuntimeContext;
 
@@ -88,25 +88,25 @@ public:
 		return nullptr;
 	}
 	[[nodiscard]] bool& AsBoolean();
-	[[nodiscard]] std::int64_t& AsInt();
-	[[nodiscard]] double &AsDouble();
+	[[nodiscard]] VarjusInt& AsInt();
+	[[nodiscard]] VarjusUInt& AsUInt();
+	[[nodiscard]] VarjusDouble &AsDouble();
 	[[nodiscard]] std::string& AsString();
 
 	[[nodiscard]] virtual bool ToBoolean() const { return false; }
-	[[nodiscard]] virtual std::int64_t ToInt() const { return 0; }
-	[[nodiscard]] virtual double ToDouble() const { return 0.0; }
+	[[nodiscard]] virtual VarjusInt ToInt() const { return VarjusInt(0); }
+	[[nodiscard]] virtual VarjusUInt ToUInt() const { return VarjusUInt(0); }
+	[[nodiscard]] virtual VarjusDouble ToDouble() const { return VarjusDouble(0.0); }
 	[[nodiscard]] virtual const std::string& ToString() const { return emptyString; }
 
 	[[nodiscard]] virtual std::size_t AddressOf() const noexcept { return reinterpret_cast<std::size_t>(this); }
 
 	[[nodiscard]] virtual CBooleanValue* ToCBoolean() { return nullptr; }
 	[[nodiscard]] virtual CIntValue* ToCInt() { return nullptr; }
+	[[nodiscard]] virtual CUIntValue* ToCUInt() { return nullptr; }
 	[[nodiscard]] virtual CDoubleValue* ToCDouble() { return nullptr; }
-
 	[[nodiscard]] virtual CStringValue* ToCString() { return nullptr; }
 	[[nodiscard]] virtual CCallableValue* ToCallable() { return nullptr; }
-	[[nodiscard]] virtual CBuiltInMemberCallableValue* ToBuiltInMemberCallable() { return nullptr; }
-
 	[[nodiscard]] virtual CArrayValue* ToArray() { return nullptr; }
 	[[nodiscard]] virtual CObjectValue* ToObject() { return nullptr; }
 
