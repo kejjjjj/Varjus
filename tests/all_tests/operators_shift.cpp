@@ -18,3 +18,16 @@ TEST_CASE("integer shift operations") {
 	retVal->Release();
 	REQUIRE(CProgramRuntime::HasLeaks() == false);
 }
+TEST_CASE("uinteger shift operations") {
+
+	auto retVal = TEST_ExecuteFile(JP("uint.var"));
+
+	AssertArray(retVal, AssertArrayValue<ASSERT_UINT>(t_uint, {
+		VarjusUInt(2) << 30,
+		VarjusUInt(30u) >> 2,
+	}));
+
+	REQUIRE(retVal->HasOwner() == false);
+	retVal->Release();
+	REQUIRE(CProgramRuntime::HasLeaks() == false);
+}

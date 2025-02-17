@@ -13,6 +13,7 @@ TEST_CASE("equality operations") {
 		1 == 1,
 		1 == true,
 		1 == 1.0,
+		1 == 1u,
 
 		1 == 2,
 		1 == false,
@@ -45,6 +46,7 @@ TEST_CASE("strict equality operations") {
 		1 == 1,
 		false, //1 === true
 		false, //1 === 1.0
+		false, 
 
 		1 == 2,
 		false, //1 === false
@@ -77,6 +79,7 @@ TEST_CASE("unequality operations") {
 		1 != 1,
 		1 != true,
 		1 != 1.0,
+		1 != 1u,
 
 		1 != 2,
 		1 != false,
@@ -109,6 +112,7 @@ TEST_CASE("strict unequality operations") {
 		1 != 1,
 		true, // 1 !== true
 		true, // 1 !== 1.0 
+		true,
 
 		1 != 2,
 		1 != false, // 1 !== false

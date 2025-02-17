@@ -16,7 +16,19 @@ TEST_CASE("Boolean gets coerced to int") {
 	retVal->Release();
 	REQUIRE(CProgramRuntime::HasLeaks() == false);
 }
-TEST_CASE("Boolean gets coerced to VarjusDouble") {
+TEST_CASE("Boolean gets coerced to uint") {
+
+	auto retVal = TEST_ExecuteFile(JP("boolean_to_uint.var"));
+
+	REQUIRE(retVal != nullptr);
+	REQUIRE(retVal->Type() == t_uint);
+	REQUIRE(retVal->ToInt() == 2);
+
+	REQUIRE(retVal->HasOwner() == false);
+	retVal->Release();
+	REQUIRE(CProgramRuntime::HasLeaks() == false);
+}
+TEST_CASE("Boolean gets coerced to double") {
 
 	auto retVal = TEST_ExecuteFile(JP("boolean_to_double.var"));
 
@@ -28,9 +40,33 @@ TEST_CASE("Boolean gets coerced to VarjusDouble") {
 	retVal->Release();
 	REQUIRE(CProgramRuntime::HasLeaks() == false);
 }
-TEST_CASE("Int gets coerced to VarjusDouble") {
+TEST_CASE("Int gets coerced to uint") {
+
+	auto retVal = TEST_ExecuteFile(JP("int_to_uint.var"));
+
+	REQUIRE(retVal != nullptr);
+	REQUIRE(retVal->Type() == t_uint);
+	REQUIRE(retVal->ToInt() == 2);
+
+	REQUIRE(retVal->HasOwner() == false);
+	retVal->Release();
+	REQUIRE(CProgramRuntime::HasLeaks() == false);
+}
+TEST_CASE("Int gets coerced to double") {
 
 	auto retVal = TEST_ExecuteFile(JP("int_to_double.var"));
+
+	REQUIRE(retVal != nullptr);
+	REQUIRE(retVal->Type() == t_double);
+	REQUIRE(retVal->ToDouble() == 3.0);
+
+	REQUIRE(retVal->HasOwner() == false);
+	retVal->Release();
+	REQUIRE(CProgramRuntime::HasLeaks() == false);
+}
+TEST_CASE("UInt gets coerced to double") {
+
+	auto retVal = TEST_ExecuteFile(JP("uint_to_double.var"));
 
 	REQUIRE(retVal != nullptr);
 	REQUIRE(retVal->Type() == t_double);

@@ -21,7 +21,7 @@ TEST_CASE("object {a: 0, b: 1} gets copied and then the copy gets a value 50 ass
 {
 	auto retVal = TEST_ExecuteFile(JP("object.var"));
 
-	AssertObject(retVal, AssertObjectValue<ASSERT_INT>(t_int, 0u, { {"a", 50}, {"b", 1} }));
+	AssertObject(retVal, AssertObjectValue<ASSERT_INT>(t_int, { {"a", 50}, {"b", 1} }));
 
 	REQUIRE(retVal->HasOwner() == false);
 	retVal->Release();

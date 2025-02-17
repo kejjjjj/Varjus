@@ -20,7 +20,7 @@ TEST_CASE("Returns an object { a: 1, b: 2, c: 3 } in variable context") {
 
 	auto retVal = TEST_ExecuteFile(JP("object.var"));
 
-	AssertObject(retVal, AssertObjectValue<ASSERT_INT>(t_int, 0u, { {"a", 1}, {"b", 2}, {"c", 3} }));
+	AssertObject(retVal, AssertObjectValue<ASSERT_INT>(t_int, { {"a", 1}, {"b", 2}, {"c", 3} }));
 
 	REQUIRE(retVal->HasOwner() == false);
 	retVal->Release();

@@ -41,10 +41,21 @@ TEST_CASE("Returns an integer 64") {
 	retVal->Release();
 	REQUIRE(CProgramRuntime::HasLeaks() == false);
 }
+TEST_CASE("Returns a uinteger 64") {
 
-TEST_CASE("Returns a VarjusDouble 64.0") {
+	auto retVal = TEST_ExecuteFile(JP("uinteger.var"));
 
-	auto retVal = TEST_ExecuteFile(JP("VarjusDouble.var"));
+	REQUIRE(retVal != nullptr);
+	REQUIRE(retVal->Type() == t_uint);
+	REQUIRE(retVal->ToUInt() == 64);
+
+	REQUIRE(retVal->HasOwner() == false);
+	retVal->Release();
+	REQUIRE(CProgramRuntime::HasLeaks() == false);
+}
+TEST_CASE("Returns a double 64.0") {
+
+	auto retVal = TEST_ExecuteFile(JP("double.var"));
 
 	REQUIRE(retVal != nullptr);
 	REQUIRE(retVal->Type() == t_double);

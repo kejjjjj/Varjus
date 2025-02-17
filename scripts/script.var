@@ -1,27 +1,18 @@
 
-fn funnyThing(sortFunc)
-{
-    const capture = 3;
-    const ref = {key: capture };
-
-    return {}
-    .set("callable", (v) => v * ref.key)
-    .set("weird_ref", ref)
-    .set("sort", sortFunc);
-}
-
-fn randomNumbers(min, max, count, randomizer){
-    const arr = [].resize(count);
-    for(let i = 0; i < count; i++)
-        arr[i] = randomizer(min, max);
-    return arr;
-}       
-
 fn main()
 {
-    const sortCallback = (a, b) => a < b;
-    const obj = funnyThing(sortCallback);
-    obj.weird_ref.key = obj.callable(5);
-    const numbers = randomNumbers(25, 75, 10, math.random);
-    return [ obj["callable"](5), numbers.sort(obj.sort) ];
+    const key2 = "key2";
+    const value2 = "value2";
+    const arr = { 
+        "key0": "value0", 
+        key1: "value1", 
+        key2: value2
+    }.to_array();
+
+    const resultArr = [];
+
+    for(let i = 0; i < arr.length; i++)
+        resultArr.push(arr[i][0] + arr[i][1]);
+
+    return resultArr;
 }

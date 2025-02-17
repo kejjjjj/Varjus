@@ -20,10 +20,25 @@ TEST_CASE("integer additive operations") {
 	retVal->Release();
 	REQUIRE(CProgramRuntime::HasLeaks() == false);
 }
+TEST_CASE("uinteger additive operations") {
 
-TEST_CASE("VarjusDouble additive operations") {
+	auto retVal = TEST_ExecuteFile(JP("uint.var"));
 
-	auto retVal = TEST_ExecuteFile(JP("VarjusDouble.var"));
+	AssertArray(retVal, AssertArrayValue<ASSERT_UINT>(t_uint, {
+		1 + 2,
+		5 + 2,
+		1001 + 50,
+		0xFFFFFFFFFFFFFFFF,
+	}));
+
+	REQUIRE(retVal->HasOwner() == false);
+	retVal->Release();
+	REQUIRE(CProgramRuntime::HasLeaks() == false);
+}
+
+TEST_CASE("double additive operations") {
+
+	auto retVal = TEST_ExecuteFile(JP("double.var"));
 
 	AssertArray(retVal, AssertArrayValue<ASSERT_DOUBLE>(t_double, { 
 		1.2 + 2.6,

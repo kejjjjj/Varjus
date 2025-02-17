@@ -193,3 +193,13 @@ TEST_CASE("ArrayToString([ 1, [ 2, [3, [] ] ], 4 ])") {
 	retVal->Release();
 	REQUIRE(CProgramRuntime::HasLeaks() == false);
 }
+TEST_CASE("StressTest") {
+
+	auto retVal = TEST_ExecuteFile(JP("stress_test.var"));
+
+	AssertArray(retVal, AssertArrayValue<ASSERT_INT>(t_int, { 93, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 }));
+
+	REQUIRE(retVal->HasOwner() == false);
+	retVal->Release();
+	REQUIRE(CProgramRuntime::HasLeaks() == false);
+}

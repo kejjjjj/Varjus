@@ -15,6 +15,7 @@
 
 using ASSERT_BOOL = bool;
 using ASSERT_INT = VarjusInt;
+using ASSERT_UINT = VarjusUInt;
 using ASSERT_DOUBLE = VarjusDouble;
 using ASSERT_STRING = std::string;
 using ASSERT_UNDEFINED = void;
@@ -23,7 +24,6 @@ template<typename T>
 struct AssertObjectValue
 {
 	EValueType m_type;
-	std::size_t m_moduleIndex{};
 	std::vector<std::pair<std::string, T>> m_targetValues;
 };
 
@@ -41,6 +41,8 @@ constexpr auto GetTemplatedValue(IValue* t)
 		return t->ToBoolean();
 	else if constexpr (std::is_same_v<ASSERT_INT, T>)
 		return t->ToInt();
+	else if constexpr (std::is_same_v<ASSERT_UINT, T>)
+		return t->ToUInt();
 	else if constexpr (std::is_same_v<ASSERT_DOUBLE, T>)
 		return t->ToDouble();
 	else if constexpr (std::is_same_v<ASSERT_STRING, T>)

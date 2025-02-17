@@ -218,7 +218,7 @@ IValue* OP_MODULO(IValue* _lhs, IValue* _rhs)
 		if (rhs->ToUInt() == VarjusUInt(0))
 			throw CRuntimeError("division by 0");
 
-		result = CProgramRuntime::AcquireNewValue<CUIntValue>(lhs->ToUInt() & rhs->ToUInt());
+		result = CProgramRuntime::AcquireNewValue<CUIntValue>(lhs->ToUInt() % rhs->ToUInt());
 		break;
 	case t_double:
 

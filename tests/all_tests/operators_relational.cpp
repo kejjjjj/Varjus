@@ -52,10 +52,36 @@ TEST_CASE("integer relational operations") {
 	retVal->Release();
 	REQUIRE(CProgramRuntime::HasLeaks() == false);
 }
+TEST_CASE("uinteger relational operations") {
 
-TEST_CASE("VarjusDouble relational operations") {
+	auto retVal = TEST_ExecuteFile(JP("uint.var"));
 
-	auto retVal = TEST_ExecuteFile(JP("VarjusDouble.var"));
+	AssertArray(retVal, AssertArrayValue<ASSERT_BOOL>(t_boolean, {
+		100 < 101,
+		101 < 100,
+		100 < 100,
+
+		100 <= 101,
+		101 <= 100,
+		100 <= 100,
+
+		100 > 101,
+		101 > 100,
+		100 > 100,
+
+		100 >= 101,
+		101 >= 100,
+		100 >= 100,
+	}));
+
+	REQUIRE(retVal->HasOwner() == false);
+	retVal->Release();
+	REQUIRE(CProgramRuntime::HasLeaks() == false);
+}
+
+TEST_CASE("double relational operations") {
+
+	auto retVal = TEST_ExecuteFile(JP("double.var"));
 
 	AssertArray(retVal, AssertArrayValue<ASSERT_BOOL>(t_boolean, {
 		100.1 < 101.1,

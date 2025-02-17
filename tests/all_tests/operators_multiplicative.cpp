@@ -21,10 +21,31 @@ TEST_CASE("integer multiplicative operations") {
 	retVal->Release();
 	REQUIRE(CProgramRuntime::HasLeaks() == false);
 }
+TEST_CASE("uinteger multiplicative operations") {
 
-TEST_CASE("VarjusDouble multiplicative operations") {
+	auto retVal = TEST_ExecuteFile(JP("uint.var"));
 
-	auto retVal = TEST_ExecuteFile(JP("VarjusDouble.var"));
+	constexpr unsigned int arr[] = { 2 * 5,
+		10 / 2,
+		9 / 2,
+		10 % 2,
+		7 % 2 };
+
+	AssertArray(retVal, AssertArrayValue<ASSERT_UINT>(t_uint, {
+		2 * 5,
+		10 / 2,
+		9 / 2,
+		10 % 2,
+		7 % 2
+	}));
+
+	REQUIRE(retVal->HasOwner() == false);
+	retVal->Release();
+	REQUIRE(CProgramRuntime::HasLeaks() == false);
+}
+TEST_CASE("double multiplicative operations") {
+
+	auto retVal = TEST_ExecuteFile(JP("double.var"));
 
 	AssertArray(retVal, AssertArrayValue<ASSERT_DOUBLE>(t_double, { 
 		2 * 5.2,

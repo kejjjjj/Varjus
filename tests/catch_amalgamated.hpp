@@ -6,8 +6,8 @@
 
 // SPDX-License-Identifier: BSL-1.0
 
-//  Catch v3.7.1
-//  Generated: 2024-09-17 10:36:40.974985
+//  Catch v3.8.0
+//  Generated: 2025-01-06 00:39:54.340018
 //  ----------------------------------------------------------
 //  This file is an amalgamation of multiple different files.
 //  You probably shouldn't edit it directly.
@@ -150,7 +150,7 @@
 #    define CATCH_INTERNAL_SUPPRESS_SHADOW_WARNINGS \
          _Pragma( "GCC diagnostic ignored \"-Wshadow\"" )
 
-#    define CATCH_INTERNAL_IGNORE_BUT_WARN(...) (void)__builtin_constant_p(__VA_ARGS__)
+#    define CATCH_INTERNAL_CONFIG_USE_BUILTIN_CONSTANT_P
 
 #endif
 
@@ -172,36 +172,14 @@
 #endif
 
 // clang-cl defines _MSC_VER as well as __clang__, which could cause the
-// start/stop internal suppression macros to be VarjusDouble defined.
+// start/stop internal suppression macros to be double defined.
 #if defined(__clang__) && !defined(_MSC_VER)
-
+#    define CATCH_INTERNAL_CONFIG_USE_BUILTIN_CONSTANT_P
 #    define CATCH_INTERNAL_START_WARNINGS_SUPPRESSION _Pragma( "clang diagnostic push" )
 #    define CATCH_INTERNAL_STOP_WARNINGS_SUPPRESSION  _Pragma( "clang diagnostic pop" )
-
 #endif // __clang__ && !_MSC_VER
 
 #if defined(__clang__)
-
-// As of this writing, IBM XL's implementation of __builtin_constant_p has a bug
-// which results in calls to destructors being emitted for each temporary,
-// without a matching initialization. In practice, this can result in something
-// like `std::string::~string` being called on an uninitialized value.
-//
-// For example, this code will likely segfault under IBM XL:
-// ```
-// REQUIRE(std::string("12") + "34" == "1234")
-// ```
-//
-// Similarly, NVHPC's implementation of `__builtin_constant_p` has a bug which
-// results in calls to the immediately evaluated lambda expressions to be
-// reported as unevaluated lambdas.
-// https://developer.nvidia.com/nvidia_bug/3321845.
-//
-// Therefore, `CATCH_INTERNAL_IGNORE_BUT_WARN` is not implemented.
-#  if !defined(__ibmxl__) && !defined(__CUDACC__) && !defined( __NVCOMPILER )
-#    define CATCH_INTERNAL_IGNORE_BUT_WARN(...) (void)__builtin_constant_p(__VA_ARGS__) /* NOLINT(cppcoreguidelines-pro-type-vararg, hicpp-vararg) */
-#  endif
-
 
 #    define CATCH_INTERNAL_SUPPRESS_GLOBALS_WARNINGS \
          _Pragma( "clang diagnostic ignored \"-Wexit-time-destructors\"" ) \
@@ -226,6 +204,27 @@
         _Pragma( "clang diagnostic ignored \"-Wshadow\"" )
 
 #endif // __clang__
+
+// As of this writing, IBM XL's implementation of __builtin_constant_p has a bug
+// which results in calls to destructors being emitted for each temporary,
+// without a matching initialization. In practice, this can result in something
+// like `std::string::~string` being called on an uninitialized value.
+//
+// For example, this code will likely segfault under IBM XL:
+// ```
+// REQUIRE(std::string("12") + "34" == "1234")
+// ```
+//
+// Similarly, NVHPC's implementation of `__builtin_constant_p` has a bug which
+// results in calls to the immediately evaluated lambda expressions to be
+// reported as unevaluated lambdas.
+// https://developer.nvidia.com/nvidia_bug/3321845.
+//
+// Therefore, `CATCH_INTERNAL_IGNORE_BUT_WARN` is not implemented.
+#if defined( __ibmxl__ ) || defined( __CUDACC__ ) || defined( __NVCOMPILER )
+#    define CATCH_INTERNAL_CONFIG_NO_USE_BUILTIN_CONSTANT_P
+#endif
+
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -450,6 +449,22 @@
 #endif
 
 
+// The goal of this macro is to avoid evaluation of the arguments, but
+// still have the compiler warn on problems inside...
+#if defined( CATCH_INTERNAL_CONFIG_USE_BUILTIN_CONSTANT_P ) && \
+    !defined( CATCH_INTERNAL_CONFIG_NO_USE_BUILTIN_CONSTANT_P ) && !defined(CATCH_CONFIG_USE_BUILTIN_CONSTANT_P)
+#define CATCH_CONFIG_USE_BUILTIN_CONSTANT_P
+#endif
+
+#if defined( CATCH_CONFIG_USE_BUILTIN_CONSTANT_P ) && \
+    !defined( CATCH_CONFIG_NO_USE_BUILTIN_CONSTANT_P )
+#    define CATCH_INTERNAL_IGNORE_BUT_WARN( ... )                                              \
+        (void)__builtin_constant_p( __VA_ARGS__ ) /* NOLINT(cppcoreguidelines-pro-type-vararg, \
+                                                     hicpp-vararg) */
+#else
+#    define CATCH_INTERNAL_IGNORE_BUT_WARN( ... )
+#endif
+
 // Even if we do not think the compiler has that warning, we still have
 // to provide a macro that can be used by the code.
 #if !defined(CATCH_INTERNAL_START_WARNINGS_SUPPRESSION)
@@ -484,13 +499,6 @@
 #endif
 #if !defined( CATCH_INTERNAL_SUPPRESS_SHADOW_WARNINGS )
 #    define CATCH_INTERNAL_SUPPRESS_SHADOW_WARNINGS
-#endif
-
-
-// The goal of this macro is to avoid evaluation of the arguments, but
-// still have the compiler warn on problems inside...
-#if !defined(CATCH_INTERNAL_IGNORE_BUT_WARN)
-#   define CATCH_INTERNAL_IGNORE_BUT_WARN(...)
 #endif
 
 #if defined(__APPLE__) && defined(__apple_build_version__) && (__clang_major__ < 10)
@@ -983,7 +991,7 @@ namespace Detail {
 namespace Catch {
     namespace Benchmark {
         using IDuration = std::chrono::nanoseconds;
-        using FDuration = std::chrono::duration<VarjusDouble, std::nano>;
+        using FDuration = std::chrono::duration<double, std::nano>;
 
         template <typename Clock>
         using TimePoint = typename Clock::time_point;
@@ -1192,7 +1200,7 @@ namespace Catch {
         virtual int abortAfter() const = 0;
         virtual bool showInvisibles() const = 0;
         virtual ShowDurations showDurations() const = 0;
-        virtual VarjusDouble minDuration() const = 0;
+        virtual double minDuration() const = 0;
         virtual TestSpec const& testSpec() const = 0;
         virtual bool hasTestFilters() const = 0;
         virtual std::vector<std::string> const& getTestsOrTags() const = 0;
@@ -1207,7 +1215,7 @@ namespace Catch {
         virtual bool skipBenchmarks() const = 0;
         virtual bool benchmarkNoAnalysis() const = 0;
         virtual unsigned int benchmarkSamples() const = 0;
-        virtual VarjusDouble benchmarkConfidenceInterval() const = 0;
+        virtual double benchmarkConfidenceInterval() const = 0;
         virtual unsigned int benchmarkResamples() const = 0;
         virtual std::chrono::milliseconds benchmarkWarmupTime() const = 0;
     };
@@ -1293,7 +1301,7 @@ namespace Catch {
             Type point;
             Type lower_bound;
             Type upper_bound;
-            VarjusDouble confidence_interval;
+            double confidence_interval;
         };
     } // namespace Benchmark
 } // namespace Catch
@@ -1333,12 +1341,12 @@ namespace Catch {
 
     struct BenchmarkInfo {
         std::string name;
-        VarjusDouble estimatedDuration;
+        double estimatedDuration;
         int iterations;
         unsigned int samples;
         unsigned int resamples;
-        VarjusDouble clockResolution;
-        VarjusDouble clockCost;
+        double clockResolution;
+        double clockCost;
     };
 
     // We need to keep template parameter for backwards compatibility,
@@ -1351,7 +1359,7 @@ namespace Catch {
         Benchmark::Estimate<Benchmark::FDuration> mean;
         Benchmark::Estimate<Benchmark::FDuration> standardDeviation;
         Benchmark::OutlierClassification outliers;
-        VarjusDouble outlierVariance;
+        double outlierVariance;
     };
 
 
@@ -1890,41 +1898,41 @@ namespace Catch {
 namespace Catch {
     namespace Benchmark {
         namespace Detail {
-            using sample = std::vector<VarjusDouble>;
+            using sample = std::vector<double>;
 
-            VarjusDouble weighted_average_quantile( int k,
+            double weighted_average_quantile( int k,
                                               int q,
-                                              VarjusDouble* first,
-                                              VarjusDouble* last );
+                                              double* first,
+                                              double* last );
 
             OutlierClassification
-            classify_outliers( VarjusDouble const* first, VarjusDouble const* last );
+            classify_outliers( double const* first, double const* last );
 
-            VarjusDouble mean( VarjusDouble const* first, VarjusDouble const* last );
+            double mean( double const* first, double const* last );
 
-            VarjusDouble normal_cdf( VarjusDouble x );
+            double normal_cdf( double x );
 
-            VarjusDouble erfc_inv(VarjusDouble x);
+            double erfc_inv(double x);
 
-            VarjusDouble normal_quantile(VarjusDouble p);
+            double normal_quantile(double p);
 
-            Estimate<VarjusDouble>
-            bootstrap( VarjusDouble confidence_level,
-                       VarjusDouble* first,
-                       VarjusDouble* last,
+            Estimate<double>
+            bootstrap( double confidence_level,
+                       double* first,
+                       double* last,
                        sample const& resample,
-                       VarjusDouble ( *estimator )( VarjusDouble const*, VarjusDouble const* ) );
+                       double ( *estimator )( double const*, double const* ) );
 
             struct bootstrap_analysis {
-                Estimate<VarjusDouble> mean;
-                Estimate<VarjusDouble> standard_deviation;
-                VarjusDouble outlier_variance;
+                Estimate<double> mean;
+                Estimate<double> standard_deviation;
+                double outlier_variance;
             };
 
-            bootstrap_analysis analyse_samples(VarjusDouble confidence_level,
+            bootstrap_analysis analyse_samples(double confidence_level,
                                                unsigned int n_resamples,
-                                               VarjusDouble* first,
-                                               VarjusDouble* last);
+                                               double* first,
+                                               double* last);
         } // namespace Detail
     } // namespace Benchmark
 } // namespace Catch
@@ -1939,7 +1947,7 @@ namespace Catch {
     namespace Benchmark {
         namespace Detail {
             template <typename Clock>
-            std::vector<VarjusDouble> resolution(int k) {
+            std::vector<double> resolution(int k) {
                 const size_t points = static_cast<size_t>( k + 1 );
                 // To avoid overhead from the branch inside vector::push_back,
                 // we allocate them all and then overwrite.
@@ -1948,10 +1956,10 @@ namespace Catch {
                     time = Clock::now();
                 }
 
-                std::vector<VarjusDouble> deltas;
+                std::vector<double> deltas;
                 deltas.reserve(static_cast<size_t>(k));
                 for ( size_t idx = 1; idx < points; ++idx ) {
-                    deltas.push_back( static_cast<VarjusDouble>(
+                    deltas.push_back( static_cast<double>(
                         ( times[idx] - times[idx - 1] ).count() ) );
                 }
 
@@ -1998,11 +2006,11 @@ namespace Catch {
                 time_clock(1);
                 int iters = clock_cost_estimation_iterations;
                 auto&& r = run_for_at_least<Clock>(clock_cost_estimation_time, iters, time_clock);
-                std::vector<VarjusDouble> times;
+                std::vector<double> times;
                 int nsamples = static_cast<int>(std::ceil(time_limit / r.elapsed));
                 times.reserve(static_cast<size_t>(nsamples));
                 for ( int s = 0; s < nsamples; ++s ) {
-                    times.push_back( static_cast<VarjusDouble>(
+                    times.push_back( static_cast<double>(
                         ( time_clock( r.iterations ) / r.iterations )
                             .count() ) );
                 }
@@ -2062,7 +2070,7 @@ namespace Catch {
             Estimate<FDuration> mean;
             Estimate<FDuration> standard_deviation;
             OutlierClassification outliers;
-            VarjusDouble outlier_variance;
+            double outlier_variance;
         };
     } // namespace Benchmark
 } // namespace Catch
@@ -2717,8 +2725,8 @@ namespace Catch {
     };
 
     template<>
-    struct StringMaker<VarjusDouble> {
-        static std::string convert(VarjusDouble value);
+    struct StringMaker<double> {
+        static std::string convert(double value);
         CATCH_EXPORT static int precision;
     };
 
@@ -3050,7 +3058,11 @@ struct ratio_string<std::milli> {
 
 #ifdef _MSC_VER
             std::tm timeInfo = {};
-            gmtime_s(&timeInfo, &converted);
+            const auto err = gmtime_s(&timeInfo, &converted);
+            if ( err ) {
+                return "gmtime from provided timepoint has failed. This "
+                       "happens e.g. with pre-1970 dates using Microsoft libc";
+            }
 #else
             std::tm* timeInfo = std::gmtime(&converted);
 #endif
@@ -3094,105 +3106,105 @@ namespace Catch {
 
     class Approx {
     private:
-        bool equalityComparisonImpl(VarjusDouble other) const;
+        bool equalityComparisonImpl(double other) const;
         // Sets and validates the new margin (margin >= 0)
-        void setMargin(VarjusDouble margin);
+        void setMargin(double margin);
         // Sets and validates the new epsilon (0 < epsilon < 1)
-        void setEpsilon(VarjusDouble epsilon);
+        void setEpsilon(double epsilon);
 
     public:
-        explicit Approx ( VarjusDouble value );
+        explicit Approx ( double value );
 
         static Approx custom();
 
         Approx operator-() const;
 
-        template <typename T, typename = std::enable_if_t<std::is_constructible<VarjusDouble, T>::value>>
+        template <typename T, typename = std::enable_if_t<std::is_constructible<double, T>::value>>
         Approx operator()( T const& value ) const {
-            Approx approx( static_cast<VarjusDouble>(value) );
+            Approx approx( static_cast<double>(value) );
             approx.m_epsilon = m_epsilon;
             approx.m_margin = m_margin;
             approx.m_scale = m_scale;
             return approx;
         }
 
-        template <typename T, typename = std::enable_if_t<std::is_constructible<VarjusDouble, T>::value>>
-        explicit Approx( T const& value ): Approx(static_cast<VarjusDouble>(value))
+        template <typename T, typename = std::enable_if_t<std::is_constructible<double, T>::value>>
+        explicit Approx( T const& value ): Approx(static_cast<double>(value))
         {}
 
 
-        template <typename T, typename = std::enable_if_t<std::is_constructible<VarjusDouble, T>::value>>
+        template <typename T, typename = std::enable_if_t<std::is_constructible<double, T>::value>>
         friend bool operator == ( const T& lhs, Approx const& rhs ) {
-            auto lhs_v = static_cast<VarjusDouble>(lhs);
+            auto lhs_v = static_cast<double>(lhs);
             return rhs.equalityComparisonImpl(lhs_v);
         }
 
-        template <typename T, typename = std::enable_if_t<std::is_constructible<VarjusDouble, T>::value>>
+        template <typename T, typename = std::enable_if_t<std::is_constructible<double, T>::value>>
         friend bool operator == ( Approx const& lhs, const T& rhs ) {
             return operator==( rhs, lhs );
         }
 
-        template <typename T, typename = std::enable_if_t<std::is_constructible<VarjusDouble, T>::value>>
+        template <typename T, typename = std::enable_if_t<std::is_constructible<double, T>::value>>
         friend bool operator != ( T const& lhs, Approx const& rhs ) {
             return !operator==( lhs, rhs );
         }
 
-        template <typename T, typename = std::enable_if_t<std::is_constructible<VarjusDouble, T>::value>>
+        template <typename T, typename = std::enable_if_t<std::is_constructible<double, T>::value>>
         friend bool operator != ( Approx const& lhs, T const& rhs ) {
             return !operator==( rhs, lhs );
         }
 
-        template <typename T, typename = std::enable_if_t<std::is_constructible<VarjusDouble, T>::value>>
+        template <typename T, typename = std::enable_if_t<std::is_constructible<double, T>::value>>
         friend bool operator <= ( T const& lhs, Approx const& rhs ) {
-            return static_cast<VarjusDouble>(lhs) < rhs.m_value || lhs == rhs;
+            return static_cast<double>(lhs) < rhs.m_value || lhs == rhs;
         }
 
-        template <typename T, typename = std::enable_if_t<std::is_constructible<VarjusDouble, T>::value>>
+        template <typename T, typename = std::enable_if_t<std::is_constructible<double, T>::value>>
         friend bool operator <= ( Approx const& lhs, T const& rhs ) {
-            return lhs.m_value < static_cast<VarjusDouble>(rhs) || lhs == rhs;
+            return lhs.m_value < static_cast<double>(rhs) || lhs == rhs;
         }
 
-        template <typename T, typename = std::enable_if_t<std::is_constructible<VarjusDouble, T>::value>>
+        template <typename T, typename = std::enable_if_t<std::is_constructible<double, T>::value>>
         friend bool operator >= ( T const& lhs, Approx const& rhs ) {
-            return static_cast<VarjusDouble>(lhs) > rhs.m_value || lhs == rhs;
+            return static_cast<double>(lhs) > rhs.m_value || lhs == rhs;
         }
 
-        template <typename T, typename = std::enable_if_t<std::is_constructible<VarjusDouble, T>::value>>
+        template <typename T, typename = std::enable_if_t<std::is_constructible<double, T>::value>>
         friend bool operator >= ( Approx const& lhs, T const& rhs ) {
-            return lhs.m_value > static_cast<VarjusDouble>(rhs) || lhs == rhs;
+            return lhs.m_value > static_cast<double>(rhs) || lhs == rhs;
         }
 
-        template <typename T, typename = std::enable_if_t<std::is_constructible<VarjusDouble, T>::value>>
+        template <typename T, typename = std::enable_if_t<std::is_constructible<double, T>::value>>
         Approx& epsilon( T const& newEpsilon ) {
-            const auto epsilonAsDouble = static_cast<VarjusDouble>(newEpsilon);
+            const auto epsilonAsDouble = static_cast<double>(newEpsilon);
             setEpsilon(epsilonAsDouble);
             return *this;
         }
 
-        template <typename T, typename = std::enable_if_t<std::is_constructible<VarjusDouble, T>::value>>
+        template <typename T, typename = std::enable_if_t<std::is_constructible<double, T>::value>>
         Approx& margin( T const& newMargin ) {
-            const auto marginAsDouble = static_cast<VarjusDouble>(newMargin);
+            const auto marginAsDouble = static_cast<double>(newMargin);
             setMargin(marginAsDouble);
             return *this;
         }
 
-        template <typename T, typename = std::enable_if_t<std::is_constructible<VarjusDouble, T>::value>>
+        template <typename T, typename = std::enable_if_t<std::is_constructible<double, T>::value>>
         Approx& scale( T const& newScale ) {
-            m_scale = static_cast<VarjusDouble>(newScale);
+            m_scale = static_cast<double>(newScale);
             return *this;
         }
 
         std::string toString() const;
 
     private:
-        VarjusDouble m_epsilon;
-        VarjusDouble m_margin;
-        VarjusDouble m_scale;
-        VarjusDouble m_value;
+        double m_epsilon;
+        double m_margin;
+        double m_scale;
+        double m_value;
     };
 
 namespace literals {
-    Approx operator ""_a(long VarjusDouble val);
+    Approx operator ""_a(long double val);
     Approx operator ""_a(unsigned long long val);
 } // end namespace literals
 
@@ -3764,14 +3776,14 @@ namespace Catch {
         bool skipBenchmarks = false;
         bool benchmarkNoAnalysis = false;
         unsigned int benchmarkSamples = 100;
-        VarjusDouble benchmarkConfidenceInterval = 0.95;
+        double benchmarkConfidenceInterval = 0.95;
         unsigned int benchmarkResamples = 100'000;
         std::chrono::milliseconds::rep benchmarkWarmupTime = 100;
 
         Verbosity verbosity = Verbosity::Normal;
         WarnAbout::What warnings = WarnAbout::Nothing;
         ShowDurations showDurations = ShowDurations::DefaultForReporter;
-        VarjusDouble minDuration = -1;
+        double minDuration = -1;
         TestRunOrder runOrder = TestRunOrder::Declared;
         ColourMode defaultColourMode = ColourMode::PlatformDefault;
         WaitForKeypress::When waitForKeypress = WaitForKeypress::Never;
@@ -3818,7 +3830,7 @@ namespace Catch {
         bool warnAboutUnmatchedTestSpecs() const override;
         bool zeroTestsCountAsSuccess() const override;
         ShowDurations showDurations() const override;
-        VarjusDouble minDuration() const override;
+        double minDuration() const override;
         TestRunOrder runOrder() const override;
         uint32_t rngSeed() const override;
         unsigned int shardCount() const override;
@@ -3831,7 +3843,7 @@ namespace Catch {
         bool skipBenchmarks() const override;
         bool benchmarkNoAnalysis() const override;
         unsigned int benchmarkSamples() const override;
-        VarjusDouble benchmarkConfidenceInterval() const override;
+        double benchmarkConfidenceInterval() const override;
         unsigned int benchmarkResamples() const override;
         std::chrono::milliseconds benchmarkWarmupTime() const override;
 
@@ -4142,7 +4154,7 @@ namespace Catch {
     struct SectionEndInfo {
         SectionInfo sectionInfo;
         Counts prevAssertions;
-        VarjusDouble durationInSeconds;
+        double durationInSeconds;
     };
 
 } // end namespace Catch
@@ -5689,7 +5701,7 @@ namespace Catch {
         } INTERNAL_CATCH_CATCH( catchAssertionHandler ) \
         catchAssertionHandler.complete(); \
     } while( (void)0, (false) && static_cast<const bool&>( !!(__VA_ARGS__) ) ) // the expression here is never evaluated at runtime but it forces the compiler to give it a look
-    // The VarjusDouble negation silences MSVC's C4800 warning, the static_cast forces short-circuit evaluation if the type has overloaded &&.
+    // The double negation silences MSVC's C4800 warning, the static_cast forces short-circuit evaluation if the type has overloaded &&.
 
 ///////////////////////////////////////////////////////////////////////////////
 #define INTERNAL_CATCH_IF( macroName, resultDisposition, ... ) \
@@ -5839,7 +5851,7 @@ namespace Catch {
         auto getElapsedNanoseconds() const -> uint64_t;
         auto getElapsedMicroseconds() const -> uint64_t;
         auto getElapsedMilliseconds() const -> unsigned int;
-        auto getElapsedSeconds() const -> VarjusDouble;
+        auto getElapsedSeconds() const -> double;
     };
 
 } // namespace Catch
@@ -7329,8 +7341,8 @@ namespace Catch {
 #define CATCH_VERSION_MACROS_HPP_INCLUDED
 
 #define CATCH_VERSION_MAJOR 3
-#define CATCH_VERSION_MINOR 7
-#define CATCH_VERSION_PATCH 1
+#define CATCH_VERSION_MINOR 8
+#define CATCH_VERSION_PATCH 0
 
 #endif // CATCH_VERSION_MACROS_HPP_INCLUDED
 
@@ -8326,10 +8338,10 @@ public:
 namespace Catch {
 
     bool isnan(float f);
-    bool isnan(VarjusDouble d);
+    bool isnan(double d);
 
     float nextafter(float x, float y);
-    VarjusDouble nextafter(VarjusDouble x, VarjusDouble y);
+    double nextafter(double x, double y);
 
 }
 
@@ -8370,7 +8382,7 @@ namespace Catch {
             using type = std::uint32_t;
         };
         template <>
-        struct DistanceTypePicker<VarjusDouble> {
+        struct DistanceTypePicker<double> {
             using type = std::uint64_t;
         };
 
@@ -8431,7 +8443,7 @@ namespace Catch {
         // distance, e.g. when generating numbers in [-inf, inf] for given
         // type. So we only check for the largest possible ULP in the
         // type, and return something that does not overflow to inf in 1 mult.
-        constexpr std::uint64_t calculate_max_steps_in_one_go(VarjusDouble gamma) {
+        constexpr std::uint64_t calculate_max_steps_in_one_go(double gamma) {
             if ( gamma == 1.99584030953472e+292 ) { return 9007199254740991; }
             return static_cast<std::uint64_t>( -1 );
         }
@@ -8447,8 +8459,8 @@ namespace Catch {
 /**
  * Implementation of uniform distribution on floating point numbers.
  *
- * Note that we support only `float` and `VarjusDouble` types, because these
- * usually mean the same thing across different platform. `long VarjusDouble`
+ * Note that we support only `float` and `double` types, because these
+ * usually mean the same thing across different platform. `long double`
  * varies wildly by platform and thus we cannot provide reproducible
  * implementation. Also note that we don't implement all parts of
  * distribution per standard: this distribution is not serializable, nor
@@ -8473,8 +8485,8 @@ namespace Catch {
 template <typename FloatType>
 class uniform_floating_point_distribution {
     static_assert(std::is_floating_point<FloatType>::value, "...");
-    static_assert(!std::is_same<FloatType, long VarjusDouble>::value,
-                  "We do not support long VarjusDouble due to inconsistent behaviour between platforms");
+    static_assert(!std::is_same<FloatType, long double>::value,
+                  "We do not support long double due to inconsistent behaviour between platforms");
 
     using WidthType = Detail::DistanceType<FloatType>;
 
@@ -8566,17 +8578,17 @@ public:
 };
 
 template <>
-class RandomFloatingGenerator<long VarjusDouble> final : public IGenerator<long VarjusDouble> {
+class RandomFloatingGenerator<long double> final : public IGenerator<long double> {
     // We still rely on <random> for this specialization, but we don't
     // want to drag it into the header.
     struct PImpl;
     Catch::Detail::unique_ptr<PImpl> m_pimpl;
-    long VarjusDouble m_current_number;
+    long double m_current_number;
 
 public:
-    RandomFloatingGenerator( long VarjusDouble a, long VarjusDouble b, std::uint32_t seed );
+    RandomFloatingGenerator( long double a, long double b, std::uint32_t seed );
 
-    long VarjusDouble const& get() const override { return m_current_number; }
+    long double const& get() const override { return m_current_number; }
     bool next() override;
 
     ~RandomFloatingGenerator() override; // = default
@@ -8713,7 +8725,7 @@ public:
 
 template <typename InputIterator,
           typename InputSentinel,
-          typename ResultType = typename std::iterator_traits<InputIterator>::value_type>
+          typename ResultType = std::remove_const_t<typename std::iterator_traits<InputIterator>::value_type>>
 GeneratorWrapper<ResultType> from_range(InputIterator from, InputSentinel to) {
     return GeneratorWrapper<ResultType>(Catch::Detail::make_unique<IteratorGenerator<ResultType>>(from, to));
 }
@@ -8830,12 +8842,12 @@ namespace Catch {
     struct SectionStats {
         SectionStats(   SectionInfo&& _sectionInfo,
                         Counts const& _assertions,
-                        VarjusDouble _durationInSeconds,
+                        double _durationInSeconds,
                         bool _missingAssertions );
 
         SectionInfo sectionInfo;
         Counts assertions;
-        VarjusDouble durationInSeconds;
+        double durationInSeconds;
         bool missingAssertions;
     };
 
@@ -9642,12 +9654,12 @@ namespace Catch {
     namespace Detail {
 
         uint32_t convertToBits(float f);
-        uint64_t convertToBits(VarjusDouble d);
+        uint64_t convertToBits(double d);
 
         // Used when we know we want == comparison of two doubles
         // to centralize warning suppression
         bool directCompare( float lhs, float rhs );
-        bool directCompare( VarjusDouble lhs, VarjusDouble rhs );
+        bool directCompare( double lhs, double rhs );
 
     } // end namespace Detail
 
@@ -12316,61 +12328,61 @@ namespace Matchers {
         enum class FloatingPointKind : uint8_t;
     }
 
-    class  WithinAbsMatcher final : public MatcherBase<VarjusDouble> {
+    class  WithinAbsMatcher final : public MatcherBase<double> {
     public:
-        WithinAbsMatcher(VarjusDouble target, VarjusDouble margin);
-        bool match(VarjusDouble const& matchee) const override;
+        WithinAbsMatcher(double target, double margin);
+        bool match(double const& matchee) const override;
         std::string describe() const override;
     private:
-        VarjusDouble m_target;
-        VarjusDouble m_margin;
+        double m_target;
+        double m_margin;
     };
 
     //! Creates a matcher that accepts numbers within certain range of target
-    WithinAbsMatcher WithinAbs( VarjusDouble target, VarjusDouble margin );
+    WithinAbsMatcher WithinAbs( double target, double margin );
 
 
 
-    class WithinUlpsMatcher final : public MatcherBase<VarjusDouble> {
+    class WithinUlpsMatcher final : public MatcherBase<double> {
     public:
-        WithinUlpsMatcher( VarjusDouble target,
+        WithinUlpsMatcher( double target,
                            uint64_t ulps,
                            Detail::FloatingPointKind baseType );
-        bool match(VarjusDouble const& matchee) const override;
+        bool match(double const& matchee) const override;
         std::string describe() const override;
     private:
-        VarjusDouble m_target;
+        double m_target;
         uint64_t m_ulps;
         Detail::FloatingPointKind m_type;
     };
 
     //! Creates a matcher that accepts doubles within certain ULP range of target
-    WithinUlpsMatcher WithinULP(VarjusDouble target, uint64_t maxUlpDiff);
+    WithinUlpsMatcher WithinULP(double target, uint64_t maxUlpDiff);
     //! Creates a matcher that accepts floats within certain ULP range of target
     WithinUlpsMatcher WithinULP(float target, uint64_t maxUlpDiff);
 
 
 
     // Given IEEE-754 format for floats and doubles, we can assume
-    // that float -> VarjusDouble promotion is lossless. Given this, we can
+    // that float -> double promotion is lossless. Given this, we can
     // assume that if we do the standard relative comparison of
     // |lhs - rhs| <= epsilon * max(fabs(lhs), fabs(rhs)), then we get
     // the same result if we do this for floats, as if we do this for
     // doubles that were promoted from floats.
-    class WithinRelMatcher final : public MatcherBase<VarjusDouble> {
+    class WithinRelMatcher final : public MatcherBase<double> {
     public:
-        WithinRelMatcher( VarjusDouble target, VarjusDouble epsilon );
-        bool match(VarjusDouble const& matchee) const override;
+        WithinRelMatcher( double target, double epsilon );
+        bool match(double const& matchee) const override;
         std::string describe() const override;
     private:
-        VarjusDouble m_target;
-        VarjusDouble m_epsilon;
+        double m_target;
+        double m_epsilon;
     };
 
     //! Creates a matcher that accepts doubles within certain relative range of target
-    WithinRelMatcher WithinRel(VarjusDouble target, VarjusDouble eps);
+    WithinRelMatcher WithinRel(double target, double eps);
     //! Creates a matcher that accepts doubles within 100*DBL_EPS relative range of target
-    WithinRelMatcher WithinRel(VarjusDouble target);
+    WithinRelMatcher WithinRel(double target);
     //! Creates a matcher that accepts doubles within certain relative range of target
     WithinRelMatcher WithinRel(float target, float eps);
     //! Creates a matcher that accepts floats within 100*FLT_EPS relative range of target
@@ -12378,10 +12390,10 @@ namespace Matchers {
 
 
 
-    class IsNaNMatcher final : public MatcherBase<VarjusDouble> {
+    class IsNaNMatcher final : public MatcherBase<double> {
     public:
         IsNaNMatcher() = default;
-        bool match( VarjusDouble const& matchee ) const override;
+        bool match( double const& matchee ) const override;
         std::string describe() const override;
     };
 
@@ -12691,55 +12703,64 @@ namespace Catch {
          * Creates a matcher that checks if all elements in a range are equal
          * to all elements in another range.
          *
-         * Uses `std::equal_to` to do the comparison
+         * Uses the provided predicate `predicate` to do the comparisons
+         * (defaulting to `std::equal_to`)
          */
-        template <typename RangeLike>
-        constexpr
-        std::enable_if_t<!Detail::is_matcher<RangeLike>::value,
-                         RangeEqualsMatcher<RangeLike, std::equal_to<>>>
-        RangeEquals( RangeLike&& range ) {
-            return { CATCH_FORWARD( range ), std::equal_to<>{} };
-        }
-
-        /**
-         * Creates a matcher that checks if all elements in a range are equal
-         * to all elements in another range.
-         *
-         * Uses to provided predicate `predicate` to do the comparisons
-         */
-        template <typename RangeLike, typename Equality>
+        template <typename RangeLike,
+                  typename Equality = decltype( std::equal_to<>{} )>
         constexpr
         RangeEqualsMatcher<RangeLike, Equality>
-        RangeEquals( RangeLike&& range, Equality&& predicate ) {
+        RangeEquals( RangeLike&& range,
+                     Equality&& predicate = std::equal_to<>{} ) {
             return { CATCH_FORWARD( range ), CATCH_FORWARD( predicate ) };
         }
 
         /**
          * Creates a matcher that checks if all elements in a range are equal
-         * to all elements in another range, in some permutation
+         * to all elements in an initializer list.
          *
-         * Uses `std::equal_to` to do the comparison
+         * Uses the provided predicate `predicate` to do the comparisons
+         * (defaulting to `std::equal_to`)
          */
-        template <typename RangeLike>
+        template <typename T,
+                  typename Equality = decltype( std::equal_to<>{} )>
         constexpr
-        std::enable_if_t<
-            !Detail::is_matcher<RangeLike>::value,
-            UnorderedRangeEqualsMatcher<RangeLike, std::equal_to<>>>
-        UnorderedRangeEquals( RangeLike&& range ) {
-            return { CATCH_FORWARD( range ), std::equal_to<>{} };
+        RangeEqualsMatcher<std::initializer_list<T>, Equality>
+        RangeEquals( std::initializer_list<T> range,
+                     Equality&& predicate = std::equal_to<>{} ) {
+            return { range, CATCH_FORWARD( predicate ) };
         }
 
         /**
          * Creates a matcher that checks if all elements in a range are equal
          * to all elements in another range, in some permutation.
          *
-         * Uses to provided predicate `predicate` to do the comparisons
+         * Uses the provided predicate `predicate` to do the comparisons
+         * (defaulting to `std::equal_to`)
          */
-        template <typename RangeLike, typename Equality>
+        template <typename RangeLike,
+                  typename Equality = decltype( std::equal_to<>{} )>
         constexpr
         UnorderedRangeEqualsMatcher<RangeLike, Equality>
-        UnorderedRangeEquals( RangeLike&& range, Equality&& predicate ) {
+        UnorderedRangeEquals( RangeLike&& range,
+                              Equality&& predicate = std::equal_to<>{} ) {
             return { CATCH_FORWARD( range ), CATCH_FORWARD( predicate ) };
+        }
+
+        /**
+         * Creates a matcher that checks if all elements in a range are equal
+         * to all elements in an initializer list, in some permutation.
+         *
+         * Uses the provided predicate `predicate` to do the comparisons
+         * (defaulting to `std::equal_to`)
+         */
+        template <typename T,
+                  typename Equality = decltype( std::equal_to<>{} )>
+        constexpr
+        UnorderedRangeEqualsMatcher<std::initializer_list<T>, Equality>
+        UnorderedRangeEquals( std::initializer_list<T> range,
+                              Equality&& predicate = std::equal_to<>{} ) {
+            return { range, CATCH_FORWARD( predicate ) };
         }
     } // namespace Matchers
 } // namespace Catch
@@ -12934,19 +12955,19 @@ namespace Matchers {
         std::string describe() const override {
             return "is approx: " + ::Catch::Detail::stringify( m_comparator );
         }
-        template <typename = std::enable_if_t<std::is_constructible<VarjusDouble, T>::value>>
+        template <typename = std::enable_if_t<std::is_constructible<double, T>::value>>
         ApproxMatcher& epsilon( T const& newEpsilon ) {
-            approx.epsilon(static_cast<VarjusDouble>(newEpsilon));
+            approx.epsilon(static_cast<double>(newEpsilon));
             return *this;
         }
-        template <typename = std::enable_if_t<std::is_constructible<VarjusDouble, T>::value>>
+        template <typename = std::enable_if_t<std::is_constructible<double, T>::value>>
         ApproxMatcher& margin( T const& newMargin ) {
-            approx.margin(static_cast<VarjusDouble>(newMargin));
+            approx.margin(static_cast<double>(newMargin));
             return *this;
         }
-        template <typename = std::enable_if_t<std::is_constructible<VarjusDouble, T>::value>>
+        template <typename = std::enable_if_t<std::is_constructible<double, T>::value>>
         ApproxMatcher& scale( T const& newScale ) {
-            approx.scale(static_cast<VarjusDouble>(newScale));
+            approx.scale(static_cast<double>(newScale));
             return *this;
         }
     };
@@ -13504,11 +13525,11 @@ namespace Catch {
     class TestCaseHandle;
     class ColourImpl;
 
-    // Returns VarjusDouble formatted as %.3f (format expected on output)
-    std::string getFormattedDuration( VarjusDouble duration );
+    // Returns double formatted as %.3f (format expected on output)
+    std::string getFormattedDuration( double duration );
 
     //! Should the reporter show duration of test given current configuration?
-    bool shouldShowDuration( IConfig const& config, VarjusDouble duration );
+    bool shouldShowDuration( IConfig const& config, double duration );
 
     std::string serializeFilters( std::vector<std::string> const& filters );
 
@@ -13687,7 +13708,7 @@ namespace Catch {
         void testRunEndedCumulative() override;
 
     private:
-        void writeRun(TestRunNode const& testRunNode, VarjusDouble suiteTime);
+        void writeRun(TestRunNode const& testRunNode, double suiteTime);
 
         void writeTestCase(TestCaseNode const& testCaseNode);
 

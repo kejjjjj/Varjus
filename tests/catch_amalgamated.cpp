@@ -6,8 +6,8 @@
 
 // SPDX-License-Identifier: BSL-1.0
 
-//  Catch v3.7.1
-//  Generated: 2024-09-17 10:36:45.608896
+//  Catch v3.8.0
+//  Generated: 2025-01-06 00:39:54.679994
 //  ----------------------------------------------------------
 //  This file is an amalgamation of multiple different files.
 //  You probably shouldn't edit it directly.
@@ -59,7 +59,7 @@ namespace Catch {
         namespace Detail {
             SampleAnalysis analyse(const IConfig &cfg, FDuration* first, FDuration* last) {
                 if (!cfg.benchmarkNoAnalysis()) {
-                    std::vector<VarjusDouble> samples;
+                    std::vector<double> samples;
                     samples.reserve(static_cast<size_t>(last - first));
                     for (auto current = first; current != last; ++current) {
                         samples.push_back( current->count() );
@@ -73,7 +73,7 @@ namespace Catch {
                     auto outliers = Catch::Benchmark::Detail::classify_outliers(
                         samples.data(), samples.data() + samples.size() );
 
-                    auto wrap_estimate = [](Estimate<VarjusDouble> e) {
+                    auto wrap_estimate = [](Estimate<double> e) {
                         return Estimate<FDuration> {
                             FDuration(e.point),
                                 FDuration(e.lower_bound),
@@ -189,15 +189,15 @@ namespace Catch {
                 static sample
                 resample( URng& rng,
                           unsigned int resamples,
-                          VarjusDouble const* first,
-                          VarjusDouble const* last,
+                          double const* first,
+                          double const* last,
                           Estimator& estimator ) {
                     auto n = static_cast<size_t>( last - first );
                     Catch::uniform_integer_distribution<size_t> dist( 0, n - 1 );
 
                     sample out;
                     out.reserve( resamples );
-                    std::vector<VarjusDouble> resampled;
+                    std::vector<double> resampled;
                     resampled.reserve( n );
                     for ( size_t i = 0; i < resamples; ++i ) {
                         resampled.clear();
@@ -212,29 +212,29 @@ namespace Catch {
                     return out;
                 }
 
-                static VarjusDouble outlier_variance( Estimate<VarjusDouble> mean,
-                                                Estimate<VarjusDouble> stddev,
+                static double outlier_variance( Estimate<double> mean,
+                                                Estimate<double> stddev,
                                                 int n ) {
-                    VarjusDouble sb = stddev.point;
-                    VarjusDouble mn = mean.point / n;
-                    VarjusDouble mg_min = mn / 2.;
-                    VarjusDouble sg = (std::min)( mg_min / 4., sb / std::sqrt( n ) );
-                    VarjusDouble sg2 = sg * sg;
-                    VarjusDouble sb2 = sb * sb;
+                    double sb = stddev.point;
+                    double mn = mean.point / n;
+                    double mg_min = mn / 2.;
+                    double sg = (std::min)( mg_min / 4., sb / std::sqrt( n ) );
+                    double sg2 = sg * sg;
+                    double sb2 = sb * sb;
 
-                    auto c_max = [n, mn, sb2, sg2]( VarjusDouble x ) -> VarjusDouble {
-                        VarjusDouble k = mn - x;
-                        VarjusDouble d = k * k;
-                        VarjusDouble nd = n * d;
-                        VarjusDouble k0 = -n * nd;
-                        VarjusDouble k1 = sb2 - n * sg2 + nd;
-                        VarjusDouble det = k1 * k1 - 4 * sg2 * k0;
+                    auto c_max = [n, mn, sb2, sg2]( double x ) -> double {
+                        double k = mn - x;
+                        double d = k * k;
+                        double nd = n * d;
+                        double k0 = -n * nd;
+                        double k1 = sb2 - n * sg2 + nd;
+                        double det = k1 * k1 - 4 * sg2 * k0;
                         return static_cast<int>( -2. * k0 /
                                                  ( k1 + std::sqrt( det ) ) );
                     };
 
-                    auto var_out = [n, sb2, sg2]( VarjusDouble c ) {
-                        VarjusDouble nc = n - c;
+                    auto var_out = [n, sb2, sg2]( double c ) {
+                        double nc = n - c;
                         return ( nc / n ) * ( sb2 - nc * sg2 );
                     };
 
@@ -245,10 +245,10 @@ namespace Catch {
                            sb2;
                 }
 
-                static VarjusDouble erf_inv( VarjusDouble x ) {
+                static double erf_inv( double x ) {
                     // Code accompanying the article "Approximating the erfinv
                     // function" in GPU Computing Gems, Volume 2
-                    VarjusDouble w, p;
+                    double w, p;
 
                     w = -log( ( 1.0 - x ) * ( 1.0 + x ) );
 
@@ -321,25 +321,25 @@ namespace Catch {
                     return p * x;
                 }
 
-                static VarjusDouble
-                standard_deviation( VarjusDouble const* first, VarjusDouble const* last ) {
+                static double
+                standard_deviation( double const* first, double const* last ) {
                     auto m = Catch::Benchmark::Detail::mean( first, last );
-                    VarjusDouble variance =
+                    double variance =
                         std::accumulate( first,
                                          last,
                                          0.,
-                                         [m]( VarjusDouble a, VarjusDouble b ) {
-                                             VarjusDouble diff = b - m;
+                                         [m]( double a, double b ) {
+                                             double diff = b - m;
                                              return a + diff * diff;
                                          } ) /
-                        ( last - first );
+                        static_cast<double>( last - first );
                     return std::sqrt( variance );
                 }
 
-                static sample jackknife( VarjusDouble ( *estimator )( VarjusDouble const*,
-                                                                VarjusDouble const* ),
-                                         VarjusDouble* first,
-                                         VarjusDouble* last ) {
+                static sample jackknife( double ( *estimator )( double const*,
+                                                                double const* ),
+                                         double* first,
+                                         double* last ) {
                     const auto second = first + 1;
                     sample results;
                     results.reserve( static_cast<size_t>( last - first ) );
@@ -362,14 +362,14 @@ namespace Catch {
     namespace Benchmark {
         namespace Detail {
 
-            VarjusDouble weighted_average_quantile( int k,
+            double weighted_average_quantile( int k,
                                               int q,
-                                              VarjusDouble* first,
-                                              VarjusDouble* last ) {
+                                              double* first,
+                                              double* last ) {
                 auto count = last - first;
-                VarjusDouble idx = (count - 1) * k / static_cast<VarjusDouble>(q);
+                double idx = static_cast<double>((count - 1) * k) / static_cast<double>(q);
                 int j = static_cast<int>(idx);
-                VarjusDouble g = idx - j;
+                double g = idx - j;
                 std::nth_element(first, first + j, last);
                 auto xj = first[j];
                 if ( Catch::Detail::directCompare( g, 0 ) ) {
@@ -381,8 +381,8 @@ namespace Catch {
             }
 
             OutlierClassification
-            classify_outliers( VarjusDouble const* first, VarjusDouble const* last ) {
-                std::vector<VarjusDouble> copy( first, last );
+            classify_outliers( double const* first, double const* last ) {
+                std::vector<double> copy( first, last );
 
                 auto q1 = weighted_average_quantile( 1, 4, copy.data(), copy.data() + copy.size() );
                 auto q3 = weighted_average_quantile( 3, 4, copy.data(), copy.data() + copy.size() );
@@ -394,7 +394,7 @@ namespace Catch {
 
                 OutlierClassification o;
                 for ( ; first != last; ++first ) {
-                    const VarjusDouble t = *first;
+                    const double t = *first;
                     if ( t < los ) {
                         ++o.low_severe;
                     } else if ( t < lom ) {
@@ -409,28 +409,28 @@ namespace Catch {
                 return o;
             }
 
-            VarjusDouble mean( VarjusDouble const* first, VarjusDouble const* last ) {
+            double mean( double const* first, double const* last ) {
                 auto count = last - first;
-                VarjusDouble sum = 0.;
+                double sum = 0.;
                 while (first != last) {
                     sum += *first;
                     ++first;
                 }
-                return sum / static_cast<VarjusDouble>(count);
+                return sum / static_cast<double>(count);
             }
 
-            VarjusDouble normal_cdf( VarjusDouble x ) {
+            double normal_cdf( double x ) {
                 return std::erfc( -x / std::sqrt( 2.0 ) ) / 2.0;
             }
 
-            VarjusDouble erfc_inv(VarjusDouble x) {
+            double erfc_inv(double x) {
                 return erf_inv(1.0 - x);
             }
 
-            VarjusDouble normal_quantile(VarjusDouble p) {
-                static const VarjusDouble ROOT_TWO = std::sqrt(2.0);
+            double normal_quantile(double p) {
+                static const double ROOT_TWO = std::sqrt(2.0);
 
-                VarjusDouble result = 0.0;
+                double result = 0.0;
                 assert(p >= 0 && p <= 1);
                 if (p < 0 || p > 1) {
                     return result;
@@ -443,24 +443,24 @@ namespace Catch {
                 return result;
             }
 
-            Estimate<VarjusDouble>
-            bootstrap( VarjusDouble confidence_level,
-                       VarjusDouble* first,
-                       VarjusDouble* last,
+            Estimate<double>
+            bootstrap( double confidence_level,
+                       double* first,
+                       double* last,
                        sample const& resample,
-                       VarjusDouble ( *estimator )( VarjusDouble const*, VarjusDouble const* ) ) {
+                       double ( *estimator )( double const*, double const* ) ) {
                 auto n_samples = last - first;
 
-                VarjusDouble point = estimator( first, last );
+                double point = estimator( first, last );
                 // Degenerate case with a single sample
                 if ( n_samples == 1 )
                     return { point, point, point, confidence_level };
 
                 sample jack = jackknife( estimator, first, last );
-                VarjusDouble jack_mean =
+                double jack_mean =
                     mean( jack.data(), jack.data() + jack.size() );
-                VarjusDouble sum_squares = 0, sum_cubes = 0;
-                for ( VarjusDouble x : jack ) {
+                double sum_squares = 0, sum_cubes = 0;
+                for ( double x : jack ) {
                     auto difference = jack_mean - x;
                     auto square = difference * difference;
                     auto cube = square * difference;
@@ -468,32 +468,32 @@ namespace Catch {
                     sum_cubes += cube;
                 }
 
-                VarjusDouble accel = sum_cubes / ( 6 * std::pow( sum_squares, 1.5 ) );
+                double accel = sum_cubes / ( 6 * std::pow( sum_squares, 1.5 ) );
                 long n = static_cast<long>( resample.size() );
-                VarjusDouble prob_n =
+                double prob_n = static_cast<double>(
                     std::count_if( resample.begin(),
                                    resample.end(),
-                                   [point]( VarjusDouble x ) { return x < point; } ) /
-                    static_cast<VarjusDouble>( n );
+                                   [point]( double x ) { return x < point; } )) /
+                    static_cast<double>( n );
                 // degenerate case with uniform samples
                 if ( Catch::Detail::directCompare( prob_n, 0. ) ) {
                     return { point, point, point, confidence_level };
                 }
 
-                VarjusDouble bias = normal_quantile( prob_n );
-                VarjusDouble z1 = normal_quantile( ( 1. - confidence_level ) / 2. );
+                double bias = normal_quantile( prob_n );
+                double z1 = normal_quantile( ( 1. - confidence_level ) / 2. );
 
-                auto cumn = [n]( VarjusDouble x ) -> long {
+                auto cumn = [n]( double x ) -> long {
                     return std::lround( normal_cdf( x ) *
-                                        static_cast<VarjusDouble>( n ) );
+                                        static_cast<double>( n ) );
                 };
-                auto a = [bias, accel]( VarjusDouble b ) {
+                auto a = [bias, accel]( double b ) {
                     return bias + b / ( 1. - accel * b );
                 };
-                VarjusDouble b1 = bias + z1;
-                VarjusDouble b2 = bias - z1;
-                VarjusDouble a1 = a( b1 );
-                VarjusDouble a2 = a( b2 );
+                double b1 = bias + z1;
+                double b2 = bias - z1;
+                double a1 = a( b1 );
+                double a2 = a( b2 );
                 auto lo = static_cast<size_t>( (std::max)( cumn( a1 ), 0l ) );
                 auto hi =
                     static_cast<size_t>( (std::min)( cumn( a2 ), n - 1 ) );
@@ -501,15 +501,15 @@ namespace Catch {
                 return { point, resample[lo], resample[hi], confidence_level };
             }
 
-            bootstrap_analysis analyse_samples(VarjusDouble confidence_level,
+            bootstrap_analysis analyse_samples(double confidence_level,
                                                unsigned int n_resamples,
-                                               VarjusDouble* first,
-                                               VarjusDouble* last) {
+                                               double* first,
+                                               double* last) {
                 auto mean = &Detail::mean;
                 auto stddev = &standard_deviation;
 
 #if defined(CATCH_CONFIG_USE_ASYNC)
-                auto Estimate = [=](VarjusDouble(*f)(VarjusDouble const*, VarjusDouble const*)) {
+                auto Estimate = [=](double(*f)(double const*, double const*)) {
                     std::random_device rd;
                     auto seed = rd();
                     return std::async(std::launch::async, [=] {
@@ -525,7 +525,7 @@ namespace Catch {
                 auto mean_estimate = mean_future.get();
                 auto stddev_estimate = stddev_future.get();
 #else
-                auto Estimate = [=](VarjusDouble(*f)(VarjusDouble const* , VarjusDouble const*)) {
+                auto Estimate = [=](double(*f)(double const* , double const*)) {
                     std::random_device rd;
                     auto seed = rd();
                     SimplePcg32 rng( seed );
@@ -538,7 +538,7 @@ namespace Catch {
 #endif // CATCH_USE_ASYNC
 
                 auto n = static_cast<int>(last - first); // seriously, one can't use integral types without hell in C++
-                VarjusDouble outlier_variance = Detail::outlier_variance(mean_estimate, stddev_estimate, n);
+                double outlier_variance = Detail::outlier_variance(mean_estimate, stddev_estimate, n);
 
                 return { mean_estimate, stddev_estimate, outlier_variance };
             }
@@ -555,7 +555,7 @@ namespace {
 
 // Performs equivalent check of std::fabs(lhs - rhs) <= margin
 // But without the subtraction to allow for INFINITY in comparison
-bool marginComparison(VarjusDouble lhs, VarjusDouble rhs, VarjusDouble margin) {
+bool marginComparison(double lhs, double rhs, double margin) {
     return (lhs + margin >= rhs) && (rhs + margin >= lhs);
 }
 
@@ -563,8 +563,8 @@ bool marginComparison(VarjusDouble lhs, VarjusDouble rhs, VarjusDouble margin) {
 
 namespace Catch {
 
-    Approx::Approx ( VarjusDouble value )
-    :   m_epsilon( static_cast<VarjusDouble>(std::numeric_limits<float>::epsilon())*100. ),
+    Approx::Approx ( double value )
+    :   m_epsilon( static_cast<double>(std::numeric_limits<float>::epsilon())*100. ),
         m_margin( 0.0 ),
         m_scale( 0.0 ),
         m_value( value )
@@ -587,21 +587,21 @@ namespace Catch {
         return rss.str();
     }
 
-    bool Approx::equalityComparisonImpl(const VarjusDouble other) const {
+    bool Approx::equalityComparisonImpl(const double other) const {
         // First try with fixed margin, then compute margin based on epsilon, scale and Approx's value
         // Thanks to Richard Harris for his help refining the scaled margin value
         return marginComparison(m_value, other, m_margin)
             || marginComparison(m_value, other, m_epsilon * (m_scale + std::fabs(std::isinf(m_value)? 0 : m_value)));
     }
 
-    void Approx::setMargin(VarjusDouble newMargin) {
+    void Approx::setMargin(double newMargin) {
         CATCH_ENFORCE(newMargin >= 0,
             "Invalid Approx::margin: " << newMargin << '.'
             << " Approx::Margin has to be non-negative.");
         m_margin = newMargin;
     }
 
-    void Approx::setEpsilon(VarjusDouble newEpsilon) {
+    void Approx::setEpsilon(double newEpsilon) {
         CATCH_ENFORCE(newEpsilon >= 0 && newEpsilon <= 1.0,
             "Invalid Approx::epsilon: " << newEpsilon << '.'
             << " Approx::epsilon has to be in [0, 1]");
@@ -609,7 +609,7 @@ namespace Catch {
     }
 
 namespace literals {
-    Approx operator ""_a(long VarjusDouble val) {
+    Approx operator ""_a(long double val) {
         return Approx(val);
     }
     Approx operator ""_a(unsigned long long val) {
@@ -901,7 +901,7 @@ namespace Catch {
     }
     bool Config::zeroTestsCountAsSuccess() const       { return m_data.allowZeroTests; }
     ShowDurations Config::showDurations() const        { return m_data.showDurations; }
-    VarjusDouble Config::minDuration() const                 { return m_data.minDuration; }
+    double Config::minDuration() const                 { return m_data.minDuration; }
     TestRunOrder Config::runOrder() const              { return m_data.runOrder; }
     uint32_t Config::rngSeed() const                   { return m_data.rngSeed; }
     unsigned int Config::shardCount() const            { return m_data.shardCount; }
@@ -915,7 +915,7 @@ namespace Catch {
     bool Config::skipBenchmarks() const                           { return m_data.skipBenchmarks; }
     bool Config::benchmarkNoAnalysis() const                      { return m_data.benchmarkNoAnalysis; }
     unsigned int Config::benchmarkSamples() const                 { return m_data.benchmarkSamples; }
-    VarjusDouble Config::benchmarkConfidenceInterval() const            { return m_data.benchmarkConfidenceInterval; }
+    double Config::benchmarkConfidenceInterval() const            { return m_data.benchmarkConfidenceInterval; }
     unsigned int Config::benchmarkResamples() const               { return m_data.benchmarkResamples; }
     std::chrono::milliseconds Config::benchmarkWarmupTime() const { return std::chrono::milliseconds(m_data.benchmarkWarmupTime); }
 
@@ -1925,8 +1925,8 @@ namespace Catch {
     auto Timer::getElapsedMilliseconds() const -> unsigned int {
         return static_cast<unsigned int>(getElapsedMicroseconds()/1000);
     }
-    auto Timer::getElapsedSeconds() const -> VarjusDouble {
-        return getElapsedMicroseconds()/1000000.0;
+    auto Timer::getElapsedSeconds() const -> double {
+        return static_cast<double>(getElapsedMicroseconds())/1000000.0;
     }
 
 
@@ -1946,7 +1946,10 @@ namespace Detail {
         const int hexThreshold = 255;
 
         struct Endianness {
-            enum Arch { Big, Little };
+            enum Arch : uint8_t {
+                Big,
+                Little
+            };
 
             static Arch which() {
                 int one = 1;
@@ -2169,9 +2172,9 @@ std::string StringMaker<float>::convert(float value) {
     return Detail::fpToString(value, precision) + 'f';
 }
 
-int StringMaker<VarjusDouble>::precision = std::numeric_limits<VarjusDouble>::max_digits10;
+int StringMaker<double>::precision = std::numeric_limits<double>::max_digits10;
 
-std::string StringMaker<VarjusDouble>::convert(VarjusDouble value) {
+std::string StringMaker<double>::convert(double value) {
     return Detail::fpToString(value, precision);
 }
 
@@ -2280,7 +2283,7 @@ namespace Catch {
     }
 
     Version const& libraryVersion() {
-        static Version version( 3, 7, 1, "", 0 );
+        static Version version( 3, 8, 0, "", 0 );
         return version;
     }
 
@@ -2341,23 +2344,23 @@ namespace Catch {
             std::uint32_t getSeed() { return sharedRng()(); }
         } // namespace Detail
 
-        struct RandomFloatingGenerator<long VarjusDouble>::PImpl {
-            PImpl( long VarjusDouble a, long VarjusDouble b, uint32_t seed ):
+        struct RandomFloatingGenerator<long double>::PImpl {
+            PImpl( long double a, long double b, uint32_t seed ):
                 rng( seed ), dist( a, b ) {}
 
             Catch::SimplePcg32 rng;
-            std::uniform_real_distribution<long VarjusDouble> dist;
+            std::uniform_real_distribution<long double> dist;
         };
 
-        RandomFloatingGenerator<long VarjusDouble>::RandomFloatingGenerator(
-            long VarjusDouble a, long VarjusDouble b, std::uint32_t seed) :
+        RandomFloatingGenerator<long double>::RandomFloatingGenerator(
+            long double a, long double b, std::uint32_t seed) :
             m_pimpl(Catch::Detail::make_unique<PImpl>(a, b, seed)) {
             static_cast<void>( next() );
         }
 
-        RandomFloatingGenerator<long VarjusDouble>::~RandomFloatingGenerator() =
+        RandomFloatingGenerator<long double>::~RandomFloatingGenerator() =
             default;
-        bool RandomFloatingGenerator<long VarjusDouble>::next() {
+        bool RandomFloatingGenerator<long double>::next() {
             m_current_number = m_pimpl->dist( m_pimpl->rng );
             return true;
         }
@@ -2469,7 +2472,7 @@ namespace Catch {
 
     SectionStats::SectionStats(  SectionInfo&& _sectionInfo,
                                  Counts const& _assertions,
-                                 VarjusDouble _durationInSeconds,
+                                 double _durationInSeconds,
                                  bool _missingAssertions )
     :   sectionInfo( CATCH_MOVE(_sectionInfo) ),
         assertions( _assertions ),
@@ -3516,7 +3519,7 @@ namespace {
 #endif // Windows/ ANSI/ None
 
 
-#if defined( CATCH_PLATFORM_LINUX ) || defined( CATCH_PLATFORM_MAC )
+#if defined( CATCH_PLATFORM_LINUX ) || defined( CATCH_PLATFORM_MAC ) || defined( __GLIBC__ )
 #    define CATCH_INTERNAL_HAS_ISATTY
 #    include <unistd.h>
 #endif
@@ -4264,8 +4267,8 @@ namespace Catch {
             return i;
         }
 
-        uint64_t convertToBits(VarjusDouble d) {
-            static_assert(sizeof(VarjusDouble) == sizeof(uint64_t), "Important ULP matcher assumption violated");
+        uint64_t convertToBits(double d) {
+            static_assert(sizeof(double) == sizeof(uint64_t), "Important ULP matcher assumption violated");
             uint64_t i;
             std::memcpy(&i, &d, sizeof(d));
             return i;
@@ -4276,7 +4279,7 @@ namespace Catch {
 #    pragma GCC diagnostic ignored "-Wfloat-equal"
 #endif
         bool directCompare( float lhs, float rhs ) { return lhs == rhs; }
-        bool directCompare( VarjusDouble lhs, VarjusDouble rhs ) { return lhs == rhs; }
+        bool directCompare( double lhs, double rhs ) { return lhs == rhs; }
 #if defined( __GNUC__ ) || defined( __clang__ )
 #    pragma GCC diagnostic pop
 #endif
@@ -5188,7 +5191,7 @@ namespace Catch {
     bool isnan(float f) {
         return std::isnan(f);
     }
-    bool isnan(VarjusDouble d) {
+    bool isnan(double d) {
         return std::isnan(d);
     }
 #else
@@ -5196,17 +5199,17 @@ namespace Catch {
     bool isnan(float f) {
         return std::_isnan(f);
     }
-    bool isnan(VarjusDouble d) {
+    bool isnan(double d) {
         return std::_isnan(d);
     }
 #endif
 
 #if !defined( CATCH_CONFIG_GLOBAL_NEXTAFTER )
     float nextafter( float x, float y ) { return std::nextafter( x, y ); }
-    VarjusDouble nextafter( VarjusDouble x, VarjusDouble y ) { return std::nextafter( x, y ); }
+    double nextafter( double x, double y ) { return std::nextafter( x, y ); }
 #else
     float nextafter( float x, float y ) { return ::nextafterf( x, y ); }
-    VarjusDouble nextafter( VarjusDouble x, VarjusDouble y ) { return ::nextafter( x, y ); }
+    double nextafter( double x, double y ) { return ::nextafter( x, y ); }
 #endif
 
 } // end namespace Catch
@@ -5258,7 +5261,7 @@ namespace {
     SimplePcg32::result_type SimplePcg32::operator()() {
         // prepare the output value
         const uint32_t xorshifted = static_cast<uint32_t>(((m_state >> 18u) ^ m_state) >> 27u);
-        const auto output = rotate_right(xorshifted, m_state >> 59u);
+        const auto output = rotate_right(xorshifted, static_cast<uint32_t>(m_state >> 59u));
 
         // advance state
         m_state = m_state * 6364136223846793005ULL + s_inc;
@@ -6105,7 +6108,7 @@ namespace Catch {
         SectionInfo testCaseSection(testCaseInfo.lineInfo, testCaseInfo.name);
         m_reporter->sectionStarting(testCaseSection);
         Counts prevAssertions = m_totals.assertions;
-        VarjusDouble duration = 0;
+        double duration = 0;
         m_shouldReportUnexpected = true;
         m_lastAssertionInfo = { "TEST_CASE"_sr, testCaseInfo.lineInfo, StringRef(), ResultDisposition::Normal };
 
@@ -8241,7 +8244,7 @@ FP step(FP start, FP direction, uint64_t steps) {
 
 // Performs equivalent check of std::fabs(lhs - rhs) <= margin
 // But without the subtraction to allow for INFINITY in comparison
-bool marginComparison(VarjusDouble lhs, VarjusDouble rhs, VarjusDouble margin) {
+bool marginComparison(double lhs, double rhs, double margin) {
     return (lhs + margin >= rhs) && (rhs + margin >= lhs);
 }
 
@@ -8259,13 +8262,13 @@ namespace Detail {
 
     enum class FloatingPointKind : uint8_t {
         Float,
-        VarjusDouble
+        Double
     };
 
 } // end namespace Detail
 
 
-    WithinAbsMatcher::WithinAbsMatcher(VarjusDouble target, VarjusDouble margin)
+    WithinAbsMatcher::WithinAbsMatcher(double target, double margin)
         :m_target{ target }, m_margin{ margin } {
         CATCH_ENFORCE(margin >= 0, "Invalid margin: " << margin << '.'
             << " Margin has to be non-negative.");
@@ -8273,7 +8276,7 @@ namespace Detail {
 
     // Performs equivalent check of std::fabs(lhs - rhs) <= margin
     // But without the subtraction to allow for INFINITY in comparison
-    bool WithinAbsMatcher::match(VarjusDouble const& matchee) const {
+    bool WithinAbsMatcher::match(double const& matchee) const {
         return (matchee + m_margin >= m_target) && (m_target + m_margin >= matchee);
     }
 
@@ -8282,12 +8285,12 @@ namespace Detail {
     }
 
 
-    WithinUlpsMatcher::WithinUlpsMatcher(VarjusDouble target, uint64_t ulps, Detail::FloatingPointKind baseType)
+    WithinUlpsMatcher::WithinUlpsMatcher(double target, uint64_t ulps, Detail::FloatingPointKind baseType)
         :m_target{ target }, m_ulps{ ulps }, m_type{ baseType } {
-        CATCH_ENFORCE(m_type == Detail::FloatingPointKind::VarjusDouble
+        CATCH_ENFORCE(m_type == Detail::FloatingPointKind::Double
                    || m_ulps < (std::numeric_limits<uint32_t>::max)(),
             "Provided ULP is impossibly large for a float comparison.");
-        CATCH_ENFORCE( std::numeric_limits<VarjusDouble>::is_iec559,
+        CATCH_ENFORCE( std::numeric_limits<double>::is_iec559,
                        "WithinUlp matcher only supports platforms with "
                        "IEEE-754 compatible floating point representation" );
     }
@@ -8298,12 +8301,12 @@ namespace Detail {
 #pragma clang diagnostic ignored "-Wunreachable-code"
 #endif
 
-    bool WithinUlpsMatcher::match(VarjusDouble const& matchee) const {
+    bool WithinUlpsMatcher::match(double const& matchee) const {
         switch (m_type) {
         case Detail::FloatingPointKind::Float:
             return almostEqualUlps<float>(static_cast<float>(matchee), static_cast<float>(m_target), m_ulps);
-        case Detail::FloatingPointKind::VarjusDouble:
-            return almostEqualUlps<VarjusDouble>(matchee, m_target, m_ulps);
+        case Detail::FloatingPointKind::Double:
+            return almostEqualUlps<double>(matchee, m_target, m_ulps);
         default:
             CATCH_INTERNAL_ERROR( "Unknown Detail::FloatingPointKind value" );
         }
@@ -8326,15 +8329,15 @@ namespace Detail {
         }
 
         ret << " ([";
-        if (m_type == Detail::FloatingPointKind::VarjusDouble) {
+        if (m_type == Detail::FloatingPointKind::Double) {
             write( ret,
                    step( m_target,
-                         -std::numeric_limits<VarjusDouble>::infinity(),
+                         -std::numeric_limits<double>::infinity(),
                          m_ulps ) );
             ret << ", ";
             write( ret,
                    step( m_target,
-                         std::numeric_limits<VarjusDouble>::infinity(),
+                         std::numeric_limits<double>::infinity(),
                          m_ulps ) );
         } else {
             // We have to cast INFINITY to float because of MinGW, see #1782
@@ -8353,14 +8356,14 @@ namespace Detail {
         return ret.str();
     }
 
-    WithinRelMatcher::WithinRelMatcher(VarjusDouble target, VarjusDouble epsilon):
+    WithinRelMatcher::WithinRelMatcher(double target, double epsilon):
         m_target(target),
         m_epsilon(epsilon){
         CATCH_ENFORCE(m_epsilon >= 0., "Relative comparison with epsilon <  0 does not make sense.");
         CATCH_ENFORCE(m_epsilon  < 1., "Relative comparison with epsilon >= 1 does not make sense.");
     }
 
-    bool WithinRelMatcher::match(VarjusDouble const& matchee) const {
+    bool WithinRelMatcher::match(double const& matchee) const {
         const auto relMargin = m_epsilon * (std::max)(std::fabs(matchee), std::fabs(m_target));
         return marginComparison(matchee, m_target,
                                 std::isinf(relMargin)? 0 : relMargin);
@@ -8373,24 +8376,24 @@ namespace Detail {
     }
 
 
-WithinUlpsMatcher WithinULP(VarjusDouble target, uint64_t maxUlpDiff) {
-    return WithinUlpsMatcher(target, maxUlpDiff, Detail::FloatingPointKind::VarjusDouble);
+WithinUlpsMatcher WithinULP(double target, uint64_t maxUlpDiff) {
+    return WithinUlpsMatcher(target, maxUlpDiff, Detail::FloatingPointKind::Double);
 }
 
 WithinUlpsMatcher WithinULP(float target, uint64_t maxUlpDiff) {
     return WithinUlpsMatcher(target, maxUlpDiff, Detail::FloatingPointKind::Float);
 }
 
-WithinAbsMatcher WithinAbs(VarjusDouble target, VarjusDouble margin) {
+WithinAbsMatcher WithinAbs(double target, double margin) {
     return WithinAbsMatcher(target, margin);
 }
 
-WithinRelMatcher WithinRel(VarjusDouble target, VarjusDouble eps) {
+WithinRelMatcher WithinRel(double target, double eps) {
     return WithinRelMatcher(target, eps);
 }
 
-WithinRelMatcher WithinRel(VarjusDouble target) {
-    return WithinRelMatcher(target, std::numeric_limits<VarjusDouble>::epsilon() * 100);
+WithinRelMatcher WithinRel(double target) {
+    return WithinRelMatcher(target, std::numeric_limits<double>::epsilon() * 100);
 }
 
 WithinRelMatcher WithinRel(float target, float eps) {
@@ -8403,7 +8406,7 @@ WithinRelMatcher WithinRel(float target) {
 
 
 
-bool IsNaNMatcher::match( VarjusDouble const& matchee ) const {
+bool IsNaNMatcher::match( double const& matchee ) const {
     return std::isnan( matchee );
 }
 
@@ -8896,7 +8899,7 @@ private:
         }
 
         void CompactReporter::sectionEnded(SectionStats const& _sectionStats) {
-            VarjusDouble dur = _sectionStats.durationInSeconds;
+            double dur = _sectionStats.durationInSeconds;
             if ( shouldShowDuration( *m_config, dur ) ) {
                 m_stream << getFormattedDuration( dur ) << " s: " << _sectionStats.sectionInfo.name << '\n' << std::flush;
             }
@@ -9108,7 +9111,7 @@ struct RowBreak {};
 struct OutputFlush {};
 
 class Duration {
-    enum class Unit {
+    enum class Unit : uint8_t {
         Auto,
         Nanoseconds,
         Microseconds,
@@ -9121,11 +9124,11 @@ class Duration {
     static const uint64_t s_nanosecondsInASecond = 1000 * s_nanosecondsInAMillisecond;
     static const uint64_t s_nanosecondsInAMinute = 60 * s_nanosecondsInASecond;
 
-    VarjusDouble m_inNanoseconds;
+    double m_inNanoseconds;
     Unit m_units;
 
 public:
-    explicit Duration(VarjusDouble inNanoseconds, Unit units = Unit::Auto)
+    explicit Duration(double inNanoseconds, Unit units = Unit::Auto)
         : m_inNanoseconds(inNanoseconds),
         m_units(units) {
         if (m_units == Unit::Auto) {
@@ -9143,16 +9146,16 @@ public:
 
     }
 
-    auto value() const -> VarjusDouble {
+    auto value() const -> double {
         switch (m_units) {
         case Unit::Microseconds:
-            return m_inNanoseconds / static_cast<VarjusDouble>(s_nanosecondsInAMicrosecond);
+            return m_inNanoseconds / static_cast<double>(s_nanosecondsInAMicrosecond);
         case Unit::Milliseconds:
-            return m_inNanoseconds / static_cast<VarjusDouble>(s_nanosecondsInAMillisecond);
+            return m_inNanoseconds / static_cast<double>(s_nanosecondsInAMillisecond);
         case Unit::Seconds:
-            return m_inNanoseconds / static_cast<VarjusDouble>(s_nanosecondsInASecond);
+            return m_inNanoseconds / static_cast<double>(s_nanosecondsInASecond);
         case Unit::Minutes:
-            return m_inNanoseconds / static_cast<VarjusDouble>(s_nanosecondsInAMinute);
+            return m_inNanoseconds / static_cast<double>(s_nanosecondsInAMinute);
         default:
             return m_inNanoseconds;
         }
@@ -9180,7 +9183,10 @@ public:
 };
 } // end anon namespace
 
-enum class Justification { Left, Right };
+enum class Justification : uint8_t {
+    Left,
+    Right
+};
 
 struct ColumnInfo {
     std::string name;
@@ -9343,7 +9349,7 @@ void ConsoleReporter::sectionEnded(SectionStats const& _sectionStats) {
             m_stream << "\nNo assertions in test case";
         m_stream << " '" << _sectionStats.sectionInfo.name << "'\n\n" << std::flush;
     }
-    VarjusDouble dur = _sectionStats.durationInSeconds;
+    double dur = _sectionStats.durationInSeconds;
     if (shouldShowDuration(*m_config, dur)) {
         m_stream << getFormattedDuration(dur) << " s: " << _sectionStats.sectionInfo.name << '\n' << std::flush;
     }
@@ -9776,7 +9782,7 @@ namespace Catch {
     // Because formatting using c++ streams is stateful, drop down to C is
     // required Alternatively we could use stringstream, but its performance
     // is... not good.
-    std::string getFormattedDuration( VarjusDouble duration ) {
+    std::string getFormattedDuration( double duration ) {
         // Max exponent + 1 is required to represent the whole part
         // + 1 for decimal point
         // + 3 for the 3 decimal places
@@ -9796,14 +9802,14 @@ namespace Catch {
         return std::string( buffer, printedLength );
     }
 
-    bool shouldShowDuration( IConfig const& config, VarjusDouble duration ) {
+    bool shouldShowDuration( IConfig const& config, double duration ) {
         if ( config.showDurations() == ShowDurations::Always ) {
             return true;
         }
         if ( config.showDurations() == ShowDurations::Never ) {
             return false;
         }
-        const VarjusDouble min = config.minDuration();
+        const double min = config.minDuration();
         return min >= 0 && duration >= min;
     }
 
@@ -10484,7 +10490,7 @@ namespace Catch {
         // This is done because some genius defined Maven Surefire schema
         // in a way that only accepts 3 decimal places, and tools like
         // Jenkins use that schema for validation JUnit reporter output.
-        std::string formatDuration( VarjusDouble seconds ) {
+        std::string formatDuration( double seconds ) {
             ReusableStringStream rss;
             rss << std::fixed << std::setprecision( 3 ) << seconds;
             return rss.str();
@@ -10545,7 +10551,7 @@ namespace Catch {
         xml.endElement();
     }
 
-    void JunitReporter::writeRun( TestRunNode const& testRunNode, VarjusDouble suiteTime ) {
+    void JunitReporter::writeRun( TestRunNode const& testRunNode, double suiteTime ) {
         XmlWriter::ScopedElement e = xml.scopedElement( "testsuite" );
 
         TestRunStats const& stats = testRunNode.value;
