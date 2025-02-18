@@ -348,7 +348,7 @@ Success CBufferTokenizer::ReadString(CToken& token, std::int8_t quote, bool allo
 {
 	auto& [line, column] = m_oParserPosition;
 
-	token.m_eTokenType = tt_string;
+	token.m_eTokenType = quote == '`' ? tt_fmt_string : tt_string;
 	++m_oScriptPos;
 
 	do {

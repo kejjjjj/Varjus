@@ -3,6 +3,7 @@
 #include <memory>
 #include <utility>
 #include <stdexcept>
+#include <variant>
 
 #include "globalDefinitions.hpp"
 #include "linter/expressions/definitions.hpp"
@@ -30,6 +31,7 @@ class ArrayASTNode;
 class ObjectASTNode;
 class TernaryASTNode;
 class LambdaASTNode;
+class FmtStringASTNode;
 class OperatorASTNode;
 
 class CMemory;
@@ -59,6 +61,7 @@ public:
 	[[nodiscard]] virtual constexpr bool IsArray() const noexcept { return false; }
 	[[nodiscard]] virtual constexpr bool IsObject() const noexcept { return false; }
 	[[nodiscard]] virtual constexpr bool IsTernary() const noexcept { return false; }
+	[[nodiscard]] virtual constexpr bool IsFmtString() const noexcept { return false; }
 	[[nodiscard]] virtual constexpr bool IsLambda() const noexcept { return false; }
 	[[nodiscard]] virtual constexpr bool IsSequence() const noexcept { return false; }
 
@@ -72,6 +75,7 @@ public:
 	[[nodiscard]] virtual constexpr const ObjectASTNode* GetObject() const noexcept { return nullptr; }
 	[[nodiscard]] virtual constexpr const TernaryASTNode* GetTernary() const noexcept { return nullptr; }
 	[[nodiscard]] virtual constexpr const LambdaASTNode* GetLambda() const noexcept { return nullptr; }
+	[[nodiscard]] virtual constexpr const FmtStringASTNode* GetFmtString() const noexcept { return nullptr; }
 
 	ASTNode left;
 	ASTNode right;
@@ -239,6 +243,32 @@ public:
 
 	RuntimeFunction m_pLambda;
 	VectorOf<CCrossModuleReference> m_oVariableCaptures;
+};
+
+struct FmtStringAST {
+	enum FmtNodeASTType { TEXT, PLACEHOLDER } type;
+	std::variant<std::string, ASTNode> value; // Raw text for TEXT, variable name for PLACEHOLDER
+
+	explicit FmtStringAST(const std::string& raw) : type(TEXT), value(raw) {}
+	explicit FmtStringAST(ASTNode&& raw) : type(PLACEHOLDER), value(std::move(raw)) {}
+};
+
+class FmtStringASTNode final : public AbstractSyntaxTree
+{
+	NONCOPYABLE(FmtStringASTNode);
+
+public:
+
+	FmtStringASTNode(const CodePosition& pos, VectorOf<FmtStringAST>&& nodes);
+	~FmtStringASTNode();
+
+	[[nodiscard]] constexpr bool IsLeaf() const noexcept override { return true; }
+	[[nodiscard]] constexpr bool IsFmtString() const noexcept override { return true; }
+
+	[[nodiscard]] constexpr const FmtStringASTNode* GetFmtString() const noexcept override { return this; }
+
+
+	VectorOf<FmtStringAST> m_oNodes;
 };
 
 class PostfixASTNode;

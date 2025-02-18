@@ -16,7 +16,7 @@ std::unique_ptr<IOperand> CLinterOperand::ParseParentheses(std::optional<PairMat
 
 	std::advance(m_iterPos, 1); // skip (
 
-	const auto& oldIter = m_iterPos;
+	const LinterIterator& oldIter = m_iterPos;
 
 	CLinterExpression expr(m_iterPos, m_iterEnd, m_pScope, m_pOwner);
 	if (!expr.Parse(PairMatcher(p_par_open)))

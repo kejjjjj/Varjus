@@ -39,6 +39,11 @@ Success CLinterSubExpression::ParseSubExpression(std::optional<PairMatcher>& eoe
 	if (EndOfExpression())
 		return failure;
 
+	if (m_iterPos == m_iterEnd) {
+		CLinterErrors::PushError("unexpected end of buffer");
+		return failure;
+	}
+
 	CLinterOperatorParser cOperator(m_iterPos, m_iterEnd, m_pScope, m_pOwner);
 	if (!cOperator.ParseOperator(eoe, expression, evalType))
 		return failure;
@@ -49,6 +54,9 @@ Success CLinterSubExpression::ParseSubExpression(std::optional<PairMatcher>& eoe
 
 bool CLinterSubExpression::EndOfExpression() const noexcept
 {
+	if (m_iterPos == m_iterEnd)
+		return false; //let it fail!
+
 	assert(m_iterPos != m_iterEnd);
 	if (!m_oEndOfExpression) {
 		return (*m_iterPos)->IsOperator(p_semicolon);

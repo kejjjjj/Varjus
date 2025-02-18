@@ -10,6 +10,7 @@
 #include "linter/functions/function.hpp"
 #include "api/types/internal/references.hpp"
 #include "linter/error.hpp"
+#include "linter/expressions/operand/operand_fmt_string.hpp"
 
 #include "linter/token.hpp"
 
@@ -231,4 +232,6 @@ LambdaASTNode::LambdaASTNode(const CodePosition& pos, RuntimeFunction&& operand,
 LambdaASTNode::~LambdaASTNode() = default;
 
 
-
+FmtStringASTNode::FmtStringASTNode(const CodePosition& pos, VectorOf<FmtStringAST>&& nodes)
+	: AbstractSyntaxTree(pos), m_oNodes(std::move(nodes)) {}
+FmtStringASTNode::~FmtStringASTNode() = default;

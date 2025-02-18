@@ -4,6 +4,8 @@
 #include <tuple>
 #include <array>
 
+
+
 enum TokenType : signed char
 {
 	tt_error,
@@ -14,6 +16,7 @@ enum TokenType : signed char
 	tt_uint,
 	tt_double,
 	tt_string,
+	tt_fmt_string,
 	tt_name,
 	tt_operator,
 	tt_let,
@@ -44,11 +47,14 @@ constexpr std::array<const char*, tt_unused_count> tokenTypeStrings = {{
 	"false",
 	"true",
 	"int",
-	"VarjusDouble",
+	"uint",
+	"double",
 	"string",
+	"fmt_string",
 	"name",
 	"operator",
 	"let",
+	"const",
 	"fn",
 	"if",
 	"else",
@@ -112,3 +118,5 @@ public:
 	Punctuation m_ePunctuation{};
 	OperatorPriority m_ePriority{};
 };
+
+

@@ -6,6 +6,7 @@
 #include "linter/punctuation.hpp"
 #include "linter/token.hpp"
 #include "linter/functions/stack.hpp"
+#include "linter/error.hpp"
 
 #include "globalEnums.hpp"
 
@@ -27,6 +28,11 @@ Success CLinterOperand::ParseOperand(std::optional<PairMatcher>& eoe)
 	if (!unaryLinter.ParseUnary())
 		return failure;
 
+	if (m_iterPos == m_iterEnd) {
+		CLinterErrors::PushError("unexpected end of buffer");
+		return failure;
+	}
+
 	const auto token = (*m_iterPos);
 
 	if (IS_IMMEDIATE(token->Type())) {
@@ -39,8 +45,15 @@ Success CLinterOperand::ParseOperand(std::optional<PairMatcher>& eoe)
 		m_pOperand = ParseObject();
 	} else if (token->Type() == tt_fn) {
 		m_pOperand = ParseLambda();
+	} else if (token->Type() == tt_fmt_string) {
+		m_pOperand = ParseFormatString();
 	} else {
 		m_pOperand = ParseIdentifier();
+	}
+
+	if (m_iterPos == m_iterEnd) {
+		CLinterErrors::PushError("unexpected end of buffer");
+		return failure;
 	}
 
 	CPostfixLinter postfix(m_iterPos, m_iterEnd, m_pScope, m_pOwner);

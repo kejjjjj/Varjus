@@ -124,6 +124,7 @@ Success CBufferLinter::LintToken(const CLinterContext& ctx)
 	case tt_uint:
 	case tt_double:
 	case tt_string:
+	case tt_fmt_string:
 	case tt_name:
 	case tt_typeof:
 	case tt_tostring:

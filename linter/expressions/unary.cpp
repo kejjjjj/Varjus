@@ -3,6 +3,7 @@
 #include "linter/punctuation.hpp"
 
 #include "linter/expressions/ast/ast_unary.hpp"
+#include "linter/error.hpp"
 
 #include "globalEnums.hpp"
 
@@ -19,10 +20,9 @@ CUnaryLinter::~CUnaryLinter() = default;
 Success CUnaryLinter::ParseUnary()
 {
 
-
 	while(!IsEndOfBuffer() && ((*m_iterPos)->IsOperator() 
-		|| (*m_iterPos)->Type() == tt_typeof)
-		|| (*m_iterPos)->Type() == tt_tostring) {
+		|| (*m_iterPos)->Type() == tt_typeof
+		|| (*m_iterPos)->Type() == tt_tostring)) {
 
 		auto pos = *m_iterPos;
 

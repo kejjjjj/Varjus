@@ -42,6 +42,7 @@ class MemberAccessASTNode;
 class SubscriptASTNode;
 class FunctionCallASTNode;
 class TernaryASTNode;
+class FmtStringASTNode;
 class CVariable;
 class CRuntimeModule;
 
@@ -224,6 +225,7 @@ private:
 
 	[[nodiscard]] static IValue* EvaluateSequence(CRuntimeContext* const ctx, const AbstractSyntaxTree* node);
 	[[nodiscard]] static IValue* EvaluateTernary(CRuntimeContext* const ctx, const TernaryASTNode* node);
+	[[nodiscard]] static IValue* EvaluateFmtString(CRuntimeContext* const ctx, const FmtStringASTNode* node);
 
 	[[nodiscard]] static IValue* EvaluateMemberAccess(IValue* operand, const MemberAccessASTNode* node);
 	[[nodiscard]] static IValue* EvaluateSubscript(CRuntimeContext* const ctx, IValue* operand, const SubscriptASTNode* node);

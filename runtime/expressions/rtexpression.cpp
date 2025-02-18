@@ -56,6 +56,9 @@ IValue* CRuntimeExpression::Evaluate(CRuntimeContext* const ctx, const AbstractS
 	if (node->IsTernary())
 		return EvaluateTernary(ctx, node->GetTernary());
 
+	if (node->IsFmtString())
+		return EvaluateFmtString(ctx, node->GetFmtString());
+
 	if (node->IsLeaf()) 
 		return EvaluateLeaf(ctx, node);
 
@@ -209,4 +212,25 @@ IValue* CRuntimeExpression::EvaluateTernary(CRuntimeContext* const ctx, const Te
 
 	return Evaluate(ctx, node->m_pFalse.get());
 
+}
+IValue* CRuntimeExpression::EvaluateFmtString(CRuntimeContext* const ctx, const FmtStringASTNode* node)
+{
+	std::string fullString;
+	for (const auto& [t, v] : node->m_oNodes) {
+
+		if (t == FmtStringAST::TEXT) {
+			fullString += std::get<0>(v);
+		}else if (t == FmtStringAST::PLACEHOLDER) {
+
+			auto operand = Evaluate(ctx, std::get<1>(v).get());
+			fullString += operand->ValueAsString();
+
+			if (!operand->HasOwner())
+				operand->Release();
+
+		}
+
+	}
+
+	return CStringValue::Construct(fullString);
 }
