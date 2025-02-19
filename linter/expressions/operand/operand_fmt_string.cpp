@@ -11,9 +11,7 @@
 #include <ranges>
 #include <cassert>
 
-#define FMT_STRING_CHAR '$'
-#define FMT_EXPRESSION_CHAR '('
-#define FMT_EXPRESSION_PUNC p_par_open
+
 
 CFmtStringOperand::CFmtStringOperand(VectorOf<FmtStringAST>&& nodes)
 	: m_oNodes(std::move(nodes)){}
@@ -22,74 +20,47 @@ CFmtStringOperand::~CFmtStringOperand() = default;
 
 std::unique_ptr<IOperand> CLinterOperand::ParseFormatString()
 {
-	const auto& parseString = (*m_iterPos)->Source();
-	auto& oldIter = m_iterPos;
-
-	std::string raw;
+	const auto& parseString = dynamic_cast<CFmtStringToken*>(*m_iterPos);
+	auto oldIter = m_iterPos;
 
 	VectorOf<FmtStringAST> fmtString;
 
-	for (auto it = parseString.begin(); it != parseString.end(); ++it) {
+	auto tokens = parseString->GetTokens();
+	auto& tokenTypes = parseString->GetTokenTypes();
 
-		while (it != parseString.end() && *it != FMT_STRING_CHAR) {
-			raw.push_back(*it);
-			std::advance(it, 1);
+	std::string str;
+	auto end = tokens.end();
+
+	for (auto it = tokens.begin(); it != end;) {
+
+		auto i = static_cast<std::size_t>(std::distance(tokens.begin(), it));
+		auto& token = *it;
+
+		if (tokenTypes[i] == CFmtStringToken::FmtStringTokenType::raw) {
+			str += token->Source();
+			it++;
+			continue;
 		}
 
-		if (it == parseString.end())
-			break;
-
-		std::advance(it, 1); // skip the fmt char
-
-		if (it == parseString.end()) {
-			raw.push_back(*it);
-			std::advance(it, 1);
-			break;
+		if (str.length()) {
+			fmtString.emplace_back(FmtStringAST(str));
+			str.clear();
 		}
 
-		assert(it != parseString.end());
+		CLinterExpression expr(it, end, m_pScope, m_pOwner);
 
-		if (*it == FMT_EXPRESSION_CHAR) {
+		if (!expr.Parse(PairMatcher(p_curlybracket_open)))
+			return nullptr;
 
-			if (raw.size()) {
-				fmtString.emplace_back(FmtStringAST(raw));
-				raw.clear();
-			}
-			
-			std::advance(it, 1); // skip (
+		fmtString.emplace_back(FmtStringAST(expr.ToMergedAST()));
 
-			//tokenize everything until the end
-			auto str = std::string(it, parseString.end());
-			CBufferTokenizer tokenizer(str);
-
-			if (!tokenizer.Tokenize()) {
-				CLinterErrors::PushError("format string tokenization failure", GetIteratorSafe()->m_oSourcePosition);
-				return nullptr;
-			}
-
-			auto tokens = tokenizer.GetTokens();
-			std::size_t len{};
-			for (const auto& t : tokens)
-				len += t->Source().length();
-
-			auto begin = tokens.begin();
-			auto end = tokens.end();
-
-			CLinterExpression expr(begin, end, m_pScope, m_pOwner);
-
-			if (!expr.Parse(PairMatcher(FMT_EXPRESSION_PUNC)))
-				return nullptr;
-
-			fmtString.emplace_back(FmtStringAST(expr.ToMergedAST()));
-			std::advance(it, len-1);
-			raw.clear();
-		}
 	}
 
-	if (raw.size()) {
-		fmtString.emplace_back(FmtStringAST(raw));
-		raw.clear();
+	if (str.length()) {
+		fmtString.emplace_back(FmtStringAST(str));
+		str.clear();
 	}
+
 	std::advance(m_iterPos, 1);
 	auto ptr = std::make_unique<CFmtStringOperand>(std::move(fmtString));
 	ptr->m_oCodePosition = (*oldIter)->m_oSourcePosition;

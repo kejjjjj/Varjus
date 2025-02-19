@@ -118,5 +118,3 @@ public:
 	Punctuation m_ePunctuation{};
 	OperatorPriority m_ePriority{};
 };
-
-

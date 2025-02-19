@@ -1,11 +1,11 @@
-
-fn thing(a, b)
+fn thingy(a, b)
 {
-    return a * b;
+    return `${a * b}`;
 }
 
 fn main()
 {
 
-    return `result = $(thing(20,4))`;
+    return `result = $${[thingy(20, 40)]} things!`;
+
 }

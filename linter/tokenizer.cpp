@@ -3,6 +3,7 @@
 #include "globalEnums.hpp"
 #include "fs/fs_io.hpp"
 #include "error.hpp"
+#include "expressions/operand/operand_fmt_string.hpp"
 
 #include <cassert>
 #include <iostream>
@@ -90,18 +91,26 @@ std::unique_ptr<CToken> CBufferTokenizer::ReadToken()
 		if (!ReadName(token)) {
 			return nullptr;
 		}
-	} else if (*m_oScriptPos == '\"' || *m_oScriptPos == '\'' || *m_oScriptPos == '`') {
-		if (!ReadString(token, *m_oScriptPos, *m_oScriptPos == '`')) {
+	} else if (*m_oScriptPos == '\"' || *m_oScriptPos == '\'') {
+		if (!ReadString(token, *m_oScriptPos)) {
 			return nullptr;
 		}
-	} else {
+	} else if (*m_oScriptPos == '`') {
 
-		auto&& punc = ReadPunctuation();
+		if (auto fmtString = ReadFormatString()) {
+			return fmtString;
+		}
 
-		if (punc)
+		CLinterErrors::PushError("a token without a definition", m_oParserPosition);
+		return nullptr;
+	}
+	else {
+
+		if (auto punc = ReadPunctuation()) 
 			return punc;
 
-		throw std::exception("a token without a definition");
+		CLinterErrors::PushError("a token without a definition", m_oParserPosition);
+		return nullptr;
 	}
 
 	return std::make_unique<CToken>(token);
@@ -344,11 +353,11 @@ Success CBufferTokenizer::ReadHex(CToken& token)
 
 	return success;
 }
-Success CBufferTokenizer::ReadString(CToken& token, std::int8_t quote, bool allowNewLine)
+Success CBufferTokenizer::ReadString(CToken& token, std::int8_t quote)
 {
 	auto& [line, column] = m_oParserPosition;
 
-	token.m_eTokenType = quote == '`' ? tt_fmt_string : tt_string;
+	token.m_eTokenType = tt_string;
 	++m_oScriptPos;
 
 	do {
@@ -359,15 +368,9 @@ Success CBufferTokenizer::ReadString(CToken& token, std::int8_t quote, bool allo
 			break;
 
 		if (*m_oScriptPos == '\n') {
+			CLinterErrors::PushError("newline within a string", m_oParserPosition);
+			return failure;
 
-			if (!allowNewLine) {
-				CLinterErrors::PushError("newline within a string", m_oParserPosition);
-				return failure;
-			}
-				
-
-			line++;
-			column = 1ull;
 		} else {
 			column += (*m_oScriptPos == '\t' ? 4 : 1);
 		}
@@ -389,6 +392,108 @@ Success CBufferTokenizer::ReadString(CToken& token, std::int8_t quote, bool allo
 
 	return success;
 }
+
+#define FMT_STRING_CHAR '$'
+#define FMT_EXPRESSION_CHAR '{'
+#define FMT_EXPRESSION_END_CHAR '}'
+#define FMT_EXPRESSION_END_CHAR_P p_curlybracket_close
+std::unique_ptr<CToken> CBufferTokenizer::ReadFormatString()
+{
+	auto& [line, column] = m_oParserPosition;
+
+	auto token = std::make_unique<CFmtStringToken>();
+	++m_oScriptPos;
+
+	const auto BeginningOfFmtString = [&] {
+
+		if (EndOfBuffer() || std::distance(m_oScriptPos, m_oScriptEnd) < 2)
+			return false;
+
+		return *m_oScriptPos == FMT_STRING_CHAR && *(std::next(m_oScriptPos)) == FMT_EXPRESSION_CHAR;
+	};
+
+
+	do {
+		if (EndOfBuffer())
+			return token;
+
+		std::string rawText;
+
+		const auto SaveRawText = [&token, &rawText] { 
+			if (rawText.size()) {
+				token->InsertFmtToken(std::make_unique<CToken>(rawText, tt_string), CFmtStringToken::FmtStringTokenType::raw);
+				rawText.clear();
+			}
+		};
+
+		while (!BeginningOfFmtString()) {
+
+
+			if (*m_oScriptPos == '\n') {
+				line++;
+				column = 1ull;
+			}
+			else {
+				column += (*m_oScriptPos == '\t' ? 4 : 1);
+			}
+
+			if (*m_oScriptPos == '`' || BeginningOfFmtString())
+				break;
+
+			if (*m_oScriptPos == '\\')
+				rawText.push_back(ReadEscapeCharacter());
+			else {
+				rawText.push_back(*m_oScriptPos);
+			}
+
+			m_oScriptPos++;
+
+			if (EndOfBuffer()) {
+				column++;
+				break;
+			}
+		}
+
+		if (EndOfBuffer()) {
+			CLinterErrors::PushError("unexpected end of buffer", m_oParserPosition);
+			return nullptr;
+		}
+
+		SaveRawText();
+
+		if (*m_oScriptPos == '`')
+			break;
+		
+		assert(BeginningOfFmtString());
+
+		std::advance(m_oScriptPos, 2); //skip ${
+		column += 2ull;
+
+		do {
+
+			auto&& newToken = ReadToken();
+
+			if (!newToken || EndOfBuffer()) {
+				CLinterErrors::PushError("unexpected end of buffer", m_oParserPosition);
+				return nullptr;
+			}
+
+			token->InsertFmtToken(std::move(newToken), CFmtStringToken::FmtStringTokenType::placeholder);
+
+		} while (*m_oScriptPos != FMT_EXPRESSION_END_CHAR);
+
+		//so that the expression knows to end here
+		token->InsertFmtToken(ReadPunctuation(), CFmtStringToken::FmtStringTokenType::placeholder);
+
+	} while (!EndOfBuffer() && *m_oScriptPos != '`');
+
+	if (!EndOfBuffer()) {
+		m_oScriptPos++;  //skip `
+		column++;
+	}
+
+	return token;
+}
 std::int8_t CBufferTokenizer::ReadEscapeCharacter()
 {
 	auto& [line, column] = m_oParserPosition;
@@ -397,7 +502,7 @@ std::int8_t CBufferTokenizer::ReadEscapeCharacter()
 	column++;
 
 	if (EndOfBuffer()) {
-		CLinterErrors::PushError("unexpected end of file");
+		CLinterErrors::PushError("unexpected end of file", m_oParserPosition);
 		return 0;
 	}
 

@@ -37,7 +37,9 @@ private:
 	[[nodiscard]] Success ReadInteger(CToken& token) noexcept;
 	[[nodiscard]] Success ReadHex(CToken& token);
 
-	[[nodiscard]] Success ReadString(CToken& token, std::int8_t quote, bool allowNewLine);
+	[[nodiscard]] Success ReadString(CToken& token, std::int8_t quote);
+	[[nodiscard]] std::unique_ptr<CToken> ReadFormatString();
+
 	[[nodiscard]] std::int8_t ReadEscapeCharacter();
 
 	[[nodiscard]] Success ReadName(CToken& token) noexcept;
