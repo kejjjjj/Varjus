@@ -10,8 +10,13 @@ template <typename T>
 class COwningObjectPool {
 public:
 
+    COwningObjectPool() = default;
     COwningObjectPool(std::size_t initialSize) {
-        for ([[maybe_unused]] const auto i : std::views::iota(size_t(0), initialSize)) {
+        Grow(initialSize);
+    }
+
+    void Grow(std::size_t size) {
+        for ([[maybe_unused]] const auto i : std::views::iota(size_t(0), size)) {
             pool.emplace_back(std::make_unique<T>());
             available.push(pool.back().get());
         }

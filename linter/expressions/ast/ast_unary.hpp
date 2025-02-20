@@ -16,6 +16,7 @@ public:
 	[[nodiscard]] virtual constexpr bool IsIncrement() const noexcept { return false; }
 	[[nodiscard]] virtual constexpr bool IsDecrement() const noexcept { return false; }
 	[[nodiscard]] virtual constexpr bool IsLogicalNot() const noexcept { return false; }
+	[[nodiscard]] virtual constexpr bool IsBitwiseNot() const noexcept { return false; }
 
 	[[nodiscard]] virtual constexpr bool IsTypeOf() const noexcept { return false; }
 	[[nodiscard]] virtual constexpr bool IsToString() const noexcept { return false; }
@@ -61,6 +62,16 @@ public:
 	}
 
 	[[nodiscard]] constexpr bool IsLogicalNot() const noexcept override { return true; }
+};
+class UnaryBitwiseNotAST : public UnaryASTNode
+{
+	NONCOPYABLE(UnaryBitwiseNotAST);
+public:
+	UnaryBitwiseNotAST(const CodePosition& pos)
+		: UnaryASTNode(pos) {
+	}
+
+	[[nodiscard]] constexpr bool IsBitwiseNot() const noexcept override { return true; }
 };
 
 class UnaryTypeOfAST : public UnaryASTNode

@@ -7,7 +7,7 @@
 #include "linter/context.hpp"
 #include "linter/hoisting/hoisting.hpp"
 
-#include "globalEnums.hpp"
+#include "api/internal/globalEnums.hpp"
 
 #include <cassert>
 #include <iostream>

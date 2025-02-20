@@ -1,4 +1,12 @@
+fn bigAssLoop(size)
+{
+    for(let i = 0u; i < size; i++){
+        const uselessArray = [].resize(10).fill("ass");
+    }
+
+}
+
 fn main()
 {
-    return `${[(2+3)][0]}`;
+    return bigAssLoop(3000000);
 }

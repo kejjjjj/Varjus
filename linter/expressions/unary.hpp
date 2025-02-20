@@ -21,6 +21,8 @@ private:
 	[[nodiscard]] std::unique_ptr<CUnaryBase> ParseIncrement();
 	[[nodiscard]] std::unique_ptr<CUnaryBase> ParseDecrement();
 	[[nodiscard]] std::unique_ptr<CUnaryBase> ParseLogicalNot();
+	[[nodiscard]] std::unique_ptr<CUnaryBase> ParseBitwiseNot();
+
 	[[nodiscard]] std::unique_ptr<CUnaryBase> ParseTypeOf();
 	[[nodiscard]] std::unique_ptr<CUnaryBase> ParseToString();
 
@@ -37,6 +39,7 @@ enum EUnaryType{
 	un_increment,
 	un_decrement,
 	un_logical_not,
+	un_bitwise_not,
 	un_typeof,
 	un_tostring,
 };
@@ -86,6 +89,15 @@ class CUnaryLogicalNot final : public CUnaryBase
 public:
 	CUnaryLogicalNot() = default;
 	[[nodiscard]] constexpr EUnaryType Type() const noexcept override { return un_logical_not; }
+
+	[[nodiscard]] std::unique_ptr<AbstractSyntaxTree> ToAST() override;
+};
+class CUnaryBitwiseNot final : public CUnaryBase
+{
+	NONCOPYABLE(CUnaryBitwiseNot);
+public:
+	CUnaryBitwiseNot() = default;
+	[[nodiscard]] constexpr EUnaryType Type() const noexcept override { return un_bitwise_not; }
 
 	[[nodiscard]] std::unique_ptr<AbstractSyntaxTree> ToAST() override;
 };

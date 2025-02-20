@@ -1,6 +1,6 @@
 #include "tokenizer.hpp"
 #include "punctuation.hpp"
-#include "globalEnums.hpp"
+#include "api/internal/globalEnums.hpp"
 #include "fs/fs_io.hpp"
 #include "error.hpp"
 #include "expressions/operand/operand_fmt_string.hpp"
@@ -8,6 +8,7 @@
 #include <cassert>
 #include <iostream>
 #include <unordered_map>
+#include <filesystem>
 
 constexpr bool IsDigit(char c) noexcept
 {
@@ -439,7 +440,12 @@ Success CBufferTokenizer::ParseFmtExpression(CFmtStringToken& token)
 	std::advance(m_oScriptPos, 2); // Skip ${
 	column += 2;
 
-	do {
+	if (EndOfBuffer()) {
+		CLinterErrors::PushError("expected a \"}\"", m_oParserPosition);
+		return failure;
+	}
+
+	while (*m_oScriptPos != FMT_EXPRESSION_END_CHAR) {
 		auto newToken = ReadToken();
 		if (!newToken || EndOfBuffer()) {
 			CLinterErrors::PushError("unexpected end of buffer", m_oParserPosition);
@@ -447,7 +453,7 @@ Success CBufferTokenizer::ParseFmtExpression(CFmtStringToken& token)
 		}
 
 		token.InsertFmtToken(std::move(newToken), CFmtStringToken::FmtStringTokenType::placeholder);
-	} while (*m_oScriptPos != FMT_EXPRESSION_END_CHAR);
+	};
 
 	token.InsertFmtToken(ReadPunctuation(), CFmtStringToken::FmtStringTokenType::placeholder);
 	return !EndOfBuffer() ? success : failure;
@@ -614,22 +620,39 @@ std::unique_ptr<CToken> CBufferTokenizer::ReadPunctuation() noexcept
 ***********************************************************************/
 std::vector<std::unique_ptr<CToken>> CBufferTokenizer::ParseFileFromFilePath(const std::string& filePath)
 {
+
+	if (!std::filesystem::exists(filePath)) {
+		CLinterErrors::PushError(std::format("the input file \"{}\" doesn't exist", filePath));
+		return {};
+	}
+
 	const auto reader = IOReader(filePath, false);
 	auto fileBuf = reader.IO_Read();
 
+
 	if (!fileBuf) {
-		throw CLinterError("couldn't read the file buffer");
+		CLinterErrors::PushError("couldn't read the file buffer");
+		return {};
 	}
 
-	if(fileBuf->size() >= fileBuf->max_size() - 1ull)
-		throw CLinterError("buffer size is too big");
+	if (reader.ContainsUnicode()) {
+		CLinterErrors::PushError("unicode symbols aren't supported");
+		return {};
+	}
+
+	if (fileBuf->size() >= fileBuf->max_size() - std::size_t(1ull)) {
+		CLinterErrors::PushError("buffer size is too big");
+		return {};
+	}
 
 	fileBuf->push_back('\n'); // fixes a crash lol
 
 	auto tokenizer = CBufferTokenizer(*fileBuf);
 
-	if (!tokenizer.Tokenize())
-		throw CLinterError("the input file didn't have any parsable tokens");
+	if (!tokenizer.Tokenize()) {
+		CLinterErrors::PushError("the input file didn't have any parsable tokens");
+		return {};
+	}
 
 	return std::move(tokenizer.m_oTokens);
 }

@@ -15,6 +15,8 @@ static IValue* EvaluateNegation(IValue* operand);
 static IValue* EvaluateIncrement(IValue* operand);
 static IValue* EvaluateDecrement(IValue* operand);
 static IValue* EvaluateLogicalNot(IValue* operand);
+static IValue* EvaluateBitwiseNot(IValue* operand);
+
 static IValue* EvaluateTypeOf(IValue* operand);
 static IValue* EvaluateToString(IValue* operand);
 
@@ -31,6 +33,8 @@ IValue* CRuntimeExpression::EvaluateUnary(CRuntimeContext* const ctx, const Unar
 		returnVal = EvaluateDecrement(operand);
 	} else if (node->IsLogicalNot()) {
 		returnVal = EvaluateLogicalNot(operand);
+	} else if (node->IsBitwiseNot()) {
+		returnVal = EvaluateBitwiseNot(operand);
 	} else if (node->IsTypeOf()) {
 		returnVal = EvaluateTypeOf(operand);
 	} else if (node->IsToString()) {
@@ -101,7 +105,17 @@ IValue* EvaluateLogicalNot(IValue* operand)
 
 	return CProgramRuntime::AcquireNewValue<CBooleanValue>(!operand->ToBoolean());
 }
+IValue* EvaluateBitwiseNot(IValue* operand)
+{
 
+	if (operand->Type() != t_int && operand->Type() != t_uint)
+		throw CRuntimeError(std::format("the bitwise-not operand must have an (u)int type, but is \"{}\"", operand->TypeAsString()));
+
+	if (operand->Type() == t_int)
+		return CIntValue::Construct(~operand->AsInt());
+
+	return CUIntValue::Construct(~operand->AsUInt());
+}
 IValue* EvaluateTypeOf(IValue* operand){
 	return CStringValue::Construct(operand->TypeAsString());
 }

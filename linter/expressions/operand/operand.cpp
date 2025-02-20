@@ -8,7 +8,7 @@
 #include "linter/functions/stack.hpp"
 #include "linter/error.hpp"
 
-#include "globalEnums.hpp"
+#include "api/internal/globalEnums.hpp"
 
 #include <cassert>
 

@@ -6,7 +6,7 @@
 #include "linter/punctuation.hpp"
 #include "linter/error.hpp"
 #include "linter/expressions/ast.hpp"
-#include "globalEnums.hpp"
+#include "api/internal/globalEnums.hpp"
 
 #include <cassert>
 

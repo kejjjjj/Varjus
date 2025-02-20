@@ -41,6 +41,8 @@ enum TokenType : signed char
 	tt_unused_count
 };
 
+#define IS_IMMEDIATE(v) v >= TokenType::tt_undefined && v <= TokenType::tt_string
+
 constexpr std::array<const char*, tt_unused_count> tokenTypeStrings = {{
 	"error",
 	"undefined",

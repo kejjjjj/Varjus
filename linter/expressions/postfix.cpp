@@ -8,7 +8,7 @@
 
 #include "ast.hpp"
 #include "expression.hpp"
-#include "globalEnums.hpp"
+#include "api/internal/globalEnums.hpp"
 
 #include <cassert>
 #include <ranges>

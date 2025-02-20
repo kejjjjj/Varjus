@@ -1,6 +1,6 @@
 #include "context.hpp"
 #include "error.hpp"
-#include "globalEnums.hpp"
+#include "api/internal/globalEnums.hpp"
 #include "linter.hpp"
 #include "token.hpp"
 

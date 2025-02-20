@@ -1,10 +1,11 @@
 #pragma once
 
-#include "api/internal/globalEnums.hpp"
+#include "globalEnums.hpp"
 
 #define NONCOPYABLE(className) \
         className(const className&) = delete; \
         className& operator=(const className&) = delete;
+
 
 
 using VarjusInt = long long;

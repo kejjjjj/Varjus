@@ -1,6 +1,7 @@
 #include "fs_io.hpp"
 #include "fs_globals.hpp"
 
+#include <algorithm>
 /***********************************************************************
  >                             IOWriter
 ***********************************************************************/
@@ -9,8 +10,6 @@ bool IOWriter::IO_Write(const std::string& content) const
 
     if (m_bErrorOccurred)
         return false;
-
-
 
     std::ofstream file(m_sFileName, std::ios::out | std::ios_base::openmode(m_bBinary ? std::ios::binary : 0));
     if (!file.is_open()) {
@@ -84,16 +83,25 @@ std::optional<std::string> IOReader::IO_Read(/*size_t num_bytes*/) const {
 
 std::string IOReader::IO_ReadStream(std::ifstream& stream) const {
     std::string buffer;
+
     try {
         char buf[4096];
         while (stream.read(buf, sizeof(buf))) {
             buffer.append(buf, size_t(stream.gcount()));
+
+            if (!m_bContainsUnicode) {
+                m_bContainsUnicode = std::any_of(buf, buf + stream.gcount(), [](unsigned char c) { return c > 127; });
+            }
         }
         buffer.append(buf, size_t(stream.gcount()));
 
+        if (!m_bContainsUnicode) {
+            m_bContainsUnicode = std::any_of(buf, buf + stream.gcount(), [](unsigned char c) { return c > 127; });
+        }
     }
     catch ([[maybe_unused]] std::ios_base::failure& ex) {
     }
+
     return buffer;
 }
 

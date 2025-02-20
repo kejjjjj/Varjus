@@ -14,17 +14,17 @@
 
 #define VALUEPOOL_INIT_SIZE size_t(100)
 
-template<> COwningObjectPool<CVariable>           CProgramRuntime::m_oValuePool<CVariable>     (VALUEPOOL_INIT_SIZE);
-template<> COwningObjectPool<IValue>              CProgramRuntime::m_oValuePool<IValue>        (VALUEPOOL_INIT_SIZE);
-template<> COwningObjectPool<CBooleanValue>       CProgramRuntime::m_oValuePool<CBooleanValue> (VALUEPOOL_INIT_SIZE);
-template<> COwningObjectPool<CIntValue>           CProgramRuntime::m_oValuePool<CIntValue>     (VALUEPOOL_INIT_SIZE);
-template<> COwningObjectPool<CUIntValue>          CProgramRuntime::m_oValuePool<CUIntValue>    (VALUEPOOL_INIT_SIZE);
-template<> COwningObjectPool<CDoubleValue>        CProgramRuntime::m_oValuePool<CDoubleValue>  (VALUEPOOL_INIT_SIZE);
-template<> COwningObjectPool<CStringValue>        CProgramRuntime::m_oValuePool<CStringValue>  (VALUEPOOL_INIT_SIZE);
-template<> COwningObjectPool<CCallableValue>      CProgramRuntime::m_oValuePool<CCallableValue>(VALUEPOOL_INIT_SIZE);
-template<> COwningObjectPool<CArrayValue>         CProgramRuntime::m_oValuePool<CArrayValue>   (VALUEPOOL_INIT_SIZE);
-template<> COwningObjectPool<CObjectValue>        CProgramRuntime::m_oValuePool<CObjectValue>  (VALUEPOOL_INIT_SIZE);
-template<> COwningObjectPool<CBuiltInObject>      CProgramRuntime::m_oValuePool<CBuiltInObject>(VALUEPOOL_INIT_SIZE);
+template<> COwningObjectPool<CVariable>           CProgramRuntime::m_oValuePool<CVariable>;
+template<> COwningObjectPool<IValue>              CProgramRuntime::m_oValuePool<IValue>;
+template<> COwningObjectPool<CBooleanValue>       CProgramRuntime::m_oValuePool<CBooleanValue>;
+template<> COwningObjectPool<CIntValue>           CProgramRuntime::m_oValuePool<CIntValue>;
+template<> COwningObjectPool<CUIntValue>          CProgramRuntime::m_oValuePool<CUIntValue>;
+template<> COwningObjectPool<CDoubleValue>        CProgramRuntime::m_oValuePool<CDoubleValue>;
+template<> COwningObjectPool<CStringValue>        CProgramRuntime::m_oValuePool<CStringValue>;
+template<> COwningObjectPool<CCallableValue>      CProgramRuntime::m_oValuePool<CCallableValue>;
+template<> COwningObjectPool<CArrayValue>         CProgramRuntime::m_oValuePool<CArrayValue>;
+template<> COwningObjectPool<CObjectValue>        CProgramRuntime::m_oValuePool<CObjectValue>;
+template<> COwningObjectPool<CBuiltInObject>      CProgramRuntime::m_oValuePool<CBuiltInObject>;
 
 RuntimeModules CProgramRuntime::m_oModules;
 const CodePosition* CProgramRuntime::m_pCodePosition{ nullptr };
@@ -32,7 +32,8 @@ bool CProgramRuntime::m_bExceptionThrown{ false };
 IValue* CProgramRuntime::m_pExceptionValue{ nullptr };
 
 CProgramRuntime::CProgramRuntime(RuntimeModules&& modules){
-	FreeAllValues();
+	FreeAllPools();
+	AllocatePools(VALUEPOOL_INIT_SIZE);
 
 	m_oModules = std::move(modules);
 	m_bExceptionThrown = false;
@@ -78,7 +79,6 @@ static void InitGlobals()
 	CStringValue::ConstructProperties();
 }
 
-#ifdef RUNNING_TESTS
 IValue* CProgramRuntime::Execute()
 {
 	m_pExceptionValue = nullptr;
@@ -100,56 +100,12 @@ IValue* CProgramRuntime::Execute()
 	for (auto& mod : m_oModules)
 		mod->FreeGlobalVariables();
 
+
 	return returnValue;
 }
 
-#else
-void CProgramRuntime::Execute()
-{
-	m_pExceptionValue = nullptr;
-	CRuntimeFunction* mainFunction = FindMainFunction(m_oModules);
 
-	if (!mainFunction) {
-		throw CRuntimeError("couldn't find the \"main\" function");
-	}
-
-	InitGlobals();
-
-	for (auto& mod : m_oModules) {
-		mod->SetupGlobalVariables();
-		mod->EvaluateGlobalExpressions();
-	}
-
-	const steady_clock old = std::chrono::steady_clock::now();
-	const steady_clock now = BeginExecution(mainFunction);
-
-	const std::chrono::duration<float> difference = now - old;
-	std::cout << std::format("\ntime taken: {:.6f}s\n", difference.count());
-
-	for (auto& mod : m_oModules) 
-		mod->FreeGlobalVariables();
-
-	PrintLeaks<IValue>        ("undefined");
-	PrintLeaks<CBooleanValue> ("boolean");
-	PrintLeaks<CIntValue>     ("int");
-	PrintLeaks<CUIntValue>    ("uint");
-	PrintLeaks<CDoubleValue>  ("VarjusDouble");
-	PrintLeaks<CStringValue>  ("string");
-	PrintLeaks<CCallableValue>("callable");
-	PrintLeaks<CArrayValue>   ("array");
-	PrintLeaks<CObjectValue>  ("object");
-	PrintLeaks<CVariable>     ("variable");
-	PrintLeaks<CBuiltInObject>("built-in object");
-
-}
-
-#endif
-
-#ifdef RUNNING_TESTS
 IValue* CProgramRuntime::BeginExecution(CRuntimeFunction* entryFunc)
-#else
-steady_clock CProgramRuntime::BeginExecution(CRuntimeFunction* entryFunc)
-#endif
 {
 	assert(entryFunc);
 
@@ -160,22 +116,14 @@ steady_clock CProgramRuntime::BeginExecution(CRuntimeFunction* entryFunc)
 
 	std::vector<IValue*> args;
 	if (auto returnValue = entryFunc->Execute(&ctx, nullptr, args, {})) {
-#ifdef RUNNING_TESTS
 		return returnValue;
-#else
-		steady_clock now = std::chrono::steady_clock::now();
-		std::cout << std::format("The program returned: {}\n", returnValue->ToPrintableString());
-		returnValue->Release();
-		return now;
-#endif
 	}
 	
-#ifdef RUNNING_TESTS
 	return CProgramRuntime::AcquireNewValue<IValue>();
-#else
-	return std::chrono::steady_clock::now();
-#endif
-
+}
+void CProgramRuntime::Cleanup()
+{
+	FreeAllPools();
 }
 CRuntimeFunction* CProgramRuntime::FindMainFunction(const RuntimeModules& modules)
 {
@@ -216,9 +164,22 @@ bool CProgramRuntime::HasLeaks()
 		HasLeak<CBuiltInObject>()
 	);
 }
-void CProgramRuntime::FreeAllValues()
+void CProgramRuntime::PrintAllLeaks()
 {
-	
+	PrintLeaks<IValue>("undefined");
+	PrintLeaks<CBooleanValue>("boolean");
+	PrintLeaks<CIntValue>("int");
+	PrintLeaks<CUIntValue>("uint");
+	PrintLeaks<CDoubleValue>("VarjusDouble");
+	PrintLeaks<CStringValue>("string");
+	PrintLeaks<CCallableValue>("callable");
+	PrintLeaks<CArrayValue>("array");
+	PrintLeaks<CObjectValue>("object");
+	PrintLeaks<CVariable>("variable");
+	PrintLeaks<CBuiltInObject>("built-in object");
+}
+void CProgramRuntime::FreeAllPools()
+{
 	ClearPool<IValue>();
 	ClearPool<CBooleanValue>();
 	ClearPool<CIntValue>();
@@ -230,4 +191,19 @@ void CProgramRuntime::FreeAllValues()
 	ClearPool<CObjectValue>();
 	ClearPool<CVariable>();
 	ClearPool<CBuiltInObject>();
+}
+void CProgramRuntime::AllocatePools(std::size_t initialSize)
+{
+	CProgramRuntime::Cleanup();
+	CProgramRuntime::m_oValuePool<CVariable>.Grow(initialSize);
+	CProgramRuntime::m_oValuePool<IValue>.Grow(initialSize);
+	CProgramRuntime::m_oValuePool<CBooleanValue>.Grow(initialSize);
+	CProgramRuntime::m_oValuePool<CIntValue>.Grow(initialSize);
+	CProgramRuntime::m_oValuePool<CUIntValue>.Grow(initialSize);
+	CProgramRuntime::m_oValuePool<CDoubleValue>.Grow(initialSize);
+	CProgramRuntime::m_oValuePool<CStringValue>.Grow(initialSize);
+	CProgramRuntime::m_oValuePool<CCallableValue>.Grow(initialSize);
+	CProgramRuntime::m_oValuePool<CArrayValue>.Grow(initialSize);
+	CProgramRuntime::m_oValuePool<CObjectValue>.Grow(initialSize);
+	CProgramRuntime::m_oValuePool<CBuiltInObject>.Grow(initialSize);
 }

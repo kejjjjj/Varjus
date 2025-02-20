@@ -41,11 +41,9 @@ public:
 	CProgramRuntime(RuntimeModules&& modules);
 	~CProgramRuntime();
 
-#ifdef RUNNING_TESTS
 	IValue* Execute();
-#else
-	void Execute();
-#endif
+	static void Cleanup();
+
 	static void SetExecutionPosition(const CodePosition* pos) noexcept;
 	[[nodiscard]] static const CodePosition* GetExecutionPosition() noexcept;
 
@@ -56,6 +54,7 @@ public:
 
 	[[nodiscard]] static CRuntimeModule* GetModuleByIndex(std::size_t index);
 	[[nodiscard]] static bool HasLeaks();
+	[[nodiscard]] static void PrintAllLeaks();
 
 private:
 
@@ -121,14 +120,12 @@ public:
 	}
 
 private:
-	void FreeAllValues();
 
-#ifdef RUNNING_TESTS
-	IValue* BeginExecution(CRuntimeFunction* entryFunc);
-#else
-	steady_clock BeginExecution(CRuntimeFunction* entryFunc);
-#endif
-	CRuntimeFunction* FindMainFunction(const RuntimeModules& modules);
+	[[nodiscard]] IValue* BeginExecution(CRuntimeFunction* entryFunc);
+	[[nodiscard]] CRuntimeFunction* FindMainFunction(const RuntimeModules& modules);
+
+	static void AllocatePools(std::size_t initialSize);
+	static void FreeAllPools();
 
 	static RuntimeModules m_oModules;
 	static const CodePosition* m_pCodePosition;

@@ -5,7 +5,7 @@
 #include "linter/expressions/ast/ast_unary.hpp"
 #include "linter/error.hpp"
 
-#include "globalEnums.hpp"
+#include "api/internal/globalEnums.hpp"
 
 #include <cassert>
 CUnaryLinter::CUnaryLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack) 
@@ -48,6 +48,9 @@ Success CUnaryLinter::ParseUnary()
 				break;
 			case p_exclamation:
 				m_oUnaryOperators.emplace_back(ParseLogicalNot());
+				break;
+			case p_tilde:
+				m_oUnaryOperators.emplace_back(ParseBitwiseNot());
 				break;
 			default:
 				assert(false);
@@ -106,6 +109,16 @@ std::unique_ptr<CUnaryBase> CUnaryLinter::ParseLogicalNot()
 }
 std::unique_ptr<AbstractSyntaxTree> CUnaryLogicalNot::ToAST() {
 	return std::make_unique<UnaryLogicalNotAST>(m_oCodePosition);
+}
+
+std::unique_ptr<CUnaryBase> CUnaryLinter::ParseBitwiseNot()
+{
+	assert(!IsEndOfBuffer() && (*m_iterPos)->IsOperator(p_tilde));
+	std::advance(m_iterPos, 1);
+	return std::make_unique<CUnaryBitwiseNot>();
+}
+std::unique_ptr<AbstractSyntaxTree> CUnaryBitwiseNot::ToAST() {
+	return std::make_unique<UnaryBitwiseNotAST>(m_oCodePosition);
 }
 
 std::unique_ptr<CUnaryBase> CUnaryLinter::ParseTypeOf()

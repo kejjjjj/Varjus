@@ -6,7 +6,6 @@ CLinterError::CLinterError(const std::string& error)
     : m_oErrorMessageFormatted(error) {
 
     if (!CLinterErrors::GetExecutionPosition()) {
-        m_oErrorMessageFormatted += std::format(" | near beginning");
         return;
     }
 
@@ -37,7 +36,7 @@ void CLinterErrors::ClearErrorStack()
 { 
     errorStack.clear(); 
 }
-const auto& CLinterErrors::GetErrorStack() 
+const std::vector<CLinterError>& CLinterErrors::GetErrorStack()
 {
     return errorStack; 
 }

@@ -11,7 +11,7 @@
 #include "linter/context.hpp"
 #include "linter/modules/module.hpp"
 #include "linter/declarations/members.hpp"
-#include "globalEnums.hpp"
+#include "api/internal/globalEnums.hpp"
 #include "runtime/structure.hpp"
 
 #ifdef OPTIMIZATIONS

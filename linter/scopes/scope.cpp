@@ -7,7 +7,7 @@
 
 #include "runtime/structure.hpp"
 
-#include "globalEnums.hpp"
+#include "api/internal/globalEnums.hpp"
 
 #include <cassert>
 

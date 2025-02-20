@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include "globalEnums.hpp"
+#include "api/internal/globalEnums.hpp"
 #include "linter/expressions/definitions.hpp"
 #include "runtime/structure.hpp"
 

@@ -13,7 +13,6 @@ IValue* CUIntValue::Copy()
 		ptr->GetShared() = GetShared();
 		return ptr;
 	}
-
 	return CProgramRuntime::AcquireNewValue<CUIntValue>(Get());
 }
 void CUIntValue::Release()

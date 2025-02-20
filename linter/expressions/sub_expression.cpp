@@ -10,7 +10,7 @@
 #include "linter/error.hpp"
 #include "linter/punctuation.hpp"
 #include "linter/functions/stack.hpp"
-#include "globalEnums.hpp"
+#include "api/internal/globalEnums.hpp"
 
 #include <cassert>
 

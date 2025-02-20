@@ -1,5 +1,5 @@
 #include "import.hpp"
-#include "globalEnums.hpp"
+#include "api/internal/globalEnums.hpp"
 #include "linter/token.hpp"
 #include "linter/error.hpp"
 #include "linter/punctuation.hpp"

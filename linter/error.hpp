@@ -44,7 +44,7 @@ public:
     static void PushError(const std::string& error);
 
     static void ClearErrorStack();
-    [[nodiscard ]] static const auto& GetErrorStack();
+    [[nodiscard ]] static const std::vector<CLinterError>& GetErrorStack();
 
 private:
     static std::vector<CLinterError> errorStack;

@@ -84,7 +84,8 @@ enum Punctuation : char
 	p_semicolon,
 	p_colon,
 	p_question_mark,
-	p_exclamation
+	p_exclamation,
+	p_tilde,
 };
 
 struct CPunctuation final
@@ -94,7 +95,7 @@ struct CPunctuation final
 	OperatorPriority m_ePriority{};
 };
 
-constexpr std::array<CPunctuation, 45u> punctuations
+constexpr std::array<CPunctuation, 46u> punctuations
 {
 	CPunctuation{"===", p_strict_equality, op_relational},
 	CPunctuation{"!==", p_strict_unequality, op_relational},
@@ -125,6 +126,7 @@ constexpr std::array<CPunctuation, 45u> punctuations
 
 	CPunctuation{"++", p_increment, op_unary},
 	CPunctuation{"--", p_decrement, op_unary},
+	CPunctuation{"~", p_tilde, op_unary},
 
 	CPunctuation{"+", p_add, op_additive},
 	CPunctuation{"-", p_sub, op_additive},
