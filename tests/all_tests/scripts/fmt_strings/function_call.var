@@ -1,0 +1,10 @@
+
+fn thing(a, b)
+{
+	return a * b;
+}
+
+fn main()
+{
+	return `thing(): ${thing(20, 4)}`;
+}

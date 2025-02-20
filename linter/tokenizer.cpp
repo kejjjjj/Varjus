@@ -397,6 +397,67 @@ Success CBufferTokenizer::ReadString(CToken& token, std::int8_t quote)
 #define FMT_EXPRESSION_CHAR '{'
 #define FMT_EXPRESSION_END_CHAR '}'
 #define FMT_EXPRESSION_END_CHAR_P p_curlybracket_close
+
+Success CBufferTokenizer::ParseFmtRawText(CFmtStringToken& token)
+{
+	auto& [line, column] = m_oParserPosition;
+	std::string rawText;
+
+	while (!BeginningOfFmtString() && *m_oScriptPos != '`') {
+		if (*m_oScriptPos == '\\') {
+			rawText.push_back(ReadEscapeCharacter());
+		}
+		else {
+			rawText.push_back(*m_oScriptPos);
+			if (*m_oScriptPos == '\n') {
+				++line;
+				column = 1;
+			}
+			else {
+				column += (*m_oScriptPos == '\t' ? 4 : 1);
+			}
+		}
+
+		if (++m_oScriptPos == m_oScriptEnd) 
+			break;
+	}
+
+	if (!rawText.empty()) {
+		token.InsertFmtToken(std::make_unique<CToken>(rawText, tt_string), CFmtStringToken::FmtStringTokenType::raw);
+	}
+
+	return !EndOfBuffer() ? success : failure;
+}
+Success CBufferTokenizer::ParseFmtExpression(CFmtStringToken& token)
+{
+	auto& [line, column] = m_oParserPosition;
+
+	if (!BeginningOfFmtString()) 
+		return success;
+
+	assert(*m_oScriptPos == FMT_STRING_CHAR);
+	std::advance(m_oScriptPos, 2); // Skip ${
+	column += 2;
+
+	do {
+		auto newToken = ReadToken();
+		if (!newToken || EndOfBuffer()) {
+			CLinterErrors::PushError("unexpected end of buffer", m_oParserPosition);
+			return failure;
+		}
+
+		token.InsertFmtToken(std::move(newToken), CFmtStringToken::FmtStringTokenType::placeholder);
+	} while (*m_oScriptPos != FMT_EXPRESSION_END_CHAR);
+
+	token.InsertFmtToken(ReadPunctuation(), CFmtStringToken::FmtStringTokenType::placeholder);
+	return !EndOfBuffer() ? success : failure;
+}
+bool CBufferTokenizer::BeginningOfFmtString() const
+{
+	return !EndOfBuffer() && std::distance(m_oScriptPos, m_oScriptEnd) >= 2 &&
+		*m_oScriptPos == FMT_STRING_CHAR && *(std::next(m_oScriptPos)) == FMT_EXPRESSION_CHAR;
+}
+
 std::unique_ptr<CToken> CBufferTokenizer::ReadFormatString()
 {
 	auto& [line, column] = m_oParserPosition;
@@ -404,88 +465,18 @@ std::unique_ptr<CToken> CBufferTokenizer::ReadFormatString()
 	auto token = std::make_unique<CFmtStringToken>();
 	++m_oScriptPos;
 
-	const auto BeginningOfFmtString = [&] {
 
-		if (EndOfBuffer() || std::distance(m_oScriptPos, m_oScriptEnd) < 2)
-			return false;
+	while (!EndOfBuffer() && *m_oScriptPos != '`') {
 
-		return *m_oScriptPos == FMT_STRING_CHAR && *(std::next(m_oScriptPos)) == FMT_EXPRESSION_CHAR;
-	};
-
-
-	do {
-		if (EndOfBuffer())
-			return token;
-
-		std::string rawText;
-
-		const auto SaveRawText = [&token, &rawText] { 
-			if (rawText.size()) {
-				token->InsertFmtToken(std::make_unique<CToken>(rawText, tt_string), CFmtStringToken::FmtStringTokenType::raw);
-				rawText.clear();
-			}
-		};
-
-		while (!BeginningOfFmtString()) {
-
-
-			if (*m_oScriptPos == '\n') {
-				line++;
-				column = 1ull;
-			}
-			else {
-				column += (*m_oScriptPos == '\t' ? 4 : 1);
-			}
-
-			if (*m_oScriptPos == '`' || BeginningOfFmtString())
-				break;
-
-			if (*m_oScriptPos == '\\')
-				rawText.push_back(ReadEscapeCharacter());
-			else {
-				rawText.push_back(*m_oScriptPos);
-			}
-
-			m_oScriptPos++;
-
-			if (EndOfBuffer()) {
-				column++;
-				break;
-			}
-		}
-
-		if (EndOfBuffer()) {
-			CLinterErrors::PushError("unexpected end of buffer", m_oParserPosition);
-			return nullptr;
-		}
-
-		SaveRawText();
+		if (!ParseFmtRawText(*token))
+			break;
 
 		if (*m_oScriptPos == '`')
 			break;
 		
-		assert(BeginningOfFmtString());
-
-		std::advance(m_oScriptPos, 2); //skip ${
-		column += 2ull;
-
-		do {
-
-			auto&& newToken = ReadToken();
-
-			if (!newToken || EndOfBuffer()) {
-				CLinterErrors::PushError("unexpected end of buffer", m_oParserPosition);
-				return nullptr;
-			}
-
-			token->InsertFmtToken(std::move(newToken), CFmtStringToken::FmtStringTokenType::placeholder);
-
-		} while (*m_oScriptPos != FMT_EXPRESSION_END_CHAR);
-
-		//so that the expression knows to end here
-		token->InsertFmtToken(ReadPunctuation(), CFmtStringToken::FmtStringTokenType::placeholder);
-
-	} while (!EndOfBuffer() && *m_oScriptPos != '`');
+		if (!ParseFmtExpression(*token))
+			break;
+	}
 
 	if (!EndOfBuffer()) {
 		m_oScriptPos++;  //skip `

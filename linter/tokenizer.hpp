@@ -9,6 +9,7 @@
 enum Success : signed char;
 
 using UniqueTokenVector = std::vector<std::unique_ptr<CToken>>;
+class CFmtStringToken;
 
 //throws on failure
 class CBufferTokenizer final
@@ -39,6 +40,9 @@ private:
 
 	[[nodiscard]] Success ReadString(CToken& token, std::int8_t quote);
 	[[nodiscard]] std::unique_ptr<CToken> ReadFormatString();
+	[[nodiscard]] Success ParseFmtRawText(CFmtStringToken& token);
+	[[nodiscard]] Success ParseFmtExpression(CFmtStringToken& token);
+	[[nodiscard]] bool BeginningOfFmtString() const;
 
 	[[nodiscard]] std::int8_t ReadEscapeCharacter();
 
