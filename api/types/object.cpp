@@ -1,4 +1,7 @@
 #include "object.hpp"
+
+#include "internal/object_declarations.hpp"
+
 #include "runtime/runtime.hpp"
 #include "runtime/variables.hpp"
 #include "runtime/structure.hpp"
@@ -35,7 +38,6 @@ IValue* CObjectValue::Copy() {
 	CObjectValue* ptr = CProgramRuntime::AcquireNewValue<CObjectValue>();
 	ptr->MakeShared();
 	ptr->GetShared() = GetShared();
-
 	return ptr;
 }
 
@@ -57,14 +59,14 @@ IValue* CObjectValue::Index(IValue* index) {
 }
 IValue* CObjectValue::GetAggregate(std::size_t memberIdx) {
 
-	if (m_oMethods.contains(memberIdx)) {
+	if (m_oMethods->contains(memberIdx)) {
 		auto v = CProgramRuntime::AcquireNewValue<CCallableValue>();
 		METHOD_BIND(v, this->Copy());
 		return v;
 	}
 
-	if (m_oProperties.contains(memberIdx)) {
-		return m_oProperties.at(memberIdx)(this);
+	if (m_oProperties->contains(memberIdx)) {
+		return m_oProperties->at(memberIdx)(this);
 	}
 
 	return Internal()->GetAggregateValue().ElementLookup(memberIdx);

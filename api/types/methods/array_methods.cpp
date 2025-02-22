@@ -10,9 +10,6 @@
 
 #include <algorithm>
 
-BuiltInMethod_t CArrayValue::m_oMethods;
-BuiltInProperty_t CArrayValue::m_oProperties;
-
 FORWARD_DECLARE_METHOD(Push);
 FORWARD_DECLARE_METHOD(PushFront);
 FORWARD_DECLARE_METHOD(Pop);
@@ -33,42 +30,41 @@ FORWARD_DECLARE_METHOD(Sort);
 FORWARD_DECLARE_METHOD(Resize);
 FORWARD_DECLARE_METHOD(Fill);
 
+std::shared_ptr<BuiltInMethod_t> CArrayValue::m_oMethods;
+std::shared_ptr<BuiltInProperty_t> CArrayValue::m_oProperties;
+
 void CArrayValue::ConstructMethods()
 {
-	m_oMethods.clear();
+	m_oMethods = std::make_shared<BuiltInMethod_t>();
 
-	m_oMethods.AddMethod("push",            Push,          1u);
-	m_oMethods.AddMethod("push_front",      PushFront,     1u);
-	m_oMethods.AddMethod("pop",             Pop,           0u);
-	m_oMethods.AddMethod("pop_front",       PopFront,      0u);
-	m_oMethods.AddMethod("map",             Map,           1u);
-	m_oMethods.AddMethod("find",            Find,          1u);
-	m_oMethods.AddMethod("find_last",       FindLast,      1u);
-	m_oMethods.AddMethod("find_index",      FindIndex,     1u);
-	m_oMethods.AddMethod("find_last_index", FindLastIndex, 1u);
-	m_oMethods.AddMethod("filter",          Filter,        1u);
-	m_oMethods.AddMethod("contains",        Contains,      1u);
-	m_oMethods.AddMethod("reversed",        Reversed,      0u);
-	m_oMethods.AddMethod("join",            Join,          1u);
-	m_oMethods.AddMethod("all",             All,           1u);
-	m_oMethods.AddMethod("any",             Any,           1u);
-	m_oMethods.AddMethod("slice",	        Slice,         2u);
-	m_oMethods.AddMethod("sort",            Sort,          1u);
-	m_oMethods.AddMethod("resize",          Resize,        1u);
-	m_oMethods.AddMethod("fill",            Fill,          1u);
-
+	m_oMethods->AddMethod("push",            Push,          1u);
+	m_oMethods->AddMethod("push_front",      PushFront,     1u);
+	m_oMethods->AddMethod("pop",             Pop,           0u);
+	m_oMethods->AddMethod("pop_front",       PopFront,      0u);
+	m_oMethods->AddMethod("map",             Map,           1u);
+	m_oMethods->AddMethod("find",            Find,          1u);
+	m_oMethods->AddMethod("find_last",       FindLast,      1u);
+	m_oMethods->AddMethod("find_index",      FindIndex,     1u);
+	m_oMethods->AddMethod("find_last_index", FindLastIndex, 1u);
+	m_oMethods->AddMethod("filter",          Filter,        1u);
+	m_oMethods->AddMethod("contains",        Contains,      1u);
+	m_oMethods->AddMethod("reversed",        Reversed,      0u);
+	m_oMethods->AddMethod("join",            Join,          1u);
+	m_oMethods->AddMethod("all",             All,           1u);
+	m_oMethods->AddMethod("any",             Any,           1u);
+	m_oMethods->AddMethod("slice",	        Slice,         2u);
+	m_oMethods->AddMethod("sort",            Sort,          1u);
+	m_oMethods->AddMethod("resize",          Resize,        1u);
+	m_oMethods->AddMethod("fill",            Fill,          1u);
 }
 
 FORWARD_DECLARE_PROPERTY(ArrayLength);
 
 void CArrayValue::ConstructProperties()
 {
-	m_oProperties.clear();
-
-	m_oProperties.AddProperty("length", ArrayLength);
+	m_oProperties = std::make_shared<BuiltInProperty_t>();
+	m_oProperties->AddProperty("length", ArrayLength);
 }
-
-
 
 #define START_METHOD(name) \
 if(!_this)\

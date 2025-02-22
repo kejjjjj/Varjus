@@ -15,9 +15,6 @@ if(_this->Type() != t_object) \
 	throw CRuntimeError(std::format("object.{} expected an object, but got {}", #name, _this->TypeAsString()));\
 auto name = _this->ToObject()
 
-BuiltInMethod_t CObjectValue::m_oMethods;
-BuiltInProperty_t CObjectValue::m_oProperties;
-
 FORWARD_DECLARE_METHOD(Object_Keys);
 FORWARD_DECLARE_METHOD(Object_Values);
 FORWARD_DECLARE_METHOD(Object_Set);
@@ -25,24 +22,27 @@ FORWARD_DECLARE_METHOD(Object_Remove);
 FORWARD_DECLARE_METHOD(Object_Contains);
 FORWARD_DECLARE_METHOD(Object_ToArray);
 
+std::shared_ptr<BuiltInMethod_t> CObjectValue::m_oMethods;
+std::shared_ptr<BuiltInProperty_t> CObjectValue::m_oProperties;
+
 void CObjectValue::ConstructMethods()
 {
-	m_oMethods.clear();
+	m_oMethods = std::make_shared<BuiltInMethod_t>();
 
-	m_oMethods.AddMethod("keys",     Object_Keys,     0u);
-	m_oMethods.AddMethod("values",   Object_Values,   0u);
-	m_oMethods.AddMethod("set",      Object_Set,      2u);
-	m_oMethods.AddMethod("remove",   Object_Remove,   1u);
-	m_oMethods.AddMethod("contains", Object_Contains, 1u);
-	m_oMethods.AddMethod("to_array", Object_ToArray,  0u);
+	m_oMethods->AddMethod("keys",     Object_Keys,     0u);
+	m_oMethods->AddMethod("values",   Object_Values,   0u);
+	m_oMethods->AddMethod("set",      Object_Set,      2u);
+	m_oMethods->AddMethod("remove",   Object_Remove,   1u);
+	m_oMethods->AddMethod("contains", Object_Contains, 1u);
+	m_oMethods->AddMethod("to_array", Object_ToArray,  0u);
 
 }
 
 FORWARD_DECLARE_PROPERTY(ObjectLength);
 void CObjectValue::ConstructProperties()
 {
-	m_oProperties.clear();
-	m_oProperties.AddProperty("length", ObjectLength);
+	m_oProperties = std::make_shared<BuiltInProperty_t>();
+	m_oProperties->AddProperty("length", ObjectLength);
 }
 
 DEFINE_PROPERTY(ObjectLength) {

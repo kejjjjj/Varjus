@@ -2,7 +2,6 @@
 
 #include "default.hpp"
 #include "internal/aggregate.hpp"
-#include "internal/methods.hpp"
 
 #include <vector>
 #include <memory>
@@ -81,8 +80,8 @@ private:
 	[[nodiscard]] std::string TypeAsString() const override { return "array"s; }
 	[[nodiscard]] std::string ValueAsString() const override;
 	
-	static BuiltInMethod_t m_oMethods;
-	static BuiltInProperty_t m_oProperties;
+	static std::shared_ptr<struct BuiltInMethod_t> m_oMethods;
+	static std::shared_ptr<struct BuiltInProperty_t> m_oProperties;
 };
 
 

@@ -1,8 +1,12 @@
 #include "console.hpp"
+
+#include "api/types/object.hpp"
+#include "api/types/internal/object_declarations.hpp"
+
 #include "runtime/runtime.hpp"
 #include "runtime/structure.hpp"
-
 #include "linter/context.hpp"
+
 #include <iostream>
 
 FORWARD_DECLARE_METHOD(LogConsole);

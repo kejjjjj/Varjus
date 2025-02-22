@@ -1,4 +1,4 @@
-#include "api/types/internal/internal_objects.hpp"
+#include "api/types/internal/objects.hpp"
 #include "api/types/types.hpp"
 
 #include "exceptions/exception.hpp"
@@ -69,6 +69,8 @@ void ClearPool() {
 
 static void InitGlobals()
 {
+	// these are static because otherwise using objects, arrays, and strings would be quite expensive
+	// as the methods and properties would have to be copied everytime
 	CArrayValue::ConstructMethods();
 	CArrayValue::ConstructProperties();
 

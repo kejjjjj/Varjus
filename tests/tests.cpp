@@ -15,26 +15,16 @@
 IValue* TEST_ExecuteFile(const std::string& srcFile)
 {
     try {
-
-        Varjus::Init();
+        Varjus::Cleanup();
         Varjus::UseStdLibrary();
 
         const auto reader = VarjusIOReader("\\scripts\\" + srcFile);
-
         std::cout << reader.GetFilePath() << '\n';
 
-        auto uniqueTokens = CBufferTokenizer::ParseFileFromFilePath(reader.GetFilePath());
-        auto tokens = CBufferTokenizer::ConvertTokensToReadOnly(uniqueTokens);
-        auto begin = tokens.begin();
-        auto end = tokens.end();
-
-        CBufferLinter linter(begin, end, reader.GetFilePath());
-
-        if (!linter.Parse())
+        if (!Varjus::LoadScriptFromFile(reader.GetFilePath())) {
             return nullptr;
-
-        CProgramRuntime runtime(CModule::ToRuntimeModules());
-        return runtime.Execute();
+        }
+        return Varjus::ExecuteScript();
     }
     catch (std::exception& ex) {
         std::cout << "\n\nERROR:\n" << ex.what() << "\n\n";

@@ -1,6 +1,8 @@
-#include "internal_objects.hpp"
+#include "objects.hpp"
+#include "object_declarations.hpp"
 #include "runtime/runtime.hpp"
 #include "runtime/structure.hpp"
+
 
 #include "linter/context.hpp"
 #include <iostream>
@@ -42,7 +44,7 @@ IValue* CBuiltInObject::GetAggregate(std::size_t memberIdx) {
 
 	if (m_oMethods->contains(memberIdx)) {
 		auto v = CProgramRuntime::AcquireNewValue<CCallableValue>();
-		METHOD_BIND_PTR(v, this->Copy());
+		METHOD_BIND(v, this->Copy());
 		return v;
 	}
 
@@ -52,6 +54,8 @@ IValue* CBuiltInObject::GetAggregate(std::size_t memberIdx) {
 
 	return CObjectValue::GetAggregate(memberIdx);
 }
+
+CBuiltInObjectPairs::~CBuiltInObjectPairs() = default;
 
 
 std::vector<std::pair<std::string, CBuiltInObjectPairs>> CBuiltInObjects::m_arrData;

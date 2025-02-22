@@ -44,7 +44,7 @@ Success CVariableDeclarationLinter::Parse()
 
 	if (const auto scope = m_pScope.lock()) {
 
-		const auto containsFunc = m_pOwner->m_FunctionManager->ContainsFunction(varName);
+		const auto containsFunc = m_pOwner->GetGlobalMemory()->m_FunctionManager->ContainsFunction(varName);
 
 		if (containsFunc || !scope->DeclareVariable((*m_iterPos)->Source())) {
 			CLinterErrors::PushError(std::format("\"{}\" already declared", (*m_iterPos)->Source()), (*m_iterPos)->m_oSourcePosition);

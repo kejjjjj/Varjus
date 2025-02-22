@@ -1,7 +1,11 @@
-#include "methods.hpp"
+#include "object_declarations.hpp"
 
 #include "runtime/structure.hpp"
 #include "linter/context.hpp"
+
+BuiltInMethod_t::~BuiltInMethod_t() {
+	static_assert(sizeof(CBuiltInRuntimeFunction) > 0, "woops!");
+}
 
 void BuiltInMethod_t::AddMethod(const std::string& name, Method_t method, std::size_t numArgs)
 {

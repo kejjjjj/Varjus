@@ -5,6 +5,7 @@
 
 #include "internal/globalDefinitions.hpp"
 #include "types/types.hpp"
+#include "types/internal/objects.hpp"
 
 #include <string>
 #include <optional>
@@ -53,7 +54,7 @@ int main()
 ***********************************************************************/
 namespace Varjus
 {
-	//Call me first if you need access to standard objects such as math and console
+	//Call me before loading a script if you need access to standard objects such as math and console
 	VARJUS_API void UseStdLibrary();
 
 	//Call me when you don't need the api anymore
@@ -70,10 +71,17 @@ namespace Varjus
 	//When a function doesn't return a success
 	VARJUS_API __ND std::optional<std::string> GetErrorMessage();
 
-#if _DEBUG
 	// Debug memory leaks
 	// call me after Varjus::Cleanup()
 	VARJUS_API void PrintMemoryUsage();
-#endif
+
 }
 
+namespace Varjus
+{
+    //Declare a new global variable with its custom methods and propertys (callbacks)
+    //See Varjus::UseStdLibrary() for an usage example
+    void AddNewGlobalObject(const std::string& name,
+        const OptionalCtor<struct BuiltInMethod_t>& createMethods = std::nullopt,
+        const OptionalCtor<struct BuiltInProperty_t>& createProperties = std::nullopt);
+}

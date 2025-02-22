@@ -1,12 +1,11 @@
-fn bigAssLoop(size)
+fn func()
 {
-    for(let i = 0u; i < size; i++){
-        const uselessArray = [].resize(10).fill("ass");
-    }
-
+    return 1;
 }
 
 fn main()
 {
-    return bigAssLoop(3000000);
+    const func = 2;
+
+    return func();
 }

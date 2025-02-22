@@ -5,9 +5,10 @@
 #include "linter/modules/module.hpp"
 #include "linter/tokenizer.hpp"
 #include "runtime/runtime.hpp"
-#include "types/internal/internal_objects.hpp"
+#include "runtime/structure.hpp"
 #include "types/std/console.hpp"
 #include "types/std/math.hpp"
+#include "types/internal/object_declarations.hpp"
 #include "runtime/exceptions/exception.hpp"
 #include "runtime/modules/rtmodule.hpp"
 
@@ -18,9 +19,11 @@ struct CVarjusInternals
     static void Init() {
         m_bScriptLoaded = failure;
         m_sErrorMessage.clear();
+#ifndef RUNNING_TESTS
         if (m_pReturnValue)
             m_pReturnValue->Release();
         m_pReturnValue = nullptr;
+#endif
     }
 
     static std::string m_sErrorMessage;
@@ -44,9 +47,10 @@ static void InitVarjus()
 void Varjus::UseStdLibrary()
 {
     CBuiltInObjects::Reset();
-    CBuiltInObjects::AddNewGlobalObject("console", CConsoleValue::ConstructMethods);
-    CBuiltInObjects::AddNewGlobalObject("math", CMathValue::ConstructMethods, CMathValue::ConstructProperties);
+    Varjus::AddNewGlobalObject("console", CConsoleValue::ConstructMethods);
+    Varjus::AddNewGlobalObject("math", CMathValue::ConstructMethods, CMathValue::ConstructProperties);
 }
+
 void Varjus::Cleanup() {
     InitVarjus();
     CBuiltInObjects::Reset();
@@ -106,8 +110,14 @@ std::optional<std::string> Varjus::GetErrorMessage()
         : std::nullopt;
 }
 
-#if _DEBUG
 void Varjus::PrintMemoryUsage() {
     CProgramRuntime::PrintAllLeaks();
 }
-#endif
+
+void Varjus::AddNewGlobalObject(const std::string& name,
+    const OptionalCtor<BuiltInMethod_t>& createMethods,
+    const OptionalCtor<BuiltInProperty_t>& createProperties) 
+{
+    CBuiltInObjects::AddNewGlobalObject(name, createMethods, createProperties);
+    
+}

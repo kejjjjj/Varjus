@@ -31,6 +31,7 @@ using Property_t = IValue*(*)(IValue*);
 struct BuiltInMethod_t : std::unordered_map<std::size_t, std::unique_ptr<class CBuiltInRuntimeFunction>>
 {
 	using unordered_map::unordered_map;
+	~BuiltInMethod_t();
 	BuiltInMethod_t(const BuiltInMethod_t&) = delete;
 	BuiltInMethod_t(BuiltInMethod_t&&) = default;
 	BuiltInMethod_t& operator=(const BuiltInMethod_t&) = delete;
@@ -45,12 +46,6 @@ struct BuiltInProperty_t : std::unordered_map<std::size_t, Property_t>
 };
 
 #define METHOD_BIND(v, value) \
-v->MakeShared();\
-v->Internal()->SetCallable(m_oMethods.at(memberIdx).get());\
-v->MakeImmutable();\
-v->Internal()->Bind(value);\
-
-#define METHOD_BIND_PTR(v, value) \
 v->MakeShared();\
 v->Internal()->SetCallable(m_oMethods->at(memberIdx).get());\
 v->MakeImmutable();\

@@ -2,7 +2,7 @@
 
 #include "globalDefinitions.hpp"
 #include "api/types/internal/references.hpp"
-#include "api/types/internal/methods.hpp"
+#include "api/types/internal/object_declarations.hpp"
 
 #include <vector>
 #include <memory>

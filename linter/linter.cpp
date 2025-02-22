@@ -23,7 +23,7 @@
 #include "statements/try_catch/try_catch.hpp"
 #include "statements/while/while.hpp"
 
-#include "api/types/internal/internal_objects.hpp"
+#include "api/types/internal/objects.hpp"
 
 
 #include <cassert>

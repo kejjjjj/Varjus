@@ -12,9 +12,6 @@
 #include <algorithm>
 
 
-BuiltInMethod_t CStringValue::m_oMethods;
-BuiltInProperty_t CStringValue::m_oProperties;
-
 #define START_METHOD(name) \
 if(!_this)\
 	throw CRuntimeError("attempted to call a method without \"this\" context"); \
@@ -33,25 +30,28 @@ FORWARD_DECLARE_METHOD(Repeat);
 
 FORWARD_DECLARE_METHOD(GetCodeAt);
 
+std::shared_ptr<BuiltInMethod_t> CStringValue::m_oMethods;
+std::shared_ptr<BuiltInProperty_t> CStringValue::m_oProperties;
+
 void CStringValue::ConstructMethods()
 {
-	m_oMethods.clear();
+	m_oMethods = std::make_shared<BuiltInMethod_t>();
 
-	m_oMethods.AddMethod("toupper",     ToUpper,   0u);
-	m_oMethods.AddMethod("tolower",     ToLower,   0u);
-	m_oMethods.AddMethod("substring",   Substring, 2u);
-	m_oMethods.AddMethod("split",       Split,     1u);
-	m_oMethods.AddMethod("replace",     Replace,   2u);
-	m_oMethods.AddMethod("repeat",      Repeat,    1u);
-	m_oMethods.AddMethod("get_code_at", GetCodeAt, 1u);
+	m_oMethods->AddMethod("toupper",     ToUpper,   0u);
+	m_oMethods->AddMethod("tolower",     ToLower,   0u);
+	m_oMethods->AddMethod("substring",   Substring, 2u);
+	m_oMethods->AddMethod("split",       Split,     1u);
+	m_oMethods->AddMethod("replace",     Replace,   2u);
+	m_oMethods->AddMethod("repeat",      Repeat,    1u);
+	m_oMethods->AddMethod("get_code_at", GetCodeAt, 1u);
 }
 
 FORWARD_DECLARE_PROPERTY(StringLength);
 
 void CStringValue::ConstructProperties()
 {
-	m_oProperties.clear();
-	m_oProperties.AddProperty("length", StringLength);
+	m_oProperties = std::make_shared<BuiltInProperty_t>();
+	m_oProperties->AddProperty("length", StringLength);
 }
 
 DEFINE_PROPERTY(StringLength) {

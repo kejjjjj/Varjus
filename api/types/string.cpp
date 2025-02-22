@@ -1,5 +1,7 @@
 #include "string.hpp"
 
+#include "internal/object_declarations.hpp"
+
 #include "runtime/runtime.hpp"
 #include "runtime/structure.hpp"
 #include "runtime/exceptions/exception.hpp"
@@ -53,14 +55,14 @@ IValue* CStringValue::Index(IValue* vIndex)
 }
 IValue* CStringValue::GetAggregate(std::size_t memberIdx)
 {
-	if (m_oMethods.contains(memberIdx)) {
+	if (m_oMethods->contains(memberIdx)) {
 		auto v = CProgramRuntime::AcquireNewValue<CCallableValue>();
 		METHOD_BIND(v, this->Copy());
 		return v;
 	}
 
-	if (m_oProperties.contains(memberIdx)) {
-		return m_oProperties.at(memberIdx)(this);
+	if (m_oProperties->contains(memberIdx)) {
+		return m_oProperties->at(memberIdx)(this);
 	}
 
 	assert(false);

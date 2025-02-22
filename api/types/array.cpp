@@ -1,4 +1,6 @@
 #include "array.hpp"
+
+#include "internal/object_declarations.hpp"
 #include "runtime/runtime.hpp"
 #include "runtime/variables.hpp"
 #include "runtime/structure.hpp"
@@ -28,7 +30,6 @@ CArrayValue* CArrayValue::Construct(IValues&& values)
 	ptr->MakeShared();
 	auto internal = ptr->Internal();
 	internal->Set(std::move(values));
-	//internal->GetAggregateValue().Setup(0, runtime::__internal::GetAggregateArrayData());
 	return ptr;
 }
 
@@ -80,14 +81,14 @@ IValue* CArrayValue::Index(IValue* vIndex)
 IValue* CArrayValue::GetAggregate(std::size_t memberIdx)
 {
 
-	if (m_oMethods.contains(memberIdx)) {
+	if (m_oMethods->contains(memberIdx)) {
 		auto v = CProgramRuntime::AcquireNewValue<CCallableValue>();
 		METHOD_BIND(v, this->Copy());
 		return v;
 	}
 
-	if (m_oProperties.contains(memberIdx)) {
-		return m_oProperties.at(memberIdx)(this);
+	if (m_oProperties->contains(memberIdx)) {
+		return m_oProperties->at(memberIdx)(this);
 	}
 
 	assert(false);

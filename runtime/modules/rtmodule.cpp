@@ -1,6 +1,6 @@
 #include "rtmodule.hpp"
 
-#include "api/types/internal/internal_objects.hpp"
+#include "api/types/internal/objects.hpp"
 
 #include "linter/modules/module.hpp"
 

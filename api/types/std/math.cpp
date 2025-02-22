@@ -1,5 +1,7 @@
 #include "math.hpp"
 
+#include "api/types/object.hpp"
+#include "api/types/internal/object_declarations.hpp"
 #include "api/types/operators/default_operators.hpp"
 
 #include "linter/context.hpp"

@@ -1,7 +1,7 @@
 #pragma once
+
 #include "default.hpp"
 #include "internal/aggregate.hpp"
-#include "internal/methods.hpp"
 
 
 struct CStringContent final
@@ -66,8 +66,8 @@ private:
 	[[nodiscard]] std::string TypeAsString() const override { return "string"s; }
 	[[nodiscard]] std::string ValueAsString() const override { return Internal()->GetString(); }
 
-	static BuiltInMethod_t m_oMethods;
-	static BuiltInProperty_t m_oProperties;
+	static std::shared_ptr<struct BuiltInMethod_t> m_oMethods;
+	static std::shared_ptr<struct BuiltInProperty_t> m_oProperties;
 
 
 };

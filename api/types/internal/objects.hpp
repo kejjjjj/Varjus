@@ -1,12 +1,14 @@
 #pragma once
 
 #include "api/types/object.hpp"
-#include "api/types/internal/methods.hpp"
 
 #include <vector>
 #include <memory>
 #include <functional>
 #include <optional>
+
+struct BuiltInMethod_t;
+struct BuiltInProperty_t;
 
 class CBuiltInObject final : public CObjectValue
 {
@@ -15,7 +17,7 @@ class CBuiltInObject final : public CObjectValue
 public:
 	CBuiltInObject();
 	~CBuiltInObject();
-	static CBuiltInObject* Construct(BuiltInMethod_t&& methods={}, BuiltInProperty_t&& properties={});
+	static CBuiltInObject* Construct(BuiltInMethod_t&& methods, BuiltInProperty_t&& properties);
 
 	void Release() override;
 
@@ -32,6 +34,7 @@ using OptionalCtor = std::optional<std::function<Type()>>;
 
 struct CBuiltInObjectPairs
 {
+	~CBuiltInObjectPairs();
 	OptionalCtor<BuiltInMethod_t> methods;
 	OptionalCtor<BuiltInProperty_t> properties;
 };
