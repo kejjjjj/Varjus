@@ -2,9 +2,9 @@
 
 #include "linter/context.hpp"
 
-#include "runtime/variables.hpp"
+#include "api/internal/variables.hpp"
 #include "runtime/exceptions/exception.hpp"
-#include "runtime/structure.hpp"
+#include "api/internal/structure.hpp"
 
 
 [[nodiscard]] inline CObjectValue* GetThis(IValue* _this) {

@@ -1,8 +1,8 @@
 #include "api/types/types.hpp"
 #include "runtime/exceptions/exception.hpp"
-#include "runtime/runtime.hpp"
-#include "runtime/structure.hpp"
-#include "runtime/variables.hpp"
+#include "api/internal/runtime.hpp"
+#include "api/internal/structure.hpp"
+#include "api/internal/variables.hpp"
 
 CRuntimeForStatement::CRuntimeForStatement(
 	ASTNode&& init,

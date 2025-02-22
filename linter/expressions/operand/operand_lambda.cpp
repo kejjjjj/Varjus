@@ -9,7 +9,7 @@
 #include "linter/expressions/expression.hpp"
 #include "linter/statements/return/return.hpp"
 
-#include "runtime/structure.hpp"
+#include "api/internal/structure.hpp"
 
 #include <cassert>
 

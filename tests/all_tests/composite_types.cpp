@@ -1,8 +1,8 @@
 #include "tests/tests.hpp"
 #include "tests/utils.hpp"
 
-#include "runtime/structure.hpp"
-#include "runtime/runtime.hpp"
+#include "api/internal/structure.hpp"
+#include "api/internal/runtime.hpp"
 
 #define PATH_PREFIX "composite_types"
 #define JP(x) (std::string(PATH_PREFIX) + "\\" + x)

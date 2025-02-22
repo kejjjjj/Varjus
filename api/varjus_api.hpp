@@ -3,13 +3,13 @@
 #define VARJUS_API
 #define __ND [[nodiscard]]
 
-#include "internal/globalDefinitions.hpp"
-#include "types/types.hpp"
-#include "types/internal/objects.hpp"
+#include "api/internal/structure.hpp"
 #include "types/internal/callbacks.hpp"
+#include "types/internal/objects.hpp"
+#include "types/types.hpp"
 
-#include <string>
 #include <optional>
+#include <string>
 
 /***********************************************************************
 ALWAYS CHECK RETURN VALUES!!!!
@@ -54,9 +54,7 @@ int main()
 }
 ***********************************************************************/
 
-struct CRuntimeContext;
-#define DEFINE_CALLBACK(name, args)\
-IValue* name([[maybe_unused]] CRuntimeContext* const ctx, [[maybe_unused]] const IValues& args)
+
 
 namespace Varjus
 {
@@ -88,8 +86,8 @@ namespace Varjus
     //Declare a new global variable with its custom methods and properties (callbacks)
     //See Varjus::UseStdLibrary() for an usage example
     void AddNewGlobalObject(const std::string& name,
-        const OptionalCtor<struct BuiltInMethod_t>& createMethods = std::nullopt,
-        const OptionalCtor<struct BuiltInProperty_t>& createProperties = std::nullopt);
+        const OptionalCtor<BuiltInMethod_t>& createMethods = std::nullopt,
+        const OptionalCtor<BuiltInProperty_t>& createProperties = std::nullopt);
 
     //When this function is referenced in code, it calls the callback
     void AddNewCallback(const std::string& name, const Function_t& callback, std::size_t numArgs);

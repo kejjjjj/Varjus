@@ -5,7 +5,7 @@
 #include <unordered_map>
 
 #include "api/types/internal/references.hpp"
-#include "globalDefinitions.hpp"
+#include "api/internal/globalDefinitions.hpp"
 
 template <typename T>
 using VectorOf = std::vector<T>;

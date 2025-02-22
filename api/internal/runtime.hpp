@@ -4,11 +4,11 @@
 #include <iostream>
 #include <chrono>
 
-#include "globalDefinitions.hpp"
+#include "api/internal/globalDefinitions.hpp"
+#include "api/types/types.hpp"
+
 #include "pools/object_pool_non_owning.hpp"
 #include "pools/object_pool_owning.hpp"
-
-#include "api/types/types.hpp"
 
 class CVariable;
 class CRuntimeFunction;

@@ -1,4 +1,4 @@
-#include "runtime/structure.hpp"
+#include "api/internal/structure.hpp"
 #include "api/types/default.hpp"
 
 ObjectInitializer CRuntimeExpression::EvaluateObject(CRuntimeContext* const ctx, const ObjectInitializerData& obj)

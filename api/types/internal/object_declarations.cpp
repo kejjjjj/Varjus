@@ -1,6 +1,6 @@
 #include "object_declarations.hpp"
 
-#include "runtime/structure.hpp"
+#include "api/internal/structure.hpp"
 #include "linter/context.hpp"
 
 BuiltInMethod_t::~BuiltInMethod_t() {

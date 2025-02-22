@@ -4,7 +4,7 @@
 #include "api/types/operators/default_operators.hpp"
 
 #include "runtime/exceptions/exception.hpp"
-#include "runtime/structure.hpp"
+#include "api/internal/structure.hpp"
 
 #include <random>
 

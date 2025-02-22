@@ -8,7 +8,7 @@
 #include "linter/scopes/scope.hpp"
 #include "linter/declarations/variable_declarations.hpp"
 
-#include "globalDefinitions.hpp"
+#include "api/internal/globalDefinitions.hpp"
 
 #include <cassert>
 

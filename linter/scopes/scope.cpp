@@ -5,7 +5,7 @@
 #include "linter/linter.hpp"
 #include "linter/error.hpp"
 
-#include "runtime/structure.hpp"
+#include "api/internal/structure.hpp"
 
 #include "api/internal/globalEnums.hpp"
 

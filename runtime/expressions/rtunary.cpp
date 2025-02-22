@@ -2,10 +2,10 @@
 #include "api/types/types.hpp"
 
 #include "runtime/functions/rtfunction.hpp"
-#include "runtime/structure.hpp"
+#include "api/internal/structure.hpp"
 #include "runtime/exceptions/exception.hpp"
-#include "runtime/runtime.hpp"
-#include "runtime/variables.hpp"
+#include "api/internal/runtime.hpp"
+#include "api/internal/variables.hpp"
 
 #include "linter/expressions/ast.hpp"
 
@@ -51,11 +51,11 @@ IValue* CRuntimeExpression::EvaluateUnary(CRuntimeContext* const ctx, const Unar
 IValue* EvaluateNegation(IValue* operand)
 {
 	if (operand->Type() == t_int) {
-		return CProgramRuntime::AcquireNewValue<CIntValue>(-operand->AsInt());
+		return CIntValue::Construct(-operand->AsInt());
 	}
 	
 	if (operand->Type() == t_double) {
-		return CProgramRuntime::AcquireNewValue<CDoubleValue>(-operand->AsDouble());
+		return CDoubleValue::Construct(-operand->AsDouble());
 	}
 
 	throw CRuntimeError(std::format("cannot negate a value of type \"{}\"", operand->TypeAsString()));
@@ -103,7 +103,7 @@ IValue* EvaluateLogicalNot(IValue* operand)
 	if (!operand->IsBooleanConvertible())
 		throw CRuntimeError(std::format("a value of type \"{}\" is not convertible to a boolean", operand->TypeAsString()));
 
-	return CProgramRuntime::AcquireNewValue<CBooleanValue>(!operand->ToBoolean());
+	return CBooleanValue::Construct(!operand->ToBoolean());
 }
 IValue* EvaluateBitwiseNot(IValue* operand)
 {

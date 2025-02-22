@@ -2,7 +2,7 @@
 
 #include "api/types/types.hpp"
 #include "catch_amalgamated.hpp"
-#include "runtime/variables.hpp"
+#include "api/internal/variables.hpp"
 
 #include <string>
 

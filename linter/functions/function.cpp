@@ -12,7 +12,7 @@
 #include "linter/modules/module.hpp"
 #include "linter/declarations/members.hpp"
 #include "api/internal/globalEnums.hpp"
-#include "runtime/structure.hpp"
+#include "api/internal/structure.hpp"
 
 #ifdef OPTIMIZATIONS
 #include "linter/optimizations/optimizations.hpp"

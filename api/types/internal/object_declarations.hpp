@@ -23,6 +23,8 @@ IValue* Name([[maybe_unused]] IValue* _this)
 #include <string>
 #include <vector>
 
+constexpr auto UNCHECKED_PARAMETER_COUNT = std::numeric_limits<std::size_t>::max();
+
 class IValue;
 template<typename T>
 using VectorOf = std::vector<T>;
@@ -30,6 +32,8 @@ using IValues = VectorOf<IValue*>;
 
 using Method_t = IValue*(*)(struct CRuntimeContext* const, IValue*, const IValues&);
 using Property_t = IValue*(*)(IValue*);
+
+#include "api/internal/structure.hpp"
 
 //msvc is unable to use the move constructor for the unique_ptr, so it has to be explicitly defined pagman
 struct BuiltInMethod_t : std::unordered_map<std::size_t, std::unique_ptr<class CBuiltInRuntimeMethod>>
@@ -55,5 +59,4 @@ v->Internal()->SetCallable(m_oMethods->at(memberIdx).get());\
 v->MakeImmutable();\
 v->Internal()->Bind(value);\
 
-constexpr auto UNCHECKED_PARAMETER_COUNT = std::numeric_limits<std::size_t>::max();
 

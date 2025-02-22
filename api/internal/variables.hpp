@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <memory>
 
-#include "globalDefinitions.hpp"
+#include "api/internal/globalDefinitions.hpp"
 
 class IValue;
 
@@ -14,6 +14,9 @@ class CVariable
 public:
 	CVariable();
 	~CVariable();
+
+	[[nodiscard]] static CVariable* Construct();
+	[[nodiscard]] static CVariable* Construct(IValue* v);
 
 	void SetValue(IValue* v);
 	[[maybe_unused]] bool Release();

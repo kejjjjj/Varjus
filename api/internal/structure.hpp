@@ -1,6 +1,6 @@
 #pragma once
 
-#include "globalDefinitions.hpp"
+#include "api/internal/globalDefinitions.hpp"
 #include "api/types/internal/references.hpp"
 #include "api/types/internal/object_declarations.hpp"
 #include "api/types/internal/callbacks.hpp"

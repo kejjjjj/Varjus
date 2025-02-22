@@ -2,7 +2,7 @@
 #include <string>
 #include <memory>
 
-#include "globalDefinitions.hpp"
+#include "api/internal/globalDefinitions.hpp"
 #include "api/types/internal/references.hpp"
 
 enum EMemoryIdentifierType

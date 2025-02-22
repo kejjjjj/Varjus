@@ -1,6 +1,6 @@
 #pragma once
 
-#include "globalDefinitions.hpp"
+#include "api/internal/globalDefinitions.hpp"
 #include <cstdint>
 #include <memory>
 #include <string>

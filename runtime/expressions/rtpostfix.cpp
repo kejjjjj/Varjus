@@ -2,10 +2,10 @@
 #include "api/types/types.hpp"
 
 #include "runtime/functions/rtfunction.hpp"
-#include "runtime/structure.hpp"
+#include "api/internal/structure.hpp"
 #include "runtime/exceptions/exception.hpp"
-#include "runtime/runtime.hpp"
-#include "runtime/variables.hpp"
+#include "api/internal/runtime.hpp"
+#include "api/internal/variables.hpp"
 
 #include "linter/expressions/ast.hpp"
 
@@ -99,12 +99,12 @@ IValue* EvaluateIncrement(IValue* operand)
 		throw CRuntimeError("cannot increment a const value");
 	
 	if (operand->Type() == t_int) {
-		auto v = CProgramRuntime::AcquireNewValue<CIntValue>(operand->AsInt()); //create temp old value
+		auto v = CIntValue::Construct(operand->AsInt()); //create temp old value
 		++operand->AsInt(); //but increment this value
 		return v;
 	} 
 	
-	auto v = CProgramRuntime::AcquireNewValue<CUIntValue>(operand->AsUInt()); //create temp old value
+	auto v = CUIntValue::Construct(operand->AsUInt()); //create temp old value
 	++operand->AsUInt(); //but increment this value
 	return v;
 }
@@ -121,12 +121,12 @@ IValue* EvaluateDecrement(IValue* operand)
 	
 
 	if (operand->Type() == t_int) {
-		auto v = CProgramRuntime::AcquireNewValue<CIntValue>(operand->AsInt()); //create temp old value
+		auto v = CIntValue::Construct(operand->AsInt()); //create temp old value
 		--operand->AsInt(); //but decrement this value
 		return v;
 	}
 
-	auto v = CProgramRuntime::AcquireNewValue<CUIntValue>(operand->AsUInt()); //create temp old value
+	auto v = CUIntValue::Construct(operand->AsUInt()); //create temp old value
 	--operand->AsUInt(); //but decrement this value
 	return v;
 }

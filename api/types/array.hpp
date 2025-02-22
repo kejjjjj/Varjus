@@ -74,6 +74,8 @@ public:
 		return reinterpret_cast<std::size_t>(GetShared().get()); 
 	}
 
+	[[nodiscard]] VectorOf<CVariable*>& GetVariables();
+	[[nodiscard]] VectorOf<CVariable*>& GetVariables() const;
 
 
 private:

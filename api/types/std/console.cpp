@@ -1,7 +1,7 @@
 #include "console.hpp"
 #include "api/types/object.hpp"
 
-#include "runtime/structure.hpp"
+#include "api/internal/structure.hpp"
 
 #include <iostream>
 

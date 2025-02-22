@@ -7,7 +7,7 @@
 #include "linter/expressions/ast.hpp"
 #include "linter/scopes/scope.hpp"
 
-#include "globalDefinitions.hpp"
+#include "api/internal/globalDefinitions.hpp"
 
 #include <cassert>
 #include <format>

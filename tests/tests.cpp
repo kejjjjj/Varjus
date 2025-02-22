@@ -9,7 +9,7 @@
 
 #include "api/varjus_api.hpp"
 
-#include "runtime/runtime.hpp"
+#include "api/internal/runtime.hpp"
 #include "runtime/modules/rtmodule.hpp"
 
 IValue* TEST_ExecuteFile(const std::string& srcFile)

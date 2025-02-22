@@ -1,5 +1,5 @@
 #include "exception.hpp"
-#include "runtime/runtime.hpp"
+#include "api/internal/runtime.hpp"
 
 CRuntimeError::CRuntimeError(const std::string& error)
     : m_oErrorMessage(error) {

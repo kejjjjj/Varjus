@@ -5,9 +5,9 @@
 #include "linter/expressions/ast.hpp"
 #include "linter/context.hpp"
 
-#include "runtime/runtime.hpp"
-#include "runtime/structure.hpp"
-#include "runtime/variables.hpp"
+#include "api/internal/runtime.hpp"
+#include "api/internal/structure.hpp"
+#include "api/internal/variables.hpp"
 #include "runtime/exceptions/exception.hpp"
 #include "runtime/modules/rtmodule.hpp"
 
@@ -22,9 +22,7 @@ void CAggregate::Setup(std::size_t moduleIndex, const std::vector<ElementIndex>&
 }
 CVariable* CAggregate::AddAttribute(ElementIndex elem)
 {
-	auto& var = m_oIndexLookup[elem] = CProgramRuntime::AcquireNewVariable();
-	var->SetValue(CProgramRuntime::AcquireNewValue<IValue>());
-	return var;
+	return m_oIndexLookup[elem] = CVariable::Construct(IValue::Construct());
 }
 void CAggregate::AddAttribute(ElementIndex elem, IValue* value){
 	return AddAttribute(elem)->SetValue(value);

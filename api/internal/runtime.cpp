@@ -1,10 +1,10 @@
+#include "api/internal/structure.hpp"
 #include "api/types/internal/objects.hpp"
 #include "api/types/types.hpp"
 
-#include "exceptions/exception.hpp"
-#include "modules/rtmodule.hpp"
 #include "runtime.hpp"
-#include "structure.hpp"
+#include "runtime/exceptions/exception.hpp"
+#include "runtime/modules/rtmodule.hpp"
 
 #include "variables.hpp"
 
@@ -121,7 +121,7 @@ IValue* CProgramRuntime::BeginExecution(CRuntimeFunction* entryFunc)
 		return returnValue;
 	}
 	
-	return CProgramRuntime::AcquireNewValue<IValue>();
+	return IValue::Construct();
 }
 void CProgramRuntime::Cleanup()
 {

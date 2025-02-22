@@ -2,7 +2,7 @@
 
 
 #include "linter/expressions/definitions.hpp"
-#include "runtime/structure.hpp"
+#include "api/internal/structure.hpp"
 
 class CMemory;
 class CVariableDeclarationLinter;

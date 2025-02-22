@@ -1,7 +1,7 @@
 #pragma once
 
 #include "definitions.hpp"
-#include "globalDefinitions.hpp"
+#include "api/internal/globalDefinitions.hpp"
 
 class CMemory;
 class CScope;

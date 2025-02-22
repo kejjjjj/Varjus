@@ -1,5 +1,5 @@
-#include "runtime/structure.hpp"
-#include "runtime/runtime.hpp"
+#include "api/internal/structure.hpp"
+#include "api/internal/runtime.hpp"
 
 #include "linter/expressions/ast.hpp"
 

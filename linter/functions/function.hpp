@@ -2,7 +2,7 @@
 
 #include "linter/expressions/definitions.hpp"
 #include "linter/functions/stack.hpp"
-#include "runtime/structure.hpp"
+#include "api/internal/structure.hpp"
 
 class IRuntimeStructure;
 struct CFunctionBlock;

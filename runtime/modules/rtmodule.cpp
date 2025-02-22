@@ -4,9 +4,11 @@
 
 #include "linter/modules/module.hpp"
 
-#include "runtime/runtime.hpp"
-#include "runtime/variables.hpp"
-#include "runtime/structure.hpp"
+#include "api/internal/runtime.hpp"
+#include "api/internal/variables.hpp"
+#include "api/internal/structure.hpp"
+
+#include <ranges>
 
 CRuntimeModule::CRuntimeModule(CModule& ctx) :
 	m_oGlobalScopeInstructions(std::move(ctx.m_oGlobalScopeInstructions)),
@@ -43,7 +45,7 @@ void CRuntimeModule::SetupGlobalVariables() {
 	}
 
 	for (auto& var : m_oGlobalVariables | std::views::drop(classData.size())) {
-		var->SetValue(CProgramRuntime::AcquireNewValue<IValue>());
+		var->SetValue(IValue::Construct());
 	}
 }
 void CRuntimeModule::EvaluateGlobalExpressions() {

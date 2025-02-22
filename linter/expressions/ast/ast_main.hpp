@@ -5,7 +5,7 @@
 #include <stdexcept>
 #include <variant>
 
-#include "globalDefinitions.hpp"
+#include "api/internal/globalDefinitions.hpp"
 #include "linter/expressions/definitions.hpp"
 #include "linter/punctuation.hpp"
 #include "api/types/internal/references.hpp"

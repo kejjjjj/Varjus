@@ -9,7 +9,7 @@
 
 #include "linter/declarations/variable_declarations.hpp"
 
-#include "globalDefinitions.hpp"
+#include "api/internal/globalDefinitions.hpp"
 
 CExportLinter::CExportLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack)
 	: CLinterSingle(pos, end), m_pScope(scope), m_pOwner(stack) {

@@ -1,4 +1,4 @@
-#include "runtime/runtime.hpp"
+#include "api/internal/runtime.hpp"
 #include "integer.hpp"
 
 CIntValue* CIntValue::Construct(VarjusInt v) {

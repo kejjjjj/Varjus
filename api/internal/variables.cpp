@@ -1,6 +1,17 @@
 #include "variables.hpp"
 #include "api/types/types.hpp"
-#include "runtime/runtime.hpp"
+#include "api/internal/runtime.hpp"
+
+CVariable* CVariable::Construct()
+{
+	return CProgramRuntime::AcquireNewVariable();
+}
+CVariable* CVariable::Construct(IValue* v)
+{
+	auto var = CProgramRuntime::AcquireNewVariable();
+	var->SetValue(v);
+	return var;
+}
 
 CVariable::CVariable() {}
 CVariable::~CVariable() = default;

@@ -8,7 +8,7 @@
 #include <cstdint>
 #include <memory>
 
-#include "globalDefinitions.hpp"
+#include "api/internal/globalDefinitions.hpp"
 
 class IConstEvalValue;
 

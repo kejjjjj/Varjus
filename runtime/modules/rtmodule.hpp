@@ -3,7 +3,7 @@
 #include <vector>
 #include <memory>
 
-#include "globalDefinitions.hpp"
+#include "api/internal/globalDefinitions.hpp"
 #include "linter/context.hpp"
 
 class CVariable;

@@ -1,6 +1,6 @@
 #include "module.hpp"
 
-#include "runtime/structure.hpp"
+#include "api/internal/structure.hpp"
 #include "runtime/modules/rtmodule.hpp"
 #include "exports/export.hpp"
 

@@ -3,8 +3,8 @@
 
 #include "api/types/types.hpp"
 #include "runtime/exceptions/exception.hpp"
-#include "runtime/runtime.hpp"
-#include "runtime/variables.hpp"
+#include "api/internal/runtime.hpp"
+#include "api/internal/variables.hpp"
 
 IValue* OP_ASSIGNMENT(IValue* lhs, IValue* rhs)
 {
@@ -22,19 +22,19 @@ IValue* OP_ASSIGNMENT(IValue* lhs, IValue* rhs)
 
 	switch (rhs->Type()) {
 		case t_undefined:
-			variable->SetValue(CProgramRuntime::AcquireNewValue<IValue>());
+			variable->SetValue(IValue::Construct());
 			break;
 		case t_boolean:
-			variable->SetValue(CProgramRuntime::AcquireNewValue<CBooleanValue>(rhs->ToBoolean()));
+			variable->SetValue(CBooleanValue::Construct(rhs->ToBoolean()));
 			break;
 		case t_int:
-			variable->SetValue(CProgramRuntime::AcquireNewValue<CIntValue>(rhs->ToInt()));
+			variable->SetValue(CIntValue::Construct(rhs->ToInt()));
 			break;
 		case t_uint:
-			variable->SetValue(CProgramRuntime::AcquireNewValue<CUIntValue>(rhs->ToUInt()));
+			variable->SetValue(CUIntValue::Construct(rhs->ToUInt()));
 			break;
 		case t_double:
-			variable->SetValue(CProgramRuntime::AcquireNewValue<CDoubleValue>(rhs->ToDouble()));
+			variable->SetValue(CDoubleValue::Construct(rhs->ToDouble()));
 			break;
 		case t_string:
 			variable->SetValue(CStringValue::Construct(rhs->ToString()));
@@ -65,16 +65,16 @@ IValue* OP_ADDITION(IValue* _lhs, IValue* _rhs)
 
 	switch (lhs->Type()) {
 	case t_boolean:
-		result = CProgramRuntime::AcquireNewValue<CBooleanValue>(static_cast<bool>(lhs->ToBoolean() + rhs->ToBoolean()));
+		result = CBooleanValue::Construct(static_cast<bool>(lhs->ToBoolean() + rhs->ToBoolean()));
 		break;
 	case t_int:
-		result = CProgramRuntime::AcquireNewValue<CIntValue>(lhs->ToInt() + rhs->ToInt());
+		result = CIntValue::Construct(lhs->ToInt() + rhs->ToInt());
 		break;
 	case t_uint:
-		result = CProgramRuntime::AcquireNewValue<CUIntValue>(lhs->ToUInt() + rhs->ToUInt());
+		result = CUIntValue::Construct(lhs->ToUInt() + rhs->ToUInt());
 		break;
 	case t_double:
-		result = CProgramRuntime::AcquireNewValue<CDoubleValue>(lhs->ToDouble() + rhs->ToDouble());
+		result = CDoubleValue::Construct(lhs->ToDouble() + rhs->ToDouble());
 		break;
 	case t_string:
 		result = CStringValue::Construct(lhs->ToString() + rhs->ToString());
@@ -99,16 +99,16 @@ IValue* OP_SUBTRACTION(IValue* _lhs, IValue* _rhs)
 
 	switch (lhs->Type()) {
 	case t_boolean:
-		result = CProgramRuntime::AcquireNewValue<CBooleanValue>(static_cast<bool>(lhs->ToBoolean() - rhs->ToBoolean()));
+		result = CBooleanValue::Construct(static_cast<bool>(lhs->ToBoolean() - rhs->ToBoolean()));
 		break;
 	case t_int:
-		result = CProgramRuntime::AcquireNewValue<CIntValue>(lhs->ToInt() - rhs->ToInt());
+		result = CIntValue::Construct(lhs->ToInt() - rhs->ToInt());
 		break;
 	case t_uint:
-		result = CProgramRuntime::AcquireNewValue<CUIntValue>(lhs->ToUInt() - rhs->ToUInt());
+		result = CUIntValue::Construct(lhs->ToUInt() - rhs->ToUInt());
 		break;
 	case t_double:
-		result = CProgramRuntime::AcquireNewValue<CDoubleValue>(lhs->ToDouble() - rhs->ToDouble());
+		result = CDoubleValue::Construct(lhs->ToDouble() - rhs->ToDouble());
 		break;
 	case t_undefined:
 	case t_string:
@@ -131,16 +131,16 @@ IValue* OP_MULTIPLICATION(IValue* _lhs, IValue* _rhs)
 
 	switch (lhs->Type()) {
 	case t_boolean:
-		result = CProgramRuntime::AcquireNewValue<CBooleanValue>(static_cast<bool>(lhs->ToBoolean() * rhs->ToBoolean()));
+		result = CBooleanValue::Construct(static_cast<bool>(lhs->ToBoolean() * rhs->ToBoolean()));
 		break;
 	case t_int:
-		result = CProgramRuntime::AcquireNewValue<CIntValue>(lhs->ToInt() * rhs->ToInt());
+		result = CIntValue::Construct(lhs->ToInt() * rhs->ToInt());
 		break;
 	case t_uint:
-		result = CProgramRuntime::AcquireNewValue<CUIntValue>(lhs->ToUInt() * rhs->ToUInt());
+		result = CUIntValue::Construct(lhs->ToUInt() * rhs->ToUInt());
 		break;
 	case t_double:
-		result = CProgramRuntime::AcquireNewValue<CDoubleValue>(lhs->ToDouble() * rhs->ToDouble());
+		result = CDoubleValue::Construct(lhs->ToDouble() * rhs->ToDouble());
 		break;
 	case t_undefined:
 	case t_string:
@@ -167,7 +167,7 @@ IValue* OP_DIVISION(IValue* _lhs, IValue* _rhs)
 		if(rhs->ToInt() == VarjusInt(0))
 			throw CRuntimeError("division by 0");
 
-		result = CProgramRuntime::AcquireNewValue<CIntValue>(lhs->ToInt() / rhs->ToInt());
+		result = CIntValue::Construct(lhs->ToInt() / rhs->ToInt());
 		break;
 
 	case t_uint:
@@ -175,14 +175,14 @@ IValue* OP_DIVISION(IValue* _lhs, IValue* _rhs)
 		if (rhs->ToUInt() == VarjusUInt(0))
 			throw CRuntimeError("division by 0");
 
-		result = CProgramRuntime::AcquireNewValue<CUIntValue>(lhs->ToUInt() / rhs->ToUInt());
+		result = CUIntValue::Construct(lhs->ToUInt() / rhs->ToUInt());
 		break;
 	case t_double:
 
 		if (rhs->ToDouble() == 0.0)
 			throw CRuntimeError("division by 0");
 
-		result = CProgramRuntime::AcquireNewValue<CDoubleValue>(lhs->ToDouble() / rhs->ToDouble());
+		result = CDoubleValue::Construct(lhs->ToDouble() / rhs->ToDouble());
 		break;
 
 	case t_undefined:
@@ -211,21 +211,21 @@ IValue* OP_MODULO(IValue* _lhs, IValue* _rhs)
 		if (rhs->ToInt() == 0ll)
 			throw CRuntimeError("division by 0");
 
-		result = CProgramRuntime::AcquireNewValue<CIntValue>(lhs->ToInt() % rhs->ToInt());
+		result = CIntValue::Construct(lhs->ToInt() % rhs->ToInt());
 		break;
 	case t_uint:
 
 		if (rhs->ToUInt() == VarjusUInt(0))
 			throw CRuntimeError("division by 0");
 
-		result = CProgramRuntime::AcquireNewValue<CUIntValue>(lhs->ToUInt() % rhs->ToUInt());
+		result = CUIntValue::Construct(lhs->ToUInt() % rhs->ToUInt());
 		break;
 	case t_double:
 
 		if (rhs->ToDouble() == 0.0)
 			throw CRuntimeError("division by 0");
 
-		result = CProgramRuntime::AcquireNewValue<CDoubleValue>(std::fmod(lhs->ToDouble(), rhs->ToDouble()));
+		result = CDoubleValue::Construct(std::fmod(lhs->ToDouble(), rhs->ToDouble()));
 		break;
 
 	case t_undefined:
@@ -250,16 +250,16 @@ IValue* OP_LESS_THAN(IValue* _lhs, IValue* _rhs)
 
 	switch (lhs->Type()) {
 	case t_boolean:
-		result = CProgramRuntime::AcquireNewValue<CBooleanValue>(lhs->AsBoolean() < rhs->AsBoolean());
+		result = CBooleanValue::Construct(lhs->AsBoolean() < rhs->AsBoolean());
 		break;
 	case t_int:
-		result = CProgramRuntime::AcquireNewValue<CBooleanValue>(lhs->AsInt() < rhs->AsInt());
+		result = CBooleanValue::Construct(lhs->AsInt() < rhs->AsInt());
 		break;
 	case t_uint:
-		result = CProgramRuntime::AcquireNewValue<CBooleanValue>(lhs->AsUInt() < rhs->AsUInt());
+		result = CBooleanValue::Construct(lhs->AsUInt() < rhs->AsUInt());
 		break;
 	case t_double:
-		result = CProgramRuntime::AcquireNewValue<CBooleanValue>(lhs->AsDouble() < rhs->AsDouble());
+		result = CBooleanValue::Construct(lhs->AsDouble() < rhs->AsDouble());
 		break;
 	case t_string:
 	case t_undefined:
@@ -282,16 +282,16 @@ IValue* OP_LESS_EQUAL(IValue* _lhs, IValue* _rhs)
 
 	switch (lhs->Type()) {
 	case t_boolean:
-		result = CProgramRuntime::AcquireNewValue<CBooleanValue>(lhs->AsBoolean() <= rhs->AsBoolean());
+		result = CBooleanValue::Construct(lhs->AsBoolean() <= rhs->AsBoolean());
 		break;
 	case t_int:
-		result = CProgramRuntime::AcquireNewValue<CBooleanValue>(lhs->AsInt() <= rhs->AsInt());
+		result = CBooleanValue::Construct(lhs->AsInt() <= rhs->AsInt());
 		break;
 	case t_uint:
-		result = CProgramRuntime::AcquireNewValue<CBooleanValue>(lhs->AsUInt() <= rhs->AsUInt());
+		result = CBooleanValue::Construct(lhs->AsUInt() <= rhs->AsUInt());
 		break;
 	case t_double:
-		result = CProgramRuntime::AcquireNewValue<CBooleanValue>(lhs->AsDouble() <= rhs->AsDouble());
+		result = CBooleanValue::Construct(lhs->AsDouble() <= rhs->AsDouble());
 		break;
 	case t_string:
 	case t_undefined:
@@ -314,16 +314,16 @@ IValue* OP_GREATER_THAN(IValue* _lhs, IValue* _rhs)
 
 	switch (lhs->Type()) {
 	case t_boolean:
-		result = CProgramRuntime::AcquireNewValue<CBooleanValue>(lhs->AsBoolean() > rhs->AsBoolean());
+		result = CBooleanValue::Construct(lhs->AsBoolean() > rhs->AsBoolean());
 		break;
 	case t_int:
-		result = CProgramRuntime::AcquireNewValue<CBooleanValue>(lhs->AsInt() > rhs->AsInt());
+		result = CBooleanValue::Construct(lhs->AsInt() > rhs->AsInt());
 		break;
 	case t_uint:
-		result = CProgramRuntime::AcquireNewValue<CBooleanValue>(lhs->AsUInt() > rhs->AsUInt());
+		result = CBooleanValue::Construct(lhs->AsUInt() > rhs->AsUInt());
 		break;
 	case t_double:
-		result = CProgramRuntime::AcquireNewValue<CBooleanValue>(lhs->AsDouble() > rhs->AsDouble());
+		result = CBooleanValue::Construct(lhs->AsDouble() > rhs->AsDouble());
 		break;
 	case t_string:
 	case t_undefined:
@@ -346,16 +346,16 @@ IValue* OP_GREATER_EQUAL(IValue* _lhs, IValue* _rhs)
 
 	switch (lhs->Type()) {
 	case t_boolean:
-		result = CProgramRuntime::AcquireNewValue<CBooleanValue>(lhs->AsBoolean() >= rhs->AsBoolean());
+		result = CBooleanValue::Construct(lhs->AsBoolean() >= rhs->AsBoolean());
 		break;
 	case t_int:
-		result = CProgramRuntime::AcquireNewValue<CBooleanValue>(lhs->AsInt() >= rhs->AsInt());
+		result = CBooleanValue::Construct(lhs->AsInt() >= rhs->AsInt());
 		break;
 	case t_uint:
-		result = CProgramRuntime::AcquireNewValue<CBooleanValue>(lhs->AsUInt() >= rhs->AsUInt());
+		result = CBooleanValue::Construct(lhs->AsUInt() >= rhs->AsUInt());
 		break;
 	case t_double:
-		result = CProgramRuntime::AcquireNewValue<CBooleanValue>(lhs->AsDouble() >= rhs->AsDouble());
+		result = CBooleanValue::Construct(lhs->AsDouble() >= rhs->AsDouble());
 		break;
 	case t_string:
 	case t_undefined:
@@ -378,28 +378,28 @@ IValue* OP_EQUALITY(IValue* _lhs, IValue* _rhs)
 
 	switch (lhs->Type()) {
 	case t_undefined:
-		result = CProgramRuntime::AcquireNewValue<CBooleanValue>(true); // undefined == undefined is always true
+		result = CBooleanValue::Construct(true); // undefined == undefined is always true
 		break;
 	case t_boolean:
-		result = CProgramRuntime::AcquireNewValue<CBooleanValue>(lhs->AsBoolean() == rhs->AsBoolean());
+		result = CBooleanValue::Construct(lhs->AsBoolean() == rhs->AsBoolean());
 		break;
 	case t_int:
-		result = CProgramRuntime::AcquireNewValue<CBooleanValue>(lhs->AsInt() == rhs->AsInt());
+		result = CBooleanValue::Construct(lhs->AsInt() == rhs->AsInt());
 		break;
 	case t_uint:
-		result = CProgramRuntime::AcquireNewValue<CBooleanValue>(lhs->AsUInt() == rhs->AsUInt());
+		result = CBooleanValue::Construct(lhs->AsUInt() == rhs->AsUInt());
 		break;
 	case t_double:
-		result = CProgramRuntime::AcquireNewValue<CBooleanValue>(lhs->AsDouble() == rhs->AsDouble());
+		result = CBooleanValue::Construct(lhs->AsDouble() == rhs->AsDouble());
 		break;
 	case t_string:
-		result = CProgramRuntime::AcquireNewValue<CBooleanValue>(lhs->ToString() == rhs->ToString());
+		result = CBooleanValue::Construct(lhs->ToString() == rhs->ToString());
 		break;
 
 	case t_callable:
 	case t_array:
 	case t_object:
-		result = CProgramRuntime::AcquireNewValue<CBooleanValue>(lhs->AddressOf() == rhs->AddressOf());
+		result = CBooleanValue::Construct(lhs->AddressOf() == rhs->AddressOf());
 		break;
 	}
 
@@ -416,27 +416,27 @@ IValue* OP_UNEQUALITY(IValue* _lhs, IValue* _rhs)
 
 	switch (lhs->Type()) {
 	case t_undefined:
-		result = CProgramRuntime::AcquireNewValue<CBooleanValue>(false); // undefined != undefined is always false
+		result = CBooleanValue::Construct(false); // undefined != undefined is always false
 		break;
 	case t_boolean:
-		result = CProgramRuntime::AcquireNewValue<CBooleanValue>(lhs->AsBoolean() != rhs->AsBoolean());
+		result = CBooleanValue::Construct(lhs->AsBoolean() != rhs->AsBoolean());
 		break;
 	case t_int:
-		result = CProgramRuntime::AcquireNewValue<CBooleanValue>(lhs->AsInt() != rhs->AsInt());
+		result = CBooleanValue::Construct(lhs->AsInt() != rhs->AsInt());
 		break;
 	case t_uint:
-		result = CProgramRuntime::AcquireNewValue<CBooleanValue>(lhs->AsUInt() != rhs->AsUInt());
+		result = CBooleanValue::Construct(lhs->AsUInt() != rhs->AsUInt());
 		break;
 	case t_double:
-		result = CProgramRuntime::AcquireNewValue<CBooleanValue>(lhs->AsDouble() != rhs->AsDouble());
+		result = CBooleanValue::Construct(lhs->AsDouble() != rhs->AsDouble());
 		break;
 	case t_string:
-		result = CProgramRuntime::AcquireNewValue<CBooleanValue>(lhs->ToString() != rhs->ToString());
+		result = CBooleanValue::Construct(lhs->ToString() != rhs->ToString());
 		break;
 	case t_callable:
 	case t_array:
 	case t_object:
-		result = CProgramRuntime::AcquireNewValue<CBooleanValue>(lhs->AddressOf() != rhs->AddressOf());
+		result = CBooleanValue::Construct(lhs->AddressOf() != rhs->AddressOf());
 		break;
 	}
 
@@ -450,14 +450,14 @@ IValue* OP_UNEQUALITY(IValue* _lhs, IValue* _rhs)
 IValue* OP_STRICT_EQUALITY(IValue* lhs, IValue* rhs)
 {
 	if(lhs->Type() != rhs->Type())
-		return CProgramRuntime::AcquireNewValue<CBooleanValue>(false);
+		return CBooleanValue::Construct(false);
 
 	return OP_EQUALITY(lhs, rhs);
 }
 IValue* OP_STRICT_UNEQUALITY(IValue* lhs, IValue* rhs)
 {
 	if (lhs->Type() != rhs->Type())
-		return CProgramRuntime::AcquireNewValue<CBooleanValue>(true);
+		return CBooleanValue::Construct(true);
 
 	return OP_UNEQUALITY(lhs, rhs);
 }
@@ -470,7 +470,7 @@ IValue* OP_LOGICAL_AND(IValue* lhs, IValue* rhs)
 	if (!rhs->IsBooleanConvertible())
 		throw CRuntimeError(std::format("\"{}\" is not convertible to a boolean", rhs->TypeAsString()));
 
-	return CProgramRuntime::AcquireNewValue<CBooleanValue>(lhs->ToBoolean() && rhs->ToBoolean());
+	return CBooleanValue::Construct(lhs->ToBoolean() && rhs->ToBoolean());
 }
 IValue* OP_LOGICAL_OR(IValue* lhs, IValue* rhs)
 {
@@ -480,7 +480,7 @@ IValue* OP_LOGICAL_OR(IValue* lhs, IValue* rhs)
 	if (!rhs->IsBooleanConvertible())
 		throw CRuntimeError(std::format("\"{}\" is not convertible to a boolean", rhs->TypeAsString()));
 
-	return CProgramRuntime::AcquireNewValue<CBooleanValue>(lhs->ToBoolean() || rhs->ToBoolean());
+	return CBooleanValue::Construct(lhs->ToBoolean() || rhs->ToBoolean());
 }
 IValue* OP_LEFT_SHIFT(IValue* _lhs, IValue* _rhs)
 {
@@ -489,10 +489,10 @@ IValue* OP_LEFT_SHIFT(IValue* _lhs, IValue* _rhs)
 
 	switch (lhs->Type()) {
 	case t_int:
-		result = CProgramRuntime::AcquireNewValue<CIntValue>(lhs->AsInt() << rhs->AsInt());
+		result = CIntValue::Construct(lhs->AsInt() << rhs->AsInt());
 		break;
 	case t_uint:
-		result = CProgramRuntime::AcquireNewValue<CUIntValue>(lhs->AsUInt() << rhs->AsUInt());
+		result = CUIntValue::Construct(lhs->AsUInt() << rhs->AsUInt());
 		break;
 	case t_undefined:
 	case t_boolean:
@@ -518,10 +518,10 @@ IValue* OP_RIGHT_SHIFT(IValue* _lhs, IValue* _rhs)
 
 	switch (lhs->Type()) {
 	case t_int:
-		result = CProgramRuntime::AcquireNewValue<CIntValue>(lhs->AsInt() >> rhs->AsInt());
+		result = CIntValue::Construct(lhs->AsInt() >> rhs->AsInt());
 		break;
 	case t_uint:
-		result = CProgramRuntime::AcquireNewValue<CUIntValue>(lhs->AsUInt() >> rhs->AsUInt());
+		result = CUIntValue::Construct(lhs->AsUInt() >> rhs->AsUInt());
 		break;
 	case t_undefined:
 	case t_boolean:
@@ -547,10 +547,10 @@ IValue* OP_BITWISE_OR(IValue* _lhs, IValue* _rhs)
 
 	switch (lhs->Type()) {
 	case t_int:
-		result = CProgramRuntime::AcquireNewValue<CIntValue>(lhs->AsInt() | rhs->AsInt());
+		result = CIntValue::Construct(lhs->AsInt() | rhs->AsInt());
 		break;
 	case t_uint:
-		result = CProgramRuntime::AcquireNewValue<CUIntValue>(lhs->AsUInt() | rhs->AsUInt());
+		result = CUIntValue::Construct(lhs->AsUInt() | rhs->AsUInt());
 		break;
 	case t_undefined:
 	case t_boolean:
@@ -576,10 +576,10 @@ IValue* OP_BITWISE_XOR(IValue* _lhs, IValue* _rhs)
 
 	switch (lhs->Type()) {
 	case t_int:
-		result = CProgramRuntime::AcquireNewValue<CIntValue>(lhs->AsInt() ^ rhs->AsInt());
+		result = CIntValue::Construct(lhs->AsInt() ^ rhs->AsInt());
 		break;
 	case t_uint:
-		result = CProgramRuntime::AcquireNewValue<CUIntValue>(lhs->AsUInt() ^ rhs->AsUInt());
+		result = CUIntValue::Construct(lhs->AsUInt() ^ rhs->AsUInt());
 		break;
 	case t_undefined:
 	case t_boolean:
@@ -605,10 +605,10 @@ IValue* OP_BITWISE_AND(IValue* _lhs, IValue* _rhs)
 
 	switch (lhs->Type()) {
 	case t_int:
-		result = CProgramRuntime::AcquireNewValue<CIntValue>(lhs->AsInt() & rhs->AsInt());
+		result = CIntValue::Construct(lhs->AsInt() & rhs->AsInt());
 		break;
 	case t_uint:
-		result = CProgramRuntime::AcquireNewValue<CUIntValue>(lhs->AsUInt() & rhs->AsUInt());
+		result = CUIntValue::Construct(lhs->AsUInt() & rhs->AsUInt());
 		break;
 	case t_undefined:
 	case t_boolean:

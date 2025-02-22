@@ -1,9 +1,9 @@
 #include "api/types/types.hpp"
 #include "rtfunction.hpp"
 #include "runtime/modules/rtmodule.hpp"
-#include "runtime/runtime.hpp"
-#include "runtime/structure.hpp"
-#include "runtime/variables.hpp"
+#include "api/internal/runtime.hpp"
+#include "api/internal/structure.hpp"
+#include "api/internal/variables.hpp"
 
 #include "linter/functions/function.hpp"
 
@@ -60,7 +60,7 @@ IValue* CRuntimeFunction::Execute(CRuntimeContext* const ctx, IValue* _this,
 	if (returnVal) {
 		copy = returnVal->HasOwner() ? returnVal->Copy() : returnVal;
 	} else {
-		copy = CProgramRuntime::AcquireNewValue<IValue>();
+		copy = IValue::Construct();
 	}
 
 	for (auto& [index, variable] : func.m_oStack) {
@@ -128,19 +128,17 @@ CFunction::CFunction(IValue* _this, VectorOf<IValue*>& args,
 {
 	//setup parameters
 	for (auto i = std::size_t(0); auto& arg : func.m_oArgumentIndices) {
-		auto var = m_oStack[arg] = CProgramRuntime::AcquireNewVariable();
-		var->SetValue(args[i++]);
+		m_oStack[arg] = CVariable::Construct(args[i++]);
 	}
 
 	//setup stack
-	for (auto& v : func.m_oVariableIndices) {
-		auto var = m_oStack[v] = CProgramRuntime::AcquireNewVariable();
-		assert(var->GetValue() == nullptr);
-		var->SetValue(CProgramRuntime::AcquireNewValue<IValue>());
+	for (const auto& v : func.m_oVariableIndices) {
+		auto var = m_oStack[v] = CVariable::Construct(IValue::Construct());
+		assert(var->GetValue() != nullptr);
 	}
 
 	//setup lambda captures
-	for (auto& [key, value] : captures)
+	for (const auto& [key, value] : captures)
 		m_oStack[key] = value;
 }
 

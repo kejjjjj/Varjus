@@ -3,7 +3,7 @@
 #include "linter/expressions/definitions.hpp"
 #include "linter/context.hpp"
 
-#include "runtime/structure.hpp"
+#include "api/internal/structure.hpp"
 
 #include <unordered_set>
 

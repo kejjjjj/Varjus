@@ -4,7 +4,7 @@
 
 #include "definitions.hpp"
 #include "expression_context.hpp"
-#include "runtime/structure.hpp"
+#include "api/internal/structure.hpp"
 
 class CLinterOperand;
 class CLinterOperatorLinkage;

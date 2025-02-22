@@ -1,4 +1,4 @@
-#include "runtime/structure.hpp"
+#include "api/internal/structure.hpp"
 #include "api/types/types.hpp"
 
 VectorOf<IValue*> CRuntimeExpression::EvaluateList(CRuntimeContext* const ctx, const ExpressionList& list)

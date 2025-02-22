@@ -1,5 +1,5 @@
 #include "linter/expressions/ast.hpp"
-#include "runtime/structure.hpp"
+#include "structure.hpp"
 
 #include <algorithm>
 #include <cassert>

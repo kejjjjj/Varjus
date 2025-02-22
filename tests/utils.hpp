@@ -2,10 +2,10 @@
 
 
 #include "api/types/types.hpp"
-#include "globalDefinitions.hpp"
+#include "api/internal/globalDefinitions.hpp"
 #include "runtime/modules/rtmodule.hpp"
-#include "runtime/runtime.hpp"
-#include "runtime/structure.hpp"
+#include "api/internal/runtime.hpp"
+#include "api/internal/structure.hpp"
 
 #include "tests.hpp"
 #include "utils.hpp"

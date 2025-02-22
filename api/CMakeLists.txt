@@ -13,6 +13,11 @@ file(GLOB_RECURSE API_SOURCES
     "${CMAKE_CURRENT_SOURCE_DIR}/../runtime/*.cpp"
 )
 
+# Collect all header files
+file(GLOB_RECURSE API_HEADERS 
+    "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp"
+)
+
 # Filter out CMake's compiler detection files
 list(FILTER API_SOURCES EXCLUDE REGEX "CMakeCXXCompilerId\\.cpp$")
 
@@ -28,3 +33,23 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     target_compile_options(VarjusAPI PRIVATE /W4 /WX)
 endif()
+
+# Define output directory
+set(OUTPUT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/VarjusAPI")
+
+# Copy the static library
+add_custom_command(TARGET VarjusAPI POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E make_directory "${OUTPUT_DIR}/lib"
+    COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE:VarjusAPI>" "${OUTPUT_DIR}/lib/"
+)
+
+# Copy header files while maintaining relative structure
+foreach(header ${API_HEADERS})
+    file(RELATIVE_PATH rel_path "${CMAKE_CURRENT_SOURCE_DIR}/.." "${header}")
+    get_filename_component(dir_path "${rel_path}" DIRECTORY)
+    
+    add_custom_command(TARGET VarjusAPI POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory "${OUTPUT_DIR}/include/${dir_path}"
+        COMMAND ${CMAKE_COMMAND} -E copy "${header}" "${OUTPUT_DIR}/include/${rel_path}"
+    )
+endforeach()

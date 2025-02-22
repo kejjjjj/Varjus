@@ -3,7 +3,7 @@
 #include <string>
 #include "api/internal/globalEnums.hpp"
 #include "linter/expressions/definitions.hpp"
-#include "runtime/structure.hpp"
+#include "api/internal/structure.hpp"
 
 class CMemory;
 struct CLinterVariable;

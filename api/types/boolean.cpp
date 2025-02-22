@@ -1,4 +1,4 @@
-#include "runtime/runtime.hpp"
+#include "api/internal/runtime.hpp"
 #include "boolean.hpp"
 
 CBooleanValue* CBooleanValue::Construct(bool v) {
@@ -14,7 +14,7 @@ IValue* CBooleanValue::Copy()
 		return ptr;
 	}
 
-	return CProgramRuntime::AcquireNewValue<CBooleanValue>(Get());
+	return CBooleanValue::Construct(Get());
 }
 void CBooleanValue::Release()
 {

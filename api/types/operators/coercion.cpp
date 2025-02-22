@@ -1,7 +1,7 @@
 #include "coercion.hpp"
 
 #include "api/types/types.hpp"
-#include "runtime/runtime.hpp"
+#include "api/internal/runtime.hpp"
 
 #include "runtime/exceptions/exception.hpp"
 
@@ -34,15 +34,15 @@ CCoercionOperands CoerceInternal(IValue* weaker, IValue* stronger, bool lhsIsWea
 	switch (stronger->Type()) {
 
 	case t_undefined:
-		return { lhs, rhs, CProgramRuntime::AcquireNewValue<IValue>(), lhsIsWeak};
+		return { lhs, rhs, IValue::Construct(), lhsIsWeak};
 	case t_boolean:
-		return { lhs, rhs, CProgramRuntime::AcquireNewValue<CBooleanValue>(weaker->ToBoolean()), lhsIsWeak };
+		return { lhs, rhs, CBooleanValue::Construct(weaker->ToBoolean()), lhsIsWeak };
 	case t_int:
-		return { lhs, rhs, CProgramRuntime::AcquireNewValue<CIntValue>(weaker->ToInt()), lhsIsWeak };
+		return { lhs, rhs, CIntValue::Construct(weaker->ToInt()), lhsIsWeak };
 	case t_uint:
-		return { lhs, rhs, CProgramRuntime::AcquireNewValue<CUIntValue>(weaker->ToUInt()), lhsIsWeak };
+		return { lhs, rhs, CUIntValue::Construct(weaker->ToUInt()), lhsIsWeak };
 	case t_double:
-		return { lhs, rhs, CProgramRuntime::AcquireNewValue<CDoubleValue>(weaker->ToDouble()), lhsIsWeak };
+		return { lhs, rhs, CDoubleValue::Construct(weaker->ToDouble()), lhsIsWeak };
 	case t_string:
 	case t_callable:
 	case t_array:

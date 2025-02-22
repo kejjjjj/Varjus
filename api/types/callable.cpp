@@ -1,7 +1,7 @@
-#include "runtime/runtime.hpp"
+#include "api/internal/runtime.hpp"
 #include "runtime/functions/rtfunction.hpp"
-#include "runtime/variables.hpp"
-#include "runtime/structure.hpp"
+#include "api/internal/variables.hpp"
+#include "api/internal/structure.hpp"
 #include "runtime/modules/rtmodule.hpp"
 #include "callable.hpp"
 

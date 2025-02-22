@@ -3,7 +3,7 @@
 #include "operand.hpp"
 
 #include "api/types/internal/references.hpp"
-#include "runtime/structure.hpp"
+#include "api/internal/structure.hpp"
 
 class CRuntimeFunctionBase;
 using ElementIndex = std::size_t;

@@ -2,11 +2,11 @@
 #include "api/types/types.hpp"
 
 #include "runtime/functions/rtfunction.hpp"
-#include "runtime/structure.hpp"
+#include "api/internal/structure.hpp"
 #include "runtime/exceptions/exception.hpp"
 #include "runtime/modules/rtmodule.hpp"
-#include "runtime/runtime.hpp"
-#include "runtime/variables.hpp"
+#include "api/internal/runtime.hpp"
+#include "api/internal/variables.hpp"
 
 #include "linter/expressions/ast.hpp"
 
@@ -112,14 +112,11 @@ inline IValue* EvaluateVariable(CRuntimeContext* const ctx, const VariableASTNod
 }
 inline IValue* EvaluateFunction(CRuntimeContext* const ctx, const FunctionASTNode* const var)
 {
-	auto v = CProgramRuntime::AcquireNewValue<CCallableValue>();
-
 	auto activeModule = var->m_bBelongsToDifferentModule
 		? CProgramRuntime::GetModuleByIndex(var->m_uModuleIndex)
 		: ctx->m_pModule;
 
-	v->MakeShared();
-	v->Internal()->SetCallable(activeModule->GetFunctionByIndex(var->m_uIndex));
+	auto v = CCallableValue::Construct(activeModule->GetFunctionByIndex(var->m_uIndex));
 
 	if (var->m_bBelongsToDifferentModule)
 		v->Internal()->SetModuleIndex(var->m_uModuleIndex);
@@ -129,13 +126,10 @@ inline IValue* EvaluateFunction(CRuntimeContext* const ctx, const FunctionASTNod
 }
 inline IValue* EvaluateLambda(CRuntimeContext* const ctx, const LambdaASTNode* const var)
 {
-	auto v = CProgramRuntime::AcquireNewValue<CCallableValue>();
-	v->MakeShared();
+	auto v = CCallableValue::Construct(var->m_pLambda.get());
 
-	auto internal = v->Internal();
-	internal->SetCallable(var->m_pLambda.get());
 	if (var->m_oVariableCaptures.size())
-		internal->SetCaptures(ctx, var->m_oVariableCaptures);
+		v->Internal()->SetCaptures(ctx, var->m_oVariableCaptures);
 
 	return v;
 }
@@ -166,15 +160,15 @@ IValue* CRuntimeExpression::EvaluateLeaf(CRuntimeContext* const ctx, const Abstr
 		const auto constant = node->GetConstant();
 		switch (constant->m_eDataType) {
 			case t_undefined:
-				return CProgramRuntime::AcquireNewValue<IValue>();
+				return IValue::Construct();
 			case t_boolean:
-				return CProgramRuntime::AcquireNewValue<CBooleanValue>(static_cast<bool>(constant->m_pConstant[0]));
+				return CBooleanValue::Construct(static_cast<bool>(constant->m_pConstant[0]));
 			case t_int:
-				return CProgramRuntime::AcquireNewValue<CIntValue>(*reinterpret_cast<VarjusInt*>((char*)constant->m_pConstant.data()));
+				return CIntValue::Construct(*reinterpret_cast<VarjusInt*>((char*)constant->m_pConstant.data()));
 			case t_uint:
-				return CProgramRuntime::AcquireNewValue<CUIntValue>(*reinterpret_cast<VarjusUInt*>((char*)constant->m_pConstant.data()));
+				return CUIntValue::Construct(*reinterpret_cast<VarjusUInt*>((char*)constant->m_pConstant.data()));
 			case t_double:
-				return CProgramRuntime::AcquireNewValue<CDoubleValue>(*reinterpret_cast<VarjusDouble*>((char*)constant->m_pConstant.data()));
+				return CDoubleValue::Construct(*reinterpret_cast<VarjusDouble*>((char*)constant->m_pConstant.data()));
 			case t_string:
 				return CStringValue::Construct(constant->m_pConstant);
 		}

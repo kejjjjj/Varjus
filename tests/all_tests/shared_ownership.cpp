@@ -1,7 +1,7 @@
 #include "tests/tests.hpp"
 #include "tests/utils.hpp"
 
-#include "runtime/runtime.hpp"
+#include "api/internal/runtime.hpp"
 
 #define PATH_PREFIX "shared_ownership"
 #define JP(x) (std::string(PATH_PREFIX) + "\\" + x)

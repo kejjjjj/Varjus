@@ -10,6 +10,7 @@
 tests/all_tests/build/
 tests/all_tests/Varjus.exe
 api/build/
+api/VarjusAPI/
 
 *vcx*
 

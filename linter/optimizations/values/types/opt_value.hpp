@@ -2,7 +2,7 @@
 
 #ifdef OPTIMIZATIONS
 
-#include "globalDefinitions.hpp"
+#include "api/internal/globalDefinitions.hpp"
 
 
 #include <string>

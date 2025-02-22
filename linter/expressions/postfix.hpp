@@ -2,7 +2,7 @@
 
 #include "definitions.hpp"
 
-#include "runtime/structure.hpp"
+#include "api/internal/structure.hpp"
 
 class AbstractSyntaxTree;
 class IPostfixBase;

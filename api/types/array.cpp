@@ -1,9 +1,9 @@
 #include "array.hpp"
 
 #include "internal/object_declarations.hpp"
-#include "runtime/runtime.hpp"
-#include "runtime/variables.hpp"
-#include "runtime/structure.hpp"
+#include "api/internal/runtime.hpp"
+#include "api/internal/variables.hpp"
+#include "api/internal/structure.hpp"
 
 #include "runtime/exceptions/exception.hpp"
 #include "linter/context.hpp"
@@ -95,6 +95,12 @@ IValue* CArrayValue::GetAggregate(std::size_t memberIdx)
 	return nullptr;
 }
 
+VectorOf<CVariable*>& CArrayValue::GetVariables() {
+	return GetShared()->GetVariables();
+}
+VectorOf<CVariable*>& CArrayValue::GetVariables() const {
+	return GetShared()->GetVariables();
+}
 CInternalArrayValue::~CInternalArrayValue() = default;
 
 void CInternalArrayValue::Release()
