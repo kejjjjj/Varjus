@@ -15,11 +15,9 @@
 CRuntimeFunction::CRuntimeFunction(ElementIndex moduleIndex, CFunctionBlock& linterFunction,
 	VectorOf<CCrossModuleReference>&& args,
 	VectorOf<CCrossModuleReference>&& variableIndices) :
-
+	CRuntimeFunctionBase(linterFunction.m_sName, linterFunction.m_uNumParameters),
 	IRuntimeStructureSequence(std::move(linterFunction.m_oInstructions)),
 	m_uModuleIndex(moduleIndex),
-	m_sName(linterFunction.m_sName),
-	m_uNumParameters(linterFunction.m_uNumParameters),
 	m_uNumVariables(linterFunction.m_pStack->m_VariableManager->GetVariableCount()),
 	m_oArgumentIndices(std::move(args)),
 	m_oVariableIndices(std::move(variableIndices))
@@ -31,8 +29,8 @@ CRuntimeFunction::~CRuntimeFunction() = default;
 IValue* CRuntimeFunction::Execute(CRuntimeContext* const ctx, IValue* _this,
 	VectorOf<IValue*>& args, const VariableCaptures& captures)
 {
-	if (m_uNumParameters != args.size())
-		throw CRuntimeError(std::format("the callable expected {} arguments instead of {}", m_uNumParameters, args.size()));
+	if (m_uNumArguments != args.size())
+		throw CRuntimeError(std::format("the callable expected {} arguments instead of {}", m_uNumArguments, args.size()));
 
 
 	auto func = CFunction(_this, args, captures, *this);
@@ -73,14 +71,16 @@ IValue* CRuntimeFunction::Execute(CRuntimeContext* const ctx, IValue* _this,
 			variable->Release();
 	}
 
+	assert(copy);
 	return copy;
 }
 
-CBuiltInRuntimeFunction::CBuiltInRuntimeFunction(Method_t method, std::size_t numArgs)
-	: m_pMethod(method), m_uNumArguments(numArgs) {}
-CBuiltInRuntimeFunction::~CBuiltInRuntimeFunction() = default;
+CBuiltInRuntimeMethod::CBuiltInRuntimeMethod(Method_t method, std::size_t numArgs)
+	: CRuntimeFunctionBase("method", numArgs), m_pMethod(method) { }
 
-IValue* CBuiltInRuntimeFunction::ExecuteFunction( CRuntimeContext* const ctx, IValue* _this,
+CBuiltInRuntimeMethod::~CBuiltInRuntimeMethod() = default;
+
+IValue* CBuiltInRuntimeMethod::ExecuteFunction( CRuntimeContext* const ctx, IValue* _this,
 	VectorOf<IValue*>& args, [[maybe_unused]] const VariableCaptures& captures)
 {
 
@@ -94,6 +94,31 @@ IValue* CBuiltInRuntimeFunction::ExecuteFunction( CRuntimeContext* const ctx, IV
 	for(auto& val : args)
 		val->Release();
 
+	assert(returnVal);
+	return returnVal;
+}
+
+CBuiltInRuntimeFunction::CBuiltInRuntimeFunction(const std::string& name, Function_t function, std::size_t numArgs)
+	: CRuntimeFunctionBase(name, numArgs), m_pFunction(function) {
+}
+
+CBuiltInRuntimeFunction::~CBuiltInRuntimeFunction() = default;
+
+IValue* CBuiltInRuntimeFunction::ExecuteFunction(CRuntimeContext* const ctx, [[maybe_unused]] IValue* _this,
+	VectorOf<IValue*>& args, [[maybe_unused]] const VariableCaptures& captures)
+{
+
+	assert(m_pFunction);
+
+	if (m_uNumArguments != UNCHECKED_PARAMETER_COUNT && m_uNumArguments != args.size())
+		throw CRuntimeError(std::format("the callable expected {} arguments instead of {}", m_uNumArguments, args.size()));
+
+	auto returnVal = m_pFunction(ctx, args);
+
+	for (auto& val : args)
+		val->Release();
+
+	assert(returnVal);
 	return returnVal;
 }
 
@@ -101,21 +126,22 @@ CFunction::CFunction(IValue* _this, VectorOf<IValue*>& args,
 	const VariableCaptures& captures, const CRuntimeFunction& func)
 	: m_pThis(_this)
 {
-	
+	//setup parameters
 	for (auto i = std::size_t(0); auto& arg : func.m_oArgumentIndices) {
 		auto var = m_oStack[arg] = CProgramRuntime::AcquireNewVariable();
 		var->SetValue(args[i++]);
 	}
 
+	//setup stack
 	for (auto& v : func.m_oVariableIndices) {
 		auto var = m_oStack[v] = CProgramRuntime::AcquireNewVariable();
 		assert(var->GetValue() == nullptr);
 		var->SetValue(CProgramRuntime::AcquireNewValue<IValue>());
 	}
 
+	//setup lambda captures
 	for (auto& [key, value] : captures)
 		m_oStack[key] = value;
-	
 }
 
 CVariable* CFunction::GetVariableByRef(const CCrossModuleReference& ref) const

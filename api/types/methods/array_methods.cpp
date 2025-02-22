@@ -10,6 +10,10 @@
 
 #include <algorithm>
 
+[[nodiscard]] inline CArrayValue* GetThis(IValue* _this) {
+	return _this->ToArray();
+}
+
 FORWARD_DECLARE_METHOD(Push);
 FORWARD_DECLARE_METHOD(PushFront);
 FORWARD_DECLARE_METHOD(Pop);
@@ -66,21 +70,15 @@ void CArrayValue::ConstructProperties()
 	m_oProperties->AddProperty("length", ArrayLength);
 }
 
-#define START_METHOD(name) \
-if(!_this)\
-	throw CRuntimeError("attempted to call a method without \"this\" context"); \
-if(_this->Type() != t_array) \
-	throw CRuntimeError(std::format("array.{} expected an array, but got {}", #name, _this->TypeAsString()));\
-auto name = _this->ToArray()
 
 DEFINE_PROPERTY(ArrayLength) {
-	START_METHOD(__this);
+	auto __this = GetThis(_this);
 	return CProgramRuntime::AcquireNewValue<CIntValue>(static_cast<VarjusInt>(__this->Internal()->Length()));
 }
 
-DEFINE_METHOD(Push)
+DEFINE_METHOD(Push, args)
 {
-	START_METHOD(__this);
+	auto __this = GetThis(_this);
 
 	assert(args.size() == 1);
 	auto& vars = __this->GetShared()->GetVariables();
@@ -88,9 +86,9 @@ DEFINE_METHOD(Push)
 	newVar->SetValue(args.front()->Copy());
 	return newVar->GetValue()->Copy();
 }
-DEFINE_METHOD(PushFront)
+DEFINE_METHOD(PushFront, args)
 {
-	START_METHOD(__this);
+	auto __this = GetThis(_this);
 	auto& vars = __this->GetShared()->GetVariables();
 
 	auto it = vars.insert(vars.begin(), CProgramRuntime::AcquireNewVariable());
@@ -98,10 +96,10 @@ DEFINE_METHOD(PushFront)
 	return (*it)->GetValue()->Copy();
 }
 
-DEFINE_METHOD(Pop)
+DEFINE_METHOD(Pop, args)
 {
 
-	START_METHOD(__this);
+	auto __this = GetThis(_this);
 	auto& vars = __this->GetShared()->GetVariables();
 
 	if (vars.empty())
@@ -115,10 +113,10 @@ DEFINE_METHOD(Pop)
 
 	return copy;
 }
-DEFINE_METHOD(PopFront)
+DEFINE_METHOD(PopFront, args)
 {
 
-	START_METHOD(__this);
+	auto __this = GetThis(_this);
 	auto& vars = __this->GetShared()->GetVariables();
 
 	if (vars.empty())
@@ -133,7 +131,7 @@ DEFINE_METHOD(PopFront)
 	return copy;
 }
 
-DEFINE_METHOD(Map)
+DEFINE_METHOD(Map, args)
 {
 	assert(args.size() == 1);
 	auto& mapFunc = args.front();
@@ -141,7 +139,7 @@ DEFINE_METHOD(Map)
 	if (!mapFunc->IsCallable())
 		throw CRuntimeError(std::format("array.map expected \"callable\", but got \"{}\"", mapFunc->TypeAsString()));
 
-	START_METHOD(__this);
+	auto __this = GetThis(_this);
 	auto& vars = __this->GetShared()->GetVariables();
 
 	IValues results(vars.size());
@@ -235,12 +233,12 @@ static inline IValue* FindInternal(CArrayValue* _this, CRuntimeContext* const ct
 	return result->Copy();
 }
 
-DEFINE_METHOD(Find) {
-	START_METHOD(__this);
+DEFINE_METHOD(Find, args) {
+	auto __this = GetThis(_this);
 	return FindInternal(__this, ctx, args, true);
 }
-DEFINE_METHOD(FindLast) {
-	START_METHOD(__this);
+DEFINE_METHOD(FindLast, args) {
+	auto __this = GetThis(_this);
 	return FindInternal(__this, ctx, args, false);
 }
 
@@ -307,16 +305,16 @@ static inline IValue* FindIndexInternal(CArrayValue* _this, CRuntimeContext* con
 
 	return result;
 }
-DEFINE_METHOD(FindIndex) {
-	START_METHOD(__this);
+DEFINE_METHOD(FindIndex, args) {
+	auto __this = GetThis(_this);
 	return FindIndexInternal(__this, ctx, args, true);
 }
-DEFINE_METHOD(FindLastIndex) {
-	START_METHOD(__this);
+DEFINE_METHOD(FindLastIndex, args) {
+	auto __this = GetThis(_this);
 	return FindIndexInternal(__this, ctx, args, false);
 }
 
-DEFINE_METHOD(Filter) 
+DEFINE_METHOD(Filter, args)
 {
 	assert(args.size() == 1);
 	auto& mapFunc = args.front();
@@ -324,7 +322,7 @@ DEFINE_METHOD(Filter)
 	if (!mapFunc->IsCallable())
 		throw CRuntimeError(std::format("array.filter expected \"callable\", but got \"{}\"", mapFunc->TypeAsString()));
 
-	START_METHOD(__this);
+	auto __this = GetThis(_this);
 	auto& vars = __this->GetShared()->GetVariables();
 
 	IValues results;
@@ -367,12 +365,12 @@ DEFINE_METHOD(Filter)
 	return CArrayValue::Construct(std::move(results));
 }
 
-DEFINE_METHOD(Contains) 
+DEFINE_METHOD(Contains, args)
 {
 	assert(args.size() == 1);
 	auto& searchElement = args.front();
 
-	START_METHOD(__this);
+	auto __this = GetThis(_this);
 	auto& vars = __this->GetShared()->GetVariables();
 
 	IValue* result{ nullptr };
@@ -393,9 +391,9 @@ DEFINE_METHOD(Contains)
 
 	return result;
 }
-DEFINE_METHOD(Reversed) {
+DEFINE_METHOD(Reversed, args) {
 	
-	START_METHOD(__this);
+	auto __this = GetThis(_this);
 	auto& vars = __this->GetShared()->GetVariables();
 	IValues valuesAsCopy(vars.size());
 
@@ -419,14 +417,14 @@ std::string JoinStrings(const VectorOf<std::string>& strings, const std::string&
 	return result.str();
 }
 
-DEFINE_METHOD(Join) 
+DEFINE_METHOD(Join, args)
 {
 	auto& delimiterValue = args.front();
 	if (delimiterValue->Type() != t_string)
 		throw CRuntimeError(std::format("array.join expected a string parameter, but got \"{}\"", delimiterValue->TypeAsString()));
 
 	VectorOf<std::string> stringValues;
-	START_METHOD(__this);
+	auto __this = GetThis(_this);
 	auto& vars = __this->GetShared()->GetVariables();
 
 	for (auto& var : vars) {
@@ -441,7 +439,7 @@ DEFINE_METHOD(Join)
 	return CStringValue::Construct(JoinStrings(stringValues, delimiterValue->ToString()));
 }
 
-DEFINE_METHOD(All)
+DEFINE_METHOD(All, args)
 {
 	assert(args.size() == 1);
 	auto& mapFunc = args.front();
@@ -449,7 +447,7 @@ DEFINE_METHOD(All)
 	if (!mapFunc->IsCallable())
 		throw CRuntimeError(std::format("array.all expected \"callable\", but got \"{}\"", mapFunc->TypeAsString()));
 
-	START_METHOD(__this);
+	auto __this = GetThis(_this);
 	auto& vars = __this->GetShared()->GetVariables();
 
 	IValues call_args(1);
@@ -486,7 +484,7 @@ DEFINE_METHOD(All)
 
 	return CProgramRuntime::AcquireNewValue<CBooleanValue>(all);
 }
-DEFINE_METHOD(Any)
+DEFINE_METHOD(Any, args)
 {
 	assert(args.size() == 1);
 	auto& mapFunc = args.front();
@@ -494,7 +492,7 @@ DEFINE_METHOD(Any)
 	if (!mapFunc->IsCallable())
 		throw CRuntimeError(std::format("array.all expected \"callable\", but got \"{}\"", mapFunc->TypeAsString()));
 
-	START_METHOD(__this);
+	auto __this = GetThis(_this);
 	auto& vars = __this->GetShared()->GetVariables();
 
 	IValues call_args(1);
@@ -532,9 +530,9 @@ DEFINE_METHOD(Any)
 	return CProgramRuntime::AcquireNewValue<CBooleanValue>(any);
 }
 
-DEFINE_METHOD(Slice) {
+DEFINE_METHOD(Slice, args) {
 
-	START_METHOD(__this);
+	auto __this = GetThis(_this);
 	auto& vars = __this->GetShared()->GetVariables();
 
 	auto& a = args[0];
@@ -649,7 +647,7 @@ struct SortContext
 	}
 }
 
-DEFINE_METHOD(Sort)
+DEFINE_METHOD(Sort, args)
 {
 	assert(args.size() == 1);
 	auto& mapFunc = args.front();
@@ -657,7 +655,7 @@ DEFINE_METHOD(Sort)
 	if (!mapFunc->IsCallable())
 		throw CRuntimeError(std::format("array.sort expected \"callable\", but got \"{}\"", mapFunc->TypeAsString()));
 
-	START_METHOD(__this);
+	auto __this = GetThis(_this);
 	auto& vars = __this->GetShared()->GetVariables();
 
 	IValues valuesAsCopy(vars.size());
@@ -671,7 +669,7 @@ DEFINE_METHOD(Sort)
 	return CArrayValue::Construct(std::move(valuesAsCopy));
 }
 
-DEFINE_METHOD(Resize)
+DEFINE_METHOD(Resize, args)
 {
 	assert(args.size() == 1);
 	auto& value = args.front();
@@ -680,7 +678,7 @@ DEFINE_METHOD(Resize)
 		throw CRuntimeError(std::format("array.resize expected \"integer\", but got \"{}\"", value->TypeAsString()));
 
 
-	START_METHOD(__this);
+	auto __this = GetThis(_this);
 	auto& vars = __this->GetShared()->GetVariables();
 
 	auto intVal = value->ToInt();
@@ -714,12 +712,12 @@ DEFINE_METHOD(Resize)
 	return __this->Copy();
 }
 
-DEFINE_METHOD(Fill)
+DEFINE_METHOD(Fill, args)
 {
 	assert(args.size() == 1);
 	auto& value = args.front();
 
-	START_METHOD(__this);
+	auto __this = GetThis(_this);
 	auto& vars = __this->GetShared()->GetVariables();
 
 	for (auto& v : vars) {

@@ -57,7 +57,7 @@ std::unique_ptr<IOperand> CLinterOperand::ParseLambda()
 	return ptr;
 }
 
-CLambdaOperand::CLambdaOperand(RuntimeFunction&& ptr, VectorOf<CCrossModuleReference>&& captures)
+CLambdaOperand::CLambdaOperand(std::unique_ptr<CRuntimeFunctionBase>&& ptr, VectorOf<CCrossModuleReference>&& captures)
 	: m_pLambda(std::move(ptr)), m_oVariableCaptures(std::move(captures)) {}
 CLambdaOperand::~CLambdaOperand() = default;
 

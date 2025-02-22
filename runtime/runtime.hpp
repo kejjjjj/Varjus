@@ -12,11 +12,12 @@
 
 class CVariable;
 class CRuntimeFunction;
+class CRuntimeFunctionBase;
 class CFileRuntimeData;
 class IRuntimeStructure;
 class CRuntimeModule;
 
-using RuntimeFunction = std::unique_ptr<CRuntimeFunction>;
+using RuntimeFunction = std::unique_ptr<CRuntimeFunctionBase>;
 using CodePosition = std::tuple<size_t, size_t>;
 using RuntimeBlock = std::unique_ptr<IRuntimeStructure>;
 using steady_clock = std::chrono::time_point<std::chrono::steady_clock>;

@@ -133,8 +133,8 @@ CRuntimeFunction* CProgramRuntime::FindMainFunction(const RuntimeModules& module
 
 		const auto iMainFunction = std::ranges::find(mod->m_oFunctions, "main", [](const RuntimeFunction& rf) { return rf->GetName(); });
 
-		if (iMainFunction != mod->m_oFunctions.end()) {
-			return iMainFunction->get();
+		if (iMainFunction != mod->m_oFunctions.end() && (*iMainFunction)->FunctionType() == fn_regular) {
+			return dynamic_cast<CRuntimeFunction*>(iMainFunction->get());
 		}
 	}
 

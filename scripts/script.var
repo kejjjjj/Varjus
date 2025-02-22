@@ -1,11 +1,6 @@
-fn func()
-{
-    return 1;
-}
+
 
 fn main()
 {
-    const func = 2;
-
-    return func();
+    return console.log(cppFunc([1, 2, 3]));
 }

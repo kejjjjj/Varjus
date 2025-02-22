@@ -62,7 +62,7 @@ void CRuntimeModule::FreeGlobalVariables() {
 	for (auto& variable : m_oGlobalVariables)
 		variable->Release();
 }
-CRuntimeFunction* CRuntimeModule::GetFunctionByIndex(std::size_t index)
+CRuntimeFunctionBase* CRuntimeModule::GetFunctionByIndex(std::size_t index)
 {
 	assert(index < m_oFunctions.size());
 	return m_oFunctions[index].get();

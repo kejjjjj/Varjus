@@ -1,23 +1,19 @@
 
 #include "api/types/operators/default_operators.hpp"
 #include "api/types/types.hpp"
+#include "api/types/internal/object_declarations.hpp"
 
 #include "runtime/exceptions/exception.hpp"
-#include "runtime/runtime.hpp"
 #include "runtime/variables.hpp"
 #include "runtime/structure.hpp"
 
-#include "linter/context.hpp"
 
 #include <algorithm>
+#include <ranges>
 
-
-#define START_METHOD(name) \
-if(!_this)\
-	throw CRuntimeError("attempted to call a method without \"this\" context"); \
-if(_this->Type() != t_string) \
-	throw CRuntimeError(std::format("string.{} expected an array, but got {}", #name, _this->TypeAsString()));\
-auto name = _this->ToCString()
+[[nodiscard]] inline CStringValue* GetThis(IValue* _this) {
+	return _this->ToCString();
+}
 
 FORWARD_DECLARE_METHOD(ToUpper);
 FORWARD_DECLARE_METHOD(ToLower);
@@ -55,31 +51,31 @@ void CStringValue::ConstructProperties()
 }
 
 DEFINE_PROPERTY(StringLength) {
-	START_METHOD(__this);
-	return CProgramRuntime::AcquireNewValue<CIntValue>(static_cast<VarjusInt>(__this->Internal()->Length()));
+	auto __this = GetThis(_this);
+	return CIntValue::Construct(static_cast<VarjusInt>(__this->Internal()->Length()));
 }
 
-DEFINE_METHOD(ToUpper)
+DEFINE_METHOD(ToUpper, args)
 {
-	START_METHOD(__this);
+	auto __this = GetThis(_this);
 	std::string v = __this->ToString();
 
 	std::ranges::transform(v, v.begin(), [](std::int8_t c) { 
 		return static_cast<std::int8_t>(std::toupper(static_cast<std::int32_t>(c))); });
 	return CStringValue::Construct(v);
 }
-DEFINE_METHOD(ToLower) 
+DEFINE_METHOD(ToLower, args)
 {
-	START_METHOD(__this);
+	auto __this = GetThis(_this);
 	std::string v = __this->ToString();
 
 	std::ranges::transform(v, v.begin(), [](std::int8_t c) {
 		return static_cast<std::int8_t>(std::tolower(static_cast<std::int32_t>(c))); });
 	return CStringValue::Construct(v);
 }
-DEFINE_METHOD(Substring) 
+DEFINE_METHOD(Substring, args)
 {
-	START_METHOD(__this);
+	auto __this = GetThis(_this);
 	const auto& v = __this->ToString();
 
 	auto& a = args[0];
@@ -130,9 +126,9 @@ std::vector<std::string> SplitString(const std::string& str, const std::string& 
 	return result;
 }
 
-DEFINE_METHOD(Split) {
+DEFINE_METHOD(Split, args) {
 
-	START_METHOD(__this);
+	auto __this = GetThis(_this);
 	const auto& v = __this->ToString();
 
 	auto& delimiter = args.front();
@@ -159,9 +155,9 @@ std::string ReplaceAll(const std::string& str, const std::string& oldSub, const 
 	return result;
 }
 
-DEFINE_METHOD(Replace) {
+DEFINE_METHOD(Replace, args) {
 
-	START_METHOD(__this);
+	auto __this = GetThis(_this);
 	const auto& v = __this->ToString();
 
 	const auto CheckSanity = [](const IValue* v) {
@@ -178,9 +174,9 @@ DEFINE_METHOD(Replace) {
 	return CStringValue::Construct(ReplaceAll(v, a->AsString(), b->AsString()));
 }
 
-DEFINE_METHOD(Repeat) {
+DEFINE_METHOD(Repeat, args) {
 
-	START_METHOD(__this);
+	auto __this = GetThis(_this);
 	const auto& v = __this->ToString();
 
 	auto& countValue = args[0];
@@ -198,8 +194,8 @@ DEFINE_METHOD(Repeat) {
 	return CStringValue::Construct(result);
 }
 
-DEFINE_METHOD(GetCodeAt) {
-	START_METHOD(__this);
+DEFINE_METHOD(GetCodeAt, args) {
+	auto __this = GetThis(_this);
 	const auto& v = __this->ToString();
 
 	auto& idx = args[0];
@@ -213,5 +209,5 @@ DEFINE_METHOD(GetCodeAt) {
 
 	const auto asUnsigned = static_cast<std::size_t>(index);
 
-	return CProgramRuntime::AcquireNewValue<CIntValue>(static_cast<VarjusInt>(v[asUnsigned]));
+	return CIntValue::Construct(static_cast<VarjusInt>(v[asUnsigned]));
 }

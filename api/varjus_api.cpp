@@ -9,6 +9,7 @@
 #include "types/std/console.hpp"
 #include "types/std/math.hpp"
 #include "types/internal/object_declarations.hpp"
+#include "types/internal/callbacks.hpp"
 #include "runtime/exceptions/exception.hpp"
 #include "runtime/modules/rtmodule.hpp"
 
@@ -54,6 +55,7 @@ void Varjus::UseStdLibrary()
 void Varjus::Cleanup() {
     InitVarjus();
     CBuiltInObjects::Reset();
+    CBuiltInFunctions::Reset();
 }
 
 Success Varjus::LoadScriptFromFile(const std::string& fullFilePath)
@@ -120,4 +122,8 @@ void Varjus::AddNewGlobalObject(const std::string& name,
 {
     CBuiltInObjects::AddNewGlobalObject(name, createMethods, createProperties);
     
+}
+void Varjus::AddNewCallback(const std::string& name, const Function_t& callback, std::size_t numArgs)
+{
+    CBuiltInFunctions::AddNewGlobalCallable(name, callback, numArgs);
 }

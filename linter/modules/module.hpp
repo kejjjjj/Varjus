@@ -8,12 +8,12 @@
 #include <unordered_set>
 
 class IRuntimeStructure;
-class CRuntimeFunction;
+class CRuntimeFunctionBase;
 class CRuntimeModule;
 class CExportedSymbol;
 
 using RuntimeBlock = std::unique_ptr<IRuntimeStructure>;
-using RuntimeFunction = std::unique_ptr<CRuntimeFunction>;
+using RuntimeFunction = std::unique_ptr<CRuntimeFunctionBase>;
 using UniqueExportedSymbol = std::unique_ptr<CExportedSymbol>;
 
 using RuntimeModules = VectorOf<std::unique_ptr<CRuntimeModule>>;
@@ -31,7 +31,7 @@ public:
 	CModule(const std::string& filePath);
 	~CModule();
 
-	[[nodiscard]] CRuntimeFunction* FindFunction(const std::string& v) const;
+	[[nodiscard]] CRuntimeFunctionBase* FindFunction(const std::string& v) const;
 	[[nodiscard]] size_t GetFunctionCount() const noexcept;
 
 	void AddFunction(RuntimeFunction&& func);

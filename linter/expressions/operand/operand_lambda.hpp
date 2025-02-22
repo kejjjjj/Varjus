@@ -5,8 +5,7 @@
 #include "api/types/internal/references.hpp"
 #include "runtime/structure.hpp"
 
-class CRuntimeFunction;
-using RuntimeFunction = std::unique_ptr<CRuntimeFunction>;
+class CRuntimeFunctionBase;
 using ElementIndex = std::size_t;
 
 struct CExpressionList;
@@ -16,7 +15,7 @@ struct CLambdaOperand final : public IOperand
 	NONCOPYABLE(CLambdaOperand);
 
 	CLambdaOperand() = default;
-	CLambdaOperand(RuntimeFunction&& ptr, VectorOf<CCrossModuleReference>&& captures);
+	CLambdaOperand(std::unique_ptr<CRuntimeFunctionBase>&& ptr, VectorOf<CCrossModuleReference>&& captures);
 	~CLambdaOperand();
 
 	[[nodiscard]] EOperandBaseType Type() const noexcept override {
@@ -25,7 +24,7 @@ struct CLambdaOperand final : public IOperand
 
 	[[nodiscard]] ASTNode ToAST() override;
 
-	RuntimeFunction m_pLambda;
+	std::unique_ptr<CRuntimeFunctionBase> m_pLambda;
 	VectorOf<CCrossModuleReference> m_oVariableCaptures;
 
 };

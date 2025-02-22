@@ -2,18 +2,14 @@
 
 #include "linter/context.hpp"
 
-#include "runtime/runtime.hpp"
 #include "runtime/variables.hpp"
 #include "runtime/exceptions/exception.hpp"
 #include "runtime/structure.hpp"
 
 
-#define START_METHOD(name) \
-if(!_this)\
-	throw CRuntimeError("attempted to call a method without \"this\" context"); \
-if(_this->Type() != t_object) \
-	throw CRuntimeError(std::format("object.{} expected an object, but got {}", #name, _this->TypeAsString()));\
-auto name = _this->ToObject()
+[[nodiscard]] inline CObjectValue* GetThis(IValue* _this) {
+	return _this->ToObject();
+}
 
 FORWARD_DECLARE_METHOD(Object_Keys);
 FORWARD_DECLARE_METHOD(Object_Values);
@@ -46,14 +42,14 @@ void CObjectValue::ConstructProperties()
 }
 
 DEFINE_PROPERTY(ObjectLength) {
-	START_METHOD(__this);
-	return CProgramRuntime::AcquireNewValue<CIntValue>(static_cast<VarjusInt>(__this->Internal()->GetAggregateValue().Length()));
+	auto __this = GetThis(_this);
+	return CIntValue::Construct(static_cast<VarjusInt>(__this->Internal()->GetAggregateValue().Length()));
 }
 
 
-DEFINE_METHOD(Object_Keys)
+DEFINE_METHOD(Object_Keys, args)
 {
-	START_METHOD(__this);
+	auto __this = GetThis(_this);
 	auto& vars = __this->GetShared()->GetAggregateValue().Iterator();
 
 	IValues results(vars.size());
@@ -65,9 +61,9 @@ DEFINE_METHOD(Object_Keys)
 
 	return CArrayValue::Construct(std::move(results));
 }
-DEFINE_METHOD(Object_Values)
+DEFINE_METHOD(Object_Values, args)
 {
-	START_METHOD(__this);
+	auto __this = GetThis(_this);
 	auto& vars = __this->GetShared()->GetAggregateValue().Iterator();
 
 	IValues results(vars.size());
@@ -94,9 +90,9 @@ static void AddAttribute(CObjectValue* obj, IValue* const key, IValue* value)
 	var->SetValue(value->Copy());
 }
 
-DEFINE_METHOD(Object_Set)
+DEFINE_METHOD(Object_Set, args)
 {
-	START_METHOD(__this);
+	auto __this = GetThis(_this);
 
 	const auto& key = args[0];
 	auto& value = args[1];
@@ -112,9 +108,9 @@ DEFINE_METHOD(Object_Set)
 
 	return __this->Copy();
 }
-DEFINE_METHOD(Object_Remove)
+DEFINE_METHOD(Object_Remove, args)
 {
-	START_METHOD(__this);
+	auto __this = GetThis(_this);
 
 	const auto& key = args[0];
 	auto& aggregate = __this->Internal()->GetAggregateValue();
@@ -131,14 +127,14 @@ static auto Contains(CObjectValue* obj, IValue* const key)
 	const auto& aggregate = obj->Internal()->GetAggregateValue();
 	return aggregate.Contains(key->ValueAsString());
 }
-DEFINE_METHOD(Object_Contains)
+DEFINE_METHOD(Object_Contains, args)
 {
-	START_METHOD(__this);
+	auto __this = GetThis(_this);
 	return CBooleanValue::Construct(Contains(__this, args[0]));
 }
-DEFINE_METHOD(Object_ToArray)
+DEFINE_METHOD(Object_ToArray, args)
 {
-	START_METHOD(__this);
+	auto __this = GetThis(_this);
 
 	const auto& aggregate = __this->Internal()->GetAggregateValue().Iterator();
 

@@ -7,11 +7,11 @@
 #include "linter/context.hpp"
 
 class CVariable;
-class CRuntimeFunction;
+class CRuntimeFunctionBase;
 class IRuntimeStructure;
 class CModule;
 
-using RuntimeFunction = std::unique_ptr<CRuntimeFunction>;
+using RuntimeFunction = std::unique_ptr<CRuntimeFunctionBase>;
 using RuntimeBlock = std::unique_ptr<IRuntimeStructure>;
 
 template<typename T>
@@ -27,7 +27,7 @@ public:
 	explicit CRuntimeModule(CModule& ctx);
 	~CRuntimeModule();
 
-	[[nodiscard]] CRuntimeFunction* GetFunctionByIndex(std::size_t index);
+	[[nodiscard]] CRuntimeFunctionBase* GetFunctionByIndex(std::size_t index);
 	[[nodiscard]] CVariable* GetGlobalVariableByIndex(std::size_t index);
 
 	void SetupGlobalVariables();

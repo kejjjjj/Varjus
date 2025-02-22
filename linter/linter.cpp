@@ -24,6 +24,7 @@
 #include "statements/while/while.hpp"
 
 #include "api/types/internal/objects.hpp"
+#include "api/types/internal/callbacks.hpp"
 
 
 #include <cassert>
@@ -186,7 +187,14 @@ static void DeclareGlobalObjects(CMemory* m_pOwner, CScope* const scope)
 			return CLinterErrors::PushError("internal bug in DeclareGlobalObjects", {});
 	}
 }
-
+static void DeclareBuiltInFunctions(CMemory* m_pOwner)
+{
+	for (auto& [k, v] : CBuiltInFunctions::Iterator()) {
+		auto& [callable, numArgs] = v;
+		m_pOwner->m_FunctionManager->DeclareFunction(k, m_pOwner->m_FunctionManager->GetFunctionCount());
+		m_pOwner->GetModule()->AddFunction(std::make_unique<CBuiltInRuntimeFunction>(k, callable, numArgs));
+	}
+}
 Success CBufferLinter::HoistFile()
 {
 	m_pHoister = std::make_unique<CHoister>();
@@ -197,6 +205,7 @@ Success CBufferLinter::HoistFile()
 	CMemory globalMemory(nullptr, mod.get());
 	auto globalScope = std::make_shared<CScope>(&globalMemory);
 
+	DeclareBuiltInFunctions(&globalMemory);
 	DeclareGlobalObjects(&globalMemory, globalScope.get());
 
 	CLinterContext ctx{
@@ -232,6 +241,7 @@ Success CBufferLinter::LintFile()
 
 	auto globalScope = std::make_shared<CScope>(&globalMemory);
 
+	DeclareBuiltInFunctions(&globalMemory);
 	DeclareGlobalObjects(&globalMemory, globalScope.get());
 
 	CLinterContext ctx{

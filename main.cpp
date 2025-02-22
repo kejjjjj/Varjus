@@ -5,6 +5,7 @@
 
 #include "api/varjus_api.hpp"
 
+
 int ExitApp(int v)
 {
     Varjus::Cleanup();
@@ -16,9 +17,16 @@ int ExitApp(int v)
     return v;
 }
 
+DEFINE_CALLBACK(CppFunc, args) {
+    return CStringValue::Construct("Hello from C++: " + args[0]->ValueAsString());
+}
+
 int main()
 {
+    Varjus::AddNewCallback("cppFunc", CppFunc, 1);
+
     Varjus::UseStdLibrary();
+
 
     const auto reader = VarjusIOReader("scripts\\script.var");
     const auto GetError = [](const std::optional<std::string>& errorMsg) {

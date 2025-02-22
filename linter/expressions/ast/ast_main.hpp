@@ -20,7 +20,7 @@ using KeyValue = std::pair<A, B>;
 class CLinterOperand;
 class CLinterOperator;
 class IRuntimeStructure;
-class CRuntimeFunction;
+class CRuntimeFunctionBase;
 
 struct IOperand;
 
@@ -39,7 +39,7 @@ class IConstEvalValue;
 
 template<typename T>
 concept Pointer = std::is_pointer_v<T> || std::is_reference_v<T>;
-using RuntimeFunction = std::unique_ptr<CRuntimeFunction>;
+using RuntimeFunction = std::unique_ptr<CRuntimeFunctionBase>;
 using ElementIndex = std::size_t;
 
 class AbstractSyntaxTree : public std::enable_shared_from_this<AbstractSyntaxTree>

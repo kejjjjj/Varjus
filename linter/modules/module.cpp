@@ -17,7 +17,7 @@ CModule::~CModule() = default;
 void CModule::AddFunction(RuntimeFunction&& func) {
 	m_oFunctions.emplace_back(std::move(func)); 
 }
-CRuntimeFunction* CModule::FindFunction(const std::string& v) const
+CRuntimeFunctionBase* CModule::FindFunction(const std::string& v) const
 {
 	const auto it = std::ranges::find(m_oFunctions, v, [](const RuntimeFunction& v) { return v->GetName(); });
 	return it != m_oFunctions.end() ? it->get() : nullptr;

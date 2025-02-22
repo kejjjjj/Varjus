@@ -1,13 +1,9 @@
 #include "math.hpp"
 
-#include "api/types/object.hpp"
-#include "api/types/internal/object_declarations.hpp"
+#include "api/types/types.hpp"
 #include "api/types/operators/default_operators.hpp"
 
-#include "linter/context.hpp"
-
 #include "runtime/exceptions/exception.hpp"
-#include "runtime/runtime.hpp"
 #include "runtime/structure.hpp"
 
 #include <random>
@@ -127,45 +123,45 @@ BuiltInProperty_t CMathValue::ConstructProperties()
 	return m_oProperties;
 }
 
-DEFINE_PROPERTY(Math_PI) { return CProgramRuntime::AcquireNewValue<CDoubleValue>(3.141592653589793); }
-DEFINE_PROPERTY(Math_TAU) { return CProgramRuntime::AcquireNewValue<CDoubleValue>(6.283185307179586); }
-DEFINE_PROPERTY(Math_E) { return CProgramRuntime::AcquireNewValue<CDoubleValue>(2.718281828459045); }
-DEFINE_PROPERTY(Math_SQRT2) { return CProgramRuntime::AcquireNewValue<CDoubleValue>(1.414213562373095); }
-DEFINE_PROPERTY(Math_SQRT3) { return CProgramRuntime::AcquireNewValue<CDoubleValue>(1.732050807568877); }
-DEFINE_PROPERTY(Math_SQRT5) { return CProgramRuntime::AcquireNewValue<CDoubleValue>(2.236067977499790); }
-DEFINE_PROPERTY(Math_GOLDEN) { return CProgramRuntime::AcquireNewValue<CDoubleValue>(1.618033988749895); }
-DEFINE_PROPERTY(Math_LN2) { return CProgramRuntime::AcquireNewValue<CDoubleValue>(0.693147180559945); }
-DEFINE_PROPERTY(Math_LN10) { return CProgramRuntime::AcquireNewValue<CDoubleValue>(2.302585092994046); }
-DEFINE_PROPERTY(Math_LOG2E) { return CProgramRuntime::AcquireNewValue<CDoubleValue>(1.442695040888963); }
-DEFINE_PROPERTY(Math_LOG10E) { return CProgramRuntime::AcquireNewValue<CDoubleValue>(0.434294481903252); }
-DEFINE_PROPERTY(Math_INV_PI) { return CProgramRuntime::AcquireNewValue<CDoubleValue>(0.318309886183790); }
-DEFINE_PROPERTY(Math_INV_SQRT2) { return CProgramRuntime::AcquireNewValue<CDoubleValue>(0.707106781186548); }
-DEFINE_PROPERTY(Math_DEG2RAD) { return CProgramRuntime::AcquireNewValue<CDoubleValue>(0.017453292519943); }
-DEFINE_PROPERTY(Math_RAD2DEG) { return CProgramRuntime::AcquireNewValue<CDoubleValue>(57.29577951308232); }
+DEFINE_PROPERTY(Math_PI) { return CDoubleValue::Construct(3.141592653589793); }
+DEFINE_PROPERTY(Math_TAU) { return CDoubleValue::Construct(6.283185307179586); }
+DEFINE_PROPERTY(Math_E) { return CDoubleValue::Construct(2.718281828459045); }
+DEFINE_PROPERTY(Math_SQRT2) { return CDoubleValue::Construct(1.414213562373095); }
+DEFINE_PROPERTY(Math_SQRT3) { return CDoubleValue::Construct(1.732050807568877); }
+DEFINE_PROPERTY(Math_SQRT5) { return CDoubleValue::Construct(2.236067977499790); }
+DEFINE_PROPERTY(Math_GOLDEN) { return CDoubleValue::Construct(1.618033988749895); }
+DEFINE_PROPERTY(Math_LN2) { return CDoubleValue::Construct(0.693147180559945); }
+DEFINE_PROPERTY(Math_LN10) { return CDoubleValue::Construct(2.302585092994046); }
+DEFINE_PROPERTY(Math_LOG2E) { return CDoubleValue::Construct(1.442695040888963); }
+DEFINE_PROPERTY(Math_LOG10E) { return CDoubleValue::Construct(0.434294481903252); }
+DEFINE_PROPERTY(Math_INV_PI) { return CDoubleValue::Construct(0.318309886183790); }
+DEFINE_PROPERTY(Math_INV_SQRT2) { return CDoubleValue::Construct(0.707106781186548); }
+DEFINE_PROPERTY(Math_DEG2RAD) { return CDoubleValue::Construct(0.017453292519943); }
+DEFINE_PROPERTY(Math_RAD2DEG) { return CDoubleValue::Construct(57.29577951308232); }
 
 #define DEFINE_SINGLE_ARG_GENERIC_MATH_FUNC(name, func) \
-DEFINE_METHOD(name){\
+DEFINE_METHOD(name, args){\
 	const auto& v = args.front(); \
 	if (!v->IsArithmetic()) \
 		throw CRuntimeError(std::format("math.{} expected an arithmetic value, but got \"{}\"", #name, v->TypeAsString())); \
-	return CProgramRuntime::AcquireNewValue<CDoubleValue>(func(v->ToDouble())); }\
+	return CDoubleValue::Construct(func(v->ToDouble())); }\
 
 #define DEFINE_SINGLE_ARG_GENERIC_MATH_FUNC_TYPE(name, func, type, T) \
-DEFINE_METHOD(name){\
+DEFINE_METHOD(name, args){\
 	const auto& v = args.front(); \
 	if (!v->IsArithmetic()) \
 		throw CRuntimeError(std::format("math.{} expected an arithmetic value, but got \"{}\"", #name, v->TypeAsString())); \
-	return CProgramRuntime::AcquireNewValue<type>(static_cast<T>(func(v->ToDouble()))); }\
+	return type::Construct(static_cast<T>(func(v->ToDouble()))); }\
 
 #define DEFINE_TWO_ARG_GENERIC_MATH_FUNC(name, func) \
-DEFINE_METHOD(name){\
+DEFINE_METHOD(name, args){\
 	const auto& lhs = args[0]; \
 	const auto& rhs = args[1]; \
 	if (!lhs->IsArithmetic()) \
 		throw CRuntimeError(std::format("math.{} expected an arithmetic value, but got \"{}\"", #name, lhs->TypeAsString())); \
 	if (!rhs->IsArithmetic()) \
 		throw CRuntimeError(std::format("math.{} expected an arithmetic value, but got \"{}\"", #name, rhs->TypeAsString())); \
-	return CProgramRuntime::AcquireNewValue<CDoubleValue>(func(lhs->ToDouble(), rhs->ToDouble())); }\
+	return CDoubleValue::Construct(func(lhs->ToDouble(), rhs->ToDouble())); }\
 
 DEFINE_SINGLE_ARG_GENERIC_MATH_FUNC(Sqrt, std::sqrt);
 DEFINE_SINGLE_ARG_GENERIC_MATH_FUNC(Abs, std::abs);
@@ -195,7 +191,7 @@ DEFINE_TWO_ARG_GENERIC_MATH_FUNC(Atan2, std::atan2);
 DEFINE_TWO_ARG_GENERIC_MATH_FUNC(Fmod, std::fmod);
 DEFINE_TWO_ARG_GENERIC_MATH_FUNC(Hypot, std::hypot);
 
-DEFINE_METHOD(Max){
+DEFINE_METHOD(Max, args){
 	const auto& lhs = args[0]; 
 	const auto& rhs = args[1];
 	if (!lhs->IsArithmetic()) 
@@ -204,7 +200,7 @@ DEFINE_METHOD(Max){
 		throw CRuntimeError(std::format("math.{} expected an arithmetic value, but got \"{}\"", "max", rhs->TypeAsString()));
 	return lhs->ToDouble() < rhs->ToDouble() ? rhs->Copy() : lhs->Copy();
 }
-DEFINE_METHOD(Min) {
+DEFINE_METHOD(Min, args) {
 
 	const auto& lhs = args[0];
 	const auto& rhs = args[1];
@@ -223,7 +219,7 @@ inline VarjusDouble GetRandomDouble(VarjusDouble min, VarjusDouble max) {
 }
 
 
-DEFINE_METHOD(Random) {
+DEFINE_METHOD(Random, args) {
 
 	const auto& lhs = args[0];
 	const auto& rhs = args[1];
@@ -238,5 +234,5 @@ DEFINE_METHOD(Random) {
 	if(b <= a)
 		throw CRuntimeError(std::format("math.{} min >= max", "random"));
 
-	return CProgramRuntime::AcquireNewValue<CDoubleValue>(GetRandomDouble(a, b));
+	return CDoubleValue::Construct(GetRandomDouble(a, b));
 }

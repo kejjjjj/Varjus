@@ -1,11 +1,7 @@
 #include "console.hpp"
-
 #include "api/types/object.hpp"
-#include "api/types/internal/object_declarations.hpp"
 
-#include "runtime/runtime.hpp"
 #include "runtime/structure.hpp"
-#include "linter/context.hpp"
 
 #include <iostream>
 
@@ -19,7 +15,7 @@ BuiltInMethod_t CConsoleValue::ConstructMethods()
 	return m_oMethods;
 }
 
-DEFINE_METHOD(LogConsole)
+DEFINE_METHOD(LogConsole, args)
 {
 	std::string p;
 
@@ -28,5 +24,5 @@ DEFINE_METHOD(LogConsole)
 
 	std::cout << p << '\n';
 
-	return CProgramRuntime::AcquireNewValue<IValue>();
+	return IValue::Construct();
 }
