@@ -18,6 +18,9 @@ file(GLOB_RECURSE API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp"
 )
 
+# Exclude files inside the build directory
+list(FILTER API_HEADERS EXCLUDE REGEX "${CMAKE_BINARY_DIR}/.*")
+
 # Filter out CMake's compiler detection files
 list(FILTER API_SOURCES EXCLUDE REGEX "CMakeCXXCompilerId\\.cpp$")
 
