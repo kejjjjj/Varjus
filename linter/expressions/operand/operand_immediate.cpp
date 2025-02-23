@@ -50,8 +50,8 @@ IConstEvalValue* ConstantASTNode::GetConstEval([[maybe_unused]]CMemory* const ow
 #endif
 
 #pragma pack(push)
-#pragma warning(disable : 4061)
-#pragma warning(disable : 4062)
+WARNING_DISABLE(4061)
+WARNING_DISABLE(4062)
 EValueType CImmediateOperand::GetImmediateType() const noexcept
 {
 	switch (m_pToken->Type()) {
@@ -122,6 +122,8 @@ std::string CImmediateOperand::ToData() const noexcept
 		break;
 	case t_string:
 		return string;
+	default:
+		assert(false);
 	}
 
 	return result;

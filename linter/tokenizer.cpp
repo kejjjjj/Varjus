@@ -9,6 +9,7 @@
 #include <iostream>
 #include <unordered_map>
 #include <filesystem>
+#include <format>
 
 constexpr bool IsDigit(char c) noexcept
 {
@@ -84,7 +85,7 @@ std::unique_ptr<CToken> CBufferTokenizer::ReadToken()
 
 	token.m_oSourcePosition = m_oParserPosition;
 
-	if (IsDigit(*m_oScriptPos) || *m_oScriptPos == '.' && IsDigit(*(std::next(m_oScriptPos)))) {
+	if (IsDigit(*m_oScriptPos) || (*m_oScriptPos == '.' && IsDigit(*(std::next(m_oScriptPos))))) {
 		if (!ReadNumber(token)) {
 			return nullptr;
 		}
@@ -208,7 +209,7 @@ Success CBufferTokenizer::ReadMultiLineComment()
 		m_oScriptPos++;
 
 		if (EndOfBuffer())
-			throw std::exception("expected to find */ before EOF");
+			throw CLinterError("expected to find */ before EOF");
 	}
 
 	m_oScriptPos += 2; // */

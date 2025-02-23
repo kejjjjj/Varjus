@@ -25,12 +25,6 @@ TEST_CASE("uinteger multiplicative operations") {
 
 	auto retVal = TEST_ExecuteFile(JP("uint.var"));
 
-	constexpr unsigned int arr[] = { 2 * 5,
-		10 / 2,
-		9 / 2,
-		10 % 2,
-		7 % 2 };
-
 	AssertArray(retVal, AssertArrayValue<ASSERT_UINT>(t_uint, {
 		2 * 5,
 		10 / 2,

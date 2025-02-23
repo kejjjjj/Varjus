@@ -4,9 +4,7 @@
 #include <string>
 #include <memory>
 
-#define NONCOPYABLE(className) \
-        className(const className&) = delete; \
-        className& operator=(const className&) = delete;
+#include "api/internal/globalDefinitions.hpp"
 
 enum Success : signed char;
 class CPunctuationToken;

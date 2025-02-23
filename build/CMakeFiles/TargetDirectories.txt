@@ -1,0 +1,3 @@
+/home/test/varjus/Varjus/build/CMakeFiles/Varjus.dir
+/home/test/varjus/Varjus/build/CMakeFiles/edit_cache.dir
+/home/test/varjus/Varjus/build/CMakeFiles/rebuild_cache.dir

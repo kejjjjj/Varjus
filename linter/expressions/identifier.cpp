@@ -147,5 +147,5 @@ bool CIdentifierLinter::CheckIdentifier(const CToken* token) const noexcept
 {
 	assert(token != nullptr);
 	const auto type = token->Type();
-	return type == TokenType::tt_name || IS_IMMEDIATE(type);
+	return type == TokenType::tt_name || (IS_IMMEDIATE(type));
 }

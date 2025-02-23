@@ -628,9 +628,7 @@ struct SortContext
 	return right;
 }
 
-
-
-[[nodiscard]] void QuickSort(SortContext& ctx, IValues& values, std::size_t low, std::size_t high)
+void QuickSort(SortContext& ctx, IValues& values, std::size_t low, std::size_t high)
 {
 
 	if (low < high) {

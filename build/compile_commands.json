@@ -1,0 +1,446 @@
+[
+{
+  "directory": "/home/test/varjus/Varjus/build",
+  "command": "/usr/bin/g++  -I/home/test/varjus/Varjus -g -std=gnu++20 -Wall -Wextra -Werror /external:W3 -pedantic -O0 -g -fsanitize=address -DDEBUG -o CMakeFiles/Varjus.dir/fs/fs_globals.cpp.o -c /home/test/varjus/Varjus/fs/fs_globals.cpp",
+  "file": "/home/test/varjus/Varjus/fs/fs_globals.cpp",
+  "output": "CMakeFiles/Varjus.dir/fs/fs_globals.cpp.o"
+},
+{
+  "directory": "/home/test/varjus/Varjus/build",
+  "command": "/usr/bin/g++  -I/home/test/varjus/Varjus -g -std=gnu++20 -Wall -Wextra -Werror /external:W3 -pedantic -O0 -g -fsanitize=address -DDEBUG -o CMakeFiles/Varjus.dir/fs/fs_io.cpp.o -c /home/test/varjus/Varjus/fs/fs_io.cpp",
+  "file": "/home/test/varjus/Varjus/fs/fs_io.cpp",
+  "output": "CMakeFiles/Varjus.dir/fs/fs_io.cpp.o"
+},
+{
+  "directory": "/home/test/varjus/Varjus/build",
+  "command": "/usr/bin/g++  -I/home/test/varjus/Varjus -g -std=gnu++20 -Wall -Wextra -Werror /external:W3 -pedantic -O0 -g -fsanitize=address -DDEBUG -o CMakeFiles/Varjus.dir/linter/context.cpp.o -c /home/test/varjus/Varjus/linter/context.cpp",
+  "file": "/home/test/varjus/Varjus/linter/context.cpp",
+  "output": "CMakeFiles/Varjus.dir/linter/context.cpp.o"
+},
+{
+  "directory": "/home/test/varjus/Varjus/build",
+  "command": "/usr/bin/g++  -I/home/test/varjus/Varjus -g -std=gnu++20 -Wall -Wextra -Werror /external:W3 -pedantic -O0 -g -fsanitize=address -DDEBUG -o CMakeFiles/Varjus.dir/linter/declarations/members.cpp.o -c /home/test/varjus/Varjus/linter/declarations/members.cpp",
+  "file": "/home/test/varjus/Varjus/linter/declarations/members.cpp",
+  "output": "CMakeFiles/Varjus.dir/linter/declarations/members.cpp.o"
+},
+{
+  "directory": "/home/test/varjus/Varjus/build",
+  "command": "/usr/bin/g++  -I/home/test/varjus/Varjus -g -std=gnu++20 -Wall -Wextra -Werror /external:W3 -pedantic -O0 -g -fsanitize=address -DDEBUG -o CMakeFiles/Varjus.dir/linter/declarations/variable_declarations.cpp.o -c /home/test/varjus/Varjus/linter/declarations/variable_declarations.cpp",
+  "file": "/home/test/varjus/Varjus/linter/declarations/variable_declarations.cpp",
+  "output": "CMakeFiles/Varjus.dir/linter/declarations/variable_declarations.cpp.o"
+},
+{
+  "directory": "/home/test/varjus/Varjus/build",
+  "command": "/usr/bin/g++  -I/home/test/varjus/Varjus -g -std=gnu++20 -Wall -Wextra -Werror /external:W3 -pedantic -O0 -g -fsanitize=address -DDEBUG -o CMakeFiles/Varjus.dir/linter/error.cpp.o -c /home/test/varjus/Varjus/linter/error.cpp",
+  "file": "/home/test/varjus/Varjus/linter/error.cpp",
+  "output": "CMakeFiles/Varjus.dir/linter/error.cpp.o"
+},
+{
+  "directory": "/home/test/varjus/Varjus/build",
+  "command": "/usr/bin/g++  -I/home/test/varjus/Varjus -g -std=gnu++20 -Wall -Wextra -Werror /external:W3 -pedantic -O0 -g -fsanitize=address -DDEBUG -o CMakeFiles/Varjus.dir/linter/expressions/ast/ast_main.cpp.o -c /home/test/varjus/Varjus/linter/expressions/ast/ast_main.cpp",
+  "file": "/home/test/varjus/Varjus/linter/expressions/ast/ast_main.cpp",
+  "output": "CMakeFiles/Varjus.dir/linter/expressions/ast/ast_main.cpp.o"
+},
+{
+  "directory": "/home/test/varjus/Varjus/build",
+  "command": "/usr/bin/g++  -I/home/test/varjus/Varjus -g -std=gnu++20 -Wall -Wextra -Werror /external:W3 -pedantic -O0 -g -fsanitize=address -DDEBUG -o CMakeFiles/Varjus.dir/linter/expressions/ast/ast_optimizations.cpp.o -c /home/test/varjus/Varjus/linter/expressions/ast/ast_optimizations.cpp",
+  "file": "/home/test/varjus/Varjus/linter/expressions/ast/ast_optimizations.cpp",
+  "output": "CMakeFiles/Varjus.dir/linter/expressions/ast/ast_optimizations.cpp.o"
+},
+{
+  "directory": "/home/test/varjus/Varjus/build",
+  "command": "/usr/bin/g++  -I/home/test/varjus/Varjus -g -std=gnu++20 -Wall -Wextra -Werror /external:W3 -pedantic -O0 -g -fsanitize=address -DDEBUG -o CMakeFiles/Varjus.dir/linter/expressions/ast/ast_postfix.cpp.o -c /home/test/varjus/Varjus/linter/expressions/ast/ast_postfix.cpp",
+  "file": "/home/test/varjus/Varjus/linter/expressions/ast/ast_postfix.cpp",
+  "output": "CMakeFiles/Varjus.dir/linter/expressions/ast/ast_postfix.cpp.o"
+},
+{
+  "directory": "/home/test/varjus/Varjus/build",
+  "command": "/usr/bin/g++  -I/home/test/varjus/Varjus -g -std=gnu++20 -Wall -Wextra -Werror /external:W3 -pedantic -O0 -g -fsanitize=address -DDEBUG -o CMakeFiles/Varjus.dir/linter/expressions/ast/ast_unary.cpp.o -c /home/test/varjus/Varjus/linter/expressions/ast/ast_unary.cpp",
+  "file": "/home/test/varjus/Varjus/linter/expressions/ast/ast_unary.cpp",
+  "output": "CMakeFiles/Varjus.dir/linter/expressions/ast/ast_unary.cpp.o"
+},
+{
+  "directory": "/home/test/varjus/Varjus/build",
+  "command": "/usr/bin/g++  -I/home/test/varjus/Varjus -g -std=gnu++20 -Wall -Wextra -Werror /external:W3 -pedantic -O0 -g -fsanitize=address -DDEBUG -o CMakeFiles/Varjus.dir/linter/expressions/expression.cpp.o -c /home/test/varjus/Varjus/linter/expressions/expression.cpp",
+  "file": "/home/test/varjus/Varjus/linter/expressions/expression.cpp",
+  "output": "CMakeFiles/Varjus.dir/linter/expressions/expression.cpp.o"
+},
+{
+  "directory": "/home/test/varjus/Varjus/build",
+  "command": "/usr/bin/g++  -I/home/test/varjus/Varjus -g -std=gnu++20 -Wall -Wextra -Werror /external:W3 -pedantic -O0 -g -fsanitize=address -DDEBUG -o CMakeFiles/Varjus.dir/linter/expressions/expression_context.cpp.o -c /home/test/varjus/Varjus/linter/expressions/expression_context.cpp",
+  "file": "/home/test/varjus/Varjus/linter/expressions/expression_context.cpp",
+  "output": "CMakeFiles/Varjus.dir/linter/expressions/expression_context.cpp.o"
+},
+{
+  "directory": "/home/test/varjus/Varjus/build",
+  "command": "/usr/bin/g++  -I/home/test/varjus/Varjus -g -std=gnu++20 -Wall -Wextra -Werror /external:W3 -pedantic -O0 -g -fsanitize=address -DDEBUG -o CMakeFiles/Varjus.dir/linter/expressions/identifier.cpp.o -c /home/test/varjus/Varjus/linter/expressions/identifier.cpp",
+  "file": "/home/test/varjus/Varjus/linter/expressions/identifier.cpp",
+  "output": "CMakeFiles/Varjus.dir/linter/expressions/identifier.cpp.o"
+},
+{
+  "directory": "/home/test/varjus/Varjus/build",
+  "command": "/usr/bin/g++  -I/home/test/varjus/Varjus -g -std=gnu++20 -Wall -Wextra -Werror /external:W3 -pedantic -O0 -g -fsanitize=address -DDEBUG -o CMakeFiles/Varjus.dir/linter/expressions/operand/operand.cpp.o -c /home/test/varjus/Varjus/linter/expressions/operand/operand.cpp",
+  "file": "/home/test/varjus/Varjus/linter/expressions/operand/operand.cpp",
+  "output": "CMakeFiles/Varjus.dir/linter/expressions/operand/operand.cpp.o"
+},
+{
+  "directory": "/home/test/varjus/Varjus/build",
+  "command": "/usr/bin/g++  -I/home/test/varjus/Varjus -g -std=gnu++20 -Wall -Wextra -Werror /external:W3 -pedantic -O0 -g -fsanitize=address -DDEBUG -o CMakeFiles/Varjus.dir/linter/expressions/operand/operand_array.cpp.o -c /home/test/varjus/Varjus/linter/expressions/operand/operand_array.cpp",
+  "file": "/home/test/varjus/Varjus/linter/expressions/operand/operand_array.cpp",
+  "output": "CMakeFiles/Varjus.dir/linter/expressions/operand/operand_array.cpp.o"
+},
+{
+  "directory": "/home/test/varjus/Varjus/build",
+  "command": "/usr/bin/g++  -I/home/test/varjus/Varjus -g -std=gnu++20 -Wall -Wextra -Werror /external:W3 -pedantic -O0 -g -fsanitize=address -DDEBUG -o CMakeFiles/Varjus.dir/linter/expressions/operand/operand_expression.cpp.o -c /home/test/varjus/Varjus/linter/expressions/operand/operand_expression.cpp",
+  "file": "/home/test/varjus/Varjus/linter/expressions/operand/operand_expression.cpp",
+  "output": "CMakeFiles/Varjus.dir/linter/expressions/operand/operand_expression.cpp.o"
+},
+{
+  "directory": "/home/test/varjus/Varjus/build",
+  "command": "/usr/bin/g++  -I/home/test/varjus/Varjus -g -std=gnu++20 -Wall -Wextra -Werror /external:W3 -pedantic -O0 -g -fsanitize=address -DDEBUG -o CMakeFiles/Varjus.dir/linter/expressions/operand/operand_fmt_string.cpp.o -c /home/test/varjus/Varjus/linter/expressions/operand/operand_fmt_string.cpp",
+  "file": "/home/test/varjus/Varjus/linter/expressions/operand/operand_fmt_string.cpp",
+  "output": "CMakeFiles/Varjus.dir/linter/expressions/operand/operand_fmt_string.cpp.o"
+},
+{
+  "directory": "/home/test/varjus/Varjus/build",
+  "command": "/usr/bin/g++  -I/home/test/varjus/Varjus -g -std=gnu++20 -Wall -Wextra -Werror /external:W3 -pedantic -O0 -g -fsanitize=address -DDEBUG -o CMakeFiles/Varjus.dir/linter/expressions/operand/operand_identifier.cpp.o -c /home/test/varjus/Varjus/linter/expressions/operand/operand_identifier.cpp",
+  "file": "/home/test/varjus/Varjus/linter/expressions/operand/operand_identifier.cpp",
+  "output": "CMakeFiles/Varjus.dir/linter/expressions/operand/operand_identifier.cpp.o"
+},
+{
+  "directory": "/home/test/varjus/Varjus/build",
+  "command": "/usr/bin/g++  -I/home/test/varjus/Varjus -g -std=gnu++20 -Wall -Wextra -Werror /external:W3 -pedantic -O0 -g -fsanitize=address -DDEBUG -o CMakeFiles/Varjus.dir/linter/expressions/operand/operand_immediate.cpp.o -c /home/test/varjus/Varjus/linter/expressions/operand/operand_immediate.cpp",
+  "file": "/home/test/varjus/Varjus/linter/expressions/operand/operand_immediate.cpp",
+  "output": "CMakeFiles/Varjus.dir/linter/expressions/operand/operand_immediate.cpp.o"
+},
+{
+  "directory": "/home/test/varjus/Varjus/build",
+  "command": "/usr/bin/g++  -I/home/test/varjus/Varjus -g -std=gnu++20 -Wall -Wextra -Werror /external:W3 -pedantic -O0 -g -fsanitize=address -DDEBUG -o CMakeFiles/Varjus.dir/linter/expressions/operand/operand_lambda.cpp.o -c /home/test/varjus/Varjus/linter/expressions/operand/operand_lambda.cpp",
+  "file": "/home/test/varjus/Varjus/linter/expressions/operand/operand_lambda.cpp",
+  "output": "CMakeFiles/Varjus.dir/linter/expressions/operand/operand_lambda.cpp.o"
+},
+{
+  "directory": "/home/test/varjus/Varjus/build",
+  "command": "/usr/bin/g++  -I/home/test/varjus/Varjus -g -std=gnu++20 -Wall -Wextra -Werror /external:W3 -pedantic -O0 -g -fsanitize=address -DDEBUG -o CMakeFiles/Varjus.dir/linter/expressions/operand/operand_object.cpp.o -c /home/test/varjus/Varjus/linter/expressions/operand/operand_object.cpp",
+  "file": "/home/test/varjus/Varjus/linter/expressions/operand/operand_object.cpp",
+  "output": "CMakeFiles/Varjus.dir/linter/expressions/operand/operand_object.cpp.o"
+},
+{
+  "directory": "/home/test/varjus/Varjus/build",
+  "command": "/usr/bin/g++  -I/home/test/varjus/Varjus -g -std=gnu++20 -Wall -Wextra -Werror /external:W3 -pedantic -O0 -g -fsanitize=address -DDEBUG -o CMakeFiles/Varjus.dir/linter/expressions/operand/operand_ternary.cpp.o -c /home/test/varjus/Varjus/linter/expressions/operand/operand_ternary.cpp",
+  "file": "/home/test/varjus/Varjus/linter/expressions/operand/operand_ternary.cpp",
+  "output": "CMakeFiles/Varjus.dir/linter/expressions/operand/operand_ternary.cpp.o"
+},
+{
+  "directory": "/home/test/varjus/Varjus/build",
+  "command": "/usr/bin/g++  -I/home/test/varjus/Varjus -g -std=gnu++20 -Wall -Wextra -Werror /external:W3 -pedantic -O0 -g -fsanitize=address -DDEBUG -o CMakeFiles/Varjus.dir/linter/expressions/operator.cpp.o -c /home/test/varjus/Varjus/linter/expressions/operator.cpp",
+  "file": "/home/test/varjus/Varjus/linter/expressions/operator.cpp",
+  "output": "CMakeFiles/Varjus.dir/linter/expressions/operator.cpp.o"
+},
+{
+  "directory": "/home/test/varjus/Varjus/build",
+  "command": "/usr/bin/g++  -I/home/test/varjus/Varjus -g -std=gnu++20 -Wall -Wextra -Werror /external:W3 -pedantic -O0 -g -fsanitize=address -DDEBUG -o CMakeFiles/Varjus.dir/linter/expressions/postfix.cpp.o -c /home/test/varjus/Varjus/linter/expressions/postfix.cpp",
+  "file": "/home/test/varjus/Varjus/linter/expressions/postfix.cpp",
+  "output": "CMakeFiles/Varjus.dir/linter/expressions/postfix.cpp.o"
+},
+{
+  "directory": "/home/test/varjus/Varjus/build",
+  "command": "/usr/bin/g++  -I/home/test/varjus/Varjus -g -std=gnu++20 -Wall -Wextra -Werror /external:W3 -pedantic -O0 -g -fsanitize=address -DDEBUG -o CMakeFiles/Varjus.dir/linter/expressions/sub_expression.cpp.o -c /home/test/varjus/Varjus/linter/expressions/sub_expression.cpp",
+  "file": "/home/test/varjus/Varjus/linter/expressions/sub_expression.cpp",
+  "output": "CMakeFiles/Varjus.dir/linter/expressions/sub_expression.cpp.o"
+},
+{
+  "directory": "/home/test/varjus/Varjus/build",
+  "command": "/usr/bin/g++  -I/home/test/varjus/Varjus -g -std=gnu++20 -Wall -Wextra -Werror /external:W3 -pedantic -O0 -g -fsanitize=address -DDEBUG -o CMakeFiles/Varjus.dir/linter/expressions/unary.cpp.o -c /home/test/varjus/Varjus/linter/expressions/unary.cpp",
+  "file": "/home/test/varjus/Varjus/linter/expressions/unary.cpp",
+  "output": "CMakeFiles/Varjus.dir/linter/expressions/unary.cpp.o"
+},
+{
+  "directory": "/home/test/varjus/Varjus/build",
+  "command": "/usr/bin/g++  -I/home/test/varjus/Varjus -g -std=gnu++20 -Wall -Wextra -Werror /external:W3 -pedantic -O0 -g -fsanitize=address -DDEBUG -o CMakeFiles/Varjus.dir/linter/functions/function.cpp.o -c /home/test/varjus/Varjus/linter/functions/function.cpp",
+  "file": "/home/test/varjus/Varjus/linter/functions/function.cpp",
+  "output": "CMakeFiles/Varjus.dir/linter/functions/function.cpp.o"
+},
+{
+  "directory": "/home/test/varjus/Varjus/build",
+  "command": "/usr/bin/g++  -I/home/test/varjus/Varjus -g -std=gnu++20 -Wall -Wextra -Werror /external:W3 -pedantic -O0 -g -fsanitize=address -DDEBUG -o CMakeFiles/Varjus.dir/linter/functions/memory/manager_function.cpp.o -c /home/test/varjus/Varjus/linter/functions/memory/manager_function.cpp",
+  "file": "/home/test/varjus/Varjus/linter/functions/memory/manager_function.cpp",
+  "output": "CMakeFiles/Varjus.dir/linter/functions/memory/manager_function.cpp.o"
+},
+{
+  "directory": "/home/test/varjus/Varjus/build",
+  "command": "/usr/bin/g++  -I/home/test/varjus/Varjus -g -std=gnu++20 -Wall -Wextra -Werror /external:W3 -pedantic -O0 -g -fsanitize=address -DDEBUG -o CMakeFiles/Varjus.dir/linter/functions/memory/manager_variable.cpp.o -c /home/test/varjus/Varjus/linter/functions/memory/manager_variable.cpp",
+  "file": "/home/test/varjus/Varjus/linter/functions/memory/manager_variable.cpp",
+  "output": "CMakeFiles/Varjus.dir/linter/functions/memory/manager_variable.cpp.o"
+},
+{
+  "directory": "/home/test/varjus/Varjus/build",
+  "command": "/usr/bin/g++  -I/home/test/varjus/Varjus -g -std=gnu++20 -Wall -Wextra -Werror /external:W3 -pedantic -O0 -g -fsanitize=address -DDEBUG -o CMakeFiles/Varjus.dir/linter/functions/stack.cpp.o -c /home/test/varjus/Varjus/linter/functions/stack.cpp",
+  "file": "/home/test/varjus/Varjus/linter/functions/stack.cpp",
+  "output": "CMakeFiles/Varjus.dir/linter/functions/stack.cpp.o"
+},
+{
+  "directory": "/home/test/varjus/Varjus/build",
+  "command": "/usr/bin/g++  -I/home/test/varjus/Varjus -g -std=gnu++20 -Wall -Wextra -Werror /external:W3 -pedantic -O0 -g -fsanitize=address -DDEBUG -o CMakeFiles/Varjus.dir/linter/hoisting/hoisting.cpp.o -c /home/test/varjus/Varjus/linter/hoisting/hoisting.cpp",
+  "file": "/home/test/varjus/Varjus/linter/hoisting/hoisting.cpp",
+  "output": "CMakeFiles/Varjus.dir/linter/hoisting/hoisting.cpp.o"
+},
+{
+  "directory": "/home/test/varjus/Varjus/build",
+  "command": "/usr/bin/g++  -I/home/test/varjus/Varjus -g -std=gnu++20 -Wall -Wextra -Werror /external:W3 -pedantic -O0 -g -fsanitize=address -DDEBUG -o CMakeFiles/Varjus.dir/linter/linter.cpp.o -c /home/test/varjus/Varjus/linter/linter.cpp",
+  "file": "/home/test/varjus/Varjus/linter/linter.cpp",
+  "output": "CMakeFiles/Varjus.dir/linter/linter.cpp.o"
+},
+{
+  "directory": "/home/test/varjus/Varjus/build",
+  "command": "/usr/bin/g++  -I/home/test/varjus/Varjus -g -std=gnu++20 -Wall -Wextra -Werror /external:W3 -pedantic -O0 -g -fsanitize=address -DDEBUG -o CMakeFiles/Varjus.dir/linter/modules/exports/export.cpp.o -c /home/test/varjus/Varjus/linter/modules/exports/export.cpp",
+  "file": "/home/test/varjus/Varjus/linter/modules/exports/export.cpp",
+  "output": "CMakeFiles/Varjus.dir/linter/modules/exports/export.cpp.o"
+},
+{
+  "directory": "/home/test/varjus/Varjus/build",
+  "command": "/usr/bin/g++  -I/home/test/varjus/Varjus -g -std=gnu++20 -Wall -Wextra -Werror /external:W3 -pedantic -O0 -g -fsanitize=address -DDEBUG -o CMakeFiles/Varjus.dir/linter/modules/imports/import.cpp.o -c /home/test/varjus/Varjus/linter/modules/imports/import.cpp",
+  "file": "/home/test/varjus/Varjus/linter/modules/imports/import.cpp",
+  "output": "CMakeFiles/Varjus.dir/linter/modules/imports/import.cpp.o"
+},
+{
+  "directory": "/home/test/varjus/Varjus/build",
+  "command": "/usr/bin/g++  -I/home/test/varjus/Varjus -g -std=gnu++20 -Wall -Wextra -Werror /external:W3 -pedantic -O0 -g -fsanitize=address -DDEBUG -o CMakeFiles/Varjus.dir/linter/modules/module.cpp.o -c /home/test/varjus/Varjus/linter/modules/module.cpp",
+  "file": "/home/test/varjus/Varjus/linter/modules/module.cpp",
+  "output": "CMakeFiles/Varjus.dir/linter/modules/module.cpp.o"
+},
+{
+  "directory": "/home/test/varjus/Varjus/build",
+  "command": "/usr/bin/g++  -I/home/test/varjus/Varjus -g -std=gnu++20 -Wall -Wextra -Werror /external:W3 -pedantic -O0 -g -fsanitize=address -DDEBUG -o CMakeFiles/Varjus.dir/linter/optimizations/optimizations.cpp.o -c /home/test/varjus/Varjus/linter/optimizations/optimizations.cpp",
+  "file": "/home/test/varjus/Varjus/linter/optimizations/optimizations.cpp",
+  "output": "CMakeFiles/Varjus.dir/linter/optimizations/optimizations.cpp.o"
+},
+{
+  "directory": "/home/test/varjus/Varjus/build",
+  "command": "/usr/bin/g++  -I/home/test/varjus/Varjus -g -std=gnu++20 -Wall -Wextra -Werror /external:W3 -pedantic -O0 -g -fsanitize=address -DDEBUG -o CMakeFiles/Varjus.dir/linter/optimizations/values/opt_coercion.cpp.o -c /home/test/varjus/Varjus/linter/optimizations/values/opt_coercion.cpp",
+  "file": "/home/test/varjus/Varjus/linter/optimizations/values/opt_coercion.cpp",
+  "output": "CMakeFiles/Varjus.dir/linter/optimizations/values/opt_coercion.cpp.o"
+},
+{
+  "directory": "/home/test/varjus/Varjus/build",
+  "command": "/usr/bin/g++  -I/home/test/varjus/Varjus -g -std=gnu++20 -Wall -Wextra -Werror /external:W3 -pedantic -O0 -g -fsanitize=address -DDEBUG -o CMakeFiles/Varjus.dir/linter/optimizations/values/opt_operators.cpp.o -c /home/test/varjus/Varjus/linter/optimizations/values/opt_operators.cpp",
+  "file": "/home/test/varjus/Varjus/linter/optimizations/values/opt_operators.cpp",
+  "output": "CMakeFiles/Varjus.dir/linter/optimizations/values/opt_operators.cpp.o"
+},
+{
+  "directory": "/home/test/varjus/Varjus/build",
+  "command": "/usr/bin/g++  -I/home/test/varjus/Varjus -g -std=gnu++20 -Wall -Wextra -Werror /external:W3 -pedantic -O0 -g -fsanitize=address -DDEBUG -o CMakeFiles/Varjus.dir/linter/optimizations/values/types/opt_boolean.cpp.o -c /home/test/varjus/Varjus/linter/optimizations/values/types/opt_boolean.cpp",
+  "file": "/home/test/varjus/Varjus/linter/optimizations/values/types/opt_boolean.cpp",
+  "output": "CMakeFiles/Varjus.dir/linter/optimizations/values/types/opt_boolean.cpp.o"
+},
+{
+  "directory": "/home/test/varjus/Varjus/build",
+  "command": "/usr/bin/g++  -I/home/test/varjus/Varjus -g -std=gnu++20 -Wall -Wextra -Werror /external:W3 -pedantic -O0 -g -fsanitize=address -DDEBUG -o CMakeFiles/Varjus.dir/linter/optimizations/values/types/opt_double.cpp.o -c /home/test/varjus/Varjus/linter/optimizations/values/types/opt_double.cpp",
+  "file": "/home/test/varjus/Varjus/linter/optimizations/values/types/opt_double.cpp",
+  "output": "CMakeFiles/Varjus.dir/linter/optimizations/values/types/opt_double.cpp.o"
+},
+{
+  "directory": "/home/test/varjus/Varjus/build",
+  "command": "/usr/bin/g++  -I/home/test/varjus/Varjus -g -std=gnu++20 -Wall -Wextra -Werror /external:W3 -pedantic -O0 -g -fsanitize=address -DDEBUG -o CMakeFiles/Varjus.dir/linter/optimizations/values/types/opt_integer.cpp.o -c /home/test/varjus/Varjus/linter/optimizations/values/types/opt_integer.cpp",
+  "file": "/home/test/varjus/Varjus/linter/optimizations/values/types/opt_integer.cpp",
+  "output": "CMakeFiles/Varjus.dir/linter/optimizations/values/types/opt_integer.cpp.o"
+},
+{
+  "directory": "/home/test/varjus/Varjus/build",
+  "command": "/usr/bin/g++  -I/home/test/varjus/Varjus -g -std=gnu++20 -Wall -Wextra -Werror /external:W3 -pedantic -O0 -g -fsanitize=address -DDEBUG -o CMakeFiles/Varjus.dir/linter/optimizations/values/types/opt_string.cpp.o -c /home/test/varjus/Varjus/linter/optimizations/values/types/opt_string.cpp",
+  "file": "/home/test/varjus/Varjus/linter/optimizations/values/types/opt_string.cpp",
+  "output": "CMakeFiles/Varjus.dir/linter/optimizations/values/types/opt_string.cpp.o"
+},
+{
+  "directory": "/home/test/varjus/Varjus/build",
+  "command": "/usr/bin/g++  -I/home/test/varjus/Varjus -g -std=gnu++20 -Wall -Wextra -Werror /external:W3 -pedantic -O0 -g -fsanitize=address -DDEBUG -o CMakeFiles/Varjus.dir/linter/optimizations/values/types/opt_value.cpp.o -c /home/test/varjus/Varjus/linter/optimizations/values/types/opt_value.cpp",
+  "file": "/home/test/varjus/Varjus/linter/optimizations/values/types/opt_value.cpp",
+  "output": "CMakeFiles/Varjus.dir/linter/optimizations/values/types/opt_value.cpp.o"
+},
+{
+  "directory": "/home/test/varjus/Varjus/build",
+  "command": "/usr/bin/g++  -I/home/test/varjus/Varjus -g -std=gnu++20 -Wall -Wextra -Werror /external:W3 -pedantic -O0 -g -fsanitize=address -DDEBUG -o CMakeFiles/Varjus.dir/linter/optimizations/variables/opt_variables.cpp.o -c /home/test/varjus/Varjus/linter/optimizations/variables/opt_variables.cpp",
+  "file": "/home/test/varjus/Varjus/linter/optimizations/variables/opt_variables.cpp",
+  "output": "CMakeFiles/Varjus.dir/linter/optimizations/variables/opt_variables.cpp.o"
+},
+{
+  "directory": "/home/test/varjus/Varjus/build",
+  "command": "/usr/bin/g++  -I/home/test/varjus/Varjus -g -std=gnu++20 -Wall -Wextra -Werror /external:W3 -pedantic -O0 -g -fsanitize=address -DDEBUG -o CMakeFiles/Varjus.dir/linter/scopes/scope.cpp.o -c /home/test/varjus/Varjus/linter/scopes/scope.cpp",
+  "file": "/home/test/varjus/Varjus/linter/scopes/scope.cpp",
+  "output": "CMakeFiles/Varjus.dir/linter/scopes/scope.cpp.o"
+},
+{
+  "directory": "/home/test/varjus/Varjus/build",
+  "command": "/usr/bin/g++  -I/home/test/varjus/Varjus -g -std=gnu++20 -Wall -Wextra -Werror /external:W3 -pedantic -O0 -g -fsanitize=address -DDEBUG -o CMakeFiles/Varjus.dir/linter/statements/control/control.cpp.o -c /home/test/varjus/Varjus/linter/statements/control/control.cpp",
+  "file": "/home/test/varjus/Varjus/linter/statements/control/control.cpp",
+  "output": "CMakeFiles/Varjus.dir/linter/statements/control/control.cpp.o"
+},
+{
+  "directory": "/home/test/varjus/Varjus/build",
+  "command": "/usr/bin/g++  -I/home/test/varjus/Varjus -g -std=gnu++20 -Wall -Wextra -Werror /external:W3 -pedantic -O0 -g -fsanitize=address -DDEBUG -o CMakeFiles/Varjus.dir/linter/statements/for/for.cpp.o -c /home/test/varjus/Varjus/linter/statements/for/for.cpp",
+  "file": "/home/test/varjus/Varjus/linter/statements/for/for.cpp",
+  "output": "CMakeFiles/Varjus.dir/linter/statements/for/for.cpp.o"
+},
+{
+  "directory": "/home/test/varjus/Varjus/build",
+  "command": "/usr/bin/g++  -I/home/test/varjus/Varjus -g -std=gnu++20 -Wall -Wextra -Werror /external:W3 -pedantic -O0 -g -fsanitize=address -DDEBUG -o CMakeFiles/Varjus.dir/linter/statements/if/else.cpp.o -c /home/test/varjus/Varjus/linter/statements/if/else.cpp",
+  "file": "/home/test/varjus/Varjus/linter/statements/if/else.cpp",
+  "output": "CMakeFiles/Varjus.dir/linter/statements/if/else.cpp.o"
+},
+{
+  "directory": "/home/test/varjus/Varjus/build",
+  "command": "/usr/bin/g++  -I/home/test/varjus/Varjus -g -std=gnu++20 -Wall -Wextra -Werror /external:W3 -pedantic -O0 -g -fsanitize=address -DDEBUG -o CMakeFiles/Varjus.dir/linter/statements/if/if.cpp.o -c /home/test/varjus/Varjus/linter/statements/if/if.cpp",
+  "file": "/home/test/varjus/Varjus/linter/statements/if/if.cpp",
+  "output": "CMakeFiles/Varjus.dir/linter/statements/if/if.cpp.o"
+},
+{
+  "directory": "/home/test/varjus/Varjus/build",
+  "command": "/usr/bin/g++  -I/home/test/varjus/Varjus -g -std=gnu++20 -Wall -Wextra -Werror /external:W3 -pedantic -O0 -g -fsanitize=address -DDEBUG -o CMakeFiles/Varjus.dir/linter/statements/repeat/repeat.cpp.o -c /home/test/varjus/Varjus/linter/statements/repeat/repeat.cpp",
+  "file": "/home/test/varjus/Varjus/linter/statements/repeat/repeat.cpp",
+  "output": "CMakeFiles/Varjus.dir/linter/statements/repeat/repeat.cpp.o"
+},
+{
+  "directory": "/home/test/varjus/Varjus/build",
+  "command": "/usr/bin/g++  -I/home/test/varjus/Varjus -g -std=gnu++20 -Wall -Wextra -Werror /external:W3 -pedantic -O0 -g -fsanitize=address -DDEBUG -o CMakeFiles/Varjus.dir/linter/statements/return/return.cpp.o -c /home/test/varjus/Varjus/linter/statements/return/return.cpp",
+  "file": "/home/test/varjus/Varjus/linter/statements/return/return.cpp",
+  "output": "CMakeFiles/Varjus.dir/linter/statements/return/return.cpp.o"
+},
+{
+  "directory": "/home/test/varjus/Varjus/build",
+  "command": "/usr/bin/g++  -I/home/test/varjus/Varjus -g -std=gnu++20 -Wall -Wextra -Werror /external:W3 -pedantic -O0 -g -fsanitize=address -DDEBUG -o CMakeFiles/Varjus.dir/linter/statements/statement.cpp.o -c /home/test/varjus/Varjus/linter/statements/statement.cpp",
+  "file": "/home/test/varjus/Varjus/linter/statements/statement.cpp",
+  "output": "CMakeFiles/Varjus.dir/linter/statements/statement.cpp.o"
+},
+{
+  "directory": "/home/test/varjus/Varjus/build",
+  "command": "/usr/bin/g++  -I/home/test/varjus/Varjus -g -std=gnu++20 -Wall -Wextra -Werror /external:W3 -pedantic -O0 -g -fsanitize=address -DDEBUG -o CMakeFiles/Varjus.dir/linter/statements/throw/throw.cpp.o -c /home/test/varjus/Varjus/linter/statements/throw/throw.cpp",
+  "file": "/home/test/varjus/Varjus/linter/statements/throw/throw.cpp",
+  "output": "CMakeFiles/Varjus.dir/linter/statements/throw/throw.cpp.o"
+},
+{
+  "directory": "/home/test/varjus/Varjus/build",
+  "command": "/usr/bin/g++  -I/home/test/varjus/Varjus -g -std=gnu++20 -Wall -Wextra -Werror /external:W3 -pedantic -O0 -g -fsanitize=address -DDEBUG -o CMakeFiles/Varjus.dir/linter/statements/try_catch/try_catch.cpp.o -c /home/test/varjus/Varjus/linter/statements/try_catch/try_catch.cpp",
+  "file": "/home/test/varjus/Varjus/linter/statements/try_catch/try_catch.cpp",
+  "output": "CMakeFiles/Varjus.dir/linter/statements/try_catch/try_catch.cpp.o"
+},
+{
+  "directory": "/home/test/varjus/Varjus/build",
+  "command": "/usr/bin/g++  -I/home/test/varjus/Varjus -g -std=gnu++20 -Wall -Wextra -Werror /external:W3 -pedantic -O0 -g -fsanitize=address -DDEBUG -o CMakeFiles/Varjus.dir/linter/statements/while/while.cpp.o -c /home/test/varjus/Varjus/linter/statements/while/while.cpp",
+  "file": "/home/test/varjus/Varjus/linter/statements/while/while.cpp",
+  "output": "CMakeFiles/Varjus.dir/linter/statements/while/while.cpp.o"
+},
+{
+  "directory": "/home/test/varjus/Varjus/build",
+  "command": "/usr/bin/g++  -I/home/test/varjus/Varjus -g -std=gnu++20 -Wall -Wextra -Werror /external:W3 -pedantic -O0 -g -fsanitize=address -DDEBUG -o CMakeFiles/Varjus.dir/linter/token.cpp.o -c /home/test/varjus/Varjus/linter/token.cpp",
+  "file": "/home/test/varjus/Varjus/linter/token.cpp",
+  "output": "CMakeFiles/Varjus.dir/linter/token.cpp.o"
+},
+{
+  "directory": "/home/test/varjus/Varjus/build",
+  "command": "/usr/bin/g++  -I/home/test/varjus/Varjus -g -std=gnu++20 -Wall -Wextra -Werror /external:W3 -pedantic -O0 -g -fsanitize=address -DDEBUG -o CMakeFiles/Varjus.dir/linter/tokenizer.cpp.o -c /home/test/varjus/Varjus/linter/tokenizer.cpp",
+  "file": "/home/test/varjus/Varjus/linter/tokenizer.cpp",
+  "output": "CMakeFiles/Varjus.dir/linter/tokenizer.cpp.o"
+},
+{
+  "directory": "/home/test/varjus/Varjus/build",
+  "command": "/usr/bin/g++  -I/home/test/varjus/Varjus -g -std=gnu++20 -Wall -Wextra -Werror /external:W3 -pedantic -O0 -g -fsanitize=address -DDEBUG -o CMakeFiles/Varjus.dir/main.cpp.o -c /home/test/varjus/Varjus/main.cpp",
+  "file": "/home/test/varjus/Varjus/main.cpp",
+  "output": "CMakeFiles/Varjus.dir/main.cpp.o"
+},
+{
+  "directory": "/home/test/varjus/Varjus/build",
+  "command": "/usr/bin/g++  -I/home/test/varjus/Varjus -g -std=gnu++20 -Wall -Wextra -Werror /external:W3 -pedantic -O0 -g -fsanitize=address -DDEBUG -o CMakeFiles/Varjus.dir/runtime/exceptions/exception.cpp.o -c /home/test/varjus/Varjus/runtime/exceptions/exception.cpp",
+  "file": "/home/test/varjus/Varjus/runtime/exceptions/exception.cpp",
+  "output": "CMakeFiles/Varjus.dir/runtime/exceptions/exception.cpp.o"
+},
+{
+  "directory": "/home/test/varjus/Varjus/build",
+  "command": "/usr/bin/g++  -I/home/test/varjus/Varjus -g -std=gnu++20 -Wall -Wextra -Werror /external:W3 -pedantic -O0 -g -fsanitize=address -DDEBUG -o CMakeFiles/Varjus.dir/runtime/expressions/rtexpression.cpp.o -c /home/test/varjus/Varjus/runtime/expressions/rtexpression.cpp",
+  "file": "/home/test/varjus/Varjus/runtime/expressions/rtexpression.cpp",
+  "output": "CMakeFiles/Varjus.dir/runtime/expressions/rtexpression.cpp.o"
+},
+{
+  "directory": "/home/test/varjus/Varjus/build",
+  "command": "/usr/bin/g++  -I/home/test/varjus/Varjus -g -std=gnu++20 -Wall -Wextra -Werror /external:W3 -pedantic -O0 -g -fsanitize=address -DDEBUG -o CMakeFiles/Varjus.dir/runtime/expressions/rtlist.cpp.o -c /home/test/varjus/Varjus/runtime/expressions/rtlist.cpp",
+  "file": "/home/test/varjus/Varjus/runtime/expressions/rtlist.cpp",
+  "output": "CMakeFiles/Varjus.dir/runtime/expressions/rtlist.cpp.o"
+},
+{
+  "directory": "/home/test/varjus/Varjus/build",
+  "command": "/usr/bin/g++  -I/home/test/varjus/Varjus -g -std=gnu++20 -Wall -Wextra -Werror /external:W3 -pedantic -O0 -g -fsanitize=address -DDEBUG -o CMakeFiles/Varjus.dir/runtime/expressions/rtobject.cpp.o -c /home/test/varjus/Varjus/runtime/expressions/rtobject.cpp",
+  "file": "/home/test/varjus/Varjus/runtime/expressions/rtobject.cpp",
+  "output": "CMakeFiles/Varjus.dir/runtime/expressions/rtobject.cpp.o"
+},
+{
+  "directory": "/home/test/varjus/Varjus/build",
+  "command": "/usr/bin/g++  -I/home/test/varjus/Varjus -g -std=gnu++20 -Wall -Wextra -Werror /external:W3 -pedantic -O0 -g -fsanitize=address -DDEBUG -o CMakeFiles/Varjus.dir/runtime/expressions/rtpostfix.cpp.o -c /home/test/varjus/Varjus/runtime/expressions/rtpostfix.cpp",
+  "file": "/home/test/varjus/Varjus/runtime/expressions/rtpostfix.cpp",
+  "output": "CMakeFiles/Varjus.dir/runtime/expressions/rtpostfix.cpp.o"
+},
+{
+  "directory": "/home/test/varjus/Varjus/build",
+  "command": "/usr/bin/g++  -I/home/test/varjus/Varjus -g -std=gnu++20 -Wall -Wextra -Werror /external:W3 -pedantic -O0 -g -fsanitize=address -DDEBUG -o CMakeFiles/Varjus.dir/runtime/expressions/rtunary.cpp.o -c /home/test/varjus/Varjus/runtime/expressions/rtunary.cpp",
+  "file": "/home/test/varjus/Varjus/runtime/expressions/rtunary.cpp",
+  "output": "CMakeFiles/Varjus.dir/runtime/expressions/rtunary.cpp.o"
+},
+{
+  "directory": "/home/test/varjus/Varjus/build",
+  "command": "/usr/bin/g++  -I/home/test/varjus/Varjus -g -std=gnu++20 -Wall -Wextra -Werror /external:W3 -pedantic -O0 -g -fsanitize=address -DDEBUG -o CMakeFiles/Varjus.dir/runtime/functions/rtfunction.cpp.o -c /home/test/varjus/Varjus/runtime/functions/rtfunction.cpp",
+  "file": "/home/test/varjus/Varjus/runtime/functions/rtfunction.cpp",
+  "output": "CMakeFiles/Varjus.dir/runtime/functions/rtfunction.cpp.o"
+},
+{
+  "directory": "/home/test/varjus/Varjus/build",
+  "command": "/usr/bin/g++  -I/home/test/varjus/Varjus -g -std=gnu++20 -Wall -Wextra -Werror /external:W3 -pedantic -O0 -g -fsanitize=address -DDEBUG -o CMakeFiles/Varjus.dir/runtime/modules/rtmodule.cpp.o -c /home/test/varjus/Varjus/runtime/modules/rtmodule.cpp",
+  "file": "/home/test/varjus/Varjus/runtime/modules/rtmodule.cpp",
+  "output": "CMakeFiles/Varjus.dir/runtime/modules/rtmodule.cpp.o"
+},
+{
+  "directory": "/home/test/varjus/Varjus/build",
+  "command": "/usr/bin/g++  -I/home/test/varjus/Varjus -g -std=gnu++20 -Wall -Wextra -Werror /external:W3 -pedantic -O0 -g -fsanitize=address -DDEBUG -o CMakeFiles/Varjus.dir/runtime/statements/conditional/rtconditional.cpp.o -c /home/test/varjus/Varjus/runtime/statements/conditional/rtconditional.cpp",
+  "file": "/home/test/varjus/Varjus/runtime/statements/conditional/rtconditional.cpp",
+  "output": "CMakeFiles/Varjus.dir/runtime/statements/conditional/rtconditional.cpp.o"
+},
+{
+  "directory": "/home/test/varjus/Varjus/build",
+  "command": "/usr/bin/g++  -I/home/test/varjus/Varjus -g -std=gnu++20 -Wall -Wextra -Werror /external:W3 -pedantic -O0 -g -fsanitize=address -DDEBUG -o CMakeFiles/Varjus.dir/runtime/statements/control/rtcontrol.cpp.o -c /home/test/varjus/Varjus/runtime/statements/control/rtcontrol.cpp",
+  "file": "/home/test/varjus/Varjus/runtime/statements/control/rtcontrol.cpp",
+  "output": "CMakeFiles/Varjus.dir/runtime/statements/control/rtcontrol.cpp.o"
+},
+{
+  "directory": "/home/test/varjus/Varjus/build",
+  "command": "/usr/bin/g++  -I/home/test/varjus/Varjus -g -std=gnu++20 -Wall -Wextra -Werror /external:W3 -pedantic -O0 -g -fsanitize=address -DDEBUG -o CMakeFiles/Varjus.dir/runtime/statements/for/rtfor.cpp.o -c /home/test/varjus/Varjus/runtime/statements/for/rtfor.cpp",
+  "file": "/home/test/varjus/Varjus/runtime/statements/for/rtfor.cpp",
+  "output": "CMakeFiles/Varjus.dir/runtime/statements/for/rtfor.cpp.o"
+},
+{
+  "directory": "/home/test/varjus/Varjus/build",
+  "command": "/usr/bin/g++  -I/home/test/varjus/Varjus -g -std=gnu++20 -Wall -Wextra -Werror /external:W3 -pedantic -O0 -g -fsanitize=address -DDEBUG -o CMakeFiles/Varjus.dir/runtime/statements/repeat/rtrepeat.cpp.o -c /home/test/varjus/Varjus/runtime/statements/repeat/rtrepeat.cpp",
+  "file": "/home/test/varjus/Varjus/runtime/statements/repeat/rtrepeat.cpp",
+  "output": "CMakeFiles/Varjus.dir/runtime/statements/repeat/rtrepeat.cpp.o"
+},
+{
+  "directory": "/home/test/varjus/Varjus/build",
+  "command": "/usr/bin/g++  -I/home/test/varjus/Varjus -g -std=gnu++20 -Wall -Wextra -Werror /external:W3 -pedantic -O0 -g -fsanitize=address -DDEBUG -o CMakeFiles/Varjus.dir/runtime/statements/return/rtreturn.cpp.o -c /home/test/varjus/Varjus/runtime/statements/return/rtreturn.cpp",
+  "file": "/home/test/varjus/Varjus/runtime/statements/return/rtreturn.cpp",
+  "output": "CMakeFiles/Varjus.dir/runtime/statements/return/rtreturn.cpp.o"
+},
+{
+  "directory": "/home/test/varjus/Varjus/build",
+  "command": "/usr/bin/g++  -I/home/test/varjus/Varjus -g -std=gnu++20 -Wall -Wextra -Werror /external:W3 -pedantic -O0 -g -fsanitize=address -DDEBUG -o CMakeFiles/Varjus.dir/runtime/statements/throw/rtthrow.cpp.o -c /home/test/varjus/Varjus/runtime/statements/throw/rtthrow.cpp",
+  "file": "/home/test/varjus/Varjus/runtime/statements/throw/rtthrow.cpp",
+  "output": "CMakeFiles/Varjus.dir/runtime/statements/throw/rtthrow.cpp.o"
+},
+{
+  "directory": "/home/test/varjus/Varjus/build",
+  "command": "/usr/bin/g++  -I/home/test/varjus/Varjus -g -std=gnu++20 -Wall -Wextra -Werror /external:W3 -pedantic -O0 -g -fsanitize=address -DDEBUG -o CMakeFiles/Varjus.dir/runtime/statements/try_catch/rttry_catch.cpp.o -c /home/test/varjus/Varjus/runtime/statements/try_catch/rttry_catch.cpp",
+  "file": "/home/test/varjus/Varjus/runtime/statements/try_catch/rttry_catch.cpp",
+  "output": "CMakeFiles/Varjus.dir/runtime/statements/try_catch/rttry_catch.cpp.o"
+},
+{
+  "directory": "/home/test/varjus/Varjus/build",
+  "command": "/usr/bin/g++  -I/home/test/varjus/Varjus -g -std=gnu++20 -Wall -Wextra -Werror /external:W3 -pedantic -O0 -g -fsanitize=address -DDEBUG -o CMakeFiles/Varjus.dir/runtime/statements/while/rtwhile.cpp.o -c /home/test/varjus/Varjus/runtime/statements/while/rtwhile.cpp",
+  "file": "/home/test/varjus/Varjus/runtime/statements/while/rtwhile.cpp",
+  "output": "CMakeFiles/Varjus.dir/runtime/statements/while/rtwhile.cpp.o"
+}
+]

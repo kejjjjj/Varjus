@@ -55,7 +55,7 @@ public:
 
 	[[nodiscard]] static CRuntimeModule* GetModuleByIndex(std::size_t index);
 	[[nodiscard]] static bool HasLeaks();
-	[[nodiscard]] static void PrintAllLeaks();
+	static void PrintAllLeaks();
 
 private:
 
@@ -71,7 +71,7 @@ public:
 
 	[[nodiscard]] static CVariable* AcquireNewVariable();
 	[[nodiscard]] static VectorOf<CVariable*> AcquireNewVariables(std::size_t count);
-	[[nodiscard]] static void FreeVariable(CVariable* var);
+	static void FreeVariable(CVariable* var);
 
 	template <IValueChild T>
 	[[nodiscard]] static constexpr T* AcquireNewValue() {

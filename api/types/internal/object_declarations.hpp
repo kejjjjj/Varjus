@@ -22,8 +22,9 @@ IValue* Name([[maybe_unused]] IValue* _this)
 #include <memory>
 #include <string>
 #include <vector>
+#include <limits>
 
-constexpr auto UNCHECKED_PARAMETER_COUNT = std::numeric_limits<std::size_t>::max();
+[[maybe_unused]] constexpr auto UNCHECKED_PARAMETER_COUNT = std::numeric_limits<std::size_t>::max();
 
 class IValue;
 template<typename T>

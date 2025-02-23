@@ -57,8 +57,8 @@ private:
 };
 
 #pragma pack(push)
-#pragma warning(disable : 4623) // default constructor implicitly deleted
-#pragma warning(disable : 5027) // move assignment operator implicitly deleted
+WARNING_DISABLE(4623) // default constructor implicitly deleted
+WARNING_DISABLE(5027) // move assignment operator implicitly deleted
 struct CFunctionBlock final
 {
 	std::string m_sName; // function name

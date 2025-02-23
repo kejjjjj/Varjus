@@ -100,7 +100,7 @@ void CInternalCallableValue::Release()
 
 		auto& [ref, variable] = *it;
 
-		if (variable->m_bSelfCapturing && variable->RefCount() == 0 || variable->Release()) {
+		if ((variable->m_bSelfCapturing && variable->RefCount() == 0) || variable->Release()) {
 
 			if (m_oCaptures.empty()) // why is this needed???
 				break;

@@ -12,9 +12,9 @@ struct CFileContext;
 
 using RuntimeBlock = std::unique_ptr<IRuntimeStructure>;
 
-#pragma warning(push)
-#pragma warning(disable : 5027)
-#pragma warning(disable : 4623)
+WARNING_PUSH()
+WARNING_DISABLE(5027)
+WARNING_DISABLE(4623)
 struct CLinterContext
 {
 	LinterIterator& m_iterPos;
@@ -23,11 +23,11 @@ struct CLinterContext
 	CMemory* const memory;
 	bool m_bAddInstructions{ true };
 };
-#pragma warning(pop)
+WARNING_POP()
 
 class CBufferLinter final : public CLinter<CToken>
 {
-	NONCOPYABLE(CBufferLinter)
+	NONCOPYABLE(CBufferLinter);
 public:
 	CBufferLinter(LinterIterator& start, LinterIterator& end, const std::string& filePath="");
 	~CBufferLinter();

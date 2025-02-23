@@ -16,7 +16,7 @@ CUnaryLinter::CUnaryLinter(LinterIterator& pos, LinterIterator& end, const WeakS
 CUnaryLinter::~CUnaryLinter() = default;
 
 #pragma pack(push)
-#pragma warning( disable : 4061)
+WARNING_DISABLE(4061)
 Success CUnaryLinter::ParseUnary()
 {
 

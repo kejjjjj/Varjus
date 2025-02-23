@@ -11,12 +11,12 @@ CLinterVariable::CLinterVariable(const CMemory* owner, const std::string& name, 
 }
 
 template <typename T1, typename T2>
-CVariableManager<typename T1, typename T2>::CVariableManager(class CMemory* const owner)
+CVariableManager<T1, T2>::CVariableManager(class CMemory* const owner)
 	: m_pOwner(owner) {
 }
 
 template <typename T1, typename T2>
-T1* CVariableManager<typename T1, typename T2>::DeclareVariable(const std::string& var) {
+T1* CVariableManager<T1, T2>::DeclareVariable(const std::string& var) {
 	assert(!var.empty());
 
 	if (ContainsVariable(var))
@@ -36,17 +36,17 @@ T1* CVariableManager<typename T1, typename T2>::DeclareVariable(const std::strin
 }
 
 template <typename T1, typename T2>
-T1* CVariableManager<typename T1, typename T2>::GetVariable(const std::string& var) {
+T1* CVariableManager<T1, T2>::GetVariable(const std::string& var) {
 	return ContainsVariable(var) ? m_oVariables[var].get() : nullptr;
 }
 
 template <typename T1, typename T2>
-bool CVariableManager<typename T1, typename T2>::ContainsVariable(const std::string& name) const {
+bool CVariableManager<T1, T2>::ContainsVariable(const std::string& name) const {
 	return m_oVariables.contains(name);
 }
 
 template <typename T1, typename T2>
-T1* CVariableManager<typename T1, typename T2>::GetVariableByIndex(std::size_t i) const
+T1* CVariableManager<T1, T2>::GetVariableByIndex(std::size_t i) const
 {
 	for (auto& [_, v] : m_oVariables) {
 
@@ -59,7 +59,7 @@ T1* CVariableManager<typename T1, typename T2>::GetVariableByIndex(std::size_t i
 }
 
 template <typename T1, typename T2>
-std::size_t CVariableManager<typename T1, typename T2>::GetVariableCount() const noexcept {
+std::size_t CVariableManager<T1, T2>::GetVariableCount() const noexcept {
 	return m_oVariables.size();
 }
 

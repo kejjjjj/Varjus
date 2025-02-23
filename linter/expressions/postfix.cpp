@@ -22,7 +22,7 @@ CPostfixLinter::CPostfixLinter(LinterIterator& pos, LinterIterator& end, const W
 CPostfixLinter::~CPostfixLinter() = default;
 
 #pragma pack(push)
-#pragma warning( disable : 4061)
+WARNING_DISABLE(4061)
 Success CPostfixLinter::ParsePostfix()
 {
 

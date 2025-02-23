@@ -133,8 +133,8 @@ CFunction::CFunction(IValue* _this, VectorOf<IValue*>& args,
 
 	//setup stack
 	for (const auto& v : func.m_oVariableIndices) {
-		auto var = m_oStack[v] = CVariable::Construct(IValue::Construct());
-		assert(var->GetValue() != nullptr);
+		m_oStack[v] = CVariable::Construct(IValue::Construct());
+		assert(m_oStack[v]->GetValue() != nullptr);
 	}
 
 	//setup lambda captures

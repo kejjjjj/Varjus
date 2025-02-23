@@ -3,7 +3,7 @@
 #include <string>
 #include <tuple>
 #include <array>
-
+#include <cassert>
 
 
 enum TokenType : signed char
@@ -90,15 +90,19 @@ class CToken
 public:
 
 	//expects a parsed string
-	constexpr CToken() = default;
-	constexpr CToken(const std::string_view& token, TokenType tt);
-	constexpr virtual ~CToken();
+	CToken() = default;
+	CToken(const std::string_view& token, TokenType tt) : m_eTokenType(tt), m_sSource(token){
+		assert(token.data() && token.size());
+		assert(m_eTokenType != tt_error);
+
+	} 
+	virtual ~CToken() = default;
 
 	std::tuple<size_t, size_t> m_oSourcePosition{1, 1};
 
 	constexpr auto Type() const noexcept { return m_eTokenType; }
-	constexpr virtual bool IsOperator() const noexcept { return false; }
-	constexpr virtual bool IsOperator([[maybe_unused]]Punctuation p) const noexcept { return false; }
+	virtual bool IsOperator() const noexcept { return false; }
+	virtual bool IsOperator([[maybe_unused]]Punctuation p) const noexcept { return false; }
 
 	constexpr auto& Source() const noexcept { return m_sSource; }
 
@@ -114,8 +118,8 @@ public:
 	CPunctuationToken(const CPunctuation& p);
 	~CPunctuationToken();
 
-	constexpr bool IsOperator() const noexcept override { return true; }
-	constexpr bool IsOperator(Punctuation p) const noexcept override { return m_ePunctuation == p; }
+	bool IsOperator() const noexcept override { return true; }
+	bool IsOperator(Punctuation p) const noexcept override { return m_ePunctuation == p; }
 
 	Punctuation m_ePunctuation{};
 	OperatorPriority m_ePriority{};

@@ -1,4 +1,3 @@
-#pragma once
 #include "tests.hpp"
 
 #include "fs/fs_io.hpp"

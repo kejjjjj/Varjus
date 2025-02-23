@@ -34,8 +34,8 @@ IValue* CRuntimeExpression::Evaluate(CRuntimeContext* const ctx)
 }
 
 #pragma pack(push)
-#pragma warning(disable : 4061)
-#pragma warning(disable : 4062)
+WARNING_DISABLE(4061)
+WARNING_DISABLE(4062)
 IValue* CRuntimeExpression::Evaluate(CRuntimeContext* const ctx, const AbstractSyntaxTree* node)
 {
 	if (CProgramRuntime::ExceptionThrown())
@@ -171,6 +171,8 @@ IValue* CRuntimeExpression::EvaluateLeaf(CRuntimeContext* const ctx, const Abstr
 				return CDoubleValue::Construct(*reinterpret_cast<VarjusDouble*>((char*)constant->m_pConstant.data()));
 			case t_string:
 				return CStringValue::Construct(constant->m_pConstant);
+			default:
+				break;
 		}
 	}
 

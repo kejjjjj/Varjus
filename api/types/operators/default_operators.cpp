@@ -6,6 +6,8 @@
 #include "api/internal/runtime.hpp"
 #include "api/internal/variables.hpp"
 
+#include <cmath>
+
 IValue* OP_ASSIGNMENT(IValue* lhs, IValue* rhs)
 {
 	auto variable = lhs->GetOwner();
@@ -131,7 +133,7 @@ IValue* OP_MULTIPLICATION(IValue* _lhs, IValue* _rhs)
 
 	switch (lhs->Type()) {
 	case t_boolean:
-		result = CBooleanValue::Construct(static_cast<bool>(lhs->ToBoolean() * rhs->ToBoolean()));
+		result = CBooleanValue::Construct(lhs->ToBoolean() && rhs->ToBoolean());
 		break;
 	case t_int:
 		result = CIntValue::Construct(lhs->ToInt() * rhs->ToInt());

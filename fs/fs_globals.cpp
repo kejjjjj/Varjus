@@ -1,6 +1,7 @@
 
 #include <filesystem>
 #include <fstream>
+#include <algorithm>
 #include "fs_globals.hpp"
 
 namespace _fs = std::filesystem;

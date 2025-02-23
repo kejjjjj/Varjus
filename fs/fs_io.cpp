@@ -11,7 +11,7 @@ bool IOWriter::IO_Write(const std::string& content) const
     if (m_bErrorOccurred)
         return false;
 
-    std::ofstream file(m_sFileName, std::ios::out | std::ios_base::openmode(m_bBinary ? std::ios::binary : 0));
+    std::ofstream file(m_sFileName, std::ios::out | std::ios_base::openmode(m_bBinary ? std::ios::binary : std::ios_base::openmode(0)));
     if (!file.is_open()) {
         return false;
     }
@@ -25,7 +25,7 @@ bool IOWriter::IO_Append(const std::string& content) const
     if (m_bErrorOccurred)
         return false;
 
-    std::ofstream file(m_sFileName, std::ios::app | (m_bBinary ? std::ios::binary : 0));
+    std::ofstream file(m_sFileName, std::ios::app | (m_bBinary ? std::ios::binary : std::ios_base::openmode(0)));
     if (!file.is_open()) {
         return false;
     }
@@ -70,7 +70,7 @@ std::optional<std::string> IOReader::IO_Read(/*size_t num_bytes*/) const {
     if (m_bErrorOccurred)
         return {};
 
-    std::ifstream file(m_sFileName, std::ios::in | (m_bBinary ? std::ios::binary : 0));
+    std::ifstream file(m_sFileName, std::ios::in | (m_bBinary ? std::ios::binary : std::ios_base::openmode(0)));
     if (!file.is_open()) {
         return {};
     }

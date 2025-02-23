@@ -13,7 +13,7 @@ class CFmtStringToken : public CToken
 public:
 	enum FmtStringTokenType { raw, placeholder };
 
-	constexpr CFmtStringToken()  : CToken("internal formatString", tt_fmt_string) { }
+	CFmtStringToken()  : CToken("internal formatString", tt_fmt_string) { }
 	constexpr void InsertFmtToken(std::unique_ptr<CToken>&& token, FmtStringTokenType t) { 
 		m_oTokens.emplace_back(std::move(token));
 		m_oTokenTypes.push_back(t);

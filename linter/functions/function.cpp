@@ -108,7 +108,7 @@ Success CFunctionLinter::ParseFunctionDeclaration()
 	const auto containsFunc = m_pOwner->m_FunctionManager->ContainsFunction(m_oFunctionName);
 	const auto containsVar = m_pOwner->m_VariableManager->ContainsVariable(m_oFunctionName);
 
-	if (containsFunc && m_pOwner->IsHoisting() || containsVar) {
+	if ((containsFunc && m_pOwner->IsHoisting()) || containsVar) {
 		CLinterErrors::PushError(std::format("\"{}\" is already defined", m_oFunctionName), GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
@@ -208,7 +208,8 @@ std::unique_ptr<CFunctionBlock> CFunctionLinter::ToFunction() const
 	return std::make_unique<CFunctionBlock>(CFunctionBlock{
 		.m_sName=m_oFunctionName,
 		.m_uNumParameters =m_oParameters.size(),
-		.m_pStack=m_pThisStack.get()
+		.m_pStack=m_pThisStack.get(),
+		.m_oInstructions={}
 	});
 }
 RuntimeBlock CFunctionLinter::ToRuntimeObject() const{

@@ -56,7 +56,7 @@ using VariableIndex = std::size_t;
 using VariableCaptures = std::unordered_map<CCrossModuleReference, CVariable*, CCrossModuleReferenceHasher>;
 
 #pragma pack(push)
-#pragma warning(disable : 4266)
+WARNING_DISABLE(4266)
 
 struct CRuntimeContext
 {
