@@ -5,7 +5,7 @@
 #include "api/internal/runtime.hpp"
 
 #define PATH_PREFIX "composite_types"
-#define JP(x) (std::string(PATH_PREFIX) + "\\" + x)
+#define JP(x) (std::string(PATH_PREFIX) + DIRECTORY_SEPARATOR + x)
 
 TEST_CASE("returns an array [ 0, 1, 2 ]") {
 

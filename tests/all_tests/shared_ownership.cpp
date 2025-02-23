@@ -4,7 +4,7 @@
 #include "api/internal/runtime.hpp"
 
 #define PATH_PREFIX "shared_ownership"
-#define JP(x) (std::string(PATH_PREFIX) + "\\" + x)
+#define JP(x) (std::string(PATH_PREFIX) + DIRECTORY_SEPARATOR + x)
 
 TEST_CASE("Array [0, 1] gets copied and then the copy gets a value 50 assigned to [0]") {
 

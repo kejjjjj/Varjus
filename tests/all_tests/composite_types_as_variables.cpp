@@ -4,7 +4,7 @@
 #include "api/internal/structure.hpp"
 #include "api/internal/runtime.hpp"
 #define PATH_PREFIX "composite_types_as_variables"
-#define JP(x) (std::string(PATH_PREFIX) + "\\" + x)
+#define JP(x) (std::string(PATH_PREFIX) + DIRECTORY_SEPARATOR + x)
 
 TEST_CASE("returns an array [ 0, 1, 2 ] in variable context") {
 

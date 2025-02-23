@@ -2,7 +2,7 @@
 #include "tests/utils.hpp"
 
 #define PATH_PREFIX "expressions"
-#define JP(x) (std::string(PATH_PREFIX) + "\\" + x)
+#define JP(x) (std::string(PATH_PREFIX) + DIRECTORY_SEPARATOR + x)
 
 
 TEST_CASE("operator precedence tests in simple expressions")

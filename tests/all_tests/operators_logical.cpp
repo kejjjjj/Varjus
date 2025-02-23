@@ -3,7 +3,7 @@
 
 
 #define PATH_PREFIX "operators\\logical"
-#define JP(x) (std::string(PATH_PREFIX) + "\\" + x)
+#define JP(x) (std::string(PATH_PREFIX) + DIRECTORY_SEPARATOR + x)
 
 TEST_CASE("logical and operations") {
 

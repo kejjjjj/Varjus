@@ -1,6 +1,8 @@
 #include "fs_io.hpp"
 #include "fs_globals.hpp"
 
+#include "api/internal/globalDefinitions.hpp"
+
 #include <algorithm>
 /***********************************************************************
  >                             IOWriter
@@ -110,11 +112,12 @@ std::string IOReader::IO_ReadStream(std::ifstream& stream) const {
  >                              AgentIO
 ***********************************************************************/
 
+
 VarjusIOWriter::VarjusIOWriter(const std::string& relative_path, bool binary)
-    : IOWriter(VARJUS_DIRECTORY() + "\\" + relative_path, binary) {}
+    : IOWriter(VARJUS_DIRECTORY() + relative_path, binary) {}
 
 
 VarjusIOReader::VarjusIOReader(const std::string& relative_path, bool binary)
-    : IOReader(VARJUS_DIRECTORY() + "\\" + relative_path, binary) {}
+    : IOReader(VARJUS_DIRECTORY() + relative_path, binary) {}
 
 

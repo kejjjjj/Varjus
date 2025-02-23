@@ -14,17 +14,17 @@
 
 #define VALUEPOOL_INIT_SIZE size_t(100)
 
-template<> COwningObjectPool<CVariable>           CProgramRuntime::m_oValuePool<CVariable>;
-template<> COwningObjectPool<IValue>              CProgramRuntime::m_oValuePool<IValue>;
-template<> COwningObjectPool<CBooleanValue>       CProgramRuntime::m_oValuePool<CBooleanValue>;
-template<> COwningObjectPool<CIntValue>           CProgramRuntime::m_oValuePool<CIntValue>;
-template<> COwningObjectPool<CUIntValue>          CProgramRuntime::m_oValuePool<CUIntValue>;
-template<> COwningObjectPool<CDoubleValue>        CProgramRuntime::m_oValuePool<CDoubleValue>;
-template<> COwningObjectPool<CStringValue>        CProgramRuntime::m_oValuePool<CStringValue>;
-template<> COwningObjectPool<CCallableValue>      CProgramRuntime::m_oValuePool<CCallableValue>;
-template<> COwningObjectPool<CArrayValue>         CProgramRuntime::m_oValuePool<CArrayValue>;
-template<> COwningObjectPool<CObjectValue>        CProgramRuntime::m_oValuePool<CObjectValue>;
-template<> COwningObjectPool<CBuiltInObject>      CProgramRuntime::m_oValuePool<CBuiltInObject>;
+template<> COwningObjectPool<CVariable>           CProgramRuntime::m_oValuePool<CVariable>{}; 
+template<> COwningObjectPool<IValue>              CProgramRuntime::m_oValuePool<IValue>{};
+template<> COwningObjectPool<CBooleanValue>       CProgramRuntime::m_oValuePool<CBooleanValue>{};
+template<> COwningObjectPool<CIntValue>           CProgramRuntime::m_oValuePool<CIntValue>{};
+template<> COwningObjectPool<CUIntValue>          CProgramRuntime::m_oValuePool<CUIntValue>{};
+template<> COwningObjectPool<CDoubleValue>        CProgramRuntime::m_oValuePool<CDoubleValue>{};
+template<> COwningObjectPool<CStringValue>        CProgramRuntime::m_oValuePool<CStringValue>{};
+template<> COwningObjectPool<CCallableValue>      CProgramRuntime::m_oValuePool<CCallableValue>{};
+template<> COwningObjectPool<CArrayValue>         CProgramRuntime::m_oValuePool<CArrayValue>{};
+template<> COwningObjectPool<CObjectValue>        CProgramRuntime::m_oValuePool<CObjectValue>{};
+template<> COwningObjectPool<CBuiltInObject>      CProgramRuntime::m_oValuePool<CBuiltInObject>{};
 
 RuntimeModules CProgramRuntime::m_oModules;
 const CodePosition* CProgramRuntime::m_pCodePosition{ nullptr };

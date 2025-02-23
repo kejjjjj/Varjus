@@ -3,7 +3,7 @@
 
 
 #define PATH_PREFIX "operators\\multiplicative"
-#define JP(x) (std::string(PATH_PREFIX) + "\\" + x)
+#define JP(x) (std::string(PATH_PREFIX) + DIRECTORY_SEPARATOR + x)
 
 TEST_CASE("integer multiplicative operations") {
 

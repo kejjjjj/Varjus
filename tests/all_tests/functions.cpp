@@ -2,7 +2,7 @@
 #include "tests/utils.hpp"
 
 #define PATH_PREFIX "functions"
-#define JP(x) (std::string(PATH_PREFIX) + "\\" + x)
+#define JP(x) (std::string(PATH_PREFIX) + DIRECTORY_SEPARATOR + x)
 
 TEST_CASE("Main function calls a function with the value 5 and returns it") {
 

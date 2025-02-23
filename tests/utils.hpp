@@ -13,6 +13,12 @@
 #include <string>
 #include <vector>
 
+#ifdef __linux__
+#define DIRECTORY_SEPARATOR "/"
+#else
+#define DIRECTORY_SEPARATOR "\\"
+#endif
+
 using ASSERT_BOOL = bool;
 using ASSERT_INT = VarjusInt;
 using ASSERT_UINT = VarjusUInt;

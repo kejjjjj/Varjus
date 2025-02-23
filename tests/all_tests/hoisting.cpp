@@ -3,7 +3,7 @@
 
 
 #define PATH_PREFIX "hoisting"
-#define JP(x) (std::string(PATH_PREFIX) + "\\" + x)
+#define JP(x) (std::string(PATH_PREFIX) + DIRECTORY_SEPARATOR + x)
 
 TEST_CASE("Main function calls a function declared beneath it") {
 

@@ -2,7 +2,7 @@
 #include "tests/utils.hpp"
 
 #define PATH_PREFIX "coercion"
-#define JP(x) (std::string(PATH_PREFIX) + "\\" + x)
+#define JP(x) (std::string(PATH_PREFIX) + DIRECTORY_SEPARATOR + x)
 
 TEST_CASE("Boolean gets coerced to int") {
 

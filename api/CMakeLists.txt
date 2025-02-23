@@ -20,6 +20,7 @@ file(GLOB_RECURSE API_HEADERS
 
 # Exclude files inside the build directory
 list(FILTER API_HEADERS EXCLUDE REGEX "${CMAKE_BINARY_DIR}/.*")
+list(FILTER API_HEADERS EXCLUDE REGEX "${CMAKE_CURRENT_SOURCE_DIR}/VarjusAPI/.*")
 
 # Filter out CMake's compiler detection files
 list(FILTER API_SOURCES EXCLUDE REGEX "CMakeCXXCompilerId\\.cpp$")

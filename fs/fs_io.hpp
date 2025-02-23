@@ -41,12 +41,18 @@ struct IOReader : public IOItem
 {
     IOReader(const std::string& filename, bool in_binary_mode) : IOItem(filename, in_binary_mode) {}
 
-    virtual std::optional<std::string> IO_Read(/*size_t num_bytes = std::numeric_limits<size_t>::max()*/) const;
+    [[nodiscard]] virtual std::optional<std::string> IO_Read(/*size_t num_bytes = std::numeric_limits<size_t>::max()*/) const;
 
 private:
     [[nodiscard]] std::string IO_ReadStream(std::ifstream& stream) const;
 
 };
+
+#ifdef __linux__
+#define DIRECTORY_SEPARATOR "/"
+#else
+#define DIRECTORY_SEPARATOR DIRECTORY_SEPARATOR
+#endif
 
 //these don't belong here but whatever
 #define VARJUS_DIRECTORY() (fs::exe_path())

@@ -3,7 +3,7 @@
 
 
 #define PATH_PREFIX "primitive_types_as_variables"
-#define JP(x) (std::string(PATH_PREFIX) + "\\" + x)
+#define JP(x) (std::string(PATH_PREFIX) + DIRECTORY_SEPARATOR + x)
 
 TEST_CASE("Returns an undefined in variable context") {
 
