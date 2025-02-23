@@ -23,7 +23,7 @@ list(FILTER API_HEADERS EXCLUDE REGEX "${CMAKE_BINARY_DIR}/.*")
 list(FILTER API_HEADERS EXCLUDE REGEX "${CMAKE_CURRENT_SOURCE_DIR}/VarjusAPI/.*")
 
 # Filter out CMake's compiler detection files
-list(FILTER API_SOURCES EXCLUDE REGEX "CMakeCXXCompilerId/.cpp$")
+list(FILTER PROJECT_SOURCES EXCLUDE REGEX "CMakeCXXCompilerId\\.cpp$")
 
 # Create a static library
 add_library(VarjusAPI STATIC ${API_SOURCES})

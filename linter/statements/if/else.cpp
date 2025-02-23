@@ -41,8 +41,9 @@ Success CElseStatementLinter::Parse()
 		return failure;
 	}
 
-	auto lastBlock = m_pPreviousBlock->SeekLastBlock();
-
+	//this data is unavailable during hoisting
+	auto lastBlock = m_pOwner->IsHoisting() ? nullptr : m_pPreviousBlock->SeekLastBlock();
+	
 	//else if?
 	if ((*m_iterPos)->Type() == tt_if) {
 
@@ -55,7 +56,9 @@ Success CElseStatementLinter::Parse()
 			return success;
 
 		//else if
-		lastBlock->m_pNext = ifStatement.ToConditionalObject();
+		if(!m_pOwner->IsHoisting())
+			lastBlock->m_pNext = ifStatement.ToConditionalObject();
+
 		return success;
 	}
 
@@ -66,7 +69,9 @@ Success CElseStatementLinter::Parse()
 		return success;
 
 	//else block
-	lastBlock->m_pNext = std::make_unique<CRuntimeConditionalStatement>(nullptr, m_pThisScope->MoveInstructions());
+	if(!m_pOwner->IsHoisting())
+		lastBlock->m_pNext = std::make_unique<CRuntimeConditionalStatement>(nullptr, m_pThisScope->MoveInstructions());
+		
 	return success;
 }
 

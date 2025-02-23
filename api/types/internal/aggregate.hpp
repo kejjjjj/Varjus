@@ -1,6 +1,6 @@
 #pragma once
 
-#include <unordered_map>
+#include <map>
 #include <vector>
 #include <memory>
 #include <string>
@@ -41,6 +41,6 @@ public:
 	[[nodiscard]] auto& Iterator() { return m_oIndexLookup; }
 
 protected:
-	std::unordered_map<ElementIndex, CVariable*> m_oIndexLookup;
+	std::map<ElementIndex, CVariable*> m_oIndexLookup;
 	std::size_t m_uModuleIndex{};
 };
