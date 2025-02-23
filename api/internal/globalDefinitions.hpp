@@ -7,9 +7,9 @@
         className& operator=(const className&) = delete
 
 #if defined(_MSC_VER) 
-#define WARNING_PUSH() #pragma warning(push)
-#define WARNING_DISABLE(w)  #pragma warning(disable:w) 
-#define WARNING_POP() #pragma warning(pop)
+#define WARNING_PUSH() __pragma(warning(push))
+#define WARNING_DISABLE(w) __pragma(warning(disable : w))
+#define WARNING_POP() __pragma(warning(pop))
 #else
 #define WARNING_PUSH()
 #define WARNING_POP()

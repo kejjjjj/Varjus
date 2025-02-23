@@ -11,7 +11,7 @@ tests/all_tests/build/
 tests/all_tests/Varjus.exe
 api/build/
 api/VarjusAPI/
-
+.vscode/
 *vcx*
 
 # User-specific files
