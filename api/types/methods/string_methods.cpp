@@ -11,7 +11,7 @@
 #include <algorithm>
 #include <ranges>
 
-[[nodiscard]] inline CStringValue* GetThis(IValue* _this) {
+[[nodiscard]] CStringValue* GetThisString(IValue* _this) {
 	return _this->ToCString();
 }
 
@@ -51,13 +51,13 @@ void CStringValue::ConstructProperties()
 }
 
 DEFINE_PROPERTY(StringLength) {
-	auto __this = GetThis(_this);
+	auto __this = GetThisString(_this);
 	return CIntValue::Construct(static_cast<VarjusInt>(__this->Internal()->Length()));
 }
 
 DEFINE_METHOD(ToUpper, args)
 {
-	auto __this = GetThis(_this);
+	auto __this = GetThisString(_this);
 	std::string v = __this->ToString();
 
 	std::ranges::transform(v, v.begin(), [](std::int8_t c) { 
@@ -66,7 +66,7 @@ DEFINE_METHOD(ToUpper, args)
 }
 DEFINE_METHOD(ToLower, args)
 {
-	auto __this = GetThis(_this);
+	auto __this = GetThisString(_this);
 	std::string v = __this->ToString();
 
 	std::ranges::transform(v, v.begin(), [](std::int8_t c) {
@@ -75,7 +75,7 @@ DEFINE_METHOD(ToLower, args)
 }
 DEFINE_METHOD(Substring, args)
 {
-	auto __this = GetThis(_this);
+	auto __this = GetThisString(_this);
 	const auto& v = __this->ToString();
 
 	auto& a = args[0];
@@ -128,7 +128,7 @@ std::vector<std::string> SplitString(const std::string& str, const std::string& 
 
 DEFINE_METHOD(Split, args) {
 
-	auto __this = GetThis(_this);
+	auto __this = GetThisString(_this);
 	const auto& v = __this->ToString();
 
 	auto& delimiter = args.front();
@@ -157,7 +157,7 @@ std::string ReplaceAll(const std::string& str, const std::string& oldSub, const 
 
 DEFINE_METHOD(Replace, args) {
 
-	auto __this = GetThis(_this);
+	auto __this = GetThisString(_this);
 	const auto& v = __this->ToString();
 
 	const auto CheckSanity = [](const IValue* v) {
@@ -176,7 +176,7 @@ DEFINE_METHOD(Replace, args) {
 
 DEFINE_METHOD(Repeat, args) {
 
-	auto __this = GetThis(_this);
+	auto __this = GetThisString(_this);
 	const auto& v = __this->ToString();
 
 	auto& countValue = args[0];
@@ -195,7 +195,7 @@ DEFINE_METHOD(Repeat, args) {
 }
 
 DEFINE_METHOD(GetCodeAt, args) {
-	auto __this = GetThis(_this);
+	auto __this = GetThisString(_this);
 	const auto& v = __this->ToString();
 
 	auto& idx = args[0];

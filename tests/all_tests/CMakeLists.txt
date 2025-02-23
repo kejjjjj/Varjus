@@ -42,7 +42,8 @@ add_custom_command(TARGET Varjus POST_BUILD
 message(STATUS "Building tests...")
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-    target_compile_options(Varjus PRIVATE -Wall -Wextra -Werror -pedantic -O3)
+    target_compile_options(Varjus PRIVATE -Wall -Wextra -Werror -pedantic -g -O0)
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-    target_compile_options(Varjus PRIVATE /W4 /WX /external:W3)
+    target_compile_options(Varjus PRIVATE /W4 /WX /external:W3 /Zi)
+    target_link_options(Varjus PRIVATE /DEBUG)
 endif()

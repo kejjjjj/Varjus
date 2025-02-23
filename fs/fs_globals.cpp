@@ -3,6 +3,7 @@
 #include <fstream>
 #include <algorithm>
 #include "fs_globals.hpp"
+#include "fs_io.hpp"
 
 namespace _fs = std::filesystem;
 
@@ -25,7 +26,7 @@ std::string fs::get_extension(const std::string& file)
 }
 std::string fs::previous_directory(const std::string& directory)
 {
-	size_t pos = directory.find_last_of('\\');
+	size_t pos = directory.find_last_of(DIRECTORY_SEPARATOR_CHAR);
 	if (pos < 1 || pos == std::string::npos)
 		return directory;
 
@@ -33,7 +34,7 @@ std::string fs::previous_directory(const std::string& directory)
 }
 std::string fs::get_file_name(const std::string& fullpath)
 {
-	size_t pos = fullpath.find_last_of('\\');
+	size_t pos = fullpath.find_last_of(DIRECTORY_SEPARATOR_CHAR);
 
 	if (pos < 1 || pos == std::string::npos)
 		return fullpath;

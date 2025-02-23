@@ -42,7 +42,7 @@ bool IOWriter::CreateMissingDirectoriesFromPath(std::string path) const
 
     do {
 
-        pos = path.find_first_of('\\');
+        pos = path.find_first_of(DIRECTORY_SEPARATOR_CHAR);
 
         if (pos == std::string::npos)
             break;
@@ -56,7 +56,7 @@ bool IOWriter::CreateMissingDirectoriesFromPath(std::string path) const
                 return false;
             }
         }
-        progress += '\\';
+        progress += DIRECTORY_SEPARATOR_CHAR;
 
     } while (true);
 

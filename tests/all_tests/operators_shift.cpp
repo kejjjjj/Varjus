@@ -2,7 +2,7 @@
 #include "tests/utils.hpp"
 
 
-#define PATH_PREFIX "operators\\shift"
+#define PATH_PREFIX std::string("operators") + DIRECTORY_SEPARATOR + "shift"
 #define JP(x) (std::string(PATH_PREFIX) + DIRECTORY_SEPARATOR + x)
 
 TEST_CASE("integer shift operations") {

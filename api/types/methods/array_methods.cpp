@@ -9,7 +9,7 @@
 #include <algorithm>
 #include <ranges>
 
-[[nodiscard]] inline CArrayValue* GetThis(IValue* _this) {
+[[nodiscard]] CArrayValue* GetThisArray(IValue* _this) {
 	return _this->ToArray();
 }
 
@@ -71,20 +71,20 @@ void CArrayValue::ConstructProperties()
 
 
 DEFINE_PROPERTY(ArrayLength) {
-	auto __this = GetThis(_this);
+	auto __this = GetThisArray(_this);
 	return CIntValue::Construct(static_cast<VarjusInt>(__this->Internal()->Length()));
 }
 
 DEFINE_METHOD(Push, args)
 {
-	auto __this = GetThis(_this);
+	auto __this = GetThisArray(_this);
 	auto& vars = __this->GetVariables();
 	auto& newVar = vars.emplace_back(CVariable::Construct(args.front()->Copy()));
 	return newVar->GetValue()->Copy();
 }
 DEFINE_METHOD(PushFront, args)
 {
-	auto __this = GetThis(_this);
+	auto __this = GetThisArray(_this);
 	auto& vars = __this->GetVariables();
 
 	auto it = vars.insert(vars.begin(), CVariable::Construct(args.front()->Copy()));
@@ -94,7 +94,7 @@ DEFINE_METHOD(PushFront, args)
 DEFINE_METHOD(Pop, args)
 {
 
-	auto __this = GetThis(_this);
+	auto __this = GetThisArray(_this);
 	auto& vars = __this->GetVariables();
 
 	if (vars.empty())
@@ -111,7 +111,7 @@ DEFINE_METHOD(Pop, args)
 DEFINE_METHOD(PopFront, args)
 {
 
-	auto __this = GetThis(_this);
+	auto __this = GetThisArray(_this);
 	auto& vars = __this->GetVariables();
 
 	if (vars.empty())
@@ -134,7 +134,7 @@ DEFINE_METHOD(Map, args)
 	if (!mapFunc->IsCallable())
 		throw CRuntimeError(std::format("array.map expected \"callable\", but got \"{}\"", mapFunc->TypeAsString()));
 
-	auto __this = GetThis(_this);
+	auto __this = GetThisArray(_this);
 	auto& vars = __this->GetVariables();
 
 	IValues results(vars.size());
@@ -229,11 +229,11 @@ static inline IValue* FindInternal(CArrayValue* _this, CRuntimeContext* const ct
 }
 
 DEFINE_METHOD(Find, args) {
-	auto __this = GetThis(_this);
+	auto __this = GetThisArray(_this);
 	return FindInternal(__this, ctx, args, true);
 }
 DEFINE_METHOD(FindLast, args) {
-	auto __this = GetThis(_this);
+	auto __this = GetThisArray(_this);
 	return FindInternal(__this, ctx, args, false);
 }
 
@@ -301,11 +301,11 @@ static inline IValue* FindIndexInternal(CArrayValue* _this, CRuntimeContext* con
 	return result;
 }
 DEFINE_METHOD(FindIndex, args) {
-	auto __this = GetThis(_this);
+	auto __this = GetThisArray(_this);
 	return FindIndexInternal(__this, ctx, args, true);
 }
 DEFINE_METHOD(FindLastIndex, args) {
-	auto __this = GetThis(_this);
+	auto __this = GetThisArray(_this);
 	return FindIndexInternal(__this, ctx, args, false);
 }
 
@@ -317,7 +317,7 @@ DEFINE_METHOD(Filter, args)
 	if (!mapFunc->IsCallable())
 		throw CRuntimeError(std::format("array.filter expected \"callable\", but got \"{}\"", mapFunc->TypeAsString()));
 
-	auto __this = GetThis(_this);
+	auto __this = GetThisArray(_this);
 	auto& vars = __this->GetVariables();
 
 	IValues results;
@@ -365,7 +365,7 @@ DEFINE_METHOD(Contains, args)
 	assert(args.size() == 1);
 	auto& searchElement = args.front();
 
-	auto __this = GetThis(_this);
+	auto __this = GetThisArray(_this);
 	auto& vars = __this->GetVariables();
 
 	IValue* result{ nullptr };
@@ -388,7 +388,7 @@ DEFINE_METHOD(Contains, args)
 }
 DEFINE_METHOD(Reversed, args) {
 	
-	auto __this = GetThis(_this);
+	auto __this = GetThisArray(_this);
 	auto& vars = __this->GetVariables();
 	IValues valuesAsCopy(vars.size());
 
@@ -419,7 +419,7 @@ DEFINE_METHOD(Join, args)
 		throw CRuntimeError(std::format("array.join expected a string parameter, but got \"{}\"", delimiterValue->TypeAsString()));
 
 	VectorOf<std::string> stringValues;
-	auto __this = GetThis(_this);
+	auto __this = GetThisArray(_this);
 	auto& vars = __this->GetVariables();
 
 	for (auto& var : vars) {
@@ -442,7 +442,7 @@ DEFINE_METHOD(All, args)
 	if (!mapFunc->IsCallable())
 		throw CRuntimeError(std::format("array.all expected \"callable\", but got \"{}\"", mapFunc->TypeAsString()));
 
-	auto __this = GetThis(_this);
+	auto __this = GetThisArray(_this);
 	auto& vars = __this->GetVariables();
 
 	IValues call_args(1);
@@ -487,7 +487,7 @@ DEFINE_METHOD(Any, args)
 	if (!mapFunc->IsCallable())
 		throw CRuntimeError(std::format("array.all expected \"callable\", but got \"{}\"", mapFunc->TypeAsString()));
 
-	auto __this = GetThis(_this);
+	auto __this = GetThisArray(_this);
 	auto& vars = __this->GetVariables();
 
 	IValues call_args(1);
@@ -527,7 +527,7 @@ DEFINE_METHOD(Any, args)
 
 DEFINE_METHOD(Slice, args) {
 
-	auto __this = GetThis(_this);
+	auto __this = GetThisArray(_this);
 	auto& vars = __this->GetVariables();
 
 	auto& a = args[0];
@@ -648,7 +648,7 @@ DEFINE_METHOD(Sort, args)
 	if (!mapFunc->IsCallable())
 		throw CRuntimeError(std::format("array.sort expected \"callable\", but got \"{}\"", mapFunc->TypeAsString()));
 
-	auto __this = GetThis(_this);
+	auto __this = GetThisArray(_this);
 	auto& vars = __this->GetVariables();
 
 	IValues valuesAsCopy(vars.size());
@@ -671,7 +671,7 @@ DEFINE_METHOD(Resize, args)
 		throw CRuntimeError(std::format("array.resize expected \"integer\", but got \"{}\"", value->TypeAsString()));
 
 
-	auto __this = GetThis(_this);
+	auto __this = GetThisArray(_this);
 	auto& vars = __this->GetVariables();
 
 	auto intVal = value->ToInt();
@@ -708,7 +708,7 @@ DEFINE_METHOD(Fill, args)
 	assert(args.size() == 1);
 	auto& value = args.front();
 
-	auto __this = GetThis(_this);
+	auto __this = GetThisArray(_this);
 	auto& vars = __this->GetVariables();
 
 	for (auto& v : vars) {

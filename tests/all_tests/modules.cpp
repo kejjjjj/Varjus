@@ -7,7 +7,7 @@
 
 TEST_CASE("Main imports global variable") {
 
-	auto retVal = TEST_ExecuteFile(JP("main_imports_variable\\main.var"));
+	auto retVal = TEST_ExecuteFile(JP("main_imports_variable" + DIRECTORY_SEPARATOR + "main.var"));
 
 	REQUIRE(retVal != nullptr);
 	REQUIRE(retVal->Type() == t_int);
@@ -19,7 +19,7 @@ TEST_CASE("Main imports global variable") {
 }
 TEST_CASE("Main imports global variable and edits it") {
 
-	auto retVal = TEST_ExecuteFile(JP("main_imports_variable\\main_imports_and_uses.var"));
+	auto retVal = TEST_ExecuteFile(JP("main_imports_variable" + DIRECTORY_SEPARATOR + "main_imports_and_uses.var"));
 
 	REQUIRE(retVal != nullptr);
 	REQUIRE(retVal->Type() == t_int);
@@ -31,7 +31,7 @@ TEST_CASE("Main imports global variable and edits it") {
 }
 TEST_CASE("Main imports function") {
 
-	auto retVal = TEST_ExecuteFile(JP("main_imports_function\\main.var"));
+	auto retVal = TEST_ExecuteFile(JP("main_imports_function" + DIRECTORY_SEPARATOR + "main.var"));
 
 	REQUIRE(retVal != nullptr);
 	REQUIRE(retVal->Type() == t_callable);
@@ -43,7 +43,7 @@ TEST_CASE("Main imports function") {
 }
 TEST_CASE("Main imports function and calls it") {
 
-	auto retVal = TEST_ExecuteFile(JP("main_imports_function\\main_calls_exported.var"));
+	auto retVal = TEST_ExecuteFile(JP("main_imports_function" + DIRECTORY_SEPARATOR + "main_calls_exported.var"));
 
 	REQUIRE(retVal != nullptr);
 	REQUIRE(retVal->Type() == t_int);
@@ -56,7 +56,7 @@ TEST_CASE("Main imports function and calls it") {
 
 TEST_CASE("Imported function edits lambda capture") {
 
-	auto retVal = TEST_ExecuteFile(JP("lambda_captures_get_passed\\main.var"));
+	auto retVal = TEST_ExecuteFile(JP("lambda_captures_get_passed" + DIRECTORY_SEPARATOR + "main.var"));
 
 	REQUIRE(retVal != nullptr);
 	REQUIRE(retVal->Type() == t_int);
@@ -70,7 +70,7 @@ TEST_CASE("Imported function edits lambda capture") {
 
 TEST_CASE("VarjusDouble import (main imports from a and a imports from b)") {
 
-	auto retVal = TEST_ExecuteFile(JP("double_import\\main.var"));
+	auto retVal = TEST_ExecuteFile(JP("double_import" + DIRECTORY_SEPARATOR + "main.var"));
 
 	REQUIRE(retVal != nullptr);
 	REQUIRE(retVal->Type() == t_int);
@@ -83,7 +83,7 @@ TEST_CASE("VarjusDouble import (main imports from a and a imports from b)") {
 
 TEST_CASE("Main imports variable and func then the variable gets edited in func") {
 
-	auto retVal = TEST_ExecuteFile(JP("main_imports_multiple\\main.var"));
+	auto retVal = TEST_ExecuteFile(JP("main_imports_multiple" + DIRECTORY_SEPARATOR + "main.var"));
 
 	AssertArray(retVal, AssertArrayValue<ASSERT_INT>(t_int, { 50, 111 }));
 
@@ -94,7 +94,7 @@ TEST_CASE("Main imports variable and func then the variable gets edited in func"
 
 TEST_CASE("Main and other call array methods") {
 
-	auto retVal = TEST_ExecuteFile(JP("calling_methods_in_separate_files\\main.var"));
+	auto retVal = TEST_ExecuteFile(JP("calling_methods_in_separate_files" + DIRECTORY_SEPARATOR + "main.var"));
 
 	AssertArray(retVal, AssertArrayValue<ASSERT_INT>(t_int, { 50, 2, 3}));
 
@@ -104,7 +104,7 @@ TEST_CASE("Main and other call array methods") {
 }
 TEST_CASE("Module throws and main catches it") {
 
-	auto retVal = TEST_ExecuteFile(JP("module_throws_and_main_catches\\main.var"));
+	auto retVal = TEST_ExecuteFile(JP("module_throws_and_main_catches" + DIRECTORY_SEPARATOR + "main.var"));
 
 	AssertArray(retVal, AssertArrayValue<ASSERT_INT>(t_int, { 1, 2, 3 }));
 

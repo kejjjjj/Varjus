@@ -12,6 +12,7 @@
 #include "linter/modules/exports/export.hpp"
 
 #include "fs/fs_globals.hpp"
+#include "fs/fs_io.hpp"
 
 #include <cassert>
 #include <format>
@@ -91,7 +92,7 @@ Success CImportLinter::ParseFilePath()
 	const auto& relativePath = (*m_iterPos)->Source();
 	const auto& wd = fs::previous_directory( m_pOwner->GetContext()->m_sFilePath );
 
-	const auto fullPath = wd + '\\' + relativePath;
+	const auto fullPath = wd + DIRECTORY_SEPARATOR_CHAR + relativePath;
 
 	if (!fs::file_exists(fullPath)) {
 		CLinterErrors::PushError(std::format("\"{}\" does not exist", fullPath), GetIteratorSafe()->m_oSourcePosition);

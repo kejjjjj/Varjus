@@ -7,7 +7,7 @@
 #include "api/internal/structure.hpp"
 
 
-[[nodiscard]] inline CObjectValue* GetThis(IValue* _this) {
+[[nodiscard]] CObjectValue* GetThisObject(IValue* _this) {
 	return _this->ToObject();
 }
 
@@ -42,14 +42,14 @@ void CObjectValue::ConstructProperties()
 }
 
 DEFINE_PROPERTY(ObjectLength) {
-	auto __this = GetThis(_this);
+	auto __this = GetThisObject(_this);
 	return CIntValue::Construct(static_cast<VarjusInt>(__this->Internal()->GetAggregateValue().Length()));
 }
 
 
 DEFINE_METHOD(Object_Keys, args)
 {
-	auto __this = GetThis(_this);
+	auto __this = GetThisObject(_this);
 	auto& vars = __this->GetShared()->GetAggregateValue().Iterator();
 
 	IValues results(vars.size());
@@ -63,7 +63,7 @@ DEFINE_METHOD(Object_Keys, args)
 }
 DEFINE_METHOD(Object_Values, args)
 {
-	auto __this = GetThis(_this);
+	auto __this = GetThisObject(_this);
 	auto& vars = __this->GetShared()->GetAggregateValue().Iterator();
 
 	IValues results(vars.size());
@@ -92,7 +92,7 @@ static void AddAttribute(CObjectValue* obj, IValue* const key, IValue* value)
 
 DEFINE_METHOD(Object_Set, args)
 {
-	auto __this = GetThis(_this);
+	auto __this = GetThisObject(_this);
 
 	const auto& key = args[0];
 	auto& value = args[1];
@@ -110,7 +110,7 @@ DEFINE_METHOD(Object_Set, args)
 }
 DEFINE_METHOD(Object_Remove, args)
 {
-	auto __this = GetThis(_this);
+	auto __this = GetThisObject(_this);
 
 	const auto& key = args[0];
 	auto& aggregate = __this->Internal()->GetAggregateValue();
@@ -129,12 +129,12 @@ static auto Contains(CObjectValue* obj, IValue* const key)
 }
 DEFINE_METHOD(Object_Contains, args)
 {
-	auto __this = GetThis(_this);
+	auto __this = GetThisObject(_this);
 	return CBooleanValue::Construct(Contains(__this, args[0]));
 }
 DEFINE_METHOD(Object_ToArray, args)
 {
-	auto __this = GetThis(_this);
+	auto __this = GetThisObject(_this);
 
 	const auto& aggregate = __this->Internal()->GetAggregateValue().Iterator();
 

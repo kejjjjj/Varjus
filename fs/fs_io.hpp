@@ -50,8 +50,11 @@ private:
 
 #ifdef __linux__
 #define DIRECTORY_SEPARATOR "/"
+#define DIRECTORY_SEPARATOR_CHAR '/'
 #else
-#define DIRECTORY_SEPARATOR DIRECTORY_SEPARATOR
+#define DIRECTORY_SEPARATOR "\\"
+#define DIRECTORY_SEPARATOR_CHAR '\\'
+
 #endif
 
 //these don't belong here but whatever
