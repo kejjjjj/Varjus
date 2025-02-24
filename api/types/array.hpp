@@ -13,9 +13,6 @@ class CVariable;
 template<typename K, typename V>
 using KeyValue = std::pair<K, V>;
 
-namespace runtime::__internal {
-	VectorOf<ElementIndex>& GetAggregateArrayData();
-}
 
 struct CArrayContent final
 {
@@ -30,7 +27,7 @@ public:
 
 	void Release();
 
-	void Set(VectorOf<IValue*>&& v);
+	void Set(CProgramRuntime* const runtime, VectorOf<IValue*>&& v);
 	constexpr auto& Get() noexcept { return m_oValue; }
 	constexpr auto& Get() const noexcept { return m_oValue; }
 
@@ -50,7 +47,7 @@ public:
 	CArrayValue() = default;
 	~CArrayValue();
 	
-	static CArrayValue* Construct(IValues&& values);
+	static CArrayValue* Construct(CProgramRuntime* const runtime, IValues&& values);
 	static void ConstructMethods(); //only called once during init
 	static void ConstructProperties(); //only called once during init
 

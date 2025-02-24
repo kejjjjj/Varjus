@@ -35,7 +35,7 @@ class CStringValue final : public CValue<CInternalStringValue>
 public:
 	CStringValue() = default;
 
-	[[nodiscard]] static CStringValue* Construct(const std::string& v);
+	[[nodiscard]] static CStringValue* Construct(CProgramRuntime* const runtime, const std::string& v);
 	static void ConstructMethods(); //only called once during init
 	static void ConstructProperties(); //only called once during init
 

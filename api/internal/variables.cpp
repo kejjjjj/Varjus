@@ -2,13 +2,15 @@
 #include "api/types/types.hpp"
 #include "api/internal/runtime.hpp"
 
-CVariable* CVariable::Construct()
+CVariable* CVariable::Construct(CProgramRuntime* const runtime)
 {
-	return CProgramRuntime::AcquireNewVariable();
+	auto v = runtime->AcquireNewVariable();
+	v->m_pAllocator = runtime;
+	return v;
 }
-CVariable* CVariable::Construct(IValue* v)
+CVariable* CVariable::Construct(CProgramRuntime* const runtime, IValue* v)
 {
-	auto var = CProgramRuntime::AcquireNewVariable();
+	auto var = runtime->AcquireNewVariable();
 	var->SetValue(v);
 	return var;
 }
@@ -44,7 +46,7 @@ bool CVariable::Release()
 	v->Release();
 	v = nullptr;
 	m_bSelfCapturing = false;
-	CProgramRuntime::FreeVariable(this);	
+	m_pAllocator->FreeVariable(this);	
 	return true;
 }
 
@@ -52,14 +54,20 @@ bool CVariable::Release()
 CVariable* CProgramRuntime::AcquireNewVariable(){
 	auto var = GetPool<CVariable>().Acquire();
 	var->RefCount() = 1;
+	var->m_pAllocator = this;
 	return var;
 }
 VectorOf<CVariable*> CProgramRuntime::AcquireNewVariables(std::size_t count){
+	auto&& vars = GetPool<CVariable>().Acquire(count);
 
-	return GetPool<CVariable>().Acquire(count);
+	for (auto& v : vars)
+		v->m_pAllocator = this;
+
+	return vars;
 }
 void CProgramRuntime::FreeVariable(CVariable* var){
 	assert(var->RefCount() == 0);
 	var->RefCount() = 1;
 	GetPool<CVariable>().Release(var);
+	var->m_pAllocator = nullptr;
 }

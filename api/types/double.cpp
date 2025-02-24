@@ -1,25 +1,25 @@
 #include "api/internal/runtime.hpp"
 #include "double.hpp"
 
-CDoubleValue* CDoubleValue::Construct(VarjusDouble v) {
-	return CProgramRuntime::AcquireNewValue<CDoubleValue>(v);
+CDoubleValue* CDoubleValue::Construct(CProgramRuntime* const runtime, VarjusDouble v) {
+	return runtime->AcquireNewValue<CDoubleValue>(v);
 }
 
 IValue* CDoubleValue::Copy()
 {
 	if (IsShared()) {
-		auto ptr = CProgramRuntime::AcquireNewValue<CDoubleValue>();
+		auto ptr = m_pAllocator->AcquireNewValue<CDoubleValue>();
 		ptr->MakeShared();
 		ptr->GetShared() = GetShared();
 		return ptr;
 	}
 
-	return CProgramRuntime::AcquireNewValue<CDoubleValue>(Get());
+	return m_pAllocator->AcquireNewValue<CDoubleValue>(Get());
 }
 void CDoubleValue::Release()
 {
 	if (IsShared())
 		ReleaseShared();
 	ReleaseInternal();
-	CProgramRuntime::FreeValue<CDoubleValue>(this);
+	m_pAllocator->FreeValue<CDoubleValue>(this);
 }

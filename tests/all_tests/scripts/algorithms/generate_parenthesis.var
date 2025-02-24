@@ -7,7 +7,7 @@ fn generateParenthesis(n)
 
 	let backtrack = fn(s, open, close) {
 
-		if(s.length === n * 2){
+		if(s.length == n * 2){
 			result.push(s);
 			return;
 		}

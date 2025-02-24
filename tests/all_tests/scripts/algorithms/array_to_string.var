@@ -4,7 +4,7 @@ fn arrayToString(value)
     if(typeof value !== "array")
         return tostring value;
 
-    if(value.length === 0)
+    if(value.length == 0)
         return "empty";
 
     let str = "";
@@ -12,7 +12,7 @@ fn arrayToString(value)
 
         let result = arrayToString(value[i]);
 
-        if(result.length === 0)
+        if(result.length == 0)
             continue;
 
         str += result;

@@ -18,8 +18,7 @@ TEST_CASE("operator precedence tests in simple expressions")
 	}));
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 
 TEST_CASE("operator precedence tests in sequences")
@@ -34,6 +33,5 @@ TEST_CASE("operator precedence tests in sequences")
 	}));
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }

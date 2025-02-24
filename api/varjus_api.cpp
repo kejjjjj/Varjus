@@ -24,25 +24,30 @@ struct CVarjusInternals
         if (m_pReturnValue)
             m_pReturnValue->Release();
         m_pReturnValue = nullptr;
+        if (m_pRuntime) {
+            m_pRuntime->Cleanup();
+            m_pRuntime.reset();
+        }
 #endif
     }
 
     static std::string m_sErrorMessage;
     static Success m_bScriptLoaded;
     static IValue* m_pReturnValue;
+    static std::unique_ptr<CProgramRuntime> m_pRuntime;
 };
 
 std::string CVarjusInternals::m_sErrorMessage{};
 Success CVarjusInternals::m_bScriptLoaded{};
 IValue* CVarjusInternals::m_pReturnValue{};
+std::unique_ptr<CProgramRuntime> CVarjusInternals::m_pRuntime{};
 
 static void InitVarjus()
 {
-    CVarjusInternals::Init();
     CLinterErrors::ClearErrorStack();
     CModule::ResetEverythingStatic();
     CFileContext::ResetGlobally();
-    CProgramRuntime::Cleanup();
+    CVarjusInternals::Init();
 }
 
 void Varjus::UseStdLibrary()
@@ -93,8 +98,8 @@ IValue* Varjus::ExecuteScript()
 
     try {
 
-        CProgramRuntime runtime(CModule::ToRuntimeModules());
-        return CVarjusInternals::m_pReturnValue = runtime.Execute();
+        CVarjusInternals::m_pRuntime = std::make_unique<CProgramRuntime>(CModule::ToRuntimeModules());
+        return CVarjusInternals::m_pReturnValue = CVarjusInternals::m_pRuntime->Execute();
 
     } catch (CRuntimeError& ex) {
         CVarjusInternals::m_sErrorMessage = ex.what();
@@ -113,7 +118,10 @@ std::optional<std::string> Varjus::GetErrorMessage()
 }
 
 void Varjus::PrintMemoryUsage() {
-    CProgramRuntime::PrintAllLeaks();
+    if (!CVarjusInternals::m_pRuntime)
+        return;
+
+    CVarjusInternals::m_pRuntime->PrintAllLeaks();
 }
 
 void Varjus::AddNewGlobalObject(const std::string& name,

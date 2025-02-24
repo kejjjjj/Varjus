@@ -13,8 +13,7 @@ TEST_CASE("Returns an undefined") {
 	REQUIRE(retVal->Type() == t_undefined);
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 
 }
 TEST_CASE("Returns a boolean true") {
@@ -26,8 +25,7 @@ TEST_CASE("Returns a boolean true") {
 	REQUIRE(retVal->ToBoolean() == true);
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 TEST_CASE("Returns an integer 64") {
 
@@ -38,8 +36,7 @@ TEST_CASE("Returns an integer 64") {
 	REQUIRE(retVal->ToInt() == 64);
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 TEST_CASE("Returns a uinteger 64") {
 
@@ -50,8 +47,7 @@ TEST_CASE("Returns a uinteger 64") {
 	REQUIRE(retVal->ToUInt() == 64);
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 TEST_CASE("Returns a double 64.0") {
 
@@ -62,8 +58,7 @@ TEST_CASE("Returns a double 64.0") {
 	REQUIRE(retVal->ToDouble() == 64.0);
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 TEST_CASE("Returns a string Hello, World!") {
 
@@ -74,8 +69,7 @@ TEST_CASE("Returns a string Hello, World!") {
 	REQUIRE(retVal->ToString() == "Hello, World!");
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 
 
@@ -84,10 +78,9 @@ TEST_CASE("Returns string length of Hello, World!") {
 	auto retVal = TEST_ExecuteFile(JP("string_length.var"));
 
 	REQUIRE(retVal != nullptr);
-	REQUIRE(retVal->Type() == t_int);
-	REQUIRE(retVal->ToInt() == 13);
+	REQUIRE(retVal->Type() == t_uint);
+	REQUIRE(retVal->ToUInt() == 13);
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }

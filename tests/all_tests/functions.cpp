@@ -13,8 +13,7 @@ TEST_CASE("Main function calls a function with the value 5 and returns it") {
 	REQUIRE(retVal->ToInt() == 50);
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 TEST_CASE("Main function calls a function with the value [50, 1] and returns it") {
 
@@ -23,8 +22,7 @@ TEST_CASE("Main function calls a function with the value [50, 1] and returns it"
 	AssertArray(retVal, AssertArrayValue<ASSERT_INT>{t_int, { 50, 1 }});
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 TEST_CASE("Main function calls a function that edits a global variable to 50") {
 
@@ -35,8 +33,7 @@ TEST_CASE("Main function calls a function that edits a global variable to 50") {
 	REQUIRE(retVal->ToInt() == 50);
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 TEST_CASE("Main function calls a function that doesn't return") {
 
@@ -46,8 +43,7 @@ TEST_CASE("Main function calls a function that doesn't return") {
 	REQUIRE(retVal->Type() == t_undefined);
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 TEST_CASE("Main function calls a function that recursively calls itself until v >= 5") {
 
@@ -58,6 +54,5 @@ TEST_CASE("Main function calls a function that recursively calls itself until v 
 	REQUIRE(retVal->ToInt() == 5);
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }

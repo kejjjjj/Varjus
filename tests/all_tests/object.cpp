@@ -16,8 +16,7 @@ TEST_CASE("Object.set") {
 	}));
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 TEST_CASE("Object.remove") {
 
@@ -28,8 +27,7 @@ TEST_CASE("Object.remove") {
 	}));
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 TEST_CASE("Object.keys") {
 
@@ -42,8 +40,7 @@ TEST_CASE("Object.keys") {
 	}));
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 TEST_CASE("Object.values") {
 
@@ -56,8 +53,7 @@ TEST_CASE("Object.values") {
 	}));
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 TEST_CASE("Object.contains") {
 
@@ -70,8 +66,7 @@ TEST_CASE("Object.contains") {
 	}));
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 TEST_CASE("Object.to_array") {
 
@@ -82,6 +77,5 @@ TEST_CASE("Object.to_array") {
 	}));
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }

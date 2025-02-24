@@ -13,8 +13,7 @@ TEST_CASE("returns an array [ 0, 1, 2 ] in variable context") {
 	AssertArray(retVal, AssertArrayValue<ASSERT_INT>{ t_int, { 0, 1, 2 } });
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 TEST_CASE("Returns an object { a: 1, b: 2, c: 3 } in variable context") {
 
@@ -23,8 +22,7 @@ TEST_CASE("Returns an object { a: 1, b: 2, c: 3 } in variable context") {
 	AssertObject(retVal, AssertObjectValue<ASSERT_INT>(t_int, { {"a", 1}, {"b", 2}, {"c", 3} }));
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 
 }
 TEST_CASE("returns a callable in variable context") {
@@ -50,8 +48,7 @@ TEST_CASE("returns a callable in variable context") {
 	REQUIRE(func->GetModuleIndex() == 0);
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 
 TEST_CASE("returns a lambda in variable context") {
@@ -76,8 +73,7 @@ TEST_CASE("returns a lambda in variable context") {
 	REQUIRE(func->GetModuleIndex() == 0);
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 
 TEST_CASE("Variable array [50,1,2] gets indexed at 0") {
@@ -89,8 +85,7 @@ TEST_CASE("Variable array [50,1,2] gets indexed at 0") {
 	REQUIRE(retVal->ToInt() == 50);
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 
 TEST_CASE("Variable object {a: 50, b: 1, c: 2} gets accessed at a") {
@@ -102,8 +97,7 @@ TEST_CASE("Variable object {a: 50, b: 1, c: 2} gets accessed at a") {
 	REQUIRE(retVal->ToInt() == 50);
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 TEST_CASE("Variable callable return50 gets called") {
 
@@ -114,8 +108,7 @@ TEST_CASE("Variable callable return50 gets called") {
 	REQUIRE(retVal->ToInt() == 50);
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 TEST_CASE("Variable lambda fn() { return 50; } gets called") {
 
@@ -126,8 +119,7 @@ TEST_CASE("Variable lambda fn() { return 50; } gets called") {
 	REQUIRE(retVal->ToInt() == 50);
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 
 TEST_CASE("Returns array length of [1,2,3] in variable context") {
@@ -135,12 +127,11 @@ TEST_CASE("Returns array length of [1,2,3] in variable context") {
 	auto retVal = TEST_ExecuteFile(JP("array_length.var"));
 
 	REQUIRE(retVal != nullptr);
-	REQUIRE(retVal->Type() == t_int);
-	REQUIRE(retVal->ToInt() == 3);
+	REQUIRE(retVal->Type() == t_uint);
+	REQUIRE(retVal->ToUInt() == 3);
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 
 TEST_CASE("Arrow function () => 2 in variable context") {
@@ -151,8 +142,7 @@ TEST_CASE("Arrow function () => 2 in variable context") {
 	REQUIRE(retVal->Type() == t_callable);
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 
 TEST_CASE("Arrow function call () => 2 in variable context") {
@@ -164,8 +154,7 @@ TEST_CASE("Arrow function call () => 2 in variable context") {
 	REQUIRE(retVal->ToInt() == 2);
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 
 TEST_CASE("Arrow function call with args ((a, b) => a + b)(2, 4) in variable context") {
@@ -177,6 +166,5 @@ TEST_CASE("Arrow function call with args ((a, b) => a + b)(2, 4) in variable con
 	REQUIRE(retVal->ToInt() == 6);
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }

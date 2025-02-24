@@ -23,8 +23,7 @@ TEST_CASE("Unary typeof") {
 	}));
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 
 TEST_CASE("Unary tostring") {
@@ -39,6 +38,5 @@ TEST_CASE("Unary tostring") {
 	}));
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }

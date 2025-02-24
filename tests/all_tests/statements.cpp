@@ -13,8 +13,7 @@ TEST_CASE("if statement is true v === 50") {
 	REQUIRE(retVal->ToBoolean() == true);
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 TEST_CASE("else if statement is true v === 50") {
 
@@ -25,8 +24,7 @@ TEST_CASE("else if statement is true v === 50") {
 	REQUIRE(retVal->ToBoolean() == true);
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 TEST_CASE("else statement is true") {
 
@@ -37,8 +35,7 @@ TEST_CASE("else statement is true") {
 	REQUIRE(retVal->ToBoolean() == true);
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 
 TEST_CASE("for loop iterates to 5") {
@@ -50,8 +47,7 @@ TEST_CASE("for loop iterates to 5") {
 	REQUIRE(retVal->ToInt() == 5);
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 
 TEST_CASE("for loop iterates to 5 but breaks at 2") {
@@ -63,8 +59,7 @@ TEST_CASE("for loop iterates to 5 but breaks at 2") {
 	REQUIRE(retVal->ToInt() == 2);
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 TEST_CASE("for loop iterates to 5 and continues when even") {
 
@@ -73,8 +68,7 @@ TEST_CASE("for loop iterates to 5 and continues when even") {
 	AssertArray(retVal, AssertArrayValue<ASSERT_INT>{t_int, { 1,3,5 }});
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 TEST_CASE("while loop iterates to 5") {
 
@@ -85,8 +79,7 @@ TEST_CASE("while loop iterates to 5") {
 	REQUIRE(retVal->ToInt() == 5);
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 
 TEST_CASE("while loop iterates to 5 but breaks at 2") {
@@ -98,8 +91,7 @@ TEST_CASE("while loop iterates to 5 but breaks at 2") {
 	REQUIRE(retVal->ToInt() == 2);
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 
 TEST_CASE("while loop iterates to 5 and continues when even") {
@@ -109,8 +101,7 @@ TEST_CASE("while loop iterates to 5 and continues when even") {
 	AssertArray(retVal, AssertArrayValue<ASSERT_INT>{t_int, { 1,3,5 }});
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 
 TEST_CASE("repeat loop iterates to 5") {
@@ -122,8 +113,7 @@ TEST_CASE("repeat loop iterates to 5") {
 	REQUIRE(retVal->ToInt() == 5);
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 
 TEST_CASE("repeat-while loop iterates to 5") {
@@ -135,8 +125,7 @@ TEST_CASE("repeat-while loop iterates to 5") {
 	REQUIRE(retVal->ToInt() == 5);
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 
 TEST_CASE("repeat iterates to 5 and continues when even") {
@@ -146,8 +135,7 @@ TEST_CASE("repeat iterates to 5 and continues when even") {
 	AssertArray(retVal, AssertArrayValue<ASSERT_INT>{t_int, { 1,3,5 }});
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 TEST_CASE("repeat-while iterates to 5 and continues when even") {
 
@@ -156,6 +144,5 @@ TEST_CASE("repeat-while iterates to 5 and continues when even") {
 	AssertArray(retVal, AssertArrayValue<ASSERT_INT>{t_int, { 1,3,5 }});
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }

@@ -26,17 +26,19 @@ CRuntimeFunction::CRuntimeFunction(ElementIndex moduleIndex, CFunctionBlock& lin
 }
 CRuntimeFunction::~CRuntimeFunction() = default;
 
-IValue* CRuntimeFunction::Execute(CRuntimeContext* const ctx, IValue* _this,
+IValue* CRuntimeFunction::Execute(CRuntimeContext* const ctx, [[maybe_unused]] IValue* _this,
 	VectorOf<IValue*>& args, const VariableCaptures& captures)
 {
+	assert(ctx->m_pRuntime);
 	if (m_uNumArguments != args.size())
-		throw CRuntimeError(std::format("the callable expected {} arguments instead of {}", m_uNumArguments, args.size()));
+		throw CRuntimeError(ctx->m_pRuntime, std::format("the callable expected {} arguments instead of {}", m_uNumArguments, args.size()));
 
 
-	auto func = CFunction(_this, args, captures, *this);
+	auto func = CFunction(ctx->m_pRuntime, args, captures, *this);
 	const auto isMainFunction = ctx->m_pFunction == nullptr;
 
 	CRuntimeContext thisContext{
+		.m_pRuntime = ctx->m_pRuntime,
 		.m_pModule = ctx->m_pModule,
 		.m_pFunction = &func
 	};
@@ -46,13 +48,11 @@ IValue* CRuntimeFunction::Execute(CRuntimeContext* const ctx, IValue* _this,
 	for (const auto& insn : m_oInstructions) {
 		if (returnVal = insn->Execute(&thisContext), returnVal) {
 
-			if (isMainFunction && CProgramRuntime::ExceptionThrown())
-				throw CRuntimeError(std::format("an uncaught exception: {}", returnVal->ToPrintableString()));
+			if (isMainFunction && thisContext.m_pRuntime->ExceptionThrown())
+				throw CRuntimeError(thisContext.m_pRuntime, std::format("an uncaught exception: {}", returnVal->ToPrintableString()));
 
 			break;
 		}
-
-		//assert(!CProgramRuntime::ExceptionThrown());
 	}
 
 	IValue* copy = nullptr;
@@ -60,7 +60,7 @@ IValue* CRuntimeFunction::Execute(CRuntimeContext* const ctx, IValue* _this,
 	if (returnVal) {
 		copy = returnVal->HasOwner() ? returnVal->Copy() : returnVal;
 	} else {
-		copy = IValue::Construct();
+		copy = IValue::Construct(thisContext.m_pRuntime);
 	}
 
 	for (auto& [index, variable] : func.m_oStack) {
@@ -87,7 +87,7 @@ IValue* CBuiltInRuntimeMethod::ExecuteFunction( CRuntimeContext* const ctx, IVal
 	assert(m_pMethod);
 
 	if (m_uNumArguments != UNCHECKED_PARAMETER_COUNT && m_uNumArguments != args.size())
-		throw CRuntimeError(std::format("the method expected {} arguments instead of {}", m_uNumArguments, args.size()));
+		throw CRuntimeError(ctx->m_pRuntime, std::format("the method expected {} arguments instead of {}", m_uNumArguments, args.size()));
 
 	auto returnVal = m_pMethod(ctx, _this, args);
 
@@ -111,7 +111,7 @@ IValue* CBuiltInRuntimeFunction::ExecuteFunction(CRuntimeContext* const ctx, [[m
 	assert(m_pFunction);
 
 	if (m_uNumArguments != UNCHECKED_PARAMETER_COUNT && m_uNumArguments != args.size())
-		throw CRuntimeError(std::format("the callable expected {} arguments instead of {}", m_uNumArguments, args.size()));
+		throw CRuntimeError(ctx->m_pRuntime, std::format("the callable expected {} arguments instead of {}", m_uNumArguments, args.size()));
 
 	auto returnVal = m_pFunction(ctx, args);
 
@@ -122,18 +122,17 @@ IValue* CBuiltInRuntimeFunction::ExecuteFunction(CRuntimeContext* const ctx, [[m
 	return returnVal;
 }
 
-CFunction::CFunction(IValue* _this, VectorOf<IValue*>& args,
+CFunction::CFunction(CProgramRuntime* const runtime, VectorOf<IValue*>& args,
 	const VariableCaptures& captures, const CRuntimeFunction& func)
-	: m_pThis(_this)
 {
 	//setup parameters
 	for (auto i = std::size_t(0); auto& arg : func.m_oArgumentIndices) {
-		m_oStack[arg] = CVariable::Construct(args[i++]);
+		m_oStack[arg] = CVariable::Construct(runtime, args[i++]);
 	}
 
 	//setup stack
 	for (const auto& v : func.m_oVariableIndices) {
-		m_oStack[v] = CVariable::Construct(IValue::Construct());
+		m_oStack[v] = CVariable::Construct(runtime, IValue::Construct(runtime));
 		assert(m_oStack[v]->GetValue() != nullptr);
 	}
 

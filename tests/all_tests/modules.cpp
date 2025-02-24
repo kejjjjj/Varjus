@@ -14,8 +14,7 @@ TEST_CASE("Main imports global variable") {
 	REQUIRE(retVal->ToInt() == 50);
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 TEST_CASE("Main imports global variable and edits it") {
 
@@ -26,8 +25,7 @@ TEST_CASE("Main imports global variable and edits it") {
 	REQUIRE(retVal->ToInt() == 4);
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 TEST_CASE("Main imports function") {
 
@@ -38,8 +36,7 @@ TEST_CASE("Main imports function") {
 	//REQUIRE(retVal->ToInt() == 50);
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 TEST_CASE("Main imports function and calls it") {
 
@@ -50,8 +47,7 @@ TEST_CASE("Main imports function and calls it") {
 	REQUIRE(retVal->ToInt() == 50);
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 
 TEST_CASE("Imported function edits lambda capture") {
@@ -63,8 +59,7 @@ TEST_CASE("Imported function edits lambda capture") {
 	REQUIRE(retVal->ToInt() == 50);
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 
 
@@ -77,8 +72,7 @@ TEST_CASE("VarjusDouble import (main imports from a and a imports from b)") {
 	REQUIRE(retVal->ToInt() == 151);
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 
 TEST_CASE("Main imports variable and func then the variable gets edited in func") {
@@ -88,8 +82,7 @@ TEST_CASE("Main imports variable and func then the variable gets edited in func"
 	AssertArray(retVal, AssertArrayValue<ASSERT_INT>(t_int, { 50, 111 }));
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 
 TEST_CASE("Main and other call array methods") {
@@ -99,8 +92,7 @@ TEST_CASE("Main and other call array methods") {
 	AssertArray(retVal, AssertArrayValue<ASSERT_INT>(t_int, { 50, 2, 3}));
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 TEST_CASE("Module throws and main catches it") {
 
@@ -109,6 +101,5 @@ TEST_CASE("Module throws and main catches it") {
 	AssertArray(retVal, AssertArrayValue<ASSERT_INT>(t_int, { 1, 2, 3 }));
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }

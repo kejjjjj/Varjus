@@ -52,7 +52,7 @@ void CStringValue::ConstructProperties()
 
 DEFINE_PROPERTY(StringLength) {
 	auto __this = GetThisString(_this);
-	return CIntValue::Construct(static_cast<VarjusInt>(__this->Internal()->Length()));
+	return CUIntValue::Construct(runtime, static_cast<VarjusUInt>(__this->Internal()->Length()));
 }
 
 DEFINE_METHOD(ToUpper, args)
@@ -62,7 +62,7 @@ DEFINE_METHOD(ToUpper, args)
 
 	std::ranges::transform(v, v.begin(), [](std::int8_t c) { 
 		return static_cast<std::int8_t>(std::toupper(static_cast<std::int32_t>(c))); });
-	return CStringValue::Construct(v);
+	return CStringValue::Construct(ctx->m_pRuntime, v);
 }
 DEFINE_METHOD(ToLower, args)
 {
@@ -71,7 +71,7 @@ DEFINE_METHOD(ToLower, args)
 
 	std::ranges::transform(v, v.begin(), [](std::int8_t c) {
 		return static_cast<std::int8_t>(std::tolower(static_cast<std::int32_t>(c))); });
-	return CStringValue::Construct(v);
+	return CStringValue::Construct(ctx->m_pRuntime, v);
 }
 DEFINE_METHOD(Substring, args)
 {
@@ -81,9 +81,9 @@ DEFINE_METHOD(Substring, args)
 	auto& a = args[0];
 	auto& b = args[1];
 
-	const auto CheckSanity = [](const IValue* v) {
+	const auto CheckSanity = [&ctx](const IValue* v) {
 		if (!v->IsIntegral())
-			throw CRuntimeError(std::format("string.substring expected an integral value, but got \"{}\"", v->TypeAsString()));
+			throw CRuntimeError(ctx->m_pRuntime, std::format("string.substring expected an integral value, but got \"{}\"", v->TypeAsString()));
 	};
 
 	CheckSanity(a);
@@ -92,18 +92,18 @@ DEFINE_METHOD(Substring, args)
 	auto start = a->ToInt();
 	auto end = b->ToInt();
 
-	const auto CheckRange = [&v](const auto value) {
+	const auto CheckRange = [&v, &ctx](const auto value) {
 		if(value < 0 || value >= static_cast<VarjusInt>(v.length()))
-			throw CRuntimeError("string.substring index out of range");
+			throw CRuntimeError(ctx->m_pRuntime, "string.substring index out of range");
 	};
 
 	CheckRange(start);
 	CheckRange(end);
 
 	if(start >= end)
-		throw CRuntimeError("string.substring expected start < end");
+		throw CRuntimeError(ctx->m_pRuntime, "string.substring expected start < end");
 
-	return CStringValue::Construct(v.substr(static_cast<std::size_t>(start), static_cast<std::size_t>(end)));
+	return CStringValue::Construct(ctx->m_pRuntime, v.substr(static_cast<std::size_t>(start), static_cast<std::size_t>(end)));
 }
 
 std::vector<std::string> SplitString(const std::string& str, const std::string& delimiter) {
@@ -134,14 +134,14 @@ DEFINE_METHOD(Split, args) {
 	auto& delimiter = args.front();
 
 	if(delimiter->Type() != t_string)
-		throw CRuntimeError(std::format("string.split expected a \"string\", but got \"{}\"", delimiter->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, std::format("string.split expected a \"string\", but got \"{}\"", delimiter->TypeAsString()));
 
 	auto tokens = SplitString(v, delimiter->AsString());
 	IValues tokensAsValues;
 	for (const auto& t : tokens)
-		tokensAsValues.emplace_back(CStringValue::Construct(t));
+		tokensAsValues.emplace_back(CStringValue::Construct(ctx->m_pRuntime, t));
 
-	return CArrayValue::Construct(std::move(tokensAsValues));
+	return CArrayValue::Construct(ctx->m_pRuntime, std::move(tokensAsValues));
 }
 std::string ReplaceAll(const std::string& str, const std::string& oldSub, const std::string& newSub) {
 	std::string result = str;
@@ -160,9 +160,9 @@ DEFINE_METHOD(Replace, args) {
 	auto __this = GetThisString(_this);
 	const auto& v = __this->ToString();
 
-	const auto CheckSanity = [](const IValue* v) {
+	const auto CheckSanity = [&ctx](const IValue* v) {
 		if (v->Type() != t_string)
-			throw CRuntimeError(std::format("string.substring expected a \"string\", but got \"{}\"", v->TypeAsString()));
+			throw CRuntimeError(ctx->m_pRuntime, std::format("string.substring expected a \"string\", but got \"{}\"", v->TypeAsString()));
 	};
 
 	auto& a = args[0];
@@ -171,7 +171,7 @@ DEFINE_METHOD(Replace, args) {
 	CheckSanity(a);
 	CheckSanity(b);
 
-	return CStringValue::Construct(ReplaceAll(v, a->AsString(), b->AsString()));
+	return CStringValue::Construct(ctx->m_pRuntime, ReplaceAll(v, a->AsString(), b->AsString()));
 }
 
 DEFINE_METHOD(Repeat, args) {
@@ -181,17 +181,17 @@ DEFINE_METHOD(Repeat, args) {
 
 	auto& countValue = args[0];
 	if (!countValue->IsIntegral())
-		throw CRuntimeError(std::format("string.repeat expected an integral value, but got \"{}\"", countValue->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, std::format("string.repeat expected an integral value, but got \"{}\"", countValue->TypeAsString()));
 
 	auto count = countValue->ToInt();
 	if (count < 0)
-		throw CRuntimeError("string.repeat expected count to be >= 0");
+		throw CRuntimeError(ctx->m_pRuntime, "string.repeat expected count to be >= 0");
 
 	std::string result;
 	for ([[maybe_unused]] const auto i : std::views::iota(0ll, count))
 		result += v;
 
-	return CStringValue::Construct(result);
+	return CStringValue::Construct(ctx->m_pRuntime, result);
 }
 
 DEFINE_METHOD(GetCodeAt, args) {
@@ -200,14 +200,14 @@ DEFINE_METHOD(GetCodeAt, args) {
 
 	auto& idx = args[0];
 	if (!idx->IsIntegral())
-		throw CRuntimeError(std::format("string.get_code_at expected an integral value, but got \"{}\"", idx->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, std::format("string.get_code_at expected an integral value, but got \"{}\"", idx->TypeAsString()));
 
 	const auto index = idx->ToInt();
 
 	if (index < 0 || index >= static_cast<VarjusInt>(v.length()))
-		throw CRuntimeError("string.get_code_at index out of range");
+		throw CRuntimeError(ctx->m_pRuntime, "string.get_code_at index out of range");
 
 	const auto asUnsigned = static_cast<std::size_t>(index);
 
-	return CIntValue::Construct(static_cast<VarjusInt>(v[asUnsigned]));
+	return CIntValue::Construct(ctx->m_pRuntime, static_cast<VarjusInt>(v[asUnsigned]));
 }

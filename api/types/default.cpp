@@ -3,8 +3,9 @@
 
 #include <format>
 
-IValue* IValue::Construct() {
-	return CProgramRuntime::AcquireNewValue<IValue>();
+
+IValue* IValue::Construct(CProgramRuntime* const runtime) {
+	return runtime->AcquireNewValue<IValue>();
 }
 void IValue::ReleaseInternal()
 {
@@ -14,11 +15,11 @@ void IValue::ReleaseInternal()
 void IValue::Release()
 {
 	ReleaseInternal();
-	return CProgramRuntime::FreeValue<IValue>(this);
+	m_pAllocator->FreeValue<IValue>(this);
 }
 IValue* IValue::Copy()
 {
-	return CProgramRuntime::AcquireNewValue<IValue>();
+	return m_pAllocator->AcquireNewValue<IValue>();
 }
 bool& IValue::AsBoolean(){
 	return ToCBoolean()->Get(); 

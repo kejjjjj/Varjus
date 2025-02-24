@@ -14,6 +14,5 @@ TEST_CASE("Main function calls a function declared beneath it") {
 	REQUIRE(retVal->ToInt() == 50);
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }

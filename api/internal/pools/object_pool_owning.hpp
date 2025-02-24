@@ -7,7 +7,7 @@
 #include <cassert>
 
 template <typename T>
-class COwningObjectPool {
+class COwningObjectPool final {
 public:
 
     COwningObjectPool() = default;

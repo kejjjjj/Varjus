@@ -31,7 +31,7 @@ fn kmpSearch(text, pattern) {
             j++;
         }
 
-        if (j === pattern.length) {
+        if (j == pattern.length) { //can't strict compare because int === uint
             return i - j;
         } else if (i < text.length && pattern[j] !== text[i]) {
             if (j !== 0) {

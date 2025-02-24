@@ -1,3 +1,9 @@
+
+export fn main()
+{
+    return "hi";
+}
+
 export fn whattheFuck(yea)
 {
     return yea[false] +  " " + "yeo";

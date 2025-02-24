@@ -6,7 +6,7 @@ class CIntValue final : public CValue<VarjusInt>
 public:
 	CIntValue() = default;
 
-	[[nodiscard]] static CIntValue* Construct(VarjusInt v);
+	[[nodiscard]] static CIntValue* Construct(CProgramRuntime* const runtime, VarjusInt v);
 
 	[[nodiscard]] EValueType Type() const noexcept override { return t_int; };
 

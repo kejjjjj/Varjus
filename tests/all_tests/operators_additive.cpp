@@ -17,8 +17,7 @@ TEST_CASE("integer additive operations") {
 	}));
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 TEST_CASE("uinteger additive operations") {
 
@@ -32,8 +31,7 @@ TEST_CASE("uinteger additive operations") {
 	}));
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 
 TEST_CASE("double additive operations") {
@@ -48,8 +46,7 @@ TEST_CASE("double additive operations") {
 	}));
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 
 TEST_CASE("string additive operations") {
@@ -65,6 +62,5 @@ TEST_CASE("string additive operations") {
 		}));
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }

@@ -17,7 +17,7 @@ class CBuiltInObject final : public CObjectValue
 public:
 	CBuiltInObject();
 	~CBuiltInObject();
-	static CBuiltInObject* Construct(BuiltInMethod_t&& methods, BuiltInProperty_t&& properties);
+	static CBuiltInObject* Construct(CProgramRuntime* const runtime, BuiltInMethod_t&& methods, BuiltInProperty_t&& properties);
 
 	void Release() override;
 

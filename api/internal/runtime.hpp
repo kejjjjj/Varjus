@@ -6,11 +6,11 @@
 
 #include "api/internal/globalDefinitions.hpp"
 #include "api/types/types.hpp"
-
-#include "pools/object_pool_non_owning.hpp"
+#include "api/types/internal/objects.hpp"
+#include "variables.hpp"
 #include "pools/object_pool_owning.hpp"
+#include <typeindex>
 
-class CVariable;
 class CRuntimeFunction;
 class CRuntimeFunctionBase;
 class CFileRuntimeData;
@@ -35,58 +35,85 @@ class CProgramRuntime
 
 	friend class CRuntimeFunction;
 	friend class CRuntimeExpression;
-	friend class CInternalArrayValue;
-	friend class CAggregate;
 
 public:
 	CProgramRuntime(RuntimeModules&& modules);
 	~CProgramRuntime();
 
 	IValue* Execute();
-	static void Cleanup();
+	void Cleanup();
 
-	static void SetExecutionPosition(const CodePosition* pos) noexcept;
-	[[nodiscard]] static const CodePosition* GetExecutionPosition() noexcept;
+	void SetExecutionPosition(const CodePosition* pos) noexcept;
+	[[nodiscard]] const CodePosition* GetExecutionPosition() noexcept;
 
-	static inline void ThrowException() noexcept { m_bExceptionThrown = true; }
-	static inline void CatchException() noexcept { m_bExceptionThrown = false; }
-	[[nodiscard]] static inline bool ExceptionThrown() noexcept { return m_bExceptionThrown; }
-	[[nodiscard]] static inline auto& GetExceptionValue() noexcept { return m_pExceptionValue; }
+	inline void ThrowException() noexcept { m_bExceptionThrown = true; }
+	inline void CatchException() noexcept { m_bExceptionThrown = false; }
+	[[nodiscard]] inline bool ExceptionThrown() noexcept { return m_bExceptionThrown; }
+	[[nodiscard]] inline auto& GetExceptionValue() noexcept { return m_pExceptionValue; }
 
-	[[nodiscard]] static CRuntimeModule* GetModuleByIndex(std::size_t index);
-	[[nodiscard]] static bool HasLeaks();
-	static void PrintAllLeaks();
+	[[nodiscard]] CRuntimeModule* GetModuleByIndex(std::size_t index);
+	[[nodiscard]] bool HasLeaks();
+	void PrintAllLeaks();
 
 private:
 
+	std::tuple<
+		COwningObjectPool<CVariable>,
+		COwningObjectPool<IValue>,
+		COwningObjectPool<CBooleanValue>,
+		COwningObjectPool<CIntValue>,
+		COwningObjectPool<CUIntValue>,
+		COwningObjectPool<CDoubleValue>,
+		COwningObjectPool<CStringValue>,
+		COwningObjectPool<CCallableValue>,
+		COwningObjectPool<CArrayValue>,
+		COwningObjectPool<CObjectValue>,
+		COwningObjectPool<CBuiltInObject>
+	>m_oValuePools;
 
-	template <IValueChild T>
-	static COwningObjectPool<T> m_oValuePool;
-public:
-
-	template <IValueChild T>
-	[[nodiscard]] static constexpr COwningObjectPool<T>& GetPool() {
-		return m_oValuePool<T>;
+	template <typename T, std::size_t... Is>
+	[[nodiscard]] static constexpr std::size_t GetPoolIndexImpl(std::index_sequence<Is...>) {
+		return ((std::is_same_v<T, std::tuple_element_t<Is, decltype(m_oValuePools)>> ? Is : 0) + ...);
 	}
 
-	[[nodiscard]] static CVariable* AcquireNewVariable();
-	[[nodiscard]] static VectorOf<CVariable*> AcquireNewVariables(std::size_t count);
-	static void FreeVariable(CVariable* var);
+	template <typename T>
+	[[nodiscard]] static constexpr std::size_t GetPoolIndex() {
+		return GetPoolIndexImpl<T>(std::make_index_sequence<std::tuple_size_v<decltype(m_oValuePools)>>{});
+	}
+
+public:
+
+	template <typename T>
+	[[nodiscard]] constexpr COwningObjectPool<T>& GetPool() {
+		return std::get<GetPoolIndex<COwningObjectPool<T>>()>(m_oValuePools);
+	}
+
+	void AllocatePools(std::size_t initialSize) {
+		std::apply([initialSize](auto&... pools) {
+			(..., pools.Grow(initialSize));
+		}, m_oValuePools);
+	}
+
+	[[nodiscard]] CVariable* AcquireNewVariable();
+	[[nodiscard]] VectorOf<CVariable*> AcquireNewVariables(std::size_t count);
+	void FreeVariable(CVariable* var);
 
 	template <IValueChild T>
-	[[nodiscard]] static constexpr T* AcquireNewValue() {
+	[[nodiscard]] constexpr T* AcquireNewValue() {
 		auto v = GetPool<T>().Acquire();
 		v->SetOwner(nullptr);
+		v->ConstructInternal(this);
 
 		assert(!v->HasOwner());
 		return v;
 	}
 
 	template <IValueChild T, typename Ctor>
-	[[nodiscard]] static constexpr T* AcquireNewValue(const Ctor& ctor) {
+	[[nodiscard]] constexpr T* AcquireNewValue(const Ctor& ctor) {
 	
 		auto v = GetPool<T>().Acquire();
 		v->SetOwner(nullptr);
+		v->ConstructInternal(this);
 		assert(!v->HasOwner());
 
 		if constexpr (std::is_same_v<IValue, T>)
@@ -99,9 +126,10 @@ public:
 	}
 
 	template <IValueChild T, typename Ctor>
-	[[nodiscard]] static constexpr T* AcquireNewValue(Ctor&& ctor) {
+	[[nodiscard]] constexpr T* AcquireNewValue(Ctor&& ctor) {
 		auto v = GetPool<T>().Acquire();
 		v->SetOwner(nullptr);
+		v->ConstructInternal(this);
 
 		assert(!v->HasOwner());
 
@@ -115,22 +143,22 @@ public:
 	}
 
 	template <IValueChild T>
-	static constexpr void FreeValue(T* value) {
+	constexpr void FreeValue(T* value) {
 		assert(!value->HasOwner());
+		value->m_pAllocator = nullptr;
 		GetPool<T>().Release(value);
 	}
 
 private:
 
 	[[nodiscard]] IValue* BeginExecution(CRuntimeFunction* entryFunc);
-	[[nodiscard]] CRuntimeFunction* FindMainFunction(const RuntimeModules& modules);
+	[[nodiscard]] static CRuntimeFunction* FindMainFunction(const RuntimeModules& modules);
 
-	static void AllocatePools(std::size_t initialSize);
-	static void FreeAllPools();
+	void FreeAllPools();
 
-	static RuntimeModules m_oModules;
-	static const CodePosition* m_pCodePosition;
-	static bool m_bExceptionThrown;
-	static IValue* m_pExceptionValue;
+	RuntimeModules m_oModules;
+	const CodePosition* m_pCodePosition;
+	bool m_bExceptionThrown;
+	IValue* m_pExceptionValue;
 };
 

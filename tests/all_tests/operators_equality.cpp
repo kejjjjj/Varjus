@@ -34,8 +34,7 @@ TEST_CASE("equality operations") {
 	}));
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 
 TEST_CASE("strict equality operations") {
@@ -67,8 +66,7 @@ TEST_CASE("strict equality operations") {
 		}));
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 
 TEST_CASE("unequality operations") {
@@ -100,8 +98,7 @@ TEST_CASE("unequality operations") {
 	}));
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 
 TEST_CASE("strict unequality operations") {
@@ -133,6 +130,5 @@ TEST_CASE("strict unequality operations") {
 	}));
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }

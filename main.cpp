@@ -18,7 +18,7 @@ int ExitApp(int v)
 }
 
 DEFINE_CALLBACK(CppFunc, args) {
-    return CStringValue::Construct("Hello from C++: " + args[0]->ValueAsString());
+    return CStringValue::Construct(ctx->m_pRuntime, "Hello from C++: " + args[0]->ValueAsString());
 }
 
 int main()
@@ -28,7 +28,7 @@ int main()
     Varjus::UseStdLibrary();
 
 
-    const auto reader = VarjusIOReader("/scripts/script.var");
+    const auto reader = VarjusIOReader("\\scripts\\script.var");
     const auto GetError = [](const std::optional<std::string>& errorMsg) {
         return errorMsg ? *errorMsg : "unknown error!";
     };

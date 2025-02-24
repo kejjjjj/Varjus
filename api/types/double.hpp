@@ -7,7 +7,7 @@ class CDoubleValue final : public CValue<VarjusDouble>
 public:
 	CDoubleValue() = default;
 	
-	[[nodiscard]] static CDoubleValue* Construct(VarjusDouble v);
+	[[nodiscard]] static CDoubleValue* Construct(CProgramRuntime* const runtime, VarjusDouble v);
 
 	[[nodiscard]] EValueType Type() const noexcept override { return t_double; };
 	

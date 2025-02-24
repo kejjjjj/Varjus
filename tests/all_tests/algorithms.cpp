@@ -13,8 +13,7 @@ TEST_CASE("Fibonacci(7)") {
 	REQUIRE(retVal->ToInt() == 13);
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 
 TEST_CASE("IterativeFibonacci(7)") {
@@ -26,8 +25,7 @@ TEST_CASE("IterativeFibonacci(7)") {
 	REQUIRE(retVal->ToInt() == 13);
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 
 TEST_CASE("Factorial(7)") {
@@ -39,8 +37,7 @@ TEST_CASE("Factorial(7)") {
 	REQUIRE(retVal->ToInt() == 5040);
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 TEST_CASE("FactorialIterative(7)") {
 
@@ -51,8 +48,7 @@ TEST_CASE("FactorialIterative(7)") {
 	REQUIRE(retVal->ToInt() == 5040);
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 
 TEST_CASE("ReverseString(hello)") {
@@ -64,8 +60,7 @@ TEST_CASE("ReverseString(hello)") {
 	REQUIRE(retVal->ToString() == "olleh");
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 
 TEST_CASE("Counter(Hello, World!)") {
@@ -75,8 +70,7 @@ TEST_CASE("Counter(Hello, World!)") {
 	AssertArray(retVal, AssertArrayValue<ASSERT_INT>(t_int, { 13, 11 }));
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 
 TEST_CASE("MaxSubArray([-2, 1, -3, 4, -1, 2, 1, -5, 4])") {
@@ -88,8 +82,7 @@ TEST_CASE("MaxSubArray([-2, 1, -3, 4, -1, 2, 1, -5, 4])") {
 	REQUIRE(retVal->ToInt() == 6);
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 
 TEST_CASE("GenerateParenthesis(3)") {
@@ -99,8 +92,7 @@ TEST_CASE("GenerateParenthesis(3)") {
 	AssertArray(retVal, AssertArrayValue<ASSERT_STRING>(t_string, { "((()))","(()())","(())()","()(())","()()()" }));
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 
 TEST_CASE("RemoveDuplicates([1, 1, 2, 2, 3, 3])") {
@@ -110,8 +102,7 @@ TEST_CASE("RemoveDuplicates([1, 1, 2, 2, 3, 3])") {
 	AssertArray(retVal, AssertArrayValue<ASSERT_INT>(t_int, { 1, 2, 3 }));
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 TEST_CASE("BinarySearch([1, 2, 3, 4, 5, 6])") {
 
@@ -122,8 +113,7 @@ TEST_CASE("BinarySearch([1, 2, 3, 4, 5, 6])") {
 	REQUIRE(retVal->ToInt() == 3);
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 TEST_CASE("SumArray([10, 15, 20])") {
 
@@ -134,8 +124,7 @@ TEST_CASE("SumArray([10, 15, 20])") {
 	REQUIRE(retVal->ToInt() == 45);
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 
 TEST_CASE("IsPrime() with 29 and 12") {
@@ -145,8 +134,7 @@ TEST_CASE("IsPrime() with 29 and 12") {
 	AssertArray(retVal, AssertArrayValue<ASSERT_BOOL>(t_boolean, { true, false }));
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 
 TEST_CASE("isPalindrome() with 29 and 12") {
@@ -156,8 +144,7 @@ TEST_CASE("isPalindrome() with 29 and 12") {
 	AssertArray(retVal, AssertArrayValue<ASSERT_BOOL>(t_boolean, { true, false, true }));
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 TEST_CASE("MergeSort([38, 27, 43, 3, 9, 82, 10])") {
 
@@ -166,8 +153,7 @@ TEST_CASE("MergeSort([38, 27, 43, 3, 9, 82, 10])") {
 	AssertArray(retVal, AssertArrayValue<ASSERT_INT>(t_int, { 3, 9, 10, 27, 38, 43, 82 }));
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 TEST_CASE("KMPStringMatch(ababcababcabc, abc)") {
 
@@ -178,8 +164,7 @@ TEST_CASE("KMPStringMatch(ababcababcabc, abc)") {
 	REQUIRE(retVal->ToInt() == 2);
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 
 TEST_CASE("ArrayToString([ 1, [ 2, [3, [] ] ], 4 ])") {
@@ -190,8 +175,7 @@ TEST_CASE("ArrayToString([ 1, [ 2, [3, [] ] ], 4 ])") {
 	REQUIRE(retVal->ToString() == "123empty4");
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 TEST_CASE("StressTest") {
 
@@ -200,6 +184,5 @@ TEST_CASE("StressTest") {
 	AssertArray(retVal, AssertArrayValue<ASSERT_INT>(t_int, { 93, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 }));
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }

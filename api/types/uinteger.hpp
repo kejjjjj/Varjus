@@ -6,7 +6,7 @@ class CUIntValue final : public CValue<VarjusUInt>
 public:
 	CUIntValue() = default;
 
-	[[nodiscard]] static CUIntValue* Construct(VarjusUInt v);
+	[[nodiscard]] static CUIntValue* Construct(CProgramRuntime* const runtime, VarjusUInt v);
 
 	[[nodiscard]] EValueType Type() const noexcept override { return t_uint; };
 

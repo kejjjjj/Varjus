@@ -14,8 +14,7 @@ TEST_CASE("Main function references global variable") {
 	REQUIRE(retVal->ToInt() == 30);
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 TEST_CASE("Main function edits global variable") {
 
@@ -26,8 +25,7 @@ TEST_CASE("Main function edits global variable") {
 	REQUIRE(retVal->ToInt() == 50);
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 
 TEST_CASE("Main function and global scope edit global variable") {
@@ -39,6 +37,5 @@ TEST_CASE("Main function and global scope edit global variable") {
 	REQUIRE(retVal->ToInt() == 50);
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }

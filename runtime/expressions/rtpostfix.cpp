@@ -12,8 +12,8 @@
 #include <cassert>
 #include <format>
 
-static IValue* EvaluateIncrement(IValue* operand);
-static IValue* EvaluateDecrement(IValue* operand);
+static IValue* EvaluateIncrement(CProgramRuntime* const runtime, IValue* operand);
+static IValue* EvaluateDecrement(CProgramRuntime* const runtime, IValue* operand);
 
 IValue* CRuntimeExpression::EvaluatePostfix(CRuntimeContext* const ctx, const PostfixASTNode* node)
 {
@@ -39,9 +39,9 @@ IValue* CRuntimeExpression::EvaluatePostfix(CRuntimeContext* const ctx, const Po
 		}
 
 	} else if (node->IsIncrement()) {
-		returnVal = EvaluateIncrement(operand);
+		returnVal = EvaluateIncrement(ctx->m_pRuntime, operand);
 	} else if (node->IsDecrement()) {
-		returnVal = EvaluateDecrement(operand);
+		returnVal = EvaluateDecrement(ctx->m_pRuntime, operand);
 	}
 
 	if (!operand->HasOwner()) 
@@ -54,7 +54,7 @@ IValue* CRuntimeExpression::EvaluateMemberAccess(IValue* operand, const MemberAc
 {
 
 	if(!operand->IsAggregate())
-		throw CRuntimeError(std::format("a value of type \"{}\" is not aggregate", operand->TypeAsString()));
+		throw CRuntimeError(operand->GetAllocator(), std::format("a value of type \"{}\" is not aggregate", operand->TypeAsString()));
 
 	return operand->GetAggregate(node->m_uGlobalMemberIndex);
 
@@ -62,7 +62,7 @@ IValue* CRuntimeExpression::EvaluateMemberAccess(IValue* operand, const MemberAc
 IValue* CRuntimeExpression::EvaluateSubscript(CRuntimeContext* const ctx, IValue* operand, const SubscriptASTNode* node)
 {
 	if (!operand->IsIndexable())
-		throw CRuntimeError(std::format("a value of type \"{}\" cannot be indexed", operand->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, std::format("a value of type \"{}\" cannot be indexed", operand->TypeAsString()));
 
 	auto accessor = Evaluate(ctx, node->m_pAST.get());
 
@@ -79,54 +79,53 @@ IValue* CRuntimeExpression::EvaluateFunctionCall(CRuntimeContext* const ctx, IVa
 {
 
 	if (!operand->IsCallable())
-		throw CRuntimeError(std::format("a value of type \"{}\" is not callable", operand->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, std::format("a value of type \"{}\" is not callable", operand->TypeAsString()));
 
 	// the callee will take ownership of temp-value args
 	auto args = EvaluateList(ctx, node->m_oArguments);
 	return operand->Call(ctx, args);
 }
 
-IValue* EvaluateIncrement(IValue* operand)
+IValue* EvaluateIncrement(CProgramRuntime* const runtime, IValue* operand)
 {
 	
 	if (operand->Type() != t_int && operand->Type() != t_uint)
-		throw CRuntimeError(std::format("the increment operand must have an (u)int type, but is \"{}\"", operand->TypeAsString()));
+		throw CRuntimeError(runtime, std::format("the increment operand must have an (u)int type, but is \"{}\"", operand->TypeAsString()));
 	
 	if (!operand->HasOwner())
-		throw CRuntimeError("cannot increment a temporary value");
+		throw CRuntimeError(runtime, "cannot increment a temporary value");
 
 	if (operand->IsImmutable()) 
-		throw CRuntimeError("cannot increment a const value");
+		throw CRuntimeError(runtime, "cannot increment a const value");
 	
 	if (operand->Type() == t_int) {
-		auto v = CIntValue::Construct(operand->AsInt()); //create temp old value
+		auto v = CIntValue::Construct(runtime, operand->AsInt()); //create temp old value
 		++operand->AsInt(); //but increment this value
 		return v;
 	} 
 	
-	auto v = CUIntValue::Construct(operand->AsUInt()); //create temp old value
+	auto v = CUIntValue::Construct(runtime, operand->AsUInt()); //create temp old value
 	++operand->AsUInt(); //but increment this value
 	return v;
 }
-IValue* EvaluateDecrement(IValue* operand)
+IValue* EvaluateDecrement(CProgramRuntime* const runtime, IValue* operand)
 {
 	if (operand->Type() != t_int && operand->Type() != t_uint)
-		throw CRuntimeError(std::format("the decrement operand must have an (u)int type, but is \"{}\"", operand->TypeAsString()));
+		throw CRuntimeError(runtime, std::format("the decrement operand must have an (u)int type, but is \"{}\"", operand->TypeAsString()));
 
 	if (!operand->HasOwner())
-		throw CRuntimeError("cannot decrement a temporary value");
+		throw CRuntimeError(runtime, "cannot decrement a temporary value");
 
 	if (operand->IsImmutable()) 
-		throw CRuntimeError("cannot decrement a const value");
+		throw CRuntimeError(runtime, "cannot decrement a const value");
 	
-
 	if (operand->Type() == t_int) {
-		auto v = CIntValue::Construct(operand->AsInt()); //create temp old value
+		auto v = CIntValue::Construct(runtime, operand->AsInt()); //create temp old value
 		--operand->AsInt(); //but decrement this value
 		return v;
 	}
 
-	auto v = CUIntValue::Construct(operand->AsUInt()); //create temp old value
+	auto v = CUIntValue::Construct(runtime, operand->AsUInt()); //create temp old value
 	--operand->AsUInt(); //but decrement this value
 	return v;
 }

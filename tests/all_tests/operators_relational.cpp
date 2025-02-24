@@ -22,8 +22,7 @@ TEST_CASE("boolean relational operations") {
 	}));
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 
 TEST_CASE("integer relational operations") {
@@ -49,8 +48,7 @@ TEST_CASE("integer relational operations") {
 	}));
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 TEST_CASE("uinteger relational operations") {
 
@@ -75,8 +73,7 @@ TEST_CASE("uinteger relational operations") {
 	}));
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 
 TEST_CASE("double relational operations") {
@@ -102,6 +99,5 @@ TEST_CASE("double relational operations") {
 	}));
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }

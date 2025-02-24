@@ -13,8 +13,7 @@ TEST_CASE("Simple throw within try catch")
 	REQUIRE(retVal->ToString() == "test exception");
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 
 }
 TEST_CASE("Nested try catch")
@@ -26,8 +25,7 @@ TEST_CASE("Nested try catch")
 	REQUIRE(retVal->ToString() == "test exception");
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 TEST_CASE("Triple nested try catch")
 {
@@ -38,8 +36,7 @@ TEST_CASE("Triple nested try catch")
 	REQUIRE(retVal->ToString() == "exceptionFunc");
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 TEST_CASE("Deeply nested try catch")
 {
@@ -50,8 +47,7 @@ TEST_CASE("Deeply nested try catch")
 	REQUIRE(retVal->ToString() == "exceptionFunc");
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 TEST_CASE("try catch doesn't throw")
 {
@@ -62,8 +58,7 @@ TEST_CASE("try catch doesn't throw")
 	REQUIRE(retVal->ToString() == "try");
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 TEST_CASE("try catch returns from try block")
 {
@@ -74,8 +69,7 @@ TEST_CASE("try catch returns from try block")
 	REQUIRE(retVal->ToString() == "try");
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 TEST_CASE("try catch returns from catch block")
 {
@@ -86,8 +80,7 @@ TEST_CASE("try catch returns from catch block")
 	REQUIRE(retVal->ToString() == "catch");
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 TEST_CASE("try catch returns the exception from catch block")
 {
@@ -98,8 +91,7 @@ TEST_CASE("try catch returns the exception from catch block")
 	REQUIRE(retVal->ToString() == "catch");
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 TEST_CASE("function throws and gets caught in main")
 {
@@ -110,8 +102,7 @@ TEST_CASE("function throws and gets caught in main")
 	REQUIRE(retVal->ToString() == "catch");
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 TEST_CASE("function throws and catches it")
 {
@@ -122,6 +113,5 @@ TEST_CASE("function throws and catches it")
 	REQUIRE(retVal->ToString() == "caught");
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }

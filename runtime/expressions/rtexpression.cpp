@@ -20,7 +20,7 @@ IValue* CRuntimeExpression::Execute(CRuntimeContext* const ctx)
 {
 	[[maybe_unused]] const auto result = Evaluate(ctx);
 	
-	if (CProgramRuntime::ExceptionThrown())
+	if (ctx->m_pRuntime->ExceptionThrown())
 		return result; //we don't want the exception to get destroyed
 	
 	if (result && !result->HasOwner())
@@ -38,11 +38,11 @@ WARNING_DISABLE(4061)
 WARNING_DISABLE(4062)
 IValue* CRuntimeExpression::Evaluate(CRuntimeContext* const ctx, const AbstractSyntaxTree* node)
 {
-	if (CProgramRuntime::ExceptionThrown())
-		return CProgramRuntime::GetExceptionValue();
+	if (ctx->m_pRuntime->ExceptionThrown())
+		return ctx->m_pRuntime->GetExceptionValue();
 
 	assert(node != nullptr);
-	CProgramRuntime::SetExecutionPosition(&node->GetCodePosition());
+	ctx->m_pRuntime->SetExecutionPosition(&node->GetCodePosition());
 
 	if (node->IsPostfix()) 
 		return EvaluatePostfix(ctx, node->GetOperator()->GetPostfix());
@@ -70,9 +70,9 @@ IValue* CRuntimeExpression::Evaluate(CRuntimeContext* const ctx, const AbstractS
 	auto& func = m_oOperatorTable[static_cast<std::size_t>(node->GetOperator()->m_ePunctuation)];
 
 	if (!func)
-		throw CRuntimeError("this operator isn't supported yet");
+		throw CRuntimeError(ctx->m_pRuntime, "this operator isn't supported yet");
 
-	IValue* result = func(lhs, rhs);
+	IValue* result = func(ctx->m_pRuntime, lhs, rhs);
 
 	if (!lhs->HasOwner()) lhs->Release();
 	if (!rhs->HasOwner()) rhs->Release();
@@ -89,7 +89,7 @@ inline IValue* EvaluateVariable(CRuntimeContext* const ctx, const VariableASTNod
 
 	if (var->m_bGlobalVariable) {
 		auto activeModule = var->m_bBelongsToDifferentModule
-			? CProgramRuntime::GetModuleByIndex(var->m_uModuleIndex)
+			? ctx->m_pRuntime->GetModuleByIndex(var->m_uModuleIndex)
 			: ctx->m_pModule;
 
 		assert(activeModule);
@@ -113,10 +113,10 @@ inline IValue* EvaluateVariable(CRuntimeContext* const ctx, const VariableASTNod
 inline IValue* EvaluateFunction(CRuntimeContext* const ctx, const FunctionASTNode* const var)
 {
 	auto activeModule = var->m_bBelongsToDifferentModule
-		? CProgramRuntime::GetModuleByIndex(var->m_uModuleIndex)
+		? ctx->m_pRuntime->GetModuleByIndex(var->m_uModuleIndex)
 		: ctx->m_pModule;
 
-	auto v = CCallableValue::Construct(activeModule->GetFunctionByIndex(var->m_uIndex));
+	auto v = CCallableValue::Construct(ctx->m_pRuntime, activeModule->GetFunctionByIndex(var->m_uIndex));
 
 	if (var->m_bBelongsToDifferentModule)
 		v->Internal()->SetModuleIndex(var->m_uModuleIndex);
@@ -126,7 +126,7 @@ inline IValue* EvaluateFunction(CRuntimeContext* const ctx, const FunctionASTNod
 }
 inline IValue* EvaluateLambda(CRuntimeContext* const ctx, const LambdaASTNode* const var)
 {
-	auto v = CCallableValue::Construct(var->m_pLambda.get());
+	auto v = CCallableValue::Construct(ctx->m_pRuntime, var->m_pLambda.get());
 
 	if (var->m_oVariableCaptures.size())
 		v->Internal()->SetCaptures(ctx, var->m_oVariableCaptures);
@@ -149,28 +149,28 @@ IValue* CRuntimeExpression::EvaluateLeaf(CRuntimeContext* const ctx, const Abstr
 	}
 
 	if (node->IsArray()) {
-		return CArrayValue::Construct(EvaluateList(ctx, node->GetArray()->m_oExpressions));
+		return CArrayValue::Construct(ctx->m_pRuntime, EvaluateList(ctx, node->GetArray()->m_oExpressions));
 	}
 
 	if (node->IsObject()) {
-		return CObjectValue::Construct(ctx->m_pModule->GetIndex() ,EvaluateObject(ctx, node->GetObject()->m_oAttributes));
+		return CObjectValue::Construct(ctx->m_pRuntime, ctx->m_pModule->GetIndex(), EvaluateObject(ctx, node->GetObject()->m_oAttributes));
 	}
 
 	if (node->IsConstant()) {
 		const auto constant = node->GetConstant();
 		switch (constant->m_eDataType) {
 			case t_undefined:
-				return IValue::Construct();
+				return IValue::Construct(ctx->m_pRuntime);
 			case t_boolean:
-				return CBooleanValue::Construct(static_cast<bool>(constant->m_pConstant[0]));
+				return CBooleanValue::Construct(ctx->m_pRuntime, static_cast<bool>(constant->m_pConstant[0]));
 			case t_int:
-				return CIntValue::Construct(*reinterpret_cast<VarjusInt*>((char*)constant->m_pConstant.data()));
+				return CIntValue::Construct(ctx->m_pRuntime, *reinterpret_cast<VarjusInt*>((char*)constant->m_pConstant.data()));
 			case t_uint:
-				return CUIntValue::Construct(*reinterpret_cast<VarjusUInt*>((char*)constant->m_pConstant.data()));
+				return CUIntValue::Construct(ctx->m_pRuntime, *reinterpret_cast<VarjusUInt*>((char*)constant->m_pConstant.data()));
 			case t_double:
-				return CDoubleValue::Construct(*reinterpret_cast<VarjusDouble*>((char*)constant->m_pConstant.data()));
+				return CDoubleValue::Construct(ctx->m_pRuntime, *reinterpret_cast<VarjusDouble*>((char*)constant->m_pConstant.data()));
 			case t_string:
-				return CStringValue::Construct(constant->m_pConstant);
+				return CStringValue::Construct(ctx->m_pRuntime, constant->m_pConstant);
 			default:
 				break;
 		}
@@ -195,7 +195,7 @@ IValue* CRuntimeExpression::EvaluateTernary(CRuntimeContext* const ctx, const Te
 	auto operand = Evaluate(ctx, node->m_pOperand.get());
 
 	if (!operand->IsBooleanConvertible())
-		throw CRuntimeError("the operand is not convertible to a boolean");
+		throw CRuntimeError(ctx->m_pRuntime, "the operand is not convertible to a boolean");
 
 	const auto boolValue = operand->ToBoolean();
 
@@ -228,5 +228,5 @@ IValue* CRuntimeExpression::EvaluateFmtString(CRuntimeContext* const ctx, const 
 
 	}
 
-	return CStringValue::Construct(fullString);
+	return CStringValue::Construct(ctx->m_pRuntime, fullString);
 }

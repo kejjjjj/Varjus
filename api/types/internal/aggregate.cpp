@@ -14,7 +14,8 @@
 #include <cassert>
 #include <stdexcept>
 
-void CAggregate::Setup(std::size_t moduleIndex, const std::vector<ElementIndex>& elements){
+void CAggregate::Setup(CProgramRuntime* const runtime, std::size_t moduleIndex, const std::vector<ElementIndex>& elements){
+	m_pAllocator = runtime;
 	SetModuleIndex(moduleIndex);
 	for (auto& l : elements) {
 		AddAttribute(l);
@@ -22,7 +23,8 @@ void CAggregate::Setup(std::size_t moduleIndex, const std::vector<ElementIndex>&
 }
 CVariable* CAggregate::AddAttribute(ElementIndex elem)
 {
-	return m_oIndexLookup[elem] = CVariable::Construct(IValue::Construct());
+	assert(m_pAllocator);
+	return m_oIndexLookup[elem] = CVariable::Construct(m_pAllocator, IValue::Construct(m_pAllocator));
 }
 void CAggregate::AddAttribute(ElementIndex elem, IValue* value){
 	return AddAttribute(elem)->SetValue(value);
@@ -52,7 +54,7 @@ void CAggregate::Release()
 IValue* CAggregate::ElementLookup(GlobalMemberIndex index) const
 {
 	if (!m_oIndexLookup.contains(index)) {
-		throw CRuntimeError(std::format("this aggregate doesn't have the attribute \"{}\"",
+		throw CRuntimeError(m_pAllocator, std::format("this aggregate doesn't have the attribute \"{}\"",
 			CFileContext::m_oAllMembers.At(index)
 		));
 	}

@@ -13,8 +13,7 @@ TEST_CASE("Closure captures local variable") {
 	REQUIRE(retVal->ToInt() == 50);
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 TEST_CASE("Closure captures global variable") {
 
@@ -25,8 +24,7 @@ TEST_CASE("Closure captures global variable") {
 	REQUIRE(retVal->ToInt() == 50);
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 TEST_CASE("Closure gets assigned to a variable") {
 
@@ -37,8 +35,7 @@ TEST_CASE("Closure gets assigned to a variable") {
 	REQUIRE(retVal->ToInt() == 50);
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 
 TEST_CASE("Closure edits local variable") {
@@ -50,8 +47,7 @@ TEST_CASE("Closure edits local variable") {
 	REQUIRE(retVal->ToInt() == 50);
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 TEST_CASE("Closure used in a closure") {
 
@@ -62,8 +58,7 @@ TEST_CASE("Closure used in a closure") {
 	REQUIRE(retVal->ToInt() == 50);
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 TEST_CASE("Closure used in a closure (variable context)") {
 
@@ -74,8 +69,7 @@ TEST_CASE("Closure used in a closure (variable context)") {
 	REQUIRE(retVal->ToInt() == 50);
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 
 TEST_CASE("Self capturing recursive closure") {
@@ -87,6 +81,5 @@ TEST_CASE("Self capturing recursive closure") {
 	REQUIRE(retVal->ToInt() == 10);
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }

@@ -42,7 +42,7 @@ public:
 	CObjectValue() = default;
 	~CObjectValue();
 
-	static CObjectValue* Construct(std::size_t moduleIndex, ObjectInitializer&& values);
+	static CObjectValue* Construct(CProgramRuntime* const runtime, std::size_t moduleIndex, ObjectInitializer&& values);
 	static void ConstructMethods(); //only called once during init
 	static void ConstructProperties(); //only called once during init
 

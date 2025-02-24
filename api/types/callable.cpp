@@ -8,9 +8,9 @@
 #include "api/types/internal/references.hpp"
 
 
-CCallableValue* CCallableValue::Construct(CRuntimeFunctionBase* v)
+CCallableValue* CCallableValue::Construct(CProgramRuntime* const runtime, CRuntimeFunctionBase* v)
 {
-	auto ptr = CProgramRuntime::AcquireNewValue<CCallableValue>();
+	auto ptr = runtime->AcquireNewValue<CCallableValue>();
 	ptr->MakeShared();
 	ptr->Internal()->SetCallable(v);
 	return ptr;
@@ -18,7 +18,7 @@ CCallableValue* CCallableValue::Construct(CRuntimeFunctionBase* v)
 
 IValue* CCallableValue::Copy()
 {
-	auto ptr = CProgramRuntime::AcquireNewValue<CCallableValue>();
+	auto ptr = m_pAllocator->AcquireNewValue<CCallableValue>();
 	ptr->MakeShared();
 	auto& var = (ptr->GetShared() = GetShared());
 
@@ -40,7 +40,7 @@ void CCallableValue::Release()
 	Get().Release(); //always decrement ref count
 
 	ReleaseInternal();
-	CProgramRuntime::FreeValue<CCallableValue>(this);
+	m_pAllocator->FreeValue<CCallableValue>(this);
 	ReleaseShared();
 }
 IValue* CCallableValue::Call(CRuntimeContext* const ctx, const IValues& args)
@@ -49,8 +49,9 @@ IValue* CCallableValue::Call(CRuntimeContext* const ctx, const IValues& args)
 	auto callable = internal->GetCallable();
 
 	CRuntimeContext newContext = {
+		.m_pRuntime = ctx->m_pRuntime,
 		.m_pModule = internal->m_bRequiresModuleChange
-			? CProgramRuntime::GetModuleByIndex(internal->m_uModule)
+			? ctx->m_pRuntime->GetModuleByIndex(internal->m_uModule)
 			: ctx->m_pModule,
 		.m_pFunction = ctx->m_pFunction
 	};
@@ -72,7 +73,7 @@ void CInternalCallableValue::SetCaptures(CRuntimeContext* const ctx, const Vecto
 	for (auto& var : captures) {
 
 		auto activeModule = var.m_bBelongsToDifferentModule
-			? CProgramRuntime::GetModuleByIndex(var.m_uModuleIndex)
+			? ctx->m_pRuntime->GetModuleByIndex(var.m_uModuleIndex)
 			: ctx->m_pModule;
 
 

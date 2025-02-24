@@ -14,8 +14,7 @@ TEST_CASE("`hello, world!`") {
 	REQUIRE(retVal->AsString() == "hello, world!");
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 TEST_CASE("``") {
 
@@ -27,8 +26,7 @@ TEST_CASE("``") {
 	REQUIRE(retVal->AsString() == "");
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 TEST_CASE("`${0xffff}`") {
 
@@ -40,8 +38,7 @@ TEST_CASE("`${0xffff}`") {
 	REQUIRE(retVal->AsString() == "65535");
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 TEST_CASE("`before ${0xffff} after`") {
 
@@ -53,8 +50,7 @@ TEST_CASE("`before ${0xffff} after`") {
 	REQUIRE(retVal->AsString() == "before 65535 after");
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 TEST_CASE("`${0xffff} and ${0.2}`") {
 
@@ -66,8 +62,7 @@ TEST_CASE("`${0xffff} and ${0.2}`") {
 	REQUIRE(retVal->AsString() == "65535 and 0.200000");
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 TEST_CASE("`thing(): ${thing(20, 4)}`") {
 
@@ -79,8 +74,7 @@ TEST_CASE("`thing(): ${thing(20, 4)}`") {
 	REQUIRE(retVal->AsString() == "thing(): 80");
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 TEST_CASE("`A${a}B${b}C${c}`") {
 
@@ -92,8 +86,7 @@ TEST_CASE("`A${a}B${b}C${c}`") {
 	REQUIRE(retVal->AsString() == "A0B1C2");
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 TEST_CASE("`o\nA${a}\nB${b}\nC${c}\no`") {
 
@@ -105,8 +98,7 @@ TEST_CASE("`o\nA${a}\nB${b}\nC${c}\no`") {
 	REQUIRE(retVal->AsString() == "o\n        A0\n        B1\n        C2\n    o");
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 TEST_CASE("`${[(f(2,3))][0]}`") {
 
@@ -118,6 +110,5 @@ TEST_CASE("`${[(f(2,3))][0]}`") {
 	REQUIRE(retVal->AsString() == "5");
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }

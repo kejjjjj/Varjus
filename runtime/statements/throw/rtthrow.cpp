@@ -15,8 +15,8 @@ IValue* CRuntimeThrowStatement::Execute(CRuntimeContext* const ctx)
 
 	auto ret = v->HasOwner() ? v->Copy() : v;
 
-	CProgramRuntime::GetExceptionValue() = ret;
-	CProgramRuntime::ThrowException();
+	ctx->m_pRuntime->GetExceptionValue() = ret;
+	ctx->m_pRuntime->ThrowException();
 
 	return ret;
 }

@@ -1,19 +1,19 @@
 #include "api/internal/runtime.hpp"
 #include "uinteger.hpp"
 
-CUIntValue* CUIntValue::Construct(VarjusUInt v) {
-	return CProgramRuntime::AcquireNewValue<CUIntValue>(v);
+CUIntValue* CUIntValue::Construct(CProgramRuntime* const runtime, VarjusUInt v) {
+	return runtime->AcquireNewValue<CUIntValue>(v);
 }
 
 IValue* CUIntValue::Copy()
 {
 	if (IsShared()) {
-		auto ptr = CProgramRuntime::AcquireNewValue<CUIntValue>();
+		auto ptr = m_pAllocator->AcquireNewValue<CUIntValue>();
 		ptr->MakeShared();
 		ptr->GetShared() = GetShared();
 		return ptr;
 	}
-	return CProgramRuntime::AcquireNewValue<CUIntValue>(Get());
+	return m_pAllocator->AcquireNewValue<CUIntValue>(Get());
 }
 void CUIntValue::Release()
 {
@@ -21,5 +21,5 @@ void CUIntValue::Release()
 		ReleaseShared();
 
 	ReleaseInternal();
-	CProgramRuntime::FreeValue<CUIntValue>(this);
+	m_pAllocator->FreeValue<CUIntValue>(this);
 }

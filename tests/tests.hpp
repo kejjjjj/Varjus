@@ -7,3 +7,8 @@
 #include <string>
 
 IValue* TEST_ExecuteFile(const std::string& srcFile);
+
+#define TEST_END(retVal)\
+auto allocator = retVal->GetAllocator();\
+retVal->Release();\
+REQUIRE((allocator && !allocator->HasLeaks()))

@@ -43,7 +43,7 @@ void CObjectValue::ConstructProperties()
 
 DEFINE_PROPERTY(ObjectLength) {
 	auto __this = GetThisObject(_this);
-	return CIntValue::Construct(static_cast<VarjusInt>(__this->Internal()->GetAggregateValue().Length()));
+	return CUIntValue::Construct(runtime, static_cast<VarjusUInt>(__this->Internal()->GetAggregateValue().Length()));
 }
 
 
@@ -56,10 +56,10 @@ DEFINE_METHOD(Object_Keys, args)
 
 	//result array
 	for (auto i = std::size_t(0); const auto& [index, var] : vars) {
-		results[i++] = CStringValue::Construct(CFileContext::m_oAllMembers.At(index));
+		results[i++] = CStringValue::Construct(ctx->m_pRuntime, CFileContext::m_oAllMembers.At(index));
 	}
 
-	return CArrayValue::Construct(std::move(results));
+	return CArrayValue::Construct(ctx->m_pRuntime, std::move(results));
 }
 DEFINE_METHOD(Object_Values, args)
 {
@@ -73,7 +73,7 @@ DEFINE_METHOD(Object_Values, args)
 		results[i++] = var->GetValue()->Copy();
 	}
 
-	return CArrayValue::Construct(std::move(results));
+	return CArrayValue::Construct(ctx->m_pRuntime, std::move(results));
 }
 
 static auto GetAttribute(CObjectValue* obj, IValue* const key)
@@ -117,9 +117,9 @@ DEFINE_METHOD(Object_Remove, args)
 	auto keyStr = key->ValueAsString();
 
 	if(!CFileContext::m_oAllMembers.Contains(keyStr))
-		return CBooleanValue::Construct(false);
+		return CBooleanValue::Construct(ctx->m_pRuntime, false);
 
-	return CBooleanValue::Construct(aggregate.RemoveAttribute(CFileContext::m_oAllMembers.At(keyStr)));
+	return CBooleanValue::Construct(ctx->m_pRuntime, aggregate.RemoveAttribute(CFileContext::m_oAllMembers.At(keyStr)));
 }
 
 static auto Contains(CObjectValue* obj, IValue* const key)
@@ -130,7 +130,7 @@ static auto Contains(CObjectValue* obj, IValue* const key)
 DEFINE_METHOD(Object_Contains, args)
 {
 	auto __this = GetThisObject(_this);
-	return CBooleanValue::Construct(Contains(__this, args[0]));
+	return CBooleanValue::Construct(ctx->m_pRuntime, Contains(__this, args[0]));
 }
 DEFINE_METHOD(Object_ToArray, args)
 {
@@ -142,11 +142,11 @@ DEFINE_METHOD(Object_ToArray, args)
 
 	for (const auto& [i, var] : aggregate) {
 
-		auto key = CStringValue::Construct(CFileContext::m_oAllMembers.At(i));
+		auto key = CStringValue::Construct(ctx->m_pRuntime, CFileContext::m_oAllMembers.At(i));
 		auto value = var->GetValue()->Copy();
 
-		values.push_back(CArrayValue::Construct({ key, value }));
+		values.push_back(CArrayValue::Construct(ctx->m_pRuntime, { key, value }));
 	}
 
-	return CArrayValue::Construct(std::move(values));
+	return CArrayValue::Construct(ctx->m_pRuntime, std::move(values));
 }

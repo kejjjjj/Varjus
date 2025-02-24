@@ -20,10 +20,10 @@ CRuntimeModule::CRuntimeModule(CModule& ctx) :
 CRuntimeModule::~CRuntimeModule() = default;
 
 
-void CRuntimeModule::SetupGlobalVariables() {
+void CRuntimeModule::SetupGlobalVariables(CProgramRuntime* const runtime) {
 
 	//create global variables
-	m_oGlobalVariables = CProgramRuntime::AcquireNewVariables(m_uNumGlobalVariables);
+	m_oGlobalVariables = runtime->AcquireNewVariables(m_uNumGlobalVariables);
 
 	std::vector<std::pair<BuiltInMethod_t, BuiltInProperty_t>> classData;
 
@@ -39,18 +39,19 @@ void CRuntimeModule::SetupGlobalVariables() {
 	assert(m_oGlobalVariables.size() >= classData.size());
 
 	for (size_t i{}; auto& [method, property] : classData) {
-		m_oGlobalVariables[i]->SetValue(CBuiltInObject::Construct(std::move(method), std::move(property)));
+		m_oGlobalVariables[i]->SetValue(CBuiltInObject::Construct(runtime, std::move(method), std::move(property)));
 		m_oGlobalVariables[i]->GetValue()->MakeImmutable();
 		i++;
 	}
 
 	for (auto& var : m_oGlobalVariables | std::views::drop(classData.size())) {
-		var->SetValue(IValue::Construct());
+		var->SetValue(IValue::Construct(runtime));
 	}
 }
-void CRuntimeModule::EvaluateGlobalExpressions() {
+void CRuntimeModule::EvaluateGlobalExpressions(CProgramRuntime* const runtime) {
 
 	CRuntimeContext ctx{
+		.m_pRuntime = runtime,
 		.m_pModule = this,
 		.m_pFunction = nullptr
 	};

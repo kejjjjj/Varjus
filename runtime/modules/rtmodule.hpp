@@ -30,8 +30,8 @@ public:
 	[[nodiscard]] CRuntimeFunctionBase* GetFunctionByIndex(std::size_t index);
 	[[nodiscard]] CVariable* GetGlobalVariableByIndex(std::size_t index);
 
-	void SetupGlobalVariables();
-	void EvaluateGlobalExpressions();
+	void SetupGlobalVariables(CProgramRuntime* const runtime);
+	void EvaluateGlobalExpressions(CProgramRuntime* const runtime);
 	void FreeGlobalVariables();
 
 	[[nodiscard]] CFileContext* GetContext() noexcept { return &m_oContext; }

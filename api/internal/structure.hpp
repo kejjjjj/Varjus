@@ -45,6 +45,7 @@ class FunctionCallASTNode;
 class TernaryASTNode;
 class FmtStringASTNode;
 class CVariable;
+class CProgramRuntime;
 class CRuntimeModule;
 
 struct CFunctionBlock;
@@ -60,6 +61,7 @@ WARNING_DISABLE(4266)
 
 struct CRuntimeContext
 {
+	CProgramRuntime* m_pRuntime;
 	CRuntimeModule* m_pModule;
 	CFunction* m_pFunction;
 };

@@ -14,25 +14,7 @@
 
 #define VALUEPOOL_INIT_SIZE size_t(100)
 
-template<> COwningObjectPool<CVariable>           CProgramRuntime::m_oValuePool<CVariable>{}; 
-template<> COwningObjectPool<IValue>              CProgramRuntime::m_oValuePool<IValue>{};
-template<> COwningObjectPool<CBooleanValue>       CProgramRuntime::m_oValuePool<CBooleanValue>{};
-template<> COwningObjectPool<CIntValue>           CProgramRuntime::m_oValuePool<CIntValue>{};
-template<> COwningObjectPool<CUIntValue>          CProgramRuntime::m_oValuePool<CUIntValue>{};
-template<> COwningObjectPool<CDoubleValue>        CProgramRuntime::m_oValuePool<CDoubleValue>{};
-template<> COwningObjectPool<CStringValue>        CProgramRuntime::m_oValuePool<CStringValue>{};
-template<> COwningObjectPool<CCallableValue>      CProgramRuntime::m_oValuePool<CCallableValue>{};
-template<> COwningObjectPool<CArrayValue>         CProgramRuntime::m_oValuePool<CArrayValue>{};
-template<> COwningObjectPool<CObjectValue>        CProgramRuntime::m_oValuePool<CObjectValue>{};
-template<> COwningObjectPool<CBuiltInObject>      CProgramRuntime::m_oValuePool<CBuiltInObject>{};
-
-RuntimeModules CProgramRuntime::m_oModules;
-const CodePosition* CProgramRuntime::m_pCodePosition{ nullptr };
-bool CProgramRuntime::m_bExceptionThrown{ false };
-IValue* CProgramRuntime::m_pExceptionValue{ nullptr };
-
 CProgramRuntime::CProgramRuntime(RuntimeModules&& modules){
-	FreeAllPools();
 	AllocatePools(VALUEPOOL_INIT_SIZE);
 
 	m_oModules = std::move(modules);
@@ -49,22 +31,22 @@ template<typename T>
 concept PrintableValue = VariableT<T> || IValueChild<T>;
 
 template<PrintableValue T>
-void PrintLeaks(const char* name) {
-	if(const auto count = CProgramRuntime::GetPool<T>().GetInUseCount())
+void PrintLeaks(CProgramRuntime* _this, const char* name) {
+	if(const auto count = _this->GetPool<T>().GetInUseCount())
 		std::cout << std::format("LEAK -> {}: {}\n", name, count);
 }
 
 template<PrintableValue T>
-bool HasLeak() {
-	if (const auto count = CProgramRuntime::GetPool<T>().GetInUseCount())
+bool HasLeak(CProgramRuntime* _this) {
+	if (const auto count = _this->GetPool<T>().GetInUseCount())
 		return true;
 
 	return false;
 }
 
 template<PrintableValue T>
-void ClearPool() {
-	CProgramRuntime::GetPool<T>().ResetPool();
+void ClearPool(CProgramRuntime* _this) {
+	_this->GetPool<T>().ResetPool();
 }
 
 static void InitGlobals()
@@ -87,14 +69,14 @@ IValue* CProgramRuntime::Execute()
 	CRuntimeFunction* mainFunction = FindMainFunction(m_oModules);
 
 	if (!mainFunction) {
-		throw CRuntimeError("couldn't find the \"main\" function");
+		throw CRuntimeError(this, "couldn't find the \"main\" function");
 	}
 
 	InitGlobals();
 
 	for (auto& mod : m_oModules) {
-		mod->SetupGlobalVariables();
-		mod->EvaluateGlobalExpressions();
+		mod->SetupGlobalVariables(this);
+		mod->EvaluateGlobalExpressions(this);
 	}
 
 	IValue* returnValue = BeginExecution(mainFunction);
@@ -112,7 +94,8 @@ IValue* CProgramRuntime::BeginExecution(CRuntimeFunction* entryFunc)
 	assert(entryFunc);
 
 	CRuntimeContext ctx{
-		.m_pModule = CProgramRuntime::GetModuleByIndex(entryFunc->GetModuleIndex()),
+		.m_pRuntime = this,
+		.m_pModule = GetModuleByIndex(entryFunc->GetModuleIndex()),
 		.m_pFunction = nullptr,
 	};
 
@@ -121,11 +104,14 @@ IValue* CProgramRuntime::BeginExecution(CRuntimeFunction* entryFunc)
 		return returnValue;
 	}
 	
-	return IValue::Construct();
+	return IValue::Construct(this);
 }
 void CProgramRuntime::Cleanup()
 {
 	FreeAllPools();
+
+
+
 }
 CRuntimeFunction* CProgramRuntime::FindMainFunction(const RuntimeModules& modules)
 {
@@ -153,59 +139,44 @@ CRuntimeModule* CProgramRuntime::GetModuleByIndex(std::size_t index) {
 bool CProgramRuntime::HasLeaks()
 {
 	return (
-		HasLeak<IValue>() ||
-		HasLeak<CBooleanValue>() ||
-		HasLeak<CIntValue>() ||
-		HasLeak<CUIntValue>() ||
-		HasLeak<CDoubleValue>() ||
-		HasLeak<CStringValue>() ||
-		HasLeak<CCallableValue>() ||
-		HasLeak<CArrayValue>() ||
-		HasLeak<CObjectValue>() ||
-		HasLeak<CVariable>() || 
-		HasLeak<CBuiltInObject>()
+		HasLeak<IValue>(this) ||
+		HasLeak<CBooleanValue>(this) ||
+		HasLeak<CIntValue>(this) ||
+		HasLeak<CUIntValue>(this) ||
+		HasLeak<CDoubleValue>(this) ||
+		HasLeak<CStringValue>(this) ||
+		HasLeak<CCallableValue>(this) ||
+		HasLeak<CArrayValue>(this) ||
+		HasLeak<CObjectValue>(this) ||
+		HasLeak<CVariable>(this) ||
+		HasLeak<CBuiltInObject>(this)
 	);
 }
 void CProgramRuntime::PrintAllLeaks()
 {
-	PrintLeaks<IValue>("undefined");
-	PrintLeaks<CBooleanValue>("boolean");
-	PrintLeaks<CIntValue>("int");
-	PrintLeaks<CUIntValue>("uint");
-	PrintLeaks<CDoubleValue>("VarjusDouble");
-	PrintLeaks<CStringValue>("string");
-	PrintLeaks<CCallableValue>("callable");
-	PrintLeaks<CArrayValue>("array");
-	PrintLeaks<CObjectValue>("object");
-	PrintLeaks<CVariable>("variable");
-	PrintLeaks<CBuiltInObject>("built-in object");
+	PrintLeaks<IValue>(this, "undefined");
+	PrintLeaks<CBooleanValue>(this, "boolean");
+	PrintLeaks<CIntValue>(this, "int");
+	PrintLeaks<CUIntValue>(this, "uint");
+	PrintLeaks<CDoubleValue>(this, "VarjusDouble");
+	PrintLeaks<CStringValue>(this, "string");
+	PrintLeaks<CCallableValue>(this, "callable");
+	PrintLeaks<CArrayValue>(this, "array");
+	PrintLeaks<CObjectValue>(this, "object");
+	PrintLeaks<CVariable>(this, "variable");
+	PrintLeaks<CBuiltInObject>(this, "built-in object");
 }
 void CProgramRuntime::FreeAllPools()
 {
-	ClearPool<IValue>();
-	ClearPool<CBooleanValue>();
-	ClearPool<CIntValue>();
-	ClearPool<CUIntValue>();
-	ClearPool<CDoubleValue>();
-	ClearPool<CStringValue>();
-	ClearPool<CCallableValue>();
-	ClearPool<CArrayValue>();
-	ClearPool<CObjectValue>();
-	ClearPool<CVariable>();
-	ClearPool<CBuiltInObject>();
-}
-void CProgramRuntime::AllocatePools(std::size_t initialSize)
-{
-	CProgramRuntime::Cleanup();
-	CProgramRuntime::m_oValuePool<CVariable>.Grow(initialSize);
-	CProgramRuntime::m_oValuePool<IValue>.Grow(initialSize);
-	CProgramRuntime::m_oValuePool<CBooleanValue>.Grow(initialSize);
-	CProgramRuntime::m_oValuePool<CIntValue>.Grow(initialSize);
-	CProgramRuntime::m_oValuePool<CUIntValue>.Grow(initialSize);
-	CProgramRuntime::m_oValuePool<CDoubleValue>.Grow(initialSize);
-	CProgramRuntime::m_oValuePool<CStringValue>.Grow(initialSize);
-	CProgramRuntime::m_oValuePool<CCallableValue>.Grow(initialSize);
-	CProgramRuntime::m_oValuePool<CArrayValue>.Grow(initialSize);
-	CProgramRuntime::m_oValuePool<CObjectValue>.Grow(initialSize);
-	CProgramRuntime::m_oValuePool<CBuiltInObject>.Grow(initialSize);
+	ClearPool<IValue>(this);
+	ClearPool<CBooleanValue>(this);
+	ClearPool<CIntValue>(this);
+	ClearPool<CUIntValue>(this);
+	ClearPool<CDoubleValue>(this);
+	ClearPool<CStringValue>(this);
+	ClearPool<CCallableValue>(this);
+	ClearPool<CArrayValue>(this);
+	ClearPool<CObjectValue>(this);
+	ClearPool<CVariable>(this);
+	ClearPool<CBuiltInObject>(this);
 }

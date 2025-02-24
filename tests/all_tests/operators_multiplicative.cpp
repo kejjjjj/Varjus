@@ -18,8 +18,7 @@ TEST_CASE("integer multiplicative operations") {
 	}));
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 TEST_CASE("uinteger multiplicative operations") {
 
@@ -34,8 +33,7 @@ TEST_CASE("uinteger multiplicative operations") {
 	}));
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 TEST_CASE("double multiplicative operations") {
 
@@ -57,6 +55,5 @@ TEST_CASE("double multiplicative operations") {
 	}));
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }

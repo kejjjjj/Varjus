@@ -10,26 +10,12 @@
 
 #include <sstream>
 
-
-
-VectorOf<ElementIndex>& runtime::__internal::GetAggregateArrayData()
+CArrayValue* CArrayValue::Construct(CProgramRuntime* const runtime, IValues&& values)
 {
-	static bool once = true;
-	static VectorOf<ElementIndex> elems;
-
-	if (!once)
-		return elems;
-
-	//elems.push_back(LENGTH_PROPERTY);
-	once = false;
-	return elems;
-}
-CArrayValue* CArrayValue::Construct(IValues&& values)
-{
-	auto ptr = CProgramRuntime::AcquireNewValue<CArrayValue>();
+	auto ptr = runtime->AcquireNewValue<CArrayValue>();
 	ptr->MakeShared();
 	auto internal = ptr->Internal();
-	internal->Set(std::move(values));
+	internal->Set(runtime, std::move(values));
 	return ptr;
 }
 
@@ -42,13 +28,13 @@ void CArrayValue::Release(){
 	}
 
 	ReleaseInternal();
-	CProgramRuntime::FreeValue<CArrayValue>(this);
+	m_pAllocator->FreeValue<CArrayValue>(this);
 	ReleaseShared();
 
 }
 
 IValue* CArrayValue::Copy(){
-	CArrayValue* ptr = CProgramRuntime::AcquireNewValue<CArrayValue>();
+	CArrayValue* ptr = m_pAllocator->AcquireNewValue<CArrayValue>();
 	ptr->MakeShared();
 	ptr->GetShared() = GetShared();
 	return ptr;
@@ -67,14 +53,14 @@ CInternalArrayValue* CArrayValue::Internal() const {
 IValue* CArrayValue::Index(IValue* vIndex)
 {
 	if (!vIndex->IsIntegral())
-		throw CRuntimeError(std::format("array accessor must be integral, but is \"{}\"", vIndex->TypeAsString()));
+		throw CRuntimeError(m_pAllocator, std::format("array accessor must be integral, but is \"{}\"", vIndex->TypeAsString()));
 
 	auto index = vIndex->ToInt();
 
 	auto& vec = GetShared()->GetVariables();
 
 	if (index < 0 || static_cast<size_t>(index) >= vec.size())
-		throw CRuntimeError("array index out of bounds");
+		throw CRuntimeError(m_pAllocator, "array index out of bounds");
 
 	return vec[static_cast<size_t>(index)]->GetValue();
 }
@@ -82,13 +68,13 @@ IValue* CArrayValue::GetAggregate(std::size_t memberIdx)
 {
 
 	if (m_oMethods->contains(memberIdx)) {
-		auto v = CProgramRuntime::AcquireNewValue<CCallableValue>();
+		auto v = m_pAllocator->AcquireNewValue<CCallableValue>();
 		METHOD_BIND(v, this->Copy());
 		return v;
 	}
 
 	if (m_oProperties->contains(memberIdx)) {
-		return m_oProperties->at(memberIdx)(this);
+		return m_oProperties->at(memberIdx)(m_pAllocator, this);
 	}
 
 	assert(false);
@@ -109,8 +95,8 @@ void CInternalArrayValue::Release()
 		v->Release();
 	}
 }
-void CInternalArrayValue::Set(VectorOf<IValue*>&& v){
-	m_oValue.m_oVariables = CProgramRuntime::AcquireNewVariables(v.size());
+void CInternalArrayValue::Set(CProgramRuntime* const runtime, VectorOf<IValue*>&& v){
+	m_oValue.m_oVariables = runtime->AcquireNewVariables(v.size());
 
 	for (auto i = size_t(0); auto & var : m_oValue.m_oVariables)
 		var->SetValue(v[i++]);

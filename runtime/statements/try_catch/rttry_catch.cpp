@@ -16,8 +16,8 @@ IValue* CRuntimeTryCatchStatement::Execute(CRuntimeContext* const ctx)
 
 	for (auto& insn : m_oTryInstructions) {
 		if (auto rv = insn->Execute(ctx)) {
-			if (CProgramRuntime::ExceptionThrown()) {
-				assert(CProgramRuntime::GetExceptionValue());
+			if (ctx->m_pRuntime->ExceptionThrown()) {
+				assert(ctx->m_pRuntime->GetExceptionValue());
 				return ExecuteCatchBlock(ctx);
 			}
 
@@ -30,7 +30,7 @@ IValue* CRuntimeTryCatchStatement::Execute(CRuntimeContext* const ctx)
 }
 IValue* CRuntimeTryCatchStatement::ExecuteCatchBlock(CRuntimeContext* const ctx)
 {
-	CProgramRuntime::CatchException();
+	ctx->m_pRuntime->CatchException();
 
 	auto catchVar = ctx->m_pFunction->GetVariableByRef(m_uCatchVariable);
 	assert(catchVar && catchVar->GetValue());
@@ -38,7 +38,7 @@ IValue* CRuntimeTryCatchStatement::ExecuteCatchBlock(CRuntimeContext* const ctx)
 	auto& value = catchVar->GetValue();
 	value->MakeImmutable();
 
-	auto& ex = CProgramRuntime::GetExceptionValue();
+	auto& ex = ctx->m_pRuntime->GetExceptionValue();
 
 	//set new value
 	catchVar->SetValue(ex->Copy());

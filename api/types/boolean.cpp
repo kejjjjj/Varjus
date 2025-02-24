@@ -1,20 +1,20 @@
 #include "api/internal/runtime.hpp"
 #include "boolean.hpp"
 
-CBooleanValue* CBooleanValue::Construct(bool v) {
-	return CProgramRuntime::AcquireNewValue<CBooleanValue>(v);
+CBooleanValue* CBooleanValue::Construct(CProgramRuntime* const runtime, bool v) {
+	return runtime->AcquireNewValue<CBooleanValue>(v);
 }
 
 IValue* CBooleanValue::Copy()
 {
 	if (IsShared()) {
-		auto ptr = CProgramRuntime::AcquireNewValue<CBooleanValue>();
+		auto ptr = m_pAllocator->AcquireNewValue<CBooleanValue>();
 		ptr->MakeShared();
 		ptr->GetShared() = GetShared();
 		return ptr;
 	}
 
-	return CBooleanValue::Construct(Get());
+	return CBooleanValue::Construct(m_pAllocator, Get());
 }
 void CBooleanValue::Release()
 {
@@ -22,5 +22,5 @@ void CBooleanValue::Release()
 		ReleaseShared();
 	
 	ReleaseInternal();
-	CProgramRuntime::FreeValue<CBooleanValue>(this);
+	m_pAllocator->FreeValue<CBooleanValue>(this);
 }

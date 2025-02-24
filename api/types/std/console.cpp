@@ -24,5 +24,5 @@ DEFINE_METHOD(LogConsole, args)
 
 	std::cout << p << '\n';
 
-	return IValue::Construct();
+	return IValue::Construct(ctx->m_pRuntime);
 }

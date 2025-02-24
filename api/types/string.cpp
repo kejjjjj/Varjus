@@ -9,10 +9,10 @@
 #include "linter/context.hpp"
 
 
-CStringValue* CStringValue::Construct(const std::string& v)
+CStringValue* CStringValue::Construct(CProgramRuntime* const runtime, const std::string& v)
 {
 
-	auto str = CProgramRuntime::AcquireNewValue<CStringValue>();
+	auto str = runtime->AcquireNewValue<CStringValue>();
 	auto internal = str->Internal();
 	str->MakeUnique();
 	internal->Set(v);
@@ -21,7 +21,7 @@ CStringValue* CStringValue::Construct(const std::string& v)
 }
 
 IValue* CStringValue::Copy(){
-	auto v = Construct(Internal()->GetString());
+	auto v = Construct(m_pAllocator, Internal()->GetString());
 	return v;
 }
 void CStringValue::Release()
@@ -29,7 +29,7 @@ void CStringValue::Release()
 	Internal()->Release();
 
 	ReleaseInternal();
-	CProgramRuntime::FreeValue<CStringValue>(this);
+	m_pAllocator->FreeValue<CStringValue>(this);
 }
 CInternalStringValue* CStringValue::Internal() {
 	return &Get();
@@ -40,29 +40,28 @@ const CInternalStringValue* CStringValue::Internal() const {
 IValue* CStringValue::Index(IValue* vIndex)
 {
 	if (!vIndex->IsIntegral())
-		throw CRuntimeError(std::format("array accessor must be integral, but is \"{}\"", vIndex->TypeAsString()));
+		throw CRuntimeError(m_pAllocator, std::format("array accessor must be integral, but is \"{}\"", vIndex->TypeAsString()));
 
 	auto index = vIndex->ToInt();
 
 	if (index < 0 || static_cast<size_t>(index) >= Internal()->Length())
-		throw CRuntimeError("string index out of bounds");
-
+		throw CRuntimeError(m_pAllocator, std::format("string index {} out of bounds (len: {})", index, Internal()->Length()));
 
 	auto newStr = std::string(size_t(1), Internal()->GetString()[static_cast<size_t>(index)]);
-	auto v = Construct(newStr);
+	auto v = Construct(m_pAllocator, newStr);
 	v->MakeImmutable(); //cannot modify parts
 	return v;
 }
 IValue* CStringValue::GetAggregate(std::size_t memberIdx)
 {
 	if (m_oMethods->contains(memberIdx)) {
-		auto v = CProgramRuntime::AcquireNewValue<CCallableValue>();
+		auto v = m_pAllocator->AcquireNewValue<CCallableValue>();
 		METHOD_BIND(v, this->Copy());
 		return v;
 	}
 
 	if (m_oProperties->contains(memberIdx)) {
-		return m_oProperties->at(memberIdx)(this);
+		return m_oProperties->at(memberIdx)(m_pAllocator, this);
 	}
 
 	assert(false);

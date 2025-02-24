@@ -8,84 +8,86 @@
 
 #include <cmath>
 
-IValue* OP_ASSIGNMENT(IValue* lhs, IValue* rhs)
-{
-	auto variable = lhs->GetOwner();
+#define DEFINE_OPERATOR(Name)\
+IValue* Name([[maybe_unused]]CProgramRuntime* const runtime, IValue* _lhs, IValue* _rhs)
 
-	if (lhs->IsImmutable())
-		throw CRuntimeError("cannot assign to an immutable value");
+DEFINE_OPERATOR(OP_ASSIGNMENT)
+{
+	auto variable = _lhs->GetOwner();
+
+	if (_lhs->IsImmutable())
+		throw CRuntimeError(runtime, "cannot assign to an immutable value");
 
 	if (!variable)
-		throw CRuntimeError("cannot assign to a temporary value");
+		throw CRuntimeError(runtime, "cannot assign to a temporary value");
 
 	//assert(lhs != rhs);
-	if (lhs == rhs)
-		return lhs;
+	if (_lhs == _rhs)
+		return _lhs;
 
-	switch (rhs->Type()) {
+	switch (_rhs->Type()) {
 		case t_undefined:
-			variable->SetValue(IValue::Construct());
+			variable->SetValue(IValue::Construct(runtime));
 			break;
 		case t_boolean:
-			variable->SetValue(CBooleanValue::Construct(rhs->ToBoolean()));
+			variable->SetValue(CBooleanValue::Construct(runtime, _rhs->ToBoolean()));
 			break;
 		case t_int:
-			variable->SetValue(CIntValue::Construct(rhs->ToInt()));
+			variable->SetValue(CIntValue::Construct(runtime, _rhs->ToInt()));
 			break;
 		case t_uint:
-			variable->SetValue(CUIntValue::Construct(rhs->ToUInt()));
+			variable->SetValue(CUIntValue::Construct(runtime, _rhs->ToUInt()));
 			break;
 		case t_double:
-			variable->SetValue(CDoubleValue::Construct(rhs->ToDouble()));
+			variable->SetValue(CDoubleValue::Construct(runtime, _rhs->ToDouble()));
 			break;
 		case t_string:
-			variable->SetValue(CStringValue::Construct(rhs->ToString()));
+			variable->SetValue(CStringValue::Construct(runtime, _rhs->ToString()));
 			break;
 		case t_callable:
-			assert(rhs->ToCallable());
-			variable->SetValue(rhs->ToCallable()->Copy());
+			assert(_rhs->ToCallable());
+			variable->SetValue(_rhs->ToCallable()->Copy());
 			break;
 		case t_array:
-			assert(rhs->ToArray());
-			variable->SetValue(rhs->ToArray()->Copy());
+			assert(_rhs->ToArray());
+			variable->SetValue(_rhs->ToArray()->Copy());
 			break;
 		case t_object:
-			assert(rhs->ToObject());
-			variable->SetValue(rhs->ToObject()->Copy());
+			assert(_rhs->ToObject());
+			variable->SetValue(_rhs->ToObject()->Copy());
 			break;
 	}
 
-	lhs->SetOwner(variable);
-	assert(lhs->HasOwner());
+	_lhs->SetOwner(variable);
+	assert(_lhs->HasOwner());
 	return variable->GetValue();
 }
-
-IValue* OP_ADDITION(IValue* _lhs, IValue* _rhs)
+DEFINE_OPERATOR(OP_ADDITION)
 {
-	auto&& [lhs, rhs, alloc] = Coerce(_lhs, _rhs);
+	auto&& [lhs, rhs, alloc] = Coerce(runtime, _lhs, _rhs);
 	IValue* result{ nullptr };
 
 	switch (lhs->Type()) {
 	case t_boolean:
-		result = CBooleanValue::Construct(static_cast<bool>(lhs->ToBoolean() + rhs->ToBoolean()));
+		result = CBooleanValue::Construct(runtime, static_cast<bool>(lhs->ToBoolean() + rhs->ToBoolean()));
 		break;
 	case t_int:
-		result = CIntValue::Construct(lhs->ToInt() + rhs->ToInt());
+		result = CIntValue::Construct(runtime, lhs->ToInt() + rhs->ToInt());
 		break;
 	case t_uint:
-		result = CUIntValue::Construct(lhs->ToUInt() + rhs->ToUInt());
+		result = CUIntValue::Construct(runtime, lhs->ToUInt() + rhs->ToUInt());
 		break;
 	case t_double:
-		result = CDoubleValue::Construct(lhs->ToDouble() + rhs->ToDouble());
+		result = CDoubleValue::Construct(runtime, lhs->ToDouble() + rhs->ToDouble());
 		break;
 	case t_string:
-		result = CStringValue::Construct(lhs->ToString() + rhs->ToString());
+		result = CStringValue::Construct(runtime, lhs->ToString() + rhs->ToString());
 		break;
 	case t_undefined:
 	case t_callable:
 	case t_array:
 	case t_object:
-		throw CRuntimeError(std::format("incompatible operands \"{}\" and \"{}\"", lhs->TypeAsString(), rhs->TypeAsString()));
+		throw CRuntimeError(runtime, std::format("incompatible operands \"{}\" and \"{}\"", lhs->TypeAsString(), rhs->TypeAsString()));
 	}
 
 	//was this allocated just now?
@@ -94,30 +96,30 @@ IValue* OP_ADDITION(IValue* _lhs, IValue* _rhs)
 
 	return result;
 }
-IValue* OP_SUBTRACTION(IValue* _lhs, IValue* _rhs)
+DEFINE_OPERATOR(OP_SUBTRACTION)
 {
-	auto&& [lhs, rhs, alloc] = Coerce(_lhs, _rhs);
+	auto&& [lhs, rhs, alloc] = Coerce(runtime, _lhs, _rhs);
 	IValue* result{ nullptr };
 
 	switch (lhs->Type()) {
 	case t_boolean:
-		result = CBooleanValue::Construct(static_cast<bool>(lhs->ToBoolean() - rhs->ToBoolean()));
+		result = CBooleanValue::Construct(runtime, static_cast<bool>(lhs->ToBoolean() - rhs->ToBoolean()));
 		break;
 	case t_int:
-		result = CIntValue::Construct(lhs->ToInt() - rhs->ToInt());
+		result = CIntValue::Construct(runtime, lhs->ToInt() - rhs->ToInt());
 		break;
 	case t_uint:
-		result = CUIntValue::Construct(lhs->ToUInt() - rhs->ToUInt());
+		result = CUIntValue::Construct(runtime, lhs->ToUInt() - rhs->ToUInt());
 		break;
 	case t_double:
-		result = CDoubleValue::Construct(lhs->ToDouble() - rhs->ToDouble());
+		result = CDoubleValue::Construct(runtime, lhs->ToDouble() - rhs->ToDouble());
 		break;
 	case t_undefined:
 	case t_string:
 	case t_callable:
 	case t_array:
 	case t_object:
-		throw CRuntimeError(std::format("incompatible operands \"{}\" and \"{}\"", lhs->TypeAsString(), rhs->TypeAsString()));
+		throw CRuntimeError(runtime, std::format("incompatible operands \"{}\" and \"{}\"", lhs->TypeAsString(), rhs->TypeAsString()));
 	}
 
 	//was this allocated just now?
@@ -126,30 +128,30 @@ IValue* OP_SUBTRACTION(IValue* _lhs, IValue* _rhs)
 
 	return result;
 }
-IValue* OP_MULTIPLICATION(IValue* _lhs, IValue* _rhs)
+DEFINE_OPERATOR(OP_MULTIPLICATION)
 {
-	auto&& [lhs, rhs, alloc] = Coerce(_lhs, _rhs);
+	auto&& [lhs, rhs, alloc] = Coerce(runtime, _lhs, _rhs);
 	IValue* result{ nullptr };
 
 	switch (lhs->Type()) {
 	case t_boolean:
-		result = CBooleanValue::Construct(lhs->ToBoolean() && rhs->ToBoolean());
+		result = CBooleanValue::Construct(runtime, lhs->ToBoolean() && rhs->ToBoolean());
 		break;
 	case t_int:
-		result = CIntValue::Construct(lhs->ToInt() * rhs->ToInt());
+		result = CIntValue::Construct(runtime, lhs->ToInt() * rhs->ToInt());
 		break;
 	case t_uint:
-		result = CUIntValue::Construct(lhs->ToUInt() * rhs->ToUInt());
+		result = CUIntValue::Construct(runtime, lhs->ToUInt() * rhs->ToUInt());
 		break;
 	case t_double:
-		result = CDoubleValue::Construct(lhs->ToDouble() * rhs->ToDouble());
+		result = CDoubleValue::Construct(runtime, lhs->ToDouble() * rhs->ToDouble());
 		break;
 	case t_undefined:
 	case t_string:
 	case t_callable:
 	case t_array:
 	case t_object:
-		throw CRuntimeError(std::format("incompatible operands \"{}\" and \"{}\"", lhs->TypeAsString(), rhs->TypeAsString()));
+		throw CRuntimeError(runtime, std::format("incompatible operands \"{}\" and \"{}\"", lhs->TypeAsString(), rhs->TypeAsString()));
 	}
 
 	//was this allocated just now?
@@ -158,33 +160,33 @@ IValue* OP_MULTIPLICATION(IValue* _lhs, IValue* _rhs)
 
 	return result;
 }
-IValue* OP_DIVISION(IValue* _lhs, IValue* _rhs)
+DEFINE_OPERATOR(OP_DIVISION)
 {
-	auto&& [lhs, rhs, alloc] = Coerce(_lhs, _rhs);
+	auto&& [lhs, rhs, alloc] = Coerce(runtime, _lhs, _rhs);
 	IValue* result{ nullptr };
 	
 	switch (lhs->Type()) {
 	case t_int:
 
 		if(rhs->ToInt() == VarjusInt(0))
-			throw CRuntimeError("division by 0");
+			throw CRuntimeError(runtime, "division by 0");
 
-		result = CIntValue::Construct(lhs->ToInt() / rhs->ToInt());
+		result = CIntValue::Construct(runtime, lhs->ToInt() / rhs->ToInt());
 		break;
 
 	case t_uint:
 
 		if (rhs->ToUInt() == VarjusUInt(0))
-			throw CRuntimeError("division by 0");
+			throw CRuntimeError(runtime, "division by 0");
 
-		result = CUIntValue::Construct(lhs->ToUInt() / rhs->ToUInt());
+		result = CUIntValue::Construct(runtime, lhs->ToUInt() / rhs->ToUInt());
 		break;
 	case t_double:
 
 		if (rhs->ToDouble() == 0.0)
-			throw CRuntimeError("division by 0");
+			throw CRuntimeError(runtime, "division by 0");
 
-		result = CDoubleValue::Construct(lhs->ToDouble() / rhs->ToDouble());
+		result = CDoubleValue::Construct(runtime, lhs->ToDouble() / rhs->ToDouble());
 		break;
 
 	case t_undefined:
@@ -193,7 +195,7 @@ IValue* OP_DIVISION(IValue* _lhs, IValue* _rhs)
 	case t_callable:
 	case t_array:
 	case t_object:
-		throw CRuntimeError(std::format("incompatible operands \"{}\" and \"{}\"", lhs->TypeAsString(), rhs->TypeAsString()));
+		throw CRuntimeError(runtime, std::format("incompatible operands \"{}\" and \"{}\"", lhs->TypeAsString(), rhs->TypeAsString()));
 	}
 
 	//was this allocated just now?
@@ -202,32 +204,32 @@ IValue* OP_DIVISION(IValue* _lhs, IValue* _rhs)
 
 	return result;
 }
-IValue* OP_MODULO(IValue* _lhs, IValue* _rhs)
+DEFINE_OPERATOR(OP_MODULO)
 {
-	auto&& [lhs, rhs, alloc] = Coerce(_lhs, _rhs);
+	auto&& [lhs, rhs, alloc] = Coerce(runtime, _lhs, _rhs);
 	IValue* result{ nullptr };
 
 	switch (lhs->Type()) {
 	case t_int:
 
 		if (rhs->ToInt() == 0ll)
-			throw CRuntimeError("division by 0");
+			throw CRuntimeError(runtime, "division by 0");
 
-		result = CIntValue::Construct(lhs->ToInt() % rhs->ToInt());
+		result = CIntValue::Construct(runtime, lhs->ToInt() % rhs->ToInt());
 		break;
 	case t_uint:
 
 		if (rhs->ToUInt() == VarjusUInt(0))
-			throw CRuntimeError("division by 0");
+			throw CRuntimeError(runtime, "division by 0");
 
-		result = CUIntValue::Construct(lhs->ToUInt() % rhs->ToUInt());
+		result = CUIntValue::Construct(runtime, lhs->ToUInt() % rhs->ToUInt());
 		break;
 	case t_double:
 
 		if (rhs->ToDouble() == 0.0)
-			throw CRuntimeError("division by 0");
+			throw CRuntimeError(runtime, "division by 0");
 
-		result = CDoubleValue::Construct(std::fmod(lhs->ToDouble(), rhs->ToDouble()));
+		result = CDoubleValue::Construct(runtime, std::fmod(lhs->ToDouble(), rhs->ToDouble()));
 		break;
 
 	case t_undefined:
@@ -236,7 +238,7 @@ IValue* OP_MODULO(IValue* _lhs, IValue* _rhs)
 	case t_callable:
 	case t_array:
 	case t_object:
-		throw CRuntimeError(std::format("incompatible operands \"{}\" and \"{}\"", lhs->TypeAsString(), rhs->TypeAsString()));
+		throw CRuntimeError(runtime, std::format("incompatible operands \"{}\" and \"{}\"", lhs->TypeAsString(), rhs->TypeAsString()));
 	}
 
 	//was this allocated just now?
@@ -245,30 +247,30 @@ IValue* OP_MODULO(IValue* _lhs, IValue* _rhs)
 
 	return result;
 }
-IValue* OP_LESS_THAN(IValue* _lhs, IValue* _rhs)
+DEFINE_OPERATOR(OP_LESS_THAN)
 {
-	auto [lhs, rhs, alloc] = Coerce(_lhs, _rhs);
+	auto [lhs, rhs, alloc] = Coerce(runtime, _lhs, _rhs);
 	IValue* result{ nullptr };
 
 	switch (lhs->Type()) {
 	case t_boolean:
-		result = CBooleanValue::Construct(lhs->AsBoolean() < rhs->AsBoolean());
+		result = CBooleanValue::Construct(runtime, lhs->AsBoolean() < rhs->AsBoolean());
 		break;
 	case t_int:
-		result = CBooleanValue::Construct(lhs->AsInt() < rhs->AsInt());
+		result = CBooleanValue::Construct(runtime, lhs->AsInt() < rhs->AsInt());
 		break;
 	case t_uint:
-		result = CBooleanValue::Construct(lhs->AsUInt() < rhs->AsUInt());
+		result = CBooleanValue::Construct(runtime, lhs->AsUInt() < rhs->AsUInt());
 		break;
 	case t_double:
-		result = CBooleanValue::Construct(lhs->AsDouble() < rhs->AsDouble());
+		result = CBooleanValue::Construct(runtime, lhs->AsDouble() < rhs->AsDouble());
 		break;
 	case t_string:
 	case t_undefined:
 	case t_callable:
 	case t_array:
 	case t_object:
-		throw CRuntimeError(std::format("incompatible operands \"{}\" and \"{}\"", lhs->TypeAsString(), rhs->TypeAsString()));
+		throw CRuntimeError(runtime, std::format("incompatible operands \"{}\" and \"{}\"", lhs->TypeAsString(), rhs->TypeAsString()));
 	}
 
 	//was this allocated just now?
@@ -277,30 +279,30 @@ IValue* OP_LESS_THAN(IValue* _lhs, IValue* _rhs)
 
 	return result;
 }
-IValue* OP_LESS_EQUAL(IValue* _lhs, IValue* _rhs)
+DEFINE_OPERATOR(OP_LESS_EQUAL)
 {
-	auto [lhs, rhs, alloc] = Coerce(_lhs, _rhs);
+	auto [lhs, rhs, alloc] = Coerce(runtime, _lhs, _rhs);
 	IValue* result{ nullptr };
 
 	switch (lhs->Type()) {
 	case t_boolean:
-		result = CBooleanValue::Construct(lhs->AsBoolean() <= rhs->AsBoolean());
+		result = CBooleanValue::Construct(runtime, lhs->AsBoolean() <= rhs->AsBoolean());
 		break;
 	case t_int:
-		result = CBooleanValue::Construct(lhs->AsInt() <= rhs->AsInt());
+		result = CBooleanValue::Construct(runtime, lhs->AsInt() <= rhs->AsInt());
 		break;
 	case t_uint:
-		result = CBooleanValue::Construct(lhs->AsUInt() <= rhs->AsUInt());
+		result = CBooleanValue::Construct(runtime, lhs->AsUInt() <= rhs->AsUInt());
 		break;
 	case t_double:
-		result = CBooleanValue::Construct(lhs->AsDouble() <= rhs->AsDouble());
+		result = CBooleanValue::Construct(runtime, lhs->AsDouble() <= rhs->AsDouble());
 		break;
 	case t_string:
 	case t_undefined:
 	case t_callable:
 	case t_array:
 	case t_object:
-		throw CRuntimeError(std::format("incompatible operands \"{}\" and \"{}\"", lhs->TypeAsString(), rhs->TypeAsString()));
+		throw CRuntimeError(runtime, std::format("incompatible operands \"{}\" and \"{}\"", lhs->TypeAsString(), rhs->TypeAsString()));
 	}
 
 	//was this allocated just now?
@@ -309,30 +311,30 @@ IValue* OP_LESS_EQUAL(IValue* _lhs, IValue* _rhs)
 
 	return result;
 }
-IValue* OP_GREATER_THAN(IValue* _lhs, IValue* _rhs)
+DEFINE_OPERATOR(OP_GREATER_THAN)
 {
-	auto [lhs, rhs, alloc] = Coerce(_lhs, _rhs);
+	auto [lhs, rhs, alloc] = Coerce(runtime, _lhs, _rhs);
 	IValue* result{ nullptr };
 
 	switch (lhs->Type()) {
 	case t_boolean:
-		result = CBooleanValue::Construct(lhs->AsBoolean() > rhs->AsBoolean());
+		result = CBooleanValue::Construct(runtime, lhs->AsBoolean() > rhs->AsBoolean());
 		break;
 	case t_int:
-		result = CBooleanValue::Construct(lhs->AsInt() > rhs->AsInt());
+		result = CBooleanValue::Construct(runtime, lhs->AsInt() > rhs->AsInt());
 		break;
 	case t_uint:
-		result = CBooleanValue::Construct(lhs->AsUInt() > rhs->AsUInt());
+		result = CBooleanValue::Construct(runtime, lhs->AsUInt() > rhs->AsUInt());
 		break;
 	case t_double:
-		result = CBooleanValue::Construct(lhs->AsDouble() > rhs->AsDouble());
+		result = CBooleanValue::Construct(runtime, lhs->AsDouble() > rhs->AsDouble());
 		break;
 	case t_string:
 	case t_undefined:
 	case t_callable:
 	case t_array:
 	case t_object:
-		throw CRuntimeError(std::format("incompatible operands \"{}\" and \"{}\"", lhs->TypeAsString(), rhs->TypeAsString()));
+		throw CRuntimeError(runtime, std::format("incompatible operands \"{}\" and \"{}\"", lhs->TypeAsString(), rhs->TypeAsString()));
 	}
 
 	//was this allocated just now?
@@ -341,30 +343,30 @@ IValue* OP_GREATER_THAN(IValue* _lhs, IValue* _rhs)
 
 	return result;
 }
-IValue* OP_GREATER_EQUAL(IValue* _lhs, IValue* _rhs)
+DEFINE_OPERATOR(OP_GREATER_EQUAL)
 {
-	auto [lhs, rhs, alloc] = Coerce(_lhs, _rhs);
+	auto [lhs, rhs, alloc] = Coerce(runtime, _lhs, _rhs);
 	IValue* result{ nullptr };
 
 	switch (lhs->Type()) {
 	case t_boolean:
-		result = CBooleanValue::Construct(lhs->AsBoolean() >= rhs->AsBoolean());
+		result = CBooleanValue::Construct(runtime, lhs->AsBoolean() >= rhs->AsBoolean());
 		break;
 	case t_int:
-		result = CBooleanValue::Construct(lhs->AsInt() >= rhs->AsInt());
+		result = CBooleanValue::Construct(runtime, lhs->AsInt() >= rhs->AsInt());
 		break;
 	case t_uint:
-		result = CBooleanValue::Construct(lhs->AsUInt() >= rhs->AsUInt());
+		result = CBooleanValue::Construct(runtime, lhs->AsUInt() >= rhs->AsUInt());
 		break;
 	case t_double:
-		result = CBooleanValue::Construct(lhs->AsDouble() >= rhs->AsDouble());
+		result = CBooleanValue::Construct(runtime, lhs->AsDouble() >= rhs->AsDouble());
 		break;
 	case t_string:
 	case t_undefined:
 	case t_callable:
 	case t_array:
 	case t_object:
-		throw CRuntimeError(std::format("incompatible operands \"{}\" and \"{}\"", lhs->TypeAsString(), rhs->TypeAsString()));
+		throw CRuntimeError(runtime, std::format("incompatible operands \"{}\" and \"{}\"", lhs->TypeAsString(), rhs->TypeAsString()));
 	}
 
 	//was this allocated just now?
@@ -373,72 +375,35 @@ IValue* OP_GREATER_EQUAL(IValue* _lhs, IValue* _rhs)
 
 	return result;
 }
-IValue* OP_EQUALITY(IValue* _lhs, IValue* _rhs)
+DEFINE_OPERATOR(OP_EQUALITY)
 {
-	auto [lhs, rhs, alloc] = Coerce(_lhs, _rhs);
+	auto [lhs, rhs, alloc] = Coerce(runtime, _lhs, _rhs);
 	IValue* result{ nullptr };
 
 	switch (lhs->Type()) {
 	case t_undefined:
-		result = CBooleanValue::Construct(true); // undefined == undefined is always true
+		result = CBooleanValue::Construct(runtime, true); // undefined == undefined is always true
 		break;
 	case t_boolean:
-		result = CBooleanValue::Construct(lhs->AsBoolean() == rhs->AsBoolean());
+		result = CBooleanValue::Construct(runtime, lhs->AsBoolean() == rhs->AsBoolean());
 		break;
 	case t_int:
-		result = CBooleanValue::Construct(lhs->AsInt() == rhs->AsInt());
+		result = CBooleanValue::Construct(runtime, lhs->AsInt() == rhs->AsInt());
 		break;
 	case t_uint:
-		result = CBooleanValue::Construct(lhs->AsUInt() == rhs->AsUInt());
+		result = CBooleanValue::Construct(runtime, lhs->AsUInt() == rhs->AsUInt());
 		break;
 	case t_double:
-		result = CBooleanValue::Construct(lhs->AsDouble() == rhs->AsDouble());
+		result = CBooleanValue::Construct(runtime, lhs->AsDouble() == rhs->AsDouble());
 		break;
 	case t_string:
-		result = CBooleanValue::Construct(lhs->ToString() == rhs->ToString());
+		result = CBooleanValue::Construct(runtime, lhs->ToString() == rhs->ToString());
 		break;
 
 	case t_callable:
 	case t_array:
 	case t_object:
-		result = CBooleanValue::Construct(lhs->AddressOf() == rhs->AddressOf());
-		break;
-	}
-
-	//was this allocated just now?
-	if (alloc)
-		alloc->Release();
-
-	return result;
-}
-IValue* OP_UNEQUALITY(IValue* _lhs, IValue* _rhs)
-{
-	auto [lhs, rhs, alloc] = Coerce(_lhs, _rhs);
-	IValue* result{ nullptr };
-
-	switch (lhs->Type()) {
-	case t_undefined:
-		result = CBooleanValue::Construct(false); // undefined != undefined is always false
-		break;
-	case t_boolean:
-		result = CBooleanValue::Construct(lhs->AsBoolean() != rhs->AsBoolean());
-		break;
-	case t_int:
-		result = CBooleanValue::Construct(lhs->AsInt() != rhs->AsInt());
-		break;
-	case t_uint:
-		result = CBooleanValue::Construct(lhs->AsUInt() != rhs->AsUInt());
-		break;
-	case t_double:
-		result = CBooleanValue::Construct(lhs->AsDouble() != rhs->AsDouble());
-		break;
-	case t_string:
-		result = CBooleanValue::Construct(lhs->ToString() != rhs->ToString());
-		break;
-	case t_callable:
-	case t_array:
-	case t_object:
-		result = CBooleanValue::Construct(lhs->AddressOf() != rhs->AddressOf());
+		result = CBooleanValue::Construct(runtime, lhs->AddressOf() == rhs->AddressOf());
 		break;
 	}
 
@@ -448,53 +413,90 @@ IValue* OP_UNEQUALITY(IValue* _lhs, IValue* _rhs)
 
 	return result;
 }
-
-IValue* OP_STRICT_EQUALITY(IValue* lhs, IValue* rhs)
+DEFINE_OPERATOR(OP_UNEQUALITY)
 {
-	if(lhs->Type() != rhs->Type())
-		return CBooleanValue::Construct(false);
+	auto [lhs, rhs, alloc] = Coerce(runtime, _lhs, _rhs);
+	IValue* result{ nullptr };
 
-	return OP_EQUALITY(lhs, rhs);
+	switch (lhs->Type()) {
+	case t_undefined:
+		result = CBooleanValue::Construct(runtime, false); // undefined != undefined is always false
+		break;
+	case t_boolean:
+		result = CBooleanValue::Construct(runtime, lhs->AsBoolean() != rhs->AsBoolean());
+		break;
+	case t_int:
+		result = CBooleanValue::Construct(runtime, lhs->AsInt() != rhs->AsInt());
+		break;
+	case t_uint:
+		result = CBooleanValue::Construct(runtime, lhs->AsUInt() != rhs->AsUInt());
+		break;
+	case t_double:
+		result = CBooleanValue::Construct(runtime, lhs->AsDouble() != rhs->AsDouble());
+		break;
+	case t_string:
+		result = CBooleanValue::Construct(runtime, lhs->ToString() != rhs->ToString());
+		break;
+	case t_callable:
+	case t_array:
+	case t_object:
+		result = CBooleanValue::Construct(runtime, lhs->AddressOf() != rhs->AddressOf());
+		break;
+	}
+
+	//was this allocated just now?
+	if (alloc)
+		alloc->Release();
+
+	return result;
 }
-IValue* OP_STRICT_UNEQUALITY(IValue* lhs, IValue* rhs)
-{
-	if (lhs->Type() != rhs->Type())
-		return CBooleanValue::Construct(true);
 
-	return OP_UNEQUALITY(lhs, rhs);
+DEFINE_OPERATOR(OP_STRICT_EQUALITY)
+{
+	if(_lhs->Type() != _rhs->Type())
+		return CBooleanValue::Construct(runtime, false);
+
+	return OP_EQUALITY(runtime, _lhs, _rhs);
+}
+DEFINE_OPERATOR(OP_STRICT_UNEQUALITY)
+{
+	if (_lhs->Type() != _rhs->Type())
+		return CBooleanValue::Construct(runtime, true);
+
+	return OP_UNEQUALITY(runtime, _lhs, _rhs);
 }
 
-IValue* OP_LOGICAL_AND(IValue* lhs, IValue* rhs)
+DEFINE_OPERATOR(OP_LOGICAL_AND)
 {
-	if(!lhs->IsBooleanConvertible())
-		throw CRuntimeError(std::format("\"{}\" is not convertible to a boolean", lhs->TypeAsString()));
+	if(!_lhs->IsBooleanConvertible())
+		throw CRuntimeError(runtime, std::format("\"{}\" is not convertible to a boolean", _lhs->TypeAsString()));
 
-	if (!rhs->IsBooleanConvertible())
-		throw CRuntimeError(std::format("\"{}\" is not convertible to a boolean", rhs->TypeAsString()));
+	if (!_rhs->IsBooleanConvertible())
+		throw CRuntimeError(runtime, std::format("\"{}\" is not convertible to a boolean", _rhs->TypeAsString()));
 
-	return CBooleanValue::Construct(lhs->ToBoolean() && rhs->ToBoolean());
+	return CBooleanValue::Construct(runtime, _lhs->ToBoolean() && _rhs->ToBoolean());
 }
-IValue* OP_LOGICAL_OR(IValue* lhs, IValue* rhs)
+DEFINE_OPERATOR(OP_LOGICAL_OR)
 {
-	if (!lhs->IsBooleanConvertible())
-		throw CRuntimeError(std::format("\"{}\" is not convertible to a boolean", lhs->TypeAsString()));
+	if (!_lhs->IsBooleanConvertible())
+		throw CRuntimeError(runtime, std::format("\"{}\" is not convertible to a boolean", _lhs->TypeAsString()));
 
-	if (!rhs->IsBooleanConvertible())
-		throw CRuntimeError(std::format("\"{}\" is not convertible to a boolean", rhs->TypeAsString()));
+	if (!_rhs->IsBooleanConvertible())
+		throw CRuntimeError(runtime, std::format("\"{}\" is not convertible to a boolean", _rhs->TypeAsString()));
 
-	return CBooleanValue::Construct(lhs->ToBoolean() || rhs->ToBoolean());
+	return CBooleanValue::Construct(runtime, _lhs->ToBoolean() || _rhs->ToBoolean());
 }
-IValue* OP_LEFT_SHIFT(IValue* _lhs, IValue* _rhs)
+DEFINE_OPERATOR(OP_LEFT_SHIFT)
 {
-	auto [lhs, rhs, alloc] = Coerce(_lhs, _rhs);
+	auto [lhs, rhs, alloc] = Coerce(runtime, _lhs, _rhs);
 	IValue* result{ nullptr };
 
 	switch (lhs->Type()) {
 	case t_int:
-		result = CIntValue::Construct(lhs->AsInt() << rhs->AsInt());
+		result = CIntValue::Construct(runtime, lhs->AsInt() << rhs->AsInt());
 		break;
 	case t_uint:
-		result = CUIntValue::Construct(lhs->AsUInt() << rhs->AsUInt());
+		result = CUIntValue::Construct(runtime, lhs->AsUInt() << rhs->AsUInt());
 		break;
 	case t_undefined:
 	case t_boolean:
@@ -503,7 +505,7 @@ IValue* OP_LEFT_SHIFT(IValue* _lhs, IValue* _rhs)
 	case t_callable:
 	case t_array:
 	case t_object:
-		throw CRuntimeError(std::format("you can only shift int operands, had \"{}\" and \"{}\"", 
+		throw CRuntimeError(runtime, std::format("you can only shift int operands, had \"{}\" and \"{}\"", 
 			lhs->TypeAsString(), rhs->TypeAsString()));
 	}
 
@@ -513,17 +515,17 @@ IValue* OP_LEFT_SHIFT(IValue* _lhs, IValue* _rhs)
 
 	return result;
 }
-IValue* OP_RIGHT_SHIFT(IValue* _lhs, IValue* _rhs)
+DEFINE_OPERATOR(OP_RIGHT_SHIFT)
 {
-	auto [lhs, rhs, alloc] = Coerce(_lhs, _rhs);
+	auto [lhs, rhs, alloc] = Coerce(runtime, _lhs, _rhs);
 	IValue* result{ nullptr };
 
 	switch (lhs->Type()) {
 	case t_int:
-		result = CIntValue::Construct(lhs->AsInt() >> rhs->AsInt());
+		result = CIntValue::Construct(runtime, lhs->AsInt() >> rhs->AsInt());
 		break;
 	case t_uint:
-		result = CUIntValue::Construct(lhs->AsUInt() >> rhs->AsUInt());
+		result = CUIntValue::Construct(runtime, lhs->AsUInt() >> rhs->AsUInt());
 		break;
 	case t_undefined:
 	case t_boolean:
@@ -532,7 +534,7 @@ IValue* OP_RIGHT_SHIFT(IValue* _lhs, IValue* _rhs)
 	case t_callable:
 	case t_array:
 	case t_object:
-		throw CRuntimeError(std::format("you can only shift int operands, had \"{}\" and \"{}\"",
+		throw CRuntimeError(runtime, std::format("you can only shift int operands, had \"{}\" and \"{}\"",
 			lhs->TypeAsString(), rhs->TypeAsString()));
 	}
 
@@ -542,17 +544,17 @@ IValue* OP_RIGHT_SHIFT(IValue* _lhs, IValue* _rhs)
 
 	return result;
 }
-IValue* OP_BITWISE_OR(IValue* _lhs, IValue* _rhs)
+DEFINE_OPERATOR(OP_BITWISE_OR)
 {
-	auto [lhs, rhs, alloc] = Coerce(_lhs, _rhs);
+	auto [lhs, rhs, alloc] = Coerce(runtime, _lhs, _rhs);
 	IValue* result{ nullptr };
 
 	switch (lhs->Type()) {
 	case t_int:
-		result = CIntValue::Construct(lhs->AsInt() | rhs->AsInt());
+		result = CIntValue::Construct(runtime, lhs->AsInt() | rhs->AsInt());
 		break;
 	case t_uint:
-		result = CUIntValue::Construct(lhs->AsUInt() | rhs->AsUInt());
+		result = CUIntValue::Construct(runtime, lhs->AsUInt() | rhs->AsUInt());
 		break;
 	case t_undefined:
 	case t_boolean:
@@ -561,7 +563,7 @@ IValue* OP_BITWISE_OR(IValue* _lhs, IValue* _rhs)
 	case t_callable:
 	case t_array:
 	case t_object:
-		throw CRuntimeError(std::format("you can only use bitwise operations with int operands, had \"{}\" and \"{}\"",
+		throw CRuntimeError(runtime, std::format("you can only use bitwise operations with int operands, had \"{}\" and \"{}\"",
 			lhs->TypeAsString(), rhs->TypeAsString()));
 	}
 
@@ -571,17 +573,17 @@ IValue* OP_BITWISE_OR(IValue* _lhs, IValue* _rhs)
 
 	return result;
 }
-IValue* OP_BITWISE_XOR(IValue* _lhs, IValue* _rhs)
+DEFINE_OPERATOR(OP_BITWISE_XOR)
 {
-	auto [lhs, rhs, alloc] = Coerce(_lhs, _rhs);
+	auto [lhs, rhs, alloc] = Coerce(runtime, _lhs, _rhs);
 	IValue* result{ nullptr };
 
 	switch (lhs->Type()) {
 	case t_int:
-		result = CIntValue::Construct(lhs->AsInt() ^ rhs->AsInt());
+		result = CIntValue::Construct(runtime, lhs->AsInt() ^ rhs->AsInt());
 		break;
 	case t_uint:
-		result = CUIntValue::Construct(lhs->AsUInt() ^ rhs->AsUInt());
+		result = CUIntValue::Construct(runtime, lhs->AsUInt() ^ rhs->AsUInt());
 		break;
 	case t_undefined:
 	case t_boolean:
@@ -590,7 +592,7 @@ IValue* OP_BITWISE_XOR(IValue* _lhs, IValue* _rhs)
 	case t_callable:
 	case t_array:
 	case t_object:
-		throw CRuntimeError(std::format("you can only use bitwise operations with int operands, had \"{}\" and \"{}\"",
+		throw CRuntimeError(runtime, std::format("you can only use bitwise operations with int operands, had \"{}\" and \"{}\"",
 			lhs->TypeAsString(), rhs->TypeAsString()));
 	}
 
@@ -600,17 +602,17 @@ IValue* OP_BITWISE_XOR(IValue* _lhs, IValue* _rhs)
 
 	return result;
 }
-IValue* OP_BITWISE_AND(IValue* _lhs, IValue* _rhs)
+DEFINE_OPERATOR(OP_BITWISE_AND)
 {
-	auto [lhs, rhs, alloc] = Coerce(_lhs, _rhs);
+	auto [lhs, rhs, alloc] = Coerce(runtime, _lhs, _rhs);
 	IValue* result{ nullptr };
 
 	switch (lhs->Type()) {
 	case t_int:
-		result = CIntValue::Construct(lhs->AsInt() & rhs->AsInt());
+		result = CIntValue::Construct(runtime, lhs->AsInt() & rhs->AsInt());
 		break;
 	case t_uint:
-		result = CUIntValue::Construct(lhs->AsUInt() & rhs->AsUInt());
+		result = CUIntValue::Construct(runtime, lhs->AsUInt() & rhs->AsUInt());
 		break;
 	case t_undefined:
 	case t_boolean:
@@ -619,7 +621,7 @@ IValue* OP_BITWISE_AND(IValue* _lhs, IValue* _rhs)
 	case t_callable:
 	case t_array:
 	case t_object:
-		throw CRuntimeError(std::format("you can only use bitwise operations with int operands, had \"{}\" and \"{}\"",
+		throw CRuntimeError(runtime, std::format("you can only use bitwise operations with int operands, had \"{}\" and \"{}\"",
 			lhs->TypeAsString(), rhs->TypeAsString()));
 	}
 
@@ -633,83 +635,57 @@ IValue* OP_BITWISE_AND(IValue* _lhs, IValue* _rhs)
 inline static void OP_ASSIGNMENT_CHECK(IValue* lhs, IValue* rhs)
 {
 	if (lhs->IsImmutable())
-		throw CRuntimeError("cannot assign to an immutable value");
+		throw CRuntimeError(lhs->GetAllocator(), "cannot assign to an immutable value");
 
 	if (!lhs->GetOwner())
-		throw CRuntimeError("cannot assign to a temporary value");
+		throw CRuntimeError(lhs->GetAllocator(), "cannot assign to a temporary value");
 
 	if (lhs->Type() != rhs->Type())
-		throw CRuntimeError(std::format("can't assign \"{}\" to \"{}\"", rhs->TypeAsString(), lhs->TypeAsString()));
+		throw CRuntimeError(lhs->GetAllocator(), std::format("can't assign \"{}\" to \"{}\"", rhs->TypeAsString(), lhs->TypeAsString()));
 }
 
-IValue* OP_ASSIGNMENT_ADDITION(IValue* lhs, IValue* rhs)
+DEFINE_OPERATOR(OP_ASSIGNMENT_ADDITION)
 {
-	OP_ASSIGNMENT_CHECK(lhs, rhs);
+	OP_ASSIGNMENT_CHECK(_lhs, _rhs);
 
-	switch (lhs->Type()) {
+	switch (_lhs->Type()) {
 
 	case t_int:
-		lhs->AsInt() += rhs->AsInt();
+		_lhs->AsInt() += _rhs->AsInt();
 		break;
 	case t_uint:
-		lhs->AsUInt() += rhs->AsUInt();
+		_lhs->AsUInt() += _rhs->AsUInt();
 		break;
 	case t_double:
-		lhs->AsDouble() += rhs->AsDouble();
+		_lhs->AsDouble() += _rhs->AsDouble();
 		break;
 	case t_string:
-		lhs->AsString() += rhs->AsString();
+		_lhs->AsString() += _rhs->AsString();
 		break;
 	case t_boolean: //unsafe
 	case t_undefined:
 	case t_callable:
 	case t_array:
 	case t_object:
-		throw CRuntimeError(std::format("incompatible operands \"{}\" and \"{}\"", lhs->TypeAsString(), rhs->TypeAsString()));
+		throw CRuntimeError(runtime, std::format("incompatible operands \"{}\" and \"{}\"", _lhs->TypeAsString(), _rhs->TypeAsString()));
 	}
 
-	return lhs;
+	return _lhs;
 }
-IValue* OP_ASSIGNMENT_SUBTRACTION(IValue* lhs, IValue* rhs)
+DEFINE_OPERATOR(OP_ASSIGNMENT_SUBTRACTION)
 {
-	OP_ASSIGNMENT_CHECK(lhs, rhs);
+	OP_ASSIGNMENT_CHECK(_lhs, _rhs);
 
-	switch (lhs->Type()) {
+	switch (_lhs->Type()) {
 
 	case t_int:
-		lhs->AsInt() -= rhs->AsInt();
+		_lhs->AsInt() -= _rhs->AsInt();
 		break;
 	case t_uint:
-		lhs->AsUInt() -= rhs->AsUInt();
+		_lhs->AsUInt() -= _rhs->AsUInt();
 		break;
 	case t_double:
-		lhs->AsDouble() -= rhs->AsDouble();
-		break;
-	case t_string:
-	case t_boolean: //unsafe
-	case t_undefined:
-	case t_callable:
-	case t_array:
-	case t_object:
-		throw CRuntimeError(std::format("incompatible operands \"{}\" and \"{}\"", lhs->TypeAsString(), rhs->TypeAsString()));
-	}
-
-	return lhs;
-}
-IValue* OP_ASSIGNMENT_MULTIPLICATION(IValue* lhs, IValue* rhs)
-{
-	OP_ASSIGNMENT_CHECK(lhs, rhs);
-
-	switch (lhs->Type()) {
-
-	case t_int:
-		lhs->AsInt() *= rhs->AsInt();
-		break;
-	case t_uint:
-		lhs->AsUInt() *= rhs->AsUInt();
-		break;
-	case t_double:
-		lhs->AsDouble() *= rhs->AsDouble();
+		_lhs->AsDouble() -= _rhs->AsDouble();
 		break;
 	case t_string:
 	case t_boolean: //unsafe
@@ -717,39 +693,25 @@ IValue* OP_ASSIGNMENT_MULTIPLICATION(IValue* lhs, IValue* rhs)
 	case t_callable:
 	case t_array:
 	case t_object:
-		throw CRuntimeError(std::format("incompatible operands \"{}\" and \"{}\"", lhs->TypeAsString(), rhs->TypeAsString()));
+		throw CRuntimeError(runtime, std::format("incompatible operands \"{}\" and \"{}\"", _lhs->TypeAsString(), _rhs->TypeAsString()));
 	}
 
-	return lhs;
+	return _lhs;
 }
-IValue* OP_ASSIGNMENT_DIVISION(IValue* lhs, IValue* rhs)
+DEFINE_OPERATOR(OP_ASSIGNMENT_MULTIPLICATION)
 {
-	OP_ASSIGNMENT_CHECK(lhs, rhs);
+	OP_ASSIGNMENT_CHECK(_lhs, _rhs);
 
-	switch (lhs->Type()) {
+	switch (_lhs->Type()) {
 
 	case t_int:
-
-		if (rhs->ToInt() == VarjusInt(0))
-			throw CRuntimeError("division by 0");
-
-		lhs->AsInt() /= rhs->AsInt();
-
+		_lhs->AsInt() *= _rhs->AsInt();
 		break;
 	case t_uint:
-
-		if (rhs->ToUInt() == VarjusUInt(0))
-			throw CRuntimeError("division by 0");
-
-		lhs->AsUInt() /= rhs->AsUInt();
-
+		_lhs->AsUInt() *= _rhs->AsUInt();
 		break;
 	case t_double:
-
-		if (rhs->ToDouble() == 0.0)
-			throw CRuntimeError("division by 0");
-
-		lhs->AsDouble() /= rhs->AsDouble();
+		_lhs->AsDouble() *= _rhs->AsDouble();
 		break;
 	case t_string:
 	case t_boolean: //unsafe
@@ -757,39 +719,39 @@ IValue* OP_ASSIGNMENT_DIVISION(IValue* lhs, IValue* rhs)
 	case t_callable:
 	case t_array:
 	case t_object:
-		throw CRuntimeError(std::format("incompatible operands \"{}\" and \"{}\"", lhs->TypeAsString(), rhs->TypeAsString()));
+		throw CRuntimeError(runtime, std::format("incompatible operands \"{}\" and \"{}\"", _lhs->TypeAsString(), _rhs->TypeAsString()));
 	}
 
-	return lhs;
+	return _lhs;
 }
-IValue* OP_ASSIGNMENT_MODULO(IValue* lhs, IValue* rhs)
+DEFINE_OPERATOR(OP_ASSIGNMENT_DIVISION)
 {
-	OP_ASSIGNMENT_CHECK(lhs, rhs);
+	OP_ASSIGNMENT_CHECK(_lhs, _rhs);
 
-	switch (lhs->Type()) {
+	switch (_lhs->Type()) {
 
 	case t_int:
 
-		if (rhs->ToInt() == VarjusInt(0))
-			throw CRuntimeError("division by 0");
+		if (_rhs->ToInt() == VarjusInt(0))
+			throw CRuntimeError(runtime, "division by 0");
 
-		lhs->AsInt() %= rhs->AsInt();
+		_lhs->AsInt() /= _rhs->AsInt();
 
 		break;
 	case t_uint:
 
-		if (rhs->ToUInt() == VarjusUInt(0))
-			throw CRuntimeError("division by 0");
+		if (_rhs->ToUInt() == VarjusUInt(0))
+			throw CRuntimeError(runtime, "division by 0");
 
-		lhs->AsUInt() %= rhs->AsUInt();
+		_lhs->AsUInt() /= _rhs->AsUInt();
 
 		break;
 	case t_double:
 
-		if (rhs->ToDouble() == 0.0)
-			throw CRuntimeError("division by 0");
+		if (_rhs->ToDouble() == 0.0)
+			throw CRuntimeError(runtime, "division by 0");
 
-		lhs->AsDouble() = std::fmod(lhs->AsDouble(), rhs->AsDouble());
+		_lhs->AsDouble() /= _rhs->AsDouble();
 		break;
 	case t_string:
 	case t_boolean: //unsafe
@@ -797,47 +759,62 @@ IValue* OP_ASSIGNMENT_MODULO(IValue* lhs, IValue* rhs)
 	case t_callable:
 	case t_array:
 	case t_object:
-		throw CRuntimeError(std::format("incompatible operands \"{}\" and \"{}\"", lhs->TypeAsString(), rhs->TypeAsString()));
+		throw CRuntimeError(runtime, std::format("incompatible operands \"{}\" and \"{}\"", _lhs->TypeAsString(), _rhs->TypeAsString()));
 	}
 
-	return lhs;
+	return _lhs;
 }
-IValue* OP_ASSIGNMENT_LEFT_SHIFT(IValue* lhs, IValue* rhs)
+DEFINE_OPERATOR(OP_ASSIGNMENT_MODULO)
 {
-	OP_ASSIGNMENT_CHECK(lhs, rhs);
+	OP_ASSIGNMENT_CHECK(_lhs, _rhs);
 
-	switch (lhs->Type()) {
+	switch (_lhs->Type()) {
 
 	case t_int:
-		lhs->AsInt() <<= rhs->AsInt();
+
+		if (_rhs->ToInt() == VarjusInt(0))
+			throw CRuntimeError(runtime, "division by 0");
+
+		_lhs->AsInt() %= _rhs->AsInt();
+
 		break;
 	case t_uint:
-		lhs->AsUInt() <<= rhs->AsUInt();
+
+		if (_rhs->ToUInt() == VarjusUInt(0))
+			throw CRuntimeError(runtime, "division by 0");
+
+		_lhs->AsUInt() %= _rhs->AsUInt();
+
 		break;
 	case t_double:
+
+		if (_rhs->ToDouble() == 0.0)
+			throw CRuntimeError(runtime, "division by 0");
+
+		_lhs->AsDouble() = std::fmod(_lhs->AsDouble(), _rhs->AsDouble());
+		break;
 	case t_string:
 	case t_boolean: //unsafe
 	case t_undefined:
 	case t_callable:
 	case t_array:
 	case t_object:
-		throw CRuntimeError(std::format("you can only shift int operands, had \"{}\" and \"{}\"",
-			lhs->TypeAsString(), rhs->TypeAsString()));
+		throw CRuntimeError(runtime, std::format("incompatible operands \"{}\" and \"{}\"", _lhs->TypeAsString(), _rhs->TypeAsString()));
 	}
 
-	return lhs;
+	return _lhs;
 }
-IValue* OP_ASSIGNMENT_RIGHT_SHIFT(IValue* lhs, IValue* rhs)
+DEFINE_OPERATOR(OP_ASSIGNMENT_LEFT_SHIFT)
 {
-	OP_ASSIGNMENT_CHECK(lhs, rhs);
+	OP_ASSIGNMENT_CHECK(_lhs, _rhs);
 
-	switch (lhs->Type()) {
+	switch (_lhs->Type()) {
 
 	case t_int:
-		lhs->AsInt() >>= rhs->AsInt();
+		_lhs->AsInt() <<= _rhs->AsInt();
 		break;
 	case t_uint:
-		lhs->AsUInt() >>= rhs->AsUInt();
+		_lhs->AsUInt() <<= _rhs->AsUInt();
 		break;
 	case t_double:
 	case t_string:
@@ -846,24 +823,23 @@ IValue* OP_ASSIGNMENT_RIGHT_SHIFT(IValue* lhs, IValue* rhs)
 	case t_callable:
 	case t_array:
 	case t_object:
-		throw CRuntimeError(std::format("you can only shift int operands, had \"{}\" and \"{}\"",
-			lhs->TypeAsString(), rhs->TypeAsString()));
+		throw CRuntimeError(runtime, std::format("you can only shift int operands, had \"{}\" and \"{}\"",
+			_lhs->TypeAsString(), _rhs->TypeAsString()));
 	}
 
-	return lhs;
-
+	return _lhs;
 }
-IValue* OP_ASSIGNMENT_BITWISE_OR(IValue* lhs, IValue* rhs)
+DEFINE_OPERATOR(OP_ASSIGNMENT_RIGHT_SHIFT)
 {
-	OP_ASSIGNMENT_CHECK(lhs, rhs);
+	OP_ASSIGNMENT_CHECK(_lhs, _rhs);
 
-	switch (lhs->Type()) {
+	switch (_lhs->Type()) {
 
 	case t_int:
-		lhs->AsInt() |= rhs->AsInt();
+		_lhs->AsInt() >>= _rhs->AsInt();
 		break;
 	case t_uint:
-		lhs->AsUInt() |= rhs->AsUInt();
+		_lhs->AsUInt() >>= _rhs->AsUInt();
 		break;
 	case t_double:
 	case t_string:
@@ -872,24 +848,24 @@ IValue* OP_ASSIGNMENT_BITWISE_OR(IValue* lhs, IValue* rhs)
 	case t_callable:
 	case t_array:
 	case t_object:
-		throw CRuntimeError(std::format("you can only use bitwise operations with int operands, had \"{}\" and \"{}\"",
-			lhs->TypeAsString(), rhs->TypeAsString()));
+		throw CRuntimeError(runtime, std::format("you can only shift int operands, had \"{}\" and \"{}\"",
+			_lhs->TypeAsString(), _rhs->TypeAsString()));
 	}
 
-	return lhs;
+	return _lhs;
 
 }
-IValue* OP_ASSIGNMENT_BITWISE_XOR(IValue* lhs, IValue* rhs)
+DEFINE_OPERATOR(OP_ASSIGNMENT_BITWISE_OR)
 {
-	OP_ASSIGNMENT_CHECK(lhs, rhs);
+	OP_ASSIGNMENT_CHECK(_lhs, _rhs);
 
-	switch (lhs->Type()) {
+	switch (_lhs->Type()) {
 
 	case t_int:
-		lhs->AsInt() ^= rhs->AsInt();
+		_lhs->AsInt() |= _rhs->AsInt();
 		break;
 	case t_uint:
-		lhs->AsUInt() ^= rhs->AsUInt();
+		_lhs->AsUInt() |= _rhs->AsUInt();
 		break;
 	case t_double:
 	case t_string:
@@ -898,24 +874,24 @@ IValue* OP_ASSIGNMENT_BITWISE_XOR(IValue* lhs, IValue* rhs)
 	case t_callable:
 	case t_array:
 	case t_object:
-		throw CRuntimeError(std::format("you can only use bitwise operations with int operands, had \"{}\" and \"{}\"",
-			lhs->TypeAsString(), rhs->TypeAsString()));
+		throw CRuntimeError(runtime, std::format("you can only use bitwise operations with int operands, had \"{}\" and \"{}\"",
+			_lhs->TypeAsString(), _rhs->TypeAsString()));
 	}
 
-	return lhs;
+	return _lhs;
 
 }
-IValue* OP_ASSIGNMENT_BITWISE_AND(IValue* lhs, IValue* rhs)
+DEFINE_OPERATOR(OP_ASSIGNMENT_BITWISE_XOR)
 {
-	OP_ASSIGNMENT_CHECK(lhs, rhs);
+	OP_ASSIGNMENT_CHECK(_lhs, _rhs);
 
-	switch (lhs->Type()) {
+	switch (_lhs->Type()) {
 
 	case t_int:
-		lhs->AsInt() &= rhs->AsInt();
+		_lhs->AsInt() ^= _rhs->AsInt();
 		break;
 	case t_uint:
-		lhs->AsUInt() &= rhs->AsUInt();
+		_lhs->AsUInt() ^= _rhs->AsUInt();
 		break;
 	case t_double:
 	case t_string:
@@ -924,9 +900,35 @@ IValue* OP_ASSIGNMENT_BITWISE_AND(IValue* lhs, IValue* rhs)
 	case t_callable:
 	case t_array:
 	case t_object:
-		throw CRuntimeError(std::format("you can only use bitwise operations with int operands, had \"{}\" and \"{}\"",
-			lhs->TypeAsString(), rhs->TypeAsString()));
+		throw CRuntimeError(runtime, std::format("you can only use bitwise operations with int operands, had \"{}\" and \"{}\"",
+			_lhs->TypeAsString(), _rhs->TypeAsString()));
 	}
 
-	return lhs;
+	return _lhs;
+
+}
+DEFINE_OPERATOR(OP_ASSIGNMENT_BITWISE_AND)
+{
+	OP_ASSIGNMENT_CHECK(_lhs, _rhs);
+
+	switch (_lhs->Type()) {
+
+	case t_int:
+		_lhs->AsInt() &= _rhs->AsInt();
+		break;
+	case t_uint:
+		_lhs->AsUInt() &= _rhs->AsUInt();
+		break;
+	case t_double:
+	case t_string:
+	case t_boolean: //unsafe
+	case t_undefined:
+	case t_callable:
+	case t_array:
+	case t_object:
+		throw CRuntimeError(runtime, std::format("you can only use bitwise operations with int operands, had \"{}\" and \"{}\"",
+			_lhs->TypeAsString(), _rhs->TypeAsString()));
+	}
+
+	return _lhs;
 }

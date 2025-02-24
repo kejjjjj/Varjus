@@ -102,7 +102,8 @@ Success CImportLinter::ParseFilePath()
 	m_oTargetFile = fullPath;
 
 	if (m_oTargetFile == m_pOwner->GetModule()->GetFilePath()) {
-		CLinterErrors::PushError(std::format("attempted to import from current file", fullPath), GetIteratorSafe()->m_oSourcePosition);
+		CLinterErrors::PushError(std::format("attempted to import a symbol that is exported in the same file", fullPath), 
+			GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 
@@ -142,9 +143,10 @@ Success CImportLinter::ParseFile()
 	for (auto& name : m_oNames) {
 		const auto exportedSymbol = thisModule->GetExport(name);
 
-		if (!exportedSymbol)
+		if (!exportedSymbol) {
 			CLinterErrors::PushError(std::format("\"{}\" is not an exported symbol", name), GetIteratorSafe()->m_oSourcePosition);
-
+			return failure;
+		}
 		if (exportedSymbol->Type() == es_variable) {
 			if (!DeclareVariable(name, exportedSymbol, thisModule->GetIndex()))
 				return failure;

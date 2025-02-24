@@ -13,8 +13,7 @@ TEST_CASE("Boolean gets coerced to int") {
 	REQUIRE(retVal->ToInt() == 2);
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 TEST_CASE("Boolean gets coerced to uint") {
 
@@ -25,8 +24,7 @@ TEST_CASE("Boolean gets coerced to uint") {
 	REQUIRE(retVal->ToInt() == 2);
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 TEST_CASE("Boolean gets coerced to double") {
 
@@ -37,20 +35,18 @@ TEST_CASE("Boolean gets coerced to double") {
 	REQUIRE(retVal->ToDouble() == 3.0);
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
-TEST_CASE("Int gets coerced to uint") {
+TEST_CASE("UInt gets coerced to int") {
 
-	auto retVal = TEST_ExecuteFile(JP("int_to_uint.var"));
+	auto retVal = TEST_ExecuteFile(JP("uint_to_int.var"));
 
 	REQUIRE(retVal != nullptr);
-	REQUIRE(retVal->Type() == t_uint);
+	REQUIRE(retVal->Type() == t_int);
 	REQUIRE(retVal->ToInt() == 2);
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 TEST_CASE("Int gets coerced to double") {
 
@@ -61,8 +57,7 @@ TEST_CASE("Int gets coerced to double") {
 	REQUIRE(retVal->ToDouble() == 3.0);
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 TEST_CASE("UInt gets coerced to double") {
 
@@ -73,6 +68,5 @@ TEST_CASE("UInt gets coerced to double") {
 	REQUIRE(retVal->ToDouble() == 3.0);
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }

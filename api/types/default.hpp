@@ -23,6 +23,7 @@ class CArrayValue;
 class CCallableValue;
 class CObjectValue;
 struct CRuntimeContext;
+class CProgramRuntime;
 
 template<typename T>
 using VectorOf = std::vector<T>;
@@ -44,13 +45,15 @@ protected:
 	[[nodiscard]] virtual IValue* Copy() = 0;
 };
 
+
 class IValue : protected IValueDestructor, protected IValueCopy
 {
+	friend class CProgramRuntime;
 public:
 	IValue() = default;
 	virtual ~IValue() = default;
 
-	[[nodiscard]] static IValue* Construct();
+	[[nodiscard]] static IValue* Construct(CProgramRuntime* const runtime);
 
 	[[nodiscard]] virtual EValueType Type() const noexcept { return t_undefined; };
 
@@ -83,7 +86,8 @@ public:
 	[[nodiscard]] constexpr virtual bool IsBuiltInMemberCallable() const noexcept { return false; }
 
 	[[nodiscard]] virtual IValue* Index(IValue* index);
-	[[nodiscard]] virtual IValue* GetAggregate([[maybe_unused]]std::size_t memberIdx) { return nullptr; }
+	[[nodiscard]] virtual IValue* GetAggregate([[maybe_unused]] std::size_t memberIdx) { return nullptr; }
+
 	[[nodiscard]] virtual IValue* Call([[maybe_unused]] struct CRuntimeContext* const ctx, [[maybe_unused]] const IValues& args) {
 		return nullptr;
 	}
@@ -110,12 +114,17 @@ public:
 	[[nodiscard]] virtual CArrayValue* ToArray() { return nullptr; }
 	[[nodiscard]] virtual CObjectValue* ToObject() { return nullptr; }
 
+	[[nodiscard]] constexpr auto GetAllocator() { return m_pAllocator; }
+
 protected:
 	void ReleaseInternal();
+	inline constexpr void ConstructInternal(CProgramRuntime* const allocator) { m_pAllocator = allocator; }
+
 	void RemoveConstness() noexcept { m_bIsConst = false; }
 
 	CVariable* m_pOwner{ nullptr };
 	bool m_bIsConst{ false };
+	CProgramRuntime* m_pAllocator{ nullptr };
 };
 
 template <typename Value>

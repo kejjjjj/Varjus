@@ -14,11 +14,12 @@
 
 CObjectValue::~CObjectValue() = default;
 
-CObjectValue* CObjectValue::Construct(std::size_t moduleIndex, ObjectInitializer&& values)
+CObjectValue* CObjectValue::Construct(CProgramRuntime* const runtime, std::size_t moduleIndex, ObjectInitializer&& values)
 {
-	auto ptr = CProgramRuntime::AcquireNewValue<CObjectValue>();
+	auto ptr = runtime->AcquireNewValue<CObjectValue>();
 	ptr->MakeShared();
 	auto internal = ptr->Internal();
+	internal->GetAggregateValue().SetAllocator(runtime);
 	internal->Set(moduleIndex, std::move(values));
 	return ptr;
 }
@@ -30,12 +31,12 @@ void CObjectValue::Release() {
 	}
 	
 	ReleaseInternal();
-	CProgramRuntime::FreeValue<CObjectValue>(this);
+	m_pAllocator->FreeValue<CObjectValue>(this);
 	ReleaseShared();
 }
 
 IValue* CObjectValue::Copy() {
-	CObjectValue* ptr = CProgramRuntime::AcquireNewValue<CObjectValue>();
+	CObjectValue* ptr = m_pAllocator->AcquireNewValue<CObjectValue>();
 	ptr->MakeShared();
 	ptr->GetShared() = GetShared();
 	return ptr;
@@ -52,7 +53,7 @@ IValue* CObjectValue::Index(IValue* index) {
 	const auto key = index->ValueAsString();
 
 	if (!CFileContext::m_oAllMembers.Contains(key)) {
-		throw CRuntimeError(std::format("this aggregate doesn't have the attribute \"{}\"", key));
+		throw CRuntimeError(m_pAllocator, std::format("this aggregate doesn't have the attribute \"{}\"", key));
 	}
 
 	return Internal()->GetAggregateValue().ElementLookup(CFileContext::m_oAllMembers.At(key));
@@ -60,13 +61,13 @@ IValue* CObjectValue::Index(IValue* index) {
 IValue* CObjectValue::GetAggregate(std::size_t memberIdx) {
 
 	if (m_oMethods->contains(memberIdx)) {
-		auto v = CProgramRuntime::AcquireNewValue<CCallableValue>();
+		auto v = m_pAllocator->AcquireNewValue<CCallableValue>();
 		METHOD_BIND(v, this->Copy());
 		return v;
 	}
 
 	if (m_oProperties->contains(memberIdx)) {
-		return m_oProperties->at(memberIdx)(this);
+		return m_oProperties->at(memberIdx)(m_pAllocator, this);
 	}
 
 	return Internal()->GetAggregateValue().ElementLookup(memberIdx);

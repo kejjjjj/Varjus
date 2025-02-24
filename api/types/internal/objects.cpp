@@ -10,9 +10,9 @@
 CBuiltInObject::CBuiltInObject() : CObjectValue() {}
 CBuiltInObject::~CBuiltInObject() = default;
 
-CBuiltInObject* CBuiltInObject::Construct(BuiltInMethod_t&& methods, BuiltInProperty_t&& properties)
+CBuiltInObject* CBuiltInObject::Construct(CProgramRuntime* const runtime, BuiltInMethod_t&& methods, BuiltInProperty_t&& properties)
 {
-	auto ptr = CProgramRuntime::AcquireNewValue<CBuiltInObject>();
+	auto ptr = runtime->AcquireNewValue<CBuiltInObject>();
 	ptr->MakeShared();
 	ptr->m_oMethods = std::make_shared<BuiltInMethod_t>(std::move(methods));
 	ptr->m_oProperties = std::make_shared<BuiltInProperty_t>(std::move(properties));
@@ -21,18 +21,19 @@ CBuiltInObject* CBuiltInObject::Construct(BuiltInMethod_t&& methods, BuiltInProp
 
 void CBuiltInObject::Release() {
 
+	assert(m_pAllocator);
 	if (SharedRefCount() == 1) {
 		Get().Release();
 	}
 
 	ReleaseInternal();
-	CProgramRuntime::FreeValue<CBuiltInObject>(this);
+	m_pAllocator->FreeValue<CBuiltInObject>(this);
 	ReleaseShared();
 }
 
 IValue* CBuiltInObject::Copy() {
 
-	CBuiltInObject* ptr = CProgramRuntime::AcquireNewValue<CBuiltInObject>();
+	CBuiltInObject* ptr = m_pAllocator->AcquireNewValue<CBuiltInObject>();
 	ptr->MakeShared();
 	ptr->GetShared() = GetShared();
 	ptr->m_oMethods = m_oMethods;
@@ -43,13 +44,13 @@ IValue* CBuiltInObject::Copy() {
 IValue* CBuiltInObject::GetAggregate(std::size_t memberIdx) {
 
 	if (m_oMethods->contains(memberIdx)) {
-		auto v = CProgramRuntime::AcquireNewValue<CCallableValue>();
+		auto v = m_pAllocator->AcquireNewValue<CCallableValue>();
 		METHOD_BIND(v, this->Copy());
 		return v;
 	}
 
 	if (m_oProperties->contains(memberIdx)) {
-		return m_oProperties->at(memberIdx)(this);
+		return m_oProperties->at(memberIdx)(m_pAllocator, this);
 	}
 
 	return CObjectValue::GetAggregate(memberIdx);

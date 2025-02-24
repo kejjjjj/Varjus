@@ -14,9 +14,9 @@ IValue* Name([[maybe_unused]] CRuntimeContext* const ctx, [[maybe_unused]] IValu
 
 
 #define FORWARD_DECLARE_PROPERTY(Name)\
-[[nodiscard]] IValue* Name(IValue* _this)
+[[nodiscard]] IValue* Name(CProgramRuntime* const runtime, IValue* _this)
 #define DEFINE_PROPERTY(Name)\
-IValue* Name([[maybe_unused]] IValue* _this)
+IValue* Name([[maybe_unused]] CProgramRuntime* const runtime, [[maybe_unused]] IValue* _this)
 
 #include <unordered_map>
 #include <memory>
@@ -32,7 +32,7 @@ using VectorOf = std::vector<T>;
 using IValues = VectorOf<IValue*>;
 
 using Method_t = IValue*(*)(struct CRuntimeContext* const, IValue*, const IValues&);
-using Property_t = IValue*(*)(IValue*);
+using Property_t = IValue*(*)(class CProgramRuntime* const, IValue*);
 
 #include "api/internal/structure.hpp"
 

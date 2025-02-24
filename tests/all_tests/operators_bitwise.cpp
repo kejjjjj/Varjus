@@ -22,8 +22,7 @@ TEST_CASE("integer bitwise operations") {
 	}));
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }
 
 TEST_CASE("uinteger bitwise operations") {
@@ -42,6 +41,5 @@ TEST_CASE("uinteger bitwise operations") {
 		}));
 
 	REQUIRE(retVal->HasOwner() == false);
-	retVal->Release();
-	REQUIRE(CProgramRuntime::HasLeaks() == false);
+	TEST_END(retVal);
 }

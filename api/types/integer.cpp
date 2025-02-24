@@ -1,20 +1,20 @@
 #include "api/internal/runtime.hpp"
 #include "integer.hpp"
 
-CIntValue* CIntValue::Construct(VarjusInt v) {
-	return CProgramRuntime::AcquireNewValue<CIntValue>(v);
+CIntValue* CIntValue::Construct(CProgramRuntime* const runtime, VarjusInt v) {
+	return runtime->AcquireNewValue<CIntValue>(v);
 }
 
 IValue* CIntValue::Copy()
 {
 	if (IsShared()) {
-		auto ptr = CProgramRuntime::AcquireNewValue<CIntValue>();
+		auto ptr = m_pAllocator->AcquireNewValue<CIntValue>();
 		ptr->MakeShared();
 		ptr->GetShared() = GetShared();
 		return ptr;
 	}
 
-	return CProgramRuntime::AcquireNewValue<CIntValue>(Get());
+	return m_pAllocator->AcquireNewValue<CIntValue>(Get());
 }
 void CIntValue::Release()
 {
@@ -22,5 +22,5 @@ void CIntValue::Release()
 		ReleaseShared();
 
 	ReleaseInternal();
-	CProgramRuntime::FreeValue<CIntValue>(this);
+	m_pAllocator->FreeValue<CIntValue>(this);
 }
