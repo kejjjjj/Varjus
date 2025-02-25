@@ -24,7 +24,8 @@ Success CImportLinter::Parse()
 {
 
 	if (IsEndOfBuffer() || (*m_iterPos)->Type() != tt_import) {
-		CLinterErrors::PushError("expected \"import\"", GetIteratorSafe()->m_oSourcePosition);
+
+		m_pOwner->GetModule()->PushError( "expected \"import\"", GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 
@@ -34,7 +35,7 @@ Success CImportLinter::Parse()
 		return failure;
 
 	if (IsEndOfBuffer() || (*m_iterPos)->Type() != tt_from) {
-		CLinterErrors::PushError("expected \"from\"", GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError("expected \"from\"", GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 
@@ -47,7 +48,7 @@ Success CImportLinter::Parse()
 		return failure;
 
 	if (IsEndOfBuffer() || !(*m_iterPos)->IsOperator(p_semicolon)) {
-		CLinterErrors::PushError("expected \";\"", GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError("expected \";\"", GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 
@@ -59,12 +60,12 @@ Success CImportLinter::ParseIdentifierRecursively()
 {
 
 	if (IsEndOfBuffer() || (*m_iterPos)->Type() != tt_name) {
-		CLinterErrors::PushError("expected a name", GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError("expected a name", GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 
 	if (m_pOwner->GetContext()->m_sFilePath.empty()) {
-		CLinterErrors::PushError("imports are not supported when there is no working directory",
+		m_pOwner->GetModule()->PushError("imports are not supported when there is no working directory",
 			GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
@@ -85,7 +86,7 @@ Success CImportLinter::ParseIdentifierRecursively()
 Success CImportLinter::ParseFilePath()
 {
 	if (IsEndOfBuffer() || (*m_iterPos)->Type() != tt_string) {
-		CLinterErrors::PushError("expected a string", GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError("expected a string", GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 
@@ -95,14 +96,14 @@ Success CImportLinter::ParseFilePath()
 	const auto fullPath = wd + DIRECTORY_SEPARATOR_CHAR + relativePath;
 
 	if (!fs::file_exists(fullPath)) {
-		CLinterErrors::PushError(std::format("\"{}\" does not exist", fullPath), GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError(std::format("\"{}\" does not exist", fullPath), GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 
 	m_oTargetFile = fullPath;
 
 	if (m_oTargetFile == m_pOwner->GetModule()->GetFilePath()) {
-		CLinterErrors::PushError(std::format("attempted to import a symbol that is exported in the same file", fullPath), 
+		m_pOwner->GetModule()->PushError(std::format("attempted to import a symbol that is exported in the same file", fullPath),
 			GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
@@ -114,25 +115,27 @@ Success CImportLinter::ParseFilePath()
 
 Success CImportLinter::ParseFile()
 {
+	auto modules = m_pOwner->GetProgramInformation()->GetModules();
+	assert(modules);
 
 	const auto& sourceFile = m_pOwner->GetContext()->m_sFilePath;
-	if (!CModule::m_oDependencyGraph.contains(sourceFile)) {
-		CModule::m_oDependencyGraph[sourceFile] = {};
+	if (!modules->m_oDependencyGraph.contains(sourceFile)) {
+		modules->m_oDependencyGraph[sourceFile] = {};
 	}
 
-	if (CModule::m_oVisitedModules.contains(m_oTargetFile)) {
-		CModule* thisModule = CModule::FindCachedModule(m_oTargetFile);
+	if (modules->m_oVisitedModules.contains(m_oTargetFile)) {
+		CModule* thisModule = modules->FindCachedModule(m_oTargetFile);
 
 		if (!thisModule) { // means this file hasn't been parsed yet
-			if (!CModule::CheckCircularDependencies(sourceFile, CModule::m_oDependencyGraph))
+			if (!modules->CheckCircularDependencies(sourceFile, modules->m_oDependencyGraph))
 				return failure;
 		}
 	} else {
-		CModule::m_oVisitedModules.insert(m_oTargetFile);
+		modules->m_oVisitedModules.insert(m_oTargetFile);
 	}
 
-	CModule::m_oDependencyGraph[sourceFile].push_back(m_oTargetFile);
-	if (!CModule::CheckCircularDependencies(sourceFile, CModule::m_oDependencyGraph))
+	modules->m_oDependencyGraph[sourceFile].push_back(m_oTargetFile);
+	if (!modules->CheckCircularDependencies(sourceFile, modules->m_oDependencyGraph))
 		return failure;
 
 	CModule* thisModule = GetFileModule();
@@ -144,7 +147,7 @@ Success CImportLinter::ParseFile()
 		const auto exportedSymbol = thisModule->GetExport(name);
 
 		if (!exportedSymbol) {
-			CLinterErrors::PushError(std::format("\"{}\" is not an exported symbol", name), GetIteratorSafe()->m_oSourcePosition);
+			thisModule->PushError(std::format("\"{}\" is not an exported symbol", name), GetIteratorSafe()->m_oSourcePosition);
 			return failure;
 		}
 		if (exportedSymbol->Type() == es_variable) {
@@ -168,7 +171,10 @@ Success CImportLinter::ParseFile()
 }
 CModule* CImportLinter::GetFileModule() const
 {
-	if (auto cachedModule = CModule::FindCachedModule(m_oTargetFile)) 
+	auto modules = m_pOwner->GetProgramInformation()->GetModules();
+	assert(modules);
+
+	if (auto cachedModule = modules->FindCachedModule(m_oTargetFile))
 		return cachedModule;
 	
 	auto uniqueTokens = CBufferTokenizer::ParseFileFromFilePath(m_oTargetFile);
@@ -176,7 +182,7 @@ CModule* CImportLinter::GetFileModule() const
 	auto begin = tokens.begin();
 	auto end = tokens.end();
 
-	CBufferLinter l(begin, end, m_oTargetFile);
+	CBufferLinter l(m_pOwner->GetProgramInformation(), begin, end, m_oTargetFile);
 
 	if (!l.Parse())
 		return nullptr;
@@ -190,11 +196,12 @@ CModule* CImportLinter::GetFileModule() const
 Success CImportLinter::DeclareVariable(const std::string& symbolName,
 	CExportedSymbol* const s, std::size_t moduleIndex)
 {
-
+	auto modules = m_pOwner->GetProgramInformation()->GetModules();
+	assert(modules);
 	auto scope = m_pScope.lock();
 
 	if (!scope) {
-		CLinterErrors::PushError("CImportLinter: internal error", GetIteratorSafe()->m_oSourcePosition);
+		modules->PushError("CImportLinter: internal error", GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 

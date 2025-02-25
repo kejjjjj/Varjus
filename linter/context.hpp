@@ -1,6 +1,8 @@
 #pragma once
 
+#include "api/internal/globalDefinitions.hpp"
 #include "declarations/members.hpp"
+#include "error.hpp"
 
 struct CFileContext
 {
@@ -9,13 +11,8 @@ struct CFileContext
 
 	std::string m_sFilePath;
 
-	static CStringIntegerHashMap m_oAllMembers; //cross module...
 	CStringIntegerHashMap m_oAllVariables;
 	CStringIntegerHashMap m_oAllGlobalVariables;
-	
-	static void ResetGlobally() noexcept {
-		m_oAllMembers.Clear();
-	}
 
 	void Reset() noexcept {
 		m_sFilePath.clear();
@@ -23,4 +20,29 @@ struct CFileContext
 		m_oAllGlobalVariables.Clear();
 	}
 
+};
+class CProjectModules;
+class CBuiltInObjects;
+class CBuiltInFunctions;
+class CProgramInformation
+{
+	NONCOPYABLE(CProgramInformation);
+public:
+	CProgramInformation();
+	~CProgramInformation();
+
+	[[nodiscard]] constexpr auto GetModules() const { return m_pModules.get(); }
+
+
+	[[nodiscard]] inline auto PushError(const std::string& err) noexcept { m_oErrors.PushError("", err); }
+	[[nodiscard]] inline auto PushError(const std::string& err, const CodePosition& pos) noexcept {
+		m_oErrors.PushError("", err, pos);
+	}
+
+	CStringIntegerHashMap m_oAllMembers;
+	std::unique_ptr<CProjectModules> m_pModules;
+	std::unique_ptr<CBuiltInObjects> m_oBuiltInObjects; //declared by the user
+	std::unique_ptr<CBuiltInFunctions> m_oBuiltInFunctions; //declared by the user
+
+	CLinterErrors m_oErrors; //global level errors
 };

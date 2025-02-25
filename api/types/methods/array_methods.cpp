@@ -33,12 +33,10 @@ FORWARD_DECLARE_METHOD(Sort);
 FORWARD_DECLARE_METHOD(Resize);
 FORWARD_DECLARE_METHOD(Fill);
 
-std::shared_ptr<BuiltInMethod_t> CArrayValue::m_oMethods;
-std::shared_ptr<BuiltInProperty_t> CArrayValue::m_oProperties;
 
-void CArrayValue::ConstructMethods()
+std::unique_ptr<BuiltInMethod_t> CArrayValue::ConstructMethods()
 {
-	m_oMethods = std::make_shared<BuiltInMethod_t>();
+	auto m_oMethods = std::make_unique<BuiltInMethod_t>();
 
 	m_oMethods->AddMethod("push",            Push,          1u);
 	m_oMethods->AddMethod("push_front",      PushFront,     1u);
@@ -59,14 +57,18 @@ void CArrayValue::ConstructMethods()
 	m_oMethods->AddMethod("sort",            Sort,          1u);
 	m_oMethods->AddMethod("resize",          Resize,        1u);
 	m_oMethods->AddMethod("fill",            Fill,          1u);
+
+	return m_oMethods;
 }
 
 FORWARD_DECLARE_PROPERTY(ArrayLength);
 
-void CArrayValue::ConstructProperties()
+std::unique_ptr<BuiltInProperty_t> CArrayValue::ConstructProperties()
 {
-	m_oProperties = std::make_shared<BuiltInProperty_t>();
+	auto m_oProperties = std::make_unique<BuiltInProperty_t>();
 	m_oProperties->AddProperty("length", ArrayLength);
+
+	return m_oProperties;
 }
 
 

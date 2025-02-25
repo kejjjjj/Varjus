@@ -5,6 +5,7 @@
 #include "linter/functions/stack.hpp"
 #include "linter/error.hpp"
 #include "linter/token.hpp"
+#include "linter/modules/module.hpp"
 #include <cassert>
 
 std::unique_ptr<IOperand> CLinterOperand::ParseTernary(std::optional<PairMatcher>& eoe)
@@ -18,7 +19,7 @@ std::unique_ptr<IOperand> CLinterOperand::ParseTernary(std::optional<PairMatcher
 		return nullptr;
 
 	if (IsEndOfBuffer() || !(*std::prev(m_iterPos))->IsOperator(p_colon)) {
-		CLinterErrors::PushError("expected \":\", but found " + (*std::prev(m_iterPos))->Source(),
+		m_pOwner->GetModule()->PushError("expected \":\", but found " + (*std::prev(m_iterPos))->Source(),
 			GetIteratorSafe()->m_oSourcePosition);
 		return nullptr;
 	}

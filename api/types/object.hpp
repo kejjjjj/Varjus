@@ -42,9 +42,9 @@ public:
 	CObjectValue() = default;
 	~CObjectValue();
 
-	static CObjectValue* Construct(CProgramRuntime* const runtime, std::size_t moduleIndex, ObjectInitializer&& values);
-	static void ConstructMethods(); //only called once during init
-	static void ConstructProperties(); //only called once during init
+	[[nodiscard]] static CObjectValue* Construct(CProgramRuntime* const runtime, std::size_t moduleIndex, ObjectInitializer&& values);
+	[[nodiscard]] static std::unique_ptr<struct BuiltInMethod_t> ConstructMethods(); //only called once during init
+	[[nodiscard]] static std::unique_ptr<struct BuiltInProperty_t> ConstructProperties(); //only called once during init
 
 	//copy constructor
 	[[nodiscard]] EValueType Type() const noexcept override { return t_object; };
@@ -71,7 +71,4 @@ public:
 protected:
 	[[nodiscard]] std::string TypeAsString() const override { return "object"s; }
 	[[nodiscard]] std::string ValueAsString() const override;
-
-	static std::shared_ptr<struct BuiltInMethod_t> m_oMethods;
-	static std::shared_ptr<struct BuiltInProperty_t> m_oProperties;
 };

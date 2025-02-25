@@ -49,35 +49,23 @@ CExportedSymbol* CModule::GetExport(const std::string& name) const {
 /***********************************************************************
  > 
 ***********************************************************************/
-VectorOf<std::unique_ptr<CModule>> CModule::m_oAllModules;
-std::unordered_map<std::string, CModule*> CModule::m_oCachedModules;
-DependencyGraph CModule::m_oDependencyGraph;
-std::unordered_set<std::string> CModule::m_oVisitedModules;
 
-void CModule::ResetEverythingStatic()
-{
-	m_oAllModules.clear();
-	m_oCachedModules.clear();
-	m_oDependencyGraph.clear();
-	m_oVisitedModules.clear();
-}
-
-CModule* CModule::CreateNewModule(const std::string& filePath)
+CModule* CProjectModules::CreateNewModule(const std::string& filePath)
 {
 	auto index = m_oAllModules.size();
 	auto& thisModule = m_oAllModules.emplace_back(std::make_unique<CModule>(filePath));
-	thisModule->m_uIndex = index;
+	thisModule->SetIndex(index);
 	m_oCachedModules[filePath] = thisModule.get();
 	return thisModule.get();
 }
-CModule* CModule::FindCachedModule(const std::string& filePath)
+CModule* CProjectModules::FindCachedModule(const std::string& filePath)
 {
 	if (!m_oCachedModules.contains(filePath))
 		return nullptr;
 
 	return m_oCachedModules.at(filePath);
 }
-RuntimeModules CModule::ToRuntimeModules()
+RuntimeModules CProjectModules::ToRuntimeModules()
 {
 	RuntimeModules modules;
 	for (auto& tMod : m_oAllModules) {
@@ -88,10 +76,10 @@ RuntimeModules CModule::ToRuntimeModules()
 	return modules;
 }
 
-Success CModule::CheckCircularDependencies(const std::string& src, const DependencyGraph& graph)
+std::optional<std::string> CProjectModules::CheckCircularDependencies(const std::string& src, const DependencyGraph& graph)
 {
 	if (graph.empty())
-		return success;
+		return std::nullopt;
 
 	std::unordered_set<std::string> visited;
 	VectorOf<std::string> recursionStack;
@@ -130,18 +118,17 @@ Success CModule::CheckCircularDependencies(const std::string& src, const Depende
 		for (const auto& [source, target] : conflictDetails)
 			ss << " - " << source << " <-> " << target << '\n';
 
-		CLinterErrors::PushError(ss.str());
-		return failure;
+		return std::make_optional(ss.str());
 	}
 
-	return success;
+	return std::nullopt;
 }
 
-std::string CModule::DependencyGraphToString() noexcept
+std::string CProjectModules::DependencyGraphToString() noexcept
 {
 	std::stringstream ss;
 
-	for (const auto& [sourceFile, dependencies] : CModule::m_oDependencyGraph) {
+	for (const auto& [sourceFile, dependencies] : m_oDependencyGraph) {
 		ss << sourceFile << " imports:\n";
 
 		if (dependencies.empty()) {

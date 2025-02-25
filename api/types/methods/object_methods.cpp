@@ -18,12 +18,9 @@ FORWARD_DECLARE_METHOD(Object_Remove);
 FORWARD_DECLARE_METHOD(Object_Contains);
 FORWARD_DECLARE_METHOD(Object_ToArray);
 
-std::shared_ptr<BuiltInMethod_t> CObjectValue::m_oMethods;
-std::shared_ptr<BuiltInProperty_t> CObjectValue::m_oProperties;
-
-void CObjectValue::ConstructMethods()
+std::unique_ptr<BuiltInMethod_t> CObjectValue::ConstructMethods()
 {
-	m_oMethods = std::make_shared<BuiltInMethod_t>();
+	auto m_oMethods = std::make_unique<BuiltInMethod_t>();
 
 	m_oMethods->AddMethod("keys",     Object_Keys,     0u);
 	m_oMethods->AddMethod("values",   Object_Values,   0u);
@@ -32,13 +29,16 @@ void CObjectValue::ConstructMethods()
 	m_oMethods->AddMethod("contains", Object_Contains, 1u);
 	m_oMethods->AddMethod("to_array", Object_ToArray,  0u);
 
+	return m_oMethods;
 }
 
 FORWARD_DECLARE_PROPERTY(ObjectLength);
-void CObjectValue::ConstructProperties()
+std::unique_ptr<BuiltInProperty_t> CObjectValue::ConstructProperties()
 {
-	m_oProperties = std::make_shared<BuiltInProperty_t>();
+	auto m_oProperties = std::make_unique<BuiltInProperty_t>();
 	m_oProperties->AddProperty("length", ObjectLength);
+
+	return m_oProperties;
 }
 
 DEFINE_PROPERTY(ObjectLength) {

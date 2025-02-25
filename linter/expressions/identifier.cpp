@@ -6,6 +6,7 @@
 #include "linter/scopes/scope.hpp"
 #include "linter/context.hpp"
 #include "linter/hoisting/hoisting.hpp"
+#include "linter/modules/module.hpp"
 
 #include "api/internal/globalEnums.hpp"
 
@@ -25,7 +26,7 @@ Success CIdentifierLinter::ParseIdentifier()
 	auto iterPos = GetIteratorSafe();
 
 	if (IsEndOfBuffer() || !CheckIdentifier(iterPos)) {
-		CLinterErrors::PushError("expected an identifier, but found: " + iterPos->Source(), iterPos->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError("expected an identifier, but found: " + iterPos->Source(), iterPos->m_oSourcePosition);
 		return failure;
 	}
 
@@ -58,7 +59,7 @@ Success CIdentifierLinter::ParseIdentifier()
 
 	//ignore when hoisting
 	if (!m_pOwner->IsHoisting() && !m_pIdentifier) {
-		CLinterErrors::PushError("Use of an undefined identifier: " + str, m_pToken->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError("Use of an undefined identifier: " + str, m_pToken->m_oSourcePosition);
 		return failure;
 	}
 	

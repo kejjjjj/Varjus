@@ -67,15 +67,21 @@ IValue* CArrayValue::Index(IValue* vIndex)
 IValue* CArrayValue::GetAggregate(std::size_t memberIdx)
 {
 
-	if (m_oMethods->contains(memberIdx)) {
+	auto& obj = m_pAllocator->GetDefaultObject<CArrayValue>();
+	auto methods = obj.GetMethods();
+	assert(methods);
+	if (methods->contains(memberIdx)) {
 		auto v = m_pAllocator->AcquireNewValue<CCallableValue>();
-		METHOD_BIND(v, this->Copy());
+		METHOD_BIND(v, methods, this->Copy());
 		return v;
 	}
 
-	if (m_oProperties->contains(memberIdx)) {
-		return m_oProperties->at(memberIdx)(m_pAllocator, this);
+	auto properties = obj.GetProperties();
+	assert(properties);
+	if (properties->contains(memberIdx)) {
+		return properties->at(memberIdx)(m_pAllocator, this);
 	}
+
 
 	assert(false);
 	return nullptr;

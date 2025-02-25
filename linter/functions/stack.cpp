@@ -35,8 +35,8 @@ void CConstEvalLinterVariable::ReleaseConstEval()
 }
 #endif
 
-CMemory::CMemory(CMemory* globalMemory, CModule* const file)
-	: m_pModule(file), m_pGlobal(globalMemory) {
+CMemory::CMemory(CProgramInformation* const program, CMemory* globalMemory, CModule* const file)
+	: m_pModule(file), m_pGlobal(globalMemory), m_pProgram(program) {
 	assert(m_pModule);
 
 	if (!m_pGlobal)
@@ -56,12 +56,11 @@ CFileContext* CMemory::GetContext() const {
 CStack* CMemory::ToStack() { return dynamic_cast<CStack*>(this); }
 auto CMemory::ToStack() const { return dynamic_cast<const CStack*>(this); }
 
-CStack::CStack(CMemory* globalMemory, CModule* const file)
-	: CMemory(globalMemory, file) {};
+CStack::CStack(CProgramInformation* const program, CMemory* globalMemory, CModule* const file)
+	: CMemory(program, globalMemory, file) {};
 
-CStack::CStack(CMemory* globalMemory, std::unique_ptr<CFunctionBlock>&& func, 
-	CModule* const file) : CMemory(globalMemory, file), 
-	m_pFunction(std::move(func)){}
+CStack::CStack(CProgramInformation* const program, CMemory* globalMemory, std::unique_ptr<CFunctionBlock>&& func, CModule* const file) 
+	: CMemory(program, globalMemory, file), m_pFunction(std::move(func)){}
 
 CStack::~CStack() = default;
 
@@ -75,6 +74,7 @@ CStack* CStack::GetGlobalFunction()
 
 	while (func->m_pLowerFunction) {
 		func = func->m_pLowerFunction;
+		assert(func);
 	}
 
 	return func;

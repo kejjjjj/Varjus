@@ -6,6 +6,7 @@
 #include "linter/expressions/expression.hpp"
 #include "linter/expressions/ast.hpp"
 #include "linter/scopes/scope.hpp"
+#include "linter/modules/module.hpp"
 
 #include "api/internal/globalDefinitions.hpp"
 
@@ -25,7 +26,7 @@ Success CThrowStatementLinter::Parse()
 
 	// throw;
 	if (!IsEndOfBuffer() && (*m_iterPos)->IsOperator(p_semicolon)) {
-		CLinterErrors::PushError("expected an expression", GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError("expected an expression", GetIteratorSafe()->m_oSourcePosition);
 		return success;
 	}
 

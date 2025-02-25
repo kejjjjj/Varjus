@@ -6,6 +6,7 @@
 #include "linter/expressions/expression.hpp"
 #include "linter/expressions/ast.hpp"
 #include "linter/scopes/scope.hpp"
+#include "linter/modules/module.hpp"
 
 #include "api/internal/globalDefinitions.hpp"
 
@@ -41,7 +42,7 @@ Success CRepeatStatementLinter::Parse()
 	m_pCondition = ParseExpression();
 
 	if (IsEndOfBuffer() || (*m_iterPos)->IsOperator(p_semicolon) == false) {
-		CLinterErrors::PushError("expected a \";\"", GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError("expected a \";\"", GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 

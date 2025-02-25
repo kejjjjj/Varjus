@@ -7,6 +7,7 @@
 #include "linter/token.hpp"
 #include "linter/functions/stack.hpp"
 #include "linter/error.hpp"
+#include "linter/modules/module.hpp"
 
 #include "api/internal/globalEnums.hpp"
 
@@ -29,7 +30,7 @@ Success CLinterOperand::ParseOperand(std::optional<PairMatcher>& eoe)
 		return failure;
 
 	if (m_iterPos == m_iterEnd) {
-		CLinterErrors::PushError("unexpected end of buffer");
+		m_pOwner->GetModule()->PushError("unexpected end of buffer");
 		return failure;
 	}
 
@@ -52,7 +53,7 @@ Success CLinterOperand::ParseOperand(std::optional<PairMatcher>& eoe)
 	}
 
 	if (m_iterPos == m_iterEnd) {
-		CLinterErrors::PushError("unexpected end of buffer");
+		m_pOwner->GetModule()->PushError("unexpected end of buffer");
 		return failure;
 	}
 

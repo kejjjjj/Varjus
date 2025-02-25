@@ -1,15 +1,16 @@
-#include "tokenizer.hpp"
-#include "punctuation.hpp"
 #include "api/internal/globalEnums.hpp"
-#include "fs/fs_io.hpp"
+#include "context.hpp"
 #include "error.hpp"
 #include "expressions/operand/operand_fmt_string.hpp"
+#include "fs/fs_io.hpp"
+#include "punctuation.hpp"
+#include "tokenizer.hpp"
 
 #include <cassert>
-#include <iostream>
-#include <unordered_map>
 #include <filesystem>
 #include <format>
+#include <iostream>
+#include <unordered_map>
 
 constexpr bool IsDigit(char c) noexcept
 {
@@ -19,7 +20,8 @@ constexpr bool IsAlpha(char c) {
 	return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z');
 }
 
-CBufferTokenizer::CBufferTokenizer(const std::string_view& buffer) : m_sSource(buffer), m_eSuccess(success) {
+CBufferTokenizer::CBufferTokenizer(CProgramInformation* const program, const std::string_view& buffer) 
+	: m_sSource(buffer), m_eSuccess(success), m_pProgram(program) {
 
 	assert(buffer.data() && buffer.size());
 
@@ -103,7 +105,7 @@ std::unique_ptr<CToken> CBufferTokenizer::ReadToken()
 			return fmtString;
 		}
 
-		CLinterErrors::PushError("a token without a definition", m_oParserPosition);
+		m_pProgram->PushError("a token without a definition", m_oParserPosition);
 		return nullptr;
 	}
 	else {
@@ -111,7 +113,7 @@ std::unique_ptr<CToken> CBufferTokenizer::ReadToken()
 		if (auto punc = ReadPunctuation()) 
 			return punc;
 
-		CLinterErrors::PushError("a token without a definition", m_oParserPosition);
+		m_pProgram->PushError("a token without a definition", m_oParserPosition);
 		return nullptr;
 	}
 
@@ -208,8 +210,10 @@ Success CBufferTokenizer::ReadMultiLineComment()
 
 		m_oScriptPos++;
 
-		if (EndOfBuffer())
-			throw CLinterError("expected to find */ before EOF");
+		if (EndOfBuffer()) {
+			m_pProgram->PushError("expected to find */ before EOF");
+			return failure;
+		}
 	}
 
 	m_oScriptPos += 2; // */
@@ -318,7 +322,7 @@ Success CBufferTokenizer::ReadHex(CToken& token)
 	while (true) {
 
 		if (EndOfBuffer()) {
-			CLinterErrors::PushError("unexpected end of file");
+			m_pProgram->PushError("unexpected end of file");
 			return failure;
 		}
 
@@ -347,7 +351,7 @@ Success CBufferTokenizer::ReadHex(CToken& token)
 			token.m_sSource = std::to_string(uintValue);
 		}
 		catch ([[maybe_unused]] std::out_of_range& ex) {
-			CLinterErrors::PushError("constant value is out of range", m_oParserPosition);
+			m_pProgram->PushError("constant value is out of range", m_oParserPosition);
 			return failure;
 		}
 	}
@@ -370,7 +374,7 @@ Success CBufferTokenizer::ReadString(CToken& token, std::int8_t quote)
 			break;
 
 		if (*m_oScriptPos == '\n') {
-			CLinterErrors::PushError("newline within a string", m_oParserPosition);
+			m_pProgram->PushError("newline within a string", m_oParserPosition);
 			return failure;
 
 		} else {
@@ -442,14 +446,14 @@ Success CBufferTokenizer::ParseFmtExpression(CFmtStringToken& token)
 	column += 2;
 
 	if (EndOfBuffer()) {
-		CLinterErrors::PushError("expected a \"}\"", m_oParserPosition);
+		m_pProgram->PushError("expected a \"}\"", m_oParserPosition);
 		return failure;
 	}
 
 	while (*m_oScriptPos != FMT_EXPRESSION_END_CHAR) {
 		auto newToken = ReadToken();
 		if (!newToken || EndOfBuffer()) {
-			CLinterErrors::PushError("unexpected end of buffer", m_oParserPosition);
+			m_pProgram->PushError("unexpected end of buffer", m_oParserPosition);
 			return failure;
 		}
 
@@ -500,7 +504,7 @@ std::int8_t CBufferTokenizer::ReadEscapeCharacter()
 	column++;
 
 	if (EndOfBuffer()) {
-		CLinterErrors::PushError("unexpected end of file", m_oParserPosition);
+		m_pProgram->PushError("unexpected end of file", m_oParserPosition);
 		return 0;
 	}
 
@@ -520,7 +524,7 @@ std::int8_t CBufferTokenizer::ReadEscapeCharacter()
 	case '\?': c = '\?'; break;
 	case '`': c = '`'; break;
 	default: 
-		CLinterErrors::PushError("unexpected escape character", m_oParserPosition);
+		m_pProgram->PushError("unexpected escape character", m_oParserPosition);
 		return 0;
 	}
 
@@ -619,11 +623,11 @@ std::unique_ptr<CToken> CBufferTokenizer::ReadPunctuation() noexcept
 /***********************************************************************
  > 
 ***********************************************************************/
-std::vector<std::unique_ptr<CToken>> CBufferTokenizer::ParseFileFromFilePath(const std::string& filePath)
+std::vector<std::unique_ptr<CToken>> CBufferTokenizer::ParseFileFromFilePath(CProgramInformation* const program, const std::string& filePath)
 {
 
 	if (!std::filesystem::exists(filePath)) {
-		CLinterErrors::PushError(std::format("the input file \"{}\" doesn't exist", filePath));
+		program->PushError(std::format("the input file \"{}\" doesn't exist", filePath));
 		return {};
 	}
 
@@ -632,26 +636,26 @@ std::vector<std::unique_ptr<CToken>> CBufferTokenizer::ParseFileFromFilePath(con
 
 
 	if (!fileBuf) {
-		CLinterErrors::PushError("couldn't read the file buffer");
+		program->PushError("couldn't read the file buffer");
 		return {};
 	}
 
 	if (reader.ContainsUnicode()) {
-		CLinterErrors::PushError("unicode symbols aren't supported");
+		program->PushError("unicode symbols aren't supported");
 		return {};
 	}
 
 	if (fileBuf->size() >= fileBuf->max_size() - std::size_t(1ull)) {
-		CLinterErrors::PushError("buffer size is too big");
+		program->PushError("buffer size is too big");
 		return {};
 	}
 
 	fileBuf->push_back('\n'); // fixes a crash lol
 
-	auto tokenizer = CBufferTokenizer(*fileBuf);
+	auto tokenizer = CBufferTokenizer(program, *fileBuf);
 
 	if (!tokenizer.Tokenize()) {
-		CLinterErrors::PushError("the input file didn't have any parsable tokens");
+		program->PushError("the input file didn't have any parsable tokens");
 		return {};
 	}
 

@@ -7,6 +7,7 @@
 #include "linter/expressions/ast.hpp"
 #include "linter/scopes/scope.hpp"
 #include "linter/functions/function.hpp"
+#include "linter/modules/module.hpp"
 
 #include "api/internal/globalDefinitions.hpp"
 
@@ -41,19 +42,19 @@ Success CTryCatchStatementLinter::ParseCatchStatement()
 	CreateThisScope(); //recreate the scope
 	
 	if (IsEndOfBuffer() || !(*m_iterPos)->IsOperator(p_par_open)) {
-		CLinterErrors::PushError("expected a \"(\"", GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError("expected a \"(\"", GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 
 	std::advance(m_iterPos, 1);
 
 	if (IsEndOfBuffer() || (*m_iterPos)->Type() != tt_name) {
-		CLinterErrors::PushError("expected an identifier", GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError("expected an identifier", GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 
 	if (!m_pThisScope->DeclareVariable((*m_iterPos)->Source())) {
-		CLinterErrors::PushError("variable " + (*m_iterPos)->Source() + " already declared", 
+		m_pOwner->GetModule()->PushError("variable " + (*m_iterPos)->Source() + " already declared",
 			(*m_iterPos)->m_oSourcePosition);
 		return failure;
 	}
@@ -65,7 +66,7 @@ Success CTryCatchStatementLinter::ParseCatchStatement()
 
 	std::advance(m_iterPos, 1);
 	if (IsEndOfBuffer() || !(*m_iterPos)->IsOperator(p_par_close)) {
-		CLinterErrors::PushError("expected a \")\"", GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError("expected a \")\"", GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 	std::advance(m_iterPos, 1); //skip )

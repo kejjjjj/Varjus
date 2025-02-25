@@ -6,24 +6,27 @@
 
 using CodePosition = std::tuple<size_t, size_t>;
 
+class CModule;
+
 class CLinterError final : public std::exception
 {
 public:
-	CLinterError(const std::string& error, const CodePosition& position) 
+	CLinterError(const std::string& filePath, const std::string& error, const CodePosition& position)
         : m_oSourcePosition(position) {
-		m_oErrorMessageFormatted = GetStringFormatted(error);
+		m_oErrorMessageFormatted = GetStringFormatted(filePath, error);
 	}
-    CLinterError(const std::string& error);
+    CLinterError(const std::string& filePath, const std::string& error, const CodePosition* pos);
 
     [[nodiscard]] char const* what() const noexcept override{
         return m_oErrorMessageFormatted.size() ? m_oErrorMessageFormatted.c_str() : "Unknown exception";
     }
 
 private:
-    std::string GetStringFormatted(const std::string& err) const noexcept {
+    std::string GetStringFormatted(const std::string& filePath, const std::string& err) const noexcept {
 
         std::stringstream ss;
-        ss << "Error: " << err << "\nAt: " << std::get<0>(m_oSourcePosition) << ':' << std::get<1>(m_oSourcePosition);
+        ss << "Error: " << err << "\nAt: " << std::get<0>(m_oSourcePosition) << ':' << std::get<1>(m_oSourcePosition)
+            << " in \"" << filePath << "\"";
         return ss.str();
     }
 
@@ -36,20 +39,18 @@ class CLinterErrors final {
 
 public:
 
-    static void SetExecutionPosition(const CodePosition* pos) noexcept;
-    [[nodiscard]] static const CodePosition* GetExecutionPosition() noexcept;
 
-    static void PushError(const CLinterError& error);
-    static void PushError(const std::string& error, const CodePosition& position);
-    static void PushError(const std::string& error);
+    void PushError(const CLinterError& error);
+    void PushError(const std::string& filePath, const std::string& error, const CodePosition& position);
+    void PushError(const std::string& filePath, const std::string& error);
 
-    static void ClearErrorStack();
-    [[nodiscard ]] static const std::vector<CLinterError>& GetErrorStack();
+    void ClearErrorStack() { errorStack.clear(); }
+    [[nodiscard]] constexpr std::vector<CLinterError>& GetErrorStack() { return errorStack; }
 
 private:
-    static std::vector<CLinterError> errorStack;
-    static const CodePosition* m_pCodePosition;
+    std::vector<CLinterError> errorStack;
 
 };
+
 
 //std::vector<CLinterError> CLinterErrors::errorStack = {};

@@ -45,7 +45,7 @@ IValue* CBuiltInObject::GetAggregate(std::size_t memberIdx) {
 
 	if (m_oMethods->contains(memberIdx)) {
 		auto v = m_pAllocator->AcquireNewValue<CCallableValue>();
-		METHOD_BIND(v, this->Copy());
+		METHOD_BIND(v, m_oMethods, this->Copy());
 		return v;
 	}
 
@@ -58,8 +58,6 @@ IValue* CBuiltInObject::GetAggregate(std::size_t memberIdx) {
 
 CBuiltInObjectPairs::~CBuiltInObjectPairs() = default;
 
-
-std::vector<std::pair<std::string, CBuiltInObjectPairs>> CBuiltInObjects::m_arrData;
 void CBuiltInObjects::AddNewGlobalObject(const std::string& name,
 	const OptionalCtor<BuiltInMethod_t>& createMethods,
 	const OptionalCtor<BuiltInProperty_t>& createProperties)

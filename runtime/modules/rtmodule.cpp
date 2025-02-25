@@ -9,6 +9,7 @@
 #include "api/internal/structure.hpp"
 
 #include <ranges>
+#include <runtime/exceptions/exception.hpp>
 
 CRuntimeModule::CRuntimeModule(CModule& ctx) :
 	m_oGlobalScopeInstructions(std::move(ctx.m_oGlobalScopeInstructions)),
@@ -22,12 +23,17 @@ CRuntimeModule::~CRuntimeModule() = default;
 
 void CRuntimeModule::SetupGlobalVariables(CProgramRuntime* const runtime) {
 
+	if (!runtime->m_pInformation || !runtime->m_pInformation->m_oBuiltInObjects) {
+		throw CRuntimeError(runtime, "no runtime context!");
+	}
+		
 	//create global variables
 	m_oGlobalVariables = runtime->AcquireNewVariables(m_uNumGlobalVariables);
 
 	std::vector<std::pair<BuiltInMethod_t, BuiltInProperty_t>> classData;
 
-	for (auto& [_, v] : CBuiltInObjects::Iterator()) {
+
+	for (auto& [_, v] : runtime->m_pInformation->m_oBuiltInObjects->Iterator()) {
 		const auto& [methodCtor, propertyCtor] = v;
 
 		BuiltInMethod_t methods = methodCtor ? (*methodCtor)() : BuiltInMethod_t{};

@@ -6,6 +6,7 @@
 #include "linter/expressions/expression.hpp"
 #include "linter/expressions/ast.hpp"
 #include "linter/scopes/scope.hpp"
+#include "linter/modules/module.hpp"
 
 #include "api/internal/globalDefinitions.hpp"
 
@@ -29,7 +30,7 @@ Success CLoopControlStatement::Parse()
 	}else if ((*m_iterPos)->Type() == tt_continue) {
 		m_eType = lc_continue;
 	} else {
-		CLinterErrors::PushError("expected \"break\" or \"continue\"", GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError("expected \"break\" or \"continue\"", GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 
@@ -37,14 +38,14 @@ Success CLoopControlStatement::Parse()
 
 	if (const auto scope = m_pScope.lock()) {
 		if (!scope->IsLoopScope()) {
-			CLinterErrors::PushError(
+			m_pOwner->GetModule()->PushError(
 				std::format("the \"{}\" statement can only be used in a loop context", quick_lookup[(std::size_t)m_eType]),
 				GetIteratorSafe()->m_oSourcePosition);
 			return failure;
 		}
 	}
 	else {
-		CLinterErrors::PushError("!(const auto scope = m_pScope.lock())", GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError("!(const auto scope = m_pScope.lock())", GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 	

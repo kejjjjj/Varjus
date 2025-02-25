@@ -6,6 +6,7 @@
 #include "linter/punctuation.hpp"
 #include "linter/expressions/expression.hpp"
 #include "linter/expressions/ast.hpp"
+#include "linter/modules/module.hpp"
 
 #include <cassert>
 #include <format>
@@ -25,7 +26,7 @@ Success CVariableDeclarationLinter::Parse()
 {
 
 	if (IsEndOfBuffer() || !IsDeclaration(*m_iterPos)) {
-		CLinterErrors::PushError("expected \"let\"", GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError("expected \"let\"", GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 
@@ -35,7 +36,7 @@ Success CVariableDeclarationLinter::Parse()
 
 
 	if (IsEndOfBuffer() || !IsIdentifier(*m_iterPos)) {
-		CLinterErrors::PushError(std::format("expected variable name, but found \"{}\"", GetIteratorSafe()->Source()), 
+		m_pOwner->GetModule()->PushError(std::format("expected variable name, but found \"{}\"", GetIteratorSafe()->Source()),
 			GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
@@ -47,7 +48,7 @@ Success CVariableDeclarationLinter::Parse()
 		const auto containsFunc = m_pOwner->GetGlobalMemory()->m_FunctionManager->ContainsFunction(varName);
 
 		if (containsFunc || !scope->DeclareVariable((*m_iterPos)->Source())) {
-			CLinterErrors::PushError(std::format("\"{}\" already declared", (*m_iterPos)->Source()), (*m_iterPos)->m_oSourcePosition);
+			m_pOwner->GetModule()->PushError(std::format("\"{}\" already declared", (*m_iterPos)->Source()), (*m_iterPos)->m_oSourcePosition);
 			return failure;
 		}
 #ifdef OPTIMIZATIONS
@@ -59,14 +60,14 @@ Success CVariableDeclarationLinter::Parse()
 		m_sDeclaredVariable = m_pOwner->m_VariableManager->DeclareVariable(varName);
 #endif
 	} else {
-		CLinterErrors::PushError("!(const auto scope = currentScope.lock())", (*m_iterPos)->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError("!(const auto scope = currentScope.lock())", (*m_iterPos)->m_oSourcePosition);
 		return failure;
 	}
 
 	std::advance(m_iterPos, 1); // skip identifier
 
 	if (IsEndOfBuffer()) {
-		CLinterErrors::PushError("expected \";\"", GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError("expected \";\"", GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 
@@ -84,7 +85,7 @@ Success CVariableDeclarationLinter::Parse()
 
 	//let var = expression;
 	if (!(*m_iterPos)->IsOperator(p_assign)) {
-		CLinterErrors::PushError("expected \";\" or \"=\"", (*m_iterPos)->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError("expected \";\" or \"=\"", (*m_iterPos)->m_oSourcePosition);
 		return failure;
 	}
 

@@ -4,6 +4,7 @@
 #include "linter/punctuation.hpp"
 #include "linter/linter.hpp"
 #include "linter/error.hpp"
+#include "linter/modules/module.hpp"
 
 #include "api/internal/structure.hpp"
 
@@ -22,8 +23,10 @@ Success CScopeLinter::Parse()
 	assert(!IsEndOfBuffer() && (*m_iterPos)->IsOperator(p_curlybracket_open));
 	std::advance(m_iterPos, 1);
 
-	if(!IsEndOfBuffer() && (*m_iterPos)->IsOperator(p_curlybracket_close))
-		CLinterErrors::PushError("empty scopes are not allowed", GetIteratorSafe()->m_oSourcePosition);
+	if (!IsEndOfBuffer() && (*m_iterPos)->IsOperator(p_curlybracket_close)) {
+		m_pOwner->GetModule()->PushError("empty scopes are not allowed", GetIteratorSafe()->m_oSourcePosition);
+		return failure;
+	}
 
 	CLinterContext ctx{
 	.m_iterPos = m_iterPos,

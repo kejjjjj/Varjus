@@ -23,14 +23,14 @@
 
 CFunctionLinter::CFunctionLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack)
 	: CLinterSingle(pos, end), m_pScope(scope), m_pOwner(stack),
-	m_pThisStack(std::make_unique<CStack>(m_pOwner->GetGlobalMemory(), m_pOwner->m_pModule))
+	m_pThisStack(std::make_unique<CStack>(m_pOwner->GetProgramInformation(), m_pOwner->GetGlobalMemory(), m_pOwner->m_pModule))
 {
 
 	if (const auto s = m_pScope.lock()) {
 		m_pThisScope = s->CreateScope();
 	}
 	else {
-		CLinterErrors::PushError("!(const auto s = m_pScope.lock())", (*m_iterPos)->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError("!(const auto s = m_pScope.lock())", (*m_iterPos)->m_oSourcePosition);
 	}
 
 	m_pThisStack->m_pLowerRegion = m_pOwner;
@@ -82,24 +82,24 @@ Success CFunctionLinter::ParseFunctionDeclaration()
 {
 
 	if (IsEndOfBuffer() || !IsFn((*m_iterPos))) {
-		CLinterErrors::PushError("expected \"fn\"", GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError("expected \"fn\"", GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 
 	if (const auto scope = m_pScope.lock()) {
 		if (!scope->IsGlobalScope()) {
-			CLinterErrors::PushError("function declarations are only allowed in the global scope", (*m_iterPos)->m_oSourcePosition);
+			m_pOwner->GetModule()->PushError("function declarations are only allowed in the global scope", (*m_iterPos)->m_oSourcePosition);
 			return failure;
 		}
 	} else {
-		CLinterErrors::PushError("!(const auto scope = m_pScope.lock())", (*m_iterPos)->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError("!(const auto scope = m_pScope.lock())", (*m_iterPos)->m_oSourcePosition);
 		return failure;
 	}
 
 	std::advance(m_iterPos, 1); //skip fn
 
 	if (IsEndOfBuffer() || !IsIdentifier((*m_iterPos))) {
-		CLinterErrors::PushError("expected an identifier", GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError("expected an identifier", GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 
@@ -109,7 +109,7 @@ Success CFunctionLinter::ParseFunctionDeclaration()
 	const auto containsVar = m_pOwner->m_VariableManager->ContainsVariable(m_oFunctionName);
 
 	if ((containsFunc && m_pOwner->IsHoisting()) || containsVar) {
-		CLinterErrors::PushError(std::format("\"{}\" is already defined", m_oFunctionName), GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError(std::format("\"{}\" is already defined", m_oFunctionName), GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 
@@ -124,7 +124,7 @@ Success CFunctionLinter::ParseFunctionDeclaration()
 Success CFunctionLinter::ParseFunctionParameters()
 {
 	if (IsEndOfBuffer() || !(*m_iterPos)->IsOperator(p_par_open)) {
-		CLinterErrors::PushError("expected a \"(\"", GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError("expected a \"(\"", GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 	std::advance(m_iterPos, 1); //skip (
@@ -145,12 +145,12 @@ Success CFunctionLinter::ParseFunctionParameters()
 Success CFunctionLinter::ParseFunctionParametersRecursively()
 {
 	if (IsEndOfBuffer() || !IsIdentifier((*m_iterPos))) {
-		CLinterErrors::PushError("expected an identifier", GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError("expected an identifier", GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 	
 	if (!m_pThisScope->DeclareVariable((*m_iterPos)->Source())) {
-		CLinterErrors::PushError("variable " + (*m_iterPos)->Source() + " already declared", (*m_iterPos)->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError("variable " + (*m_iterPos)->Source() + " already declared", (*m_iterPos)->m_oSourcePosition);
 		return failure;
 	}
 
@@ -161,7 +161,7 @@ Success CFunctionLinter::ParseFunctionParametersRecursively()
 	std::advance(m_iterPos, 1); //skip identifier
 
 	if (IsEndOfBuffer()) {
-		CLinterErrors::PushError("expected \",\" or \")\"", GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError("expected \",\" or \")\"", GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 
@@ -172,14 +172,14 @@ Success CFunctionLinter::ParseFunctionParametersRecursively()
 		return success;
 	}
 
-	CLinterErrors::PushError("expected \",\" or \")\"", GetIteratorSafe()->m_oSourcePosition);
+	m_pOwner->GetModule()->PushError("expected \",\" or \")\"", GetIteratorSafe()->m_oSourcePosition);
 	return failure;
 }
 
 Success CFunctionLinter::ParseFunctionScope()
 {
 	if (IsEndOfBuffer() || !(*m_iterPos)->IsOperator(p_curlybracket_open)) {
-		CLinterErrors::PushError("expected a \"{\" or an expression", GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError("expected a \"{\" or an expression", GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 

@@ -5,6 +5,7 @@
 #include "linter/functions/stack.hpp"
 #include "linter/error.hpp"
 #include "linter/context.hpp"
+#include "linter/modules/module.hpp"
 
 #include "ast.hpp"
 #include "expression.hpp"
@@ -76,7 +77,7 @@ std::unique_ptr<IPostfixBase> CPostfixLinter::ParseMemberAccess()
 	std::advance(m_iterPos, 1); // skip .
 
 	if (IsEndOfBuffer() || (*m_iterPos)->Type() != tt_name) {
-		CLinterErrors::PushError("expected a member name", GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError("expected a member name", GetIteratorSafe()->m_oSourcePosition);
 		return nullptr;
 	}
 
@@ -84,7 +85,7 @@ std::unique_ptr<IPostfixBase> CPostfixLinter::ParseMemberAccess()
 
 	std::advance(m_iterPos, 1); // skip this identifier
 
-	auto& members = CFileContext::m_oAllMembers;
+	auto& members = m_pOwner->GetProgramInformation()->m_oAllMembers;
 	return std::make_unique<CPostfixMemberAccess>(members[string]);
 }
 
@@ -105,7 +106,7 @@ std::unique_ptr<IPostfixBase> CPostfixLinter::ParseFunctionCall()
 {
 
 	if (m_pOwner == m_pOwner->GetGlobalMemory()) {
-		CLinterErrors::PushError("don't call functions in the global scope - use the main function", GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError("don't call functions in the global scope - use the main function", GetIteratorSafe()->m_oSourcePosition);
 		return nullptr;
 	}
 	assert((*m_iterPos)->IsOperator(p_par_open));

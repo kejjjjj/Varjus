@@ -41,13 +41,13 @@ struct CBuiltInObjectPairs
 
 class CBuiltInObjects {
 public:
-	static void AddNewGlobalObject(const std::string& name, 
+	void AddNewGlobalObject(const std::string& name, 
 		const OptionalCtor<BuiltInMethod_t>& createMethods=std::nullopt,
 		const OptionalCtor<BuiltInProperty_t>& createProperties=std::nullopt);
 
-	[[nodiscard]] static auto& Iterator() noexcept { return m_arrData; }
-	static void Reset() noexcept { m_arrData.clear(); }
+	[[nodiscard]] auto& Iterator() noexcept { return m_arrData; }
+	void Reset() noexcept { m_arrData.clear(); }
 private:
-	static std::vector<std::pair<std::string, CBuiltInObjectPairs>> m_arrData;
+	std::vector<std::pair<std::string, CBuiltInObjectPairs>> m_arrData;
 
 };

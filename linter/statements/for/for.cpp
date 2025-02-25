@@ -7,6 +7,7 @@
 #include "linter/expressions/ast.hpp"
 #include "linter/scopes/scope.hpp"
 #include "linter/declarations/variable_declarations.hpp"
+#include "linter/modules/module.hpp"
 
 #include "api/internal/globalDefinitions.hpp"
 
@@ -27,7 +28,7 @@ Success CForStatementLinter::Parse()
 		return failure;
 
 	if (IsEndOfBuffer() || !(*m_iterPos)->IsOperator(p_par_open)) {
-		CLinterErrors::PushError("expected a \"(\"", GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError("expected a \"(\"", GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 
@@ -48,7 +49,7 @@ Success CForStatementLinter::Parse()
 Success CForStatementLinter::ParseInitializer() {
 
 	if (IsEndOfBuffer()) {
-		CLinterErrors::PushError("expected an expression", GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError("expected an expression", GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 
@@ -81,7 +82,7 @@ Success CForStatementLinter::ParseInitializer() {
 Success CForStatementLinter::ParseCondition() {
 
 	if (IsEndOfBuffer()) {
-		CLinterErrors::PushError("expected an expression", GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError("expected an expression", GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 
@@ -99,7 +100,7 @@ Success CForStatementLinter::ParseCondition() {
 }
 Success CForStatementLinter::ParseEndExpression() {
 	if (IsEndOfBuffer()) {
-		CLinterErrors::PushError("expected an expression", GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError("expected an expression", GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 

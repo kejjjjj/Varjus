@@ -8,6 +8,7 @@
 #include "linter/expressions/postfix.hpp"
 #include "linter/functions/stack.hpp"
 #include "linter/functions/function.hpp"
+#include "linter/modules/module.hpp"
 #include "api/types/internal/references.hpp"
 #include "linter/error.hpp"
 #include "linter/expressions/operand/operand_fmt_string.hpp"
@@ -117,7 +118,7 @@ void AbstractSyntaxTree::CreateRecursively(CMemory* const owner,
 	}
 
 	if (IsAssignment()) {
-		CheckConstness();
+		CheckConstness(owner);
 		CheckSelfCapture(owner);
 	}
 }
@@ -151,10 +152,10 @@ bool AbstractSyntaxTree::IsAssignment() const noexcept
 {
 	return GetOperator()->m_ePunctuation >= p_assign && GetOperator()->m_ePunctuation <= p_assignment_bitwise_and;
 }
-void AbstractSyntaxTree::CheckConstness() const
+void AbstractSyntaxTree::CheckConstness(CMemory* const owner) const
 {
 	if (left->IsVariable() && left->GetVariable()->m_bIsConst) {
-		CLinterErrors::PushError("lhs is declared const", left->m_oApproximatePosition);
+		owner->GetModule()->PushError("lhs is declared const", left->m_oApproximatePosition);
 		return;
 	}
 }

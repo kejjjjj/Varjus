@@ -14,18 +14,17 @@
 
 #define VALUEPOOL_INIT_SIZE size_t(100)
 
-CProgramRuntime::CProgramRuntime(RuntimeModules&& modules){
+CProgramRuntime::CProgramRuntime(std::unique_ptr<CProgramInformation>&& information, RuntimeModules&& modules)
+	: m_oDefaultObjects(
+		CDefaultObject<CStringValue>(CStringValue::ConstructMethods(), CStringValue::ConstructProperties()),
+		CDefaultObject<CArrayValue>(CArrayValue::ConstructMethods(), CArrayValue::ConstructProperties()),
+		CDefaultObject<CObjectValue>(CObjectValue::ConstructMethods(), CObjectValue::ConstructProperties())),
+	m_pInformation(std::move(information)),
+	m_oModules(std::move(modules)) {	
 	AllocatePools(VALUEPOOL_INIT_SIZE);
-
-	m_oModules = std::move(modules);
-	m_bExceptionThrown = false;
-	m_pExceptionValue = nullptr;
-	m_pCodePosition = nullptr;
 }
 
 CProgramRuntime::~CProgramRuntime(){};
-
-using steady_clock = std::chrono::time_point<std::chrono::steady_clock>;
 
 template<typename T>
 concept PrintableValue = VariableT<T> || IValueChild<T>;
@@ -49,20 +48,6 @@ void ClearPool(CProgramRuntime* _this) {
 	_this->GetPool<T>().ResetPool();
 }
 
-static void InitGlobals()
-{
-	// these are static because otherwise using objects, arrays, and strings would be quite expensive
-	// as the methods and properties would have to be copied everytime
-	CArrayValue::ConstructMethods();
-	CArrayValue::ConstructProperties();
-
-	CObjectValue::ConstructMethods();
-	CObjectValue::ConstructProperties();
-
-	CStringValue::ConstructMethods();
-	CStringValue::ConstructProperties();
-}
-
 IValue* CProgramRuntime::Execute()
 {
 	m_pExceptionValue = nullptr;
@@ -71,8 +56,6 @@ IValue* CProgramRuntime::Execute()
 	if (!mainFunction) {
 		throw CRuntimeError(this, "couldn't find the \"main\" function");
 	}
-
-	InitGlobals();
 
 	for (auto& mod : m_oModules) {
 		mod->SetupGlobalVariables(this);

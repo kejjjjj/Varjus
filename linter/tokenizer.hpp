@@ -15,7 +15,7 @@ class CFmtStringToken;
 class CBufferTokenizer final
 {
 public:
-	CBufferTokenizer(const std::string_view& buffer);
+	CBufferTokenizer(class CProgramInformation* const program, const std::string_view& buffer);
 	~CBufferTokenizer();
 	[[maybe_unused]] Success Tokenize();
 
@@ -63,9 +63,11 @@ private:
 	const std::string_view& m_sSource;
 	Success m_eSuccess;
 
+	CProgramInformation* const m_pProgram{};
+
 public:
 
-	static UniqueTokenVector ParseFileFromFilePath(const std::string& filePath);
+	static UniqueTokenVector ParseFileFromFilePath(CProgramInformation* const program, const std::string& filePath);
 	static std::vector<CToken*> ConvertTokensToReadOnly(UniqueTokenVector& src);
 };
 

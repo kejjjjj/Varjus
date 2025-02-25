@@ -6,6 +6,8 @@
 #include "linter/punctuation.hpp"
 #include "linter/error.hpp"
 #include "linter/expressions/ast.hpp"
+#include "linter/modules/module.hpp"
+#include "linter/functions/stack.hpp"
 #include "api/internal/globalEnums.hpp"
 
 #include <cassert>
@@ -33,7 +35,7 @@ Success CLinterOperatorParser::ParseOperator(std::optional<PairMatcher>& eoe,
 		return failure;
 
 	if (IsEndOfBuffer() || !CheckOperator()) {
-		CLinterErrors::PushError("unexpected end of expression: " + (*m_iterPos)->Source(), GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError("unexpected end of expression: " + (*m_iterPos)->Source(), GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 
@@ -54,7 +56,7 @@ Success CLinterOperatorParser::ParseOperator(std::optional<PairMatcher>& eoe,
 	}
 
 	if (!IsOperator(asPunctuation)) {
-		CLinterErrors::PushError("unexpected end of expression: " + iterPos->Source(), GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError("unexpected end of expression: " + iterPos->Source(), GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 

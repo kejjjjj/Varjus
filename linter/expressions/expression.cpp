@@ -11,6 +11,7 @@
 #include "operator.hpp"
 #include "sub_expression.hpp"
 #include "unary.hpp"
+#include "linter/modules/module.hpp"
 
 #include <algorithm>
 #include <cassert>
@@ -59,7 +60,7 @@ Success CLinterExpression::ParseInternal(std::optional<PairMatcher>& m_oEndOfExp
 	Success status = failure;
 
 	if(EndOfExpression(m_oEndOfExpression))
-		CLinterErrors::PushError("expected an expression", GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError("expected an expression", GetIteratorSafe()->m_oSourcePosition);
 
 	if (!expression) {
 		m_pEvaluatedExpressions = std::make_unique<CExpressionList>();
@@ -72,7 +73,7 @@ Success CLinterExpression::ParseInternal(std::optional<PairMatcher>& m_oEndOfExp
 
 		//the previous token was an operator, so we need an operand
 		if (EndOfExpression(m_oEndOfExpression) && !m_oSubExpressions.empty()) {
-			CLinterErrors::PushError("expected an operand, but found " + (*m_iterPos)->Source(), (*m_iterPos)->m_oSourcePosition);
+			m_pOwner->GetModule()->PushError("expected an operand, but found " + (*m_iterPos)->Source(), (*m_iterPos)->m_oSourcePosition);
 			return failure;
 		}
 
@@ -83,7 +84,7 @@ Success CLinterExpression::ParseInternal(std::optional<PairMatcher>& m_oEndOfExp
 	} while (status == success);
 
 	if (m_oSubExpressions.empty()) {
-		CLinterErrors::PushError("expected an expression", GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError("expected an expression", GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 

@@ -8,6 +8,7 @@
 #include "linter/error.hpp"
 #include "linter/expressions/expression.hpp"
 #include "linter/statements/return/return.hpp"
+#include "linter/modules/module.hpp"
 
 #include "api/internal/structure.hpp"
 
@@ -20,7 +21,7 @@ std::unique_ptr<IOperand> CLinterOperand::ParseLambda()
 	auto& oldIter = m_iterPos;
 
 	if (m_pOwner->IsLocalFunction()) {
-		CLinterErrors::PushError("nested lambdas are not supported", GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError("nested lambdas are not supported", GetIteratorSafe()->m_oSourcePosition);
 		return nullptr;
 	}
 

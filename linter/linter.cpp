@@ -29,8 +29,8 @@
 
 #include <cassert>
 
-CBufferLinter::CBufferLinter(LinterIterator& start, LinterIterator& end, const std::string& filePath)
-	: CLinter(start, end), m_oInitialPosition(start), m_sFilePath(filePath) {}
+CBufferLinter::CBufferLinter(CProgramInformation* const program, LinterIterator& start, LinterIterator& end, const std::string& filePath)
+	: CLinter(start, end), m_oInitialPosition(start), m_sFilePath(filePath), m_pProgram(program) {}
 CBufferLinter::~CBufferLinter() = default;
 
 static Success AddInstruction(LinterIterator& pos, RuntimeBlock&& block, const WeakScope& scope)
@@ -40,7 +40,6 @@ static Success AddInstruction(LinterIterator& pos, RuntimeBlock&& block, const W
 		if (auto s = scope.lock()) {
 			s->AddInstruction(std::move(block));
 		} else {
-			CLinterErrors::PushError("!(auto s = scope.lock())", (*pos)->m_oSourcePosition);
 			return failure;
 		}
 	}
@@ -81,12 +80,11 @@ Success CBufferLinter::LintScope(const CLinterContext& ctx)
 {
 
 	if (ctx.memory->IsGlobalMemory()) {
-		CLinterErrors::PushError("unnamed scopes are not allowed in the global scope", (*ctx.m_iterPos)->m_oSourcePosition);
+		ctx.m_pModule->PushError("unnamed scopes are not allowed in the global scope", (*ctx.m_iterPos)->m_oSourcePosition);
 		return failure;
 	}
 	auto s = ctx.scope.lock();
 	if (!s) {
-		CLinterErrors::PushError("!(const auto scope = m_pScope.lock())", (*ctx.m_iterPos)->m_oSourcePosition);
 		return failure;
 	}
 
@@ -162,7 +160,7 @@ Success CBufferLinter::LintToken(const CLinterContext& ctx)
 	case tt_from:
 	case tt_unused_count:
 	default:
-		CLinterErrors::PushError("unexpected token: " + (*ctx.m_iterPos)->Source(), (*ctx.m_iterPos)->m_oSourcePosition);
+		ctx.m_pModule->PushError("unexpected token: " + (*ctx.m_iterPos)->Source(), (*ctx.m_iterPos)->m_oSourcePosition);
 		return failure;
 	}
 
@@ -181,15 +179,25 @@ Success CBufferLinter::Parse()
 
 static void DeclareGlobalObjects(CMemory* m_pOwner, CScope* const scope)
 {
-	for (auto& [k, v] : CBuiltInObjects::Iterator()) {
+	auto info = m_pOwner->GetProgramInformation();
+
+	if(!info || !info->m_oBuiltInObjects)
+		return m_pOwner->GetModule()->PushError("internal bug in DeclareGlobalObjects: !info || !info->m_oBuiltInObjects");
+
+	for (auto& [k, v] : info->m_oBuiltInObjects->Iterator()) {
 		m_pOwner->m_VariableManager->DeclareVariable(k);
 		if (!scope->DeclareVariable(k))
-			return CLinterErrors::PushError("internal bug in DeclareGlobalObjects", {});
+			return m_pOwner->GetModule()->PushError("internal bug in DeclareGlobalObjects");
 	}
 }
 static void DeclareBuiltInFunctions(CMemory* m_pOwner)
 {
-	for (auto& [k, v] : CBuiltInFunctions::Iterator()) {
+	auto info = m_pOwner->GetProgramInformation();
+
+	if (!info || !info->m_oBuiltInFunctions)
+		return m_pOwner->GetModule()->PushError("internal bug in DeclareGlobalObjects: !info || !info->m_oBuiltInObjects");
+
+	for (auto& [k, v] : info->m_oBuiltInFunctions->Iterator()) {
 		auto& [callable, numArgs] = v;
 		m_pOwner->m_FunctionManager->DeclareFunction(k, m_pOwner->m_FunctionManager->GetFunctionCount());
 		m_pOwner->GetModule()->AddFunction(std::make_unique<CBuiltInRuntimeFunction>(k, callable, numArgs));
@@ -202,7 +210,7 @@ Success CBufferLinter::HoistFile()
 	// no need to give a module index to hoisted files
 	auto mod = std::make_unique<CModule>(m_sFilePath);
 
-	CMemory globalMemory(nullptr, mod.get());
+	CMemory globalMemory(m_pProgram, nullptr, mod.get());
 	auto globalScope = std::make_shared<CScope>(&globalMemory);
 
 	DeclareBuiltInFunctions(&globalMemory);
@@ -213,6 +221,7 @@ Success CBufferLinter::HoistFile()
 		.m_iterEnd = m_iterEnd,
 		.scope = globalScope,
 		.memory = &globalMemory,
+		.m_pModule = mod.get(),
 		.m_bAddInstructions = false
 	};
 
@@ -235,8 +244,9 @@ Success CBufferLinter::HoistFile()
 
 Success CBufferLinter::LintFile()
 {
-	m_pModule = CModule::CreateNewModule(m_sFilePath);
-	CMemory globalMemory(nullptr, m_pModule);
+	m_pModule = m_pProgram->GetModules()->CreateNewModule(m_sFilePath);
+
+	CMemory globalMemory(m_pProgram, nullptr, m_pModule);
 	globalMemory.m_pHoister = m_pHoister.get();
 
 	auto globalScope = std::make_shared<CScope>(&globalMemory);
@@ -249,6 +259,7 @@ Success CBufferLinter::LintFile()
 		.m_iterEnd = m_iterEnd,
 		.scope = globalScope,
 		.memory = &globalMemory,
+		.m_pModule = m_pModule,
 		.m_bAddInstructions = true
 	};
 

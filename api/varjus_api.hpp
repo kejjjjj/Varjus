@@ -54,42 +54,44 @@ int main()
 }
 ***********************************************************************/
 
-
-
-namespace Varjus
-{
-	//Call me before loading a script if you need access to standard objects such as math and console
-	VARJUS_API void UseStdLibrary();
-
-	//Call me when you don't need the api anymore
-	VARJUS_API void Cleanup();
-
-	//This function expects a full file path, not a relative one
-	VARJUS_API __ND Success LoadScriptFromFile(const std::string& fullFilePath);
-	
-	//Call me after you have loaded a script with LoadScriptFromFile or LoadScript
-	//Don't do any memory management to the return value as it's managed by the API
-    //Just remember to call Varjus::Cleanup() after you don't need this value
-	VARJUS_API __ND IValue* ExecuteScript();
-
-	//When a function doesn't return a success
-	VARJUS_API __ND std::optional<std::string> GetErrorMessage();
-
-	// Debug memory leaks
-	// call me after Varjus::Cleanup()
-	VARJUS_API void PrintMemoryUsage();
-
-}
+class CProgramInformation;
+class CProgramRuntime;
 
 namespace Varjus
 {
-    //Declare a new global variable with its custom methods and properties (callbacks)
-    //See Varjus::UseStdLibrary() for an usage example
-    void AddNewGlobalObject(const std::string& name,
-        const OptionalCtor<BuiltInMethod_t>& createMethods = std::nullopt,
-        const OptionalCtor<BuiltInProperty_t>& createProperties = std::nullopt);
+    struct State
+    {
+        State();
+        ~State();
 
-    //When this function is referenced in code, it calls the callback
-    void AddNewCallback(const std::string& name, const Function_t& callback, std::size_t numArgs);
+        //Call me before loading a script if you need access to standard objects such as math and console
+        VARJUS_API __ND Success UseStdLibrary();
+
+        //This function expects a full file path, not a relative one
+        VARJUS_API __ND Success LoadScriptFromFile(const std::string& fullFilePath);
+
+        //Call me after you have loaded a script with LoadScriptFromFile or LoadScript
+        //Don't do any memory management to the return value as it's managed by the API
+        VARJUS_API __ND IValue* ExecuteScript();
+
+        //When a function doesn't return a success
+        VARJUS_API __ND std::optional<std::string> GetErrorMessage();
+
+        //Declare a new global variable with its custom methods and properties (callbacks)
+        VARJUS_API __ND Success AddNewGlobalObject(const std::string& name,
+            const OptionalCtor<BuiltInMethod_t>& createMethods = std::nullopt,
+            const OptionalCtor<BuiltInProperty_t>& createProperties = std::nullopt);
+
+        //When this function is referenced in code, it calls the callback
+        VARJUS_API __ND Success AddNewCallback(const std::string& name, const Function_t& callback, std::size_t numArgs);
+
+    private: // All of this is managed by the class, so there should never be a need to publicly access these :)
+
+        std::string m_sErrorMessage;
+        Success m_bScriptLoaded;
+        std::unique_ptr<CProgramInformation> m_pLinter;
+        std::unique_ptr<CProgramRuntime> m_pRuntime;
+        IValue* m_pReturnValue;
+    };
 
 }

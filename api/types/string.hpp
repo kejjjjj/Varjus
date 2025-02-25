@@ -36,8 +36,8 @@ public:
 	CStringValue() = default;
 
 	[[nodiscard]] static CStringValue* Construct(CProgramRuntime* const runtime, const std::string& v);
-	static void ConstructMethods(); //only called once during init
-	static void ConstructProperties(); //only called once during init
+	[[nodiscard]] static std::unique_ptr<struct BuiltInMethod_t> ConstructMethods(); //only called once during init
+	[[nodiscard]] static std::unique_ptr<struct BuiltInProperty_t> ConstructProperties(); //only called once during init
 
 	[[nodiscard]] EValueType Type() const noexcept override { return t_string; };
 	[[nodiscard]] IValue* Copy() override;
@@ -65,9 +65,5 @@ public:
 private:
 	[[nodiscard]] std::string TypeAsString() const override { return "string"s; }
 	[[nodiscard]] std::string ValueAsString() const override { return Internal()->GetString(); }
-
-	static std::shared_ptr<struct BuiltInMethod_t> m_oMethods;
-	static std::shared_ptr<struct BuiltInProperty_t> m_oProperties;
-
 
 };

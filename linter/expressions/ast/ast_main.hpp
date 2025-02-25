@@ -93,7 +93,7 @@ private:
 
 	[[nodiscard]] bool IsAssignment() const noexcept;
 	
-	void CheckConstness() const;
+	void CheckConstness(CMemory* const owner) const;
 	void CheckSelfCapture(CMemory* const owner);
 
 	[[nodiscard]] bool IsSelfReferencingCapture(const AbstractSyntaxTree* lhs, const AbstractSyntaxTree* rhs);

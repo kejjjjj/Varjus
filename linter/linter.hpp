@@ -8,8 +8,6 @@ class IRuntimeStructure;
 class CModule;
 class CHoister;
 
-struct CFileContext;
-
 using RuntimeBlock = std::unique_ptr<IRuntimeStructure>;
 
 WARNING_PUSH()
@@ -21,6 +19,7 @@ struct CLinterContext
 	LinterIterator& m_iterEnd;
 	const WeakScope& scope;
 	CMemory* const memory;
+	CModule* const m_pModule;
 	bool m_bAddInstructions{ true };
 };
 WARNING_POP()
@@ -29,7 +28,7 @@ class CBufferLinter final : public CLinter<CToken>
 {
 	NONCOPYABLE(CBufferLinter);
 public:
-	CBufferLinter(LinterIterator& start, LinterIterator& end, const std::string& filePath="");
+	CBufferLinter(CProgramInformation* const program, LinterIterator& start, LinterIterator& end, const std::string& filePath="");
 	~CBufferLinter();
 	[[nodiscard]] static Success LintToken(const CLinterContext& ctx);
 	[[nodiscard]] static Success LintOperator(const CLinterContext& ctx);
@@ -49,6 +48,7 @@ private:
 	LinterIterator m_oInitialPosition;
 	std::unique_ptr<CHoister> m_pHoister;
 	std::string m_sFilePath;
+	CProgramInformation* const m_pProgram{};
 };
 
 

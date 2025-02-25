@@ -1,5 +1,6 @@
 #include "varjus_api.hpp"
 
+#include "linter/context.hpp"
 #include "linter/error.hpp"
 #include "linter/linter.hpp"
 #include "linter/modules/module.hpp"
@@ -13,125 +14,119 @@
 #include "runtime/exceptions/exception.hpp"
 #include "runtime/modules/rtmodule.hpp"
 
-struct CVarjusInternals
-{ 
+Varjus::State::State() 
+    : m_pLinter(std::make_unique<CProgramInformation>()) {}
+Varjus::State::~State() {
 
-
-    static void Init() {
-        m_bScriptLoaded = failure;
-        m_sErrorMessage.clear();
 #ifndef RUNNING_TESTS
-        if (m_pReturnValue)
-            m_pReturnValue->Release();
-        m_pReturnValue = nullptr;
-        if (m_pRuntime) {
-            m_pRuntime->Cleanup();
-            m_pRuntime.reset();
-        }
+    if (m_pReturnValue)
+        m_pReturnValue->Release();
 #endif
+
+}
+
+Success Varjus::State::UseStdLibrary()
+{
+    if (!m_pLinter || !m_pLinter->m_oBuiltInObjects) {
+        m_sErrorMessage = "Varjus::State::UseStdLibrary(): no linter context... internal bug?";
+        return failure;
     }
 
-    static std::string m_sErrorMessage;
-    static Success m_bScriptLoaded;
-    static IValue* m_pReturnValue;
-    static std::unique_ptr<CProgramRuntime> m_pRuntime;
-};
+    m_pLinter->m_oBuiltInObjects->AddNewGlobalObject("console", CConsoleValue::ConstructMethods);
+    m_pLinter->m_oBuiltInObjects->AddNewGlobalObject("math", CMathValue::ConstructMethods, CMathValue::ConstructProperties);
 
-std::string CVarjusInternals::m_sErrorMessage{};
-Success CVarjusInternals::m_bScriptLoaded{};
-IValue* CVarjusInternals::m_pReturnValue{};
-std::unique_ptr<CProgramRuntime> CVarjusInternals::m_pRuntime{};
-
-static void InitVarjus()
-{
-    CLinterErrors::ClearErrorStack();
-    CModule::ResetEverythingStatic();
-    CFileContext::ResetGlobally();
-    CVarjusInternals::Init();
+    return success;
 }
 
-void Varjus::UseStdLibrary()
+Success Varjus::State::LoadScriptFromFile(const std::string& fullFilePath)
 {
-    CBuiltInObjects::Reset();
-    Varjus::AddNewGlobalObject("console", CConsoleValue::ConstructMethods);
-    Varjus::AddNewGlobalObject("math", CMathValue::ConstructMethods, CMathValue::ConstructProperties);
-}
-
-void Varjus::Cleanup() {
-    InitVarjus();
-    CBuiltInObjects::Reset();
-    CBuiltInFunctions::Reset();
-}
-
-Success Varjus::LoadScriptFromFile(const std::string& fullFilePath)
-{
-    InitVarjus();
+    if (!m_pLinter || !m_pLinter->m_oBuiltInObjects) {
+        m_sErrorMessage = "Varjus::State::LoadScriptFromFile(): no linter context... internal bug?";
+        return failure;
+    }
 
     try {
-        auto uniqueTokens = CBufferTokenizer::ParseFileFromFilePath(fullFilePath);
+        auto uniqueTokens = CBufferTokenizer::ParseFileFromFilePath(m_pLinter.get(), fullFilePath);
         auto tokens = CBufferTokenizer::ConvertTokensToReadOnly(uniqueTokens);
         auto begin = tokens.begin();
         auto end = tokens.end();
 
-        CBufferLinter linter(begin, end, fullFilePath);
+        CBufferLinter linter(m_pLinter.get(), begin, end, fullFilePath);
 
         if (!linter.Parse()) {
-            CLinterErrors::PushError("couldn't parse the input file");
+            m_pLinter->PushError("couldn't parse the input file");
             return failure;
         }
-        return CVarjusInternals::m_bScriptLoaded = success;
+        return m_bScriptLoaded = success;
     }
     catch (CLinterError& ex) {
-        CVarjusInternals::m_sErrorMessage = ex.what();
+        m_sErrorMessage = ex.what();
     } catch (std::exception& ex) {
-        CVarjusInternals::m_sErrorMessage = "Unexpected exception: " + std::string(ex.what());
+        m_sErrorMessage = "Unexpected exception: " + std::string(ex.what());
     }
 
     return failure;
 }
-IValue* Varjus::ExecuteScript()
+IValue* Varjus::State::ExecuteScript()
 {
-    if (CVarjusInternals::m_bScriptLoaded == failure) {
-        CLinterErrors::PushError("couldn't execute the script due to a missing script or syntax error");
+
+    if (!m_pLinter || !m_pLinter->m_oBuiltInObjects) {
+        m_sErrorMessage = "Varjus::State::ExecuteScript(): no linter context... internal bug?";
+        return nullptr;
+    }
+
+    if (m_bScriptLoaded == failure) {
+        m_pLinter->PushError("Varjus::State::ExecuteScript(): the script wasn't loaded successfully - check return values!!!");
         return nullptr;
     }
 
     try {
+        if (auto modules = m_pLinter->GetModules()) {
+            m_pRuntime = std::make_unique<CProgramRuntime>(modules->ToRuntimeModules());
+        } else {
+            m_sErrorMessage = "Varjus::State::ExecuteScript(): no modules... internal bug?";
+            return nullptr;
+        }
+        
+        if (!m_pRuntime) {
+            m_sErrorMessage = "Varjus::State::ExecuteScript(): call to std::make_unique failed... internal bug?";
+            return nullptr;
+        }
 
-        CVarjusInternals::m_pRuntime = std::make_unique<CProgramRuntime>(CModule::ToRuntimeModules());
-        return CVarjusInternals::m_pReturnValue = CVarjusInternals::m_pRuntime->Execute();
+        return m_pReturnValue = m_pRuntime->Execute();
 
     } catch (CRuntimeError& ex) {
-        CVarjusInternals::m_sErrorMessage = ex.what();
+        m_sErrorMessage = ex.what();
     } catch (std::exception& ex) {
-        CVarjusInternals::m_sErrorMessage = "Unexpected exception: " + std::string(ex.what());
+        m_sErrorMessage = "Unexpected exception: " + std::string(ex.what());
     }
 
     return nullptr;
 
 }
-std::optional<std::string> Varjus::GetErrorMessage()
-{
-    return CVarjusInternals::m_sErrorMessage.size() 
-        ? std::make_optional<std::string>(CVarjusInternals::m_sErrorMessage) 
-        : std::nullopt;
+std::optional<std::string> Varjus::State::GetErrorMessage() {
+    return m_sErrorMessage.size() ? std::make_optional<std::string>(m_sErrorMessage) : std::nullopt;
 }
 
-void Varjus::PrintMemoryUsage() {
-    if (!CVarjusInternals::m_pRuntime)
-        return;
+Success Varjus::State::AddNewGlobalObject(const std::string& name,
+    const OptionalCtor<BuiltInMethod_t>& createMethods = std::nullopt,
+    const OptionalCtor<BuiltInProperty_t>& createProperties = std::nullopt)
+{
+    if (!m_pLinter || !m_pLinter->m_oBuiltInObjects) {
+        m_sErrorMessage = "Varjus::State::AddNewGlobalObject(): no linter context... internal bug?";
+        return failure;
+    }
 
-    CVarjusInternals::m_pRuntime->PrintAllLeaks();
+    m_pLinter->m_oBuiltInObjects->AddNewGlobalObject(name, createMethods, createProperties);
+
 }
 
-void Varjus::AddNewGlobalObject(const std::string& name,
-    const OptionalCtor<BuiltInMethod_t>& createMethods,
-    const OptionalCtor<BuiltInProperty_t>& createProperties) 
+Success Varjus::State::AddNewCallback(const std::string& name, const Function_t& callback, std::size_t numArgs)
 {
-    CBuiltInObjects::AddNewGlobalObject(name, createMethods, createProperties);
-    
-}
-void Varjus::AddNewCallback(const std::string& name, const Function_t& callback, std::size_t numArgs)
-{
-    CBuiltInFunctions::AddNewGlobalCallable(name, callback, numArgs);
+    if (!m_pLinter || !m_pLinter->m_oBuiltInFunctions) {
+        m_sErrorMessage = "Varjus::State::AddNewCallback(): no linter context... internal bug?";
+        return failure;
+    }
+
+    m_pLinter->m_oBuiltInFunctions->AddNewGlobalCallable(name, callback, numArgs);
 }

@@ -6,6 +6,7 @@
 #include "linter/expressions/expression.hpp"
 #include "linter/expressions/ast.hpp"
 #include "linter/scopes/scope.hpp"
+#include "linter/modules/module.hpp"
 
 #include "api/internal/globalDefinitions.hpp"
 
@@ -23,11 +24,11 @@ Success CReturnStatementLinter::Parse()
 
 	if (const auto scope = m_pScope.lock()) {
 		if (scope->IsGlobalScope()) {
-			CLinterErrors::PushError("cannot return in the global scope", GetIteratorSafe()->m_oSourcePosition);
+			m_pOwner->GetModule()->PushError("cannot return in the global scope", GetIteratorSafe()->m_oSourcePosition);
 			return failure;
 		}
 	} else {
-		CLinterErrors::PushError("!(const auto scope = m_pScope.lock())", GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError("!(const auto scope = m_pScope.lock())", GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 

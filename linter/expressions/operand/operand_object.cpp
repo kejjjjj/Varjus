@@ -4,6 +4,7 @@
 #include "linter/expressions/expression.hpp"
 #include "linter/functions/stack.hpp"
 #include "linter/token.hpp"
+#include "linter/modules/module.hpp"
 
 #include "operand.hpp"
 #include "operand_object.hpp"
@@ -25,7 +26,7 @@ std::unique_ptr<CKeyValue> CLinterOperand::ParseKeyValue(std::optional<PairMatch
 	};
 
 	if (IsEndOfBuffer() || !isValidKey(*m_iterPos)) {
-		CLinterErrors::PushError("expected an identifier", GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError("expected an identifier", GetIteratorSafe()->m_oSourcePosition);
 		return nullptr;
 	}
 
@@ -34,7 +35,7 @@ std::unique_ptr<CKeyValue> CLinterOperand::ParseKeyValue(std::optional<PairMatch
 	std::advance(m_iterPos, 1); // skip identifier
 
 	if (IsEndOfBuffer() || !(*m_iterPos)->IsOperator(p_colon)) {
-		CLinterErrors::PushError("expected \":\"", GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError("expected \":\"", GetIteratorSafe()->m_oSourcePosition);
 		return nullptr;
 	}
 
@@ -50,7 +51,7 @@ std::unique_ptr<CKeyValue> CLinterOperand::ParseKeyValue(std::optional<PairMatch
 	}
 
 	return std::make_unique<CKeyValue>(
-		m_pOwner->GetContext()->m_oAllMembers[identifier],
+		m_pOwner->GetProgramInformation()->m_oAllMembers[identifier],
 		expr.ToMergedAST()
 	);
 

@@ -54,9 +54,9 @@ struct BuiltInProperty_t : std::unordered_map<std::size_t, Property_t>
 	void AddProperty(const std::string& name, Property_t property);
 };
 
-#define METHOD_BIND(v, value) \
+#define METHOD_BIND(v, methods, value) \
 v->MakeShared();\
-v->Internal()->SetCallable(m_oMethods->at(memberIdx).get());\
+v->Internal()->SetCallable(methods->at(memberIdx).get());\
 v->MakeImmutable();\
 v->Internal()->Bind(value);\
 

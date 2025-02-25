@@ -26,12 +26,9 @@ FORWARD_DECLARE_METHOD(Repeat);
 
 FORWARD_DECLARE_METHOD(GetCodeAt);
 
-std::shared_ptr<BuiltInMethod_t> CStringValue::m_oMethods;
-std::shared_ptr<BuiltInProperty_t> CStringValue::m_oProperties;
-
-void CStringValue::ConstructMethods()
+std::unique_ptr<BuiltInMethod_t> CStringValue::ConstructMethods()
 {
-	m_oMethods = std::make_shared<BuiltInMethod_t>();
+	auto m_oMethods = std::make_unique<BuiltInMethod_t>();
 
 	m_oMethods->AddMethod("toupper",     ToUpper,   0u);
 	m_oMethods->AddMethod("tolower",     ToLower,   0u);
@@ -40,14 +37,19 @@ void CStringValue::ConstructMethods()
 	m_oMethods->AddMethod("replace",     Replace,   2u);
 	m_oMethods->AddMethod("repeat",      Repeat,    1u);
 	m_oMethods->AddMethod("get_code_at", GetCodeAt, 1u);
+
+	return m_oMethods;
+
 }
 
 FORWARD_DECLARE_PROPERTY(StringLength);
 
-void CStringValue::ConstructProperties()
+std::unique_ptr<BuiltInProperty_t> CStringValue::ConstructProperties()
 {
-	m_oProperties = std::make_shared<BuiltInProperty_t>();
+	auto m_oProperties = std::make_unique<BuiltInProperty_t>();
 	m_oProperties->AddProperty("length", StringLength);
+
+	return m_oProperties;
 }
 
 DEFINE_PROPERTY(StringLength) {

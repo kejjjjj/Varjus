@@ -13,6 +13,7 @@ class CStack;
 class IRuntimeStructure;
 class CModule;
 class CHoister;
+class CProgramInformation;
 
 struct CFunctionBlock;
 struct CFileContext;
@@ -35,7 +36,7 @@ class CMemory
 	friend class CBufferLinter;
 
 public:
-	CMemory(CMemory* globalMemory, CModule* const file);
+	CMemory(CProgramInformation* const program, CMemory* globalMemory, CModule* const file);
 	virtual ~CMemory();
 
 	[[nodiscard]] virtual bool IsStack() const noexcept { return false; }
@@ -53,6 +54,8 @@ public:
 	[[nodiscard]] bool IsGlobalMemory() const noexcept { return this == m_pGlobal; }
 	[[nodiscard]] auto& GetLowerMemoryRegion() const noexcept { return m_pLowerRegion; }
 
+	[[nodiscard]] auto& GetProgramInformation() noexcept { return m_pProgram; }
+
 
 	[[nodiscard]] bool IsHoisting() const noexcept { return !m_pGlobal->m_pHoister; }
 	[[nodiscard]] bool HasHoistedData() const noexcept { return !!m_pGlobal->m_pHoister; }
@@ -69,7 +72,7 @@ protected:
 	CModule* const m_pModule{};
 	CMemory* m_pGlobal{ nullptr };
 	CMemory* m_pLowerRegion{ nullptr };
-
+	CProgramInformation* const m_pProgram{};
 private:
 	VectorOf<RuntimeBlock> m_oInstructions;
 	CHoister* m_pHoister{ nullptr };
@@ -86,8 +89,8 @@ class CStack final : public CMemory
 	friend class CIdentifierLinter;
 
 public:
-	CStack(CMemory* globalMemory, CModule* const file);
-	CStack(CMemory* globalMemory, std::unique_ptr<CFunctionBlock>&& func, CModule* const file);
+	CStack(CProgramInformation* const program, CMemory* globalMemory, CModule* const file);
+	CStack(CProgramInformation* const program, CMemory* globalMemory, std::unique_ptr<CFunctionBlock>&& func, CModule* const file);
 	~CStack();
 
 	[[nodiscard]] bool IsStack() const noexcept override { return true; }
