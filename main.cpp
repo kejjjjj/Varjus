@@ -19,16 +19,19 @@ DEFINE_CALLBACK(CppFunc, args) {
     return CStringValue::Construct(ctx->m_pRuntime, "Hello from C++: " + args[0]->ValueAsString());
 }
 
+
 void PerThread(std::size_t i)
 {
     Varjus::State state;
+
 
     const auto reader = VarjusIOReader("\\scripts\\script.var");
     const auto GetError = [](const std::optional<std::string>& errorMsg) {
         return errorMsg ? *errorMsg : "unknown error!";
     };
 
-    if (!state.UseStdLibrary()) {
+
+    if (!state.UseStdLibrary() || !state.AddNewCallback("cppFunc", CppFunc, 1)) {
         std::cout << "state error: " << GetError(state.GetErrorMessage()) << " in " << i << '\n';
         return;
     }
