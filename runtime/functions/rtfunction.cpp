@@ -111,9 +111,12 @@ IValue* CBuiltInRuntimeFunction::ExecuteFunction(CRuntimeContext* const ctx, [[m
 	assert(m_pFunction);
 
 	if (m_uNumArguments != UNCHECKED_PARAMETER_COUNT && m_uNumArguments != args.size())
-		throw CRuntimeError(ctx->m_pRuntime, std::format("the callable expected {} arguments instead of {}", m_uNumArguments, args.size()));
+		throw CRuntimeError(ctx->m_pRuntime, std::format("the callable \"{}\" expected {} arguments instead of {}", m_sName, m_uNumArguments, args.size()));
 
 	auto returnVal = m_pFunction(ctx, args);
+
+	if(!returnVal)
+		throw CRuntimeError(ctx->m_pRuntime, std::format("you forgot to return a value from an internal function \"{}\"", m_sName, args.size()));
 
 	for (auto& val : args)
 		val->Release();
