@@ -1,8 +1,8 @@
 #pragma once
 
-#include "api/types/types.hpp"
+#include "varjus_api/types/types.hpp"
 #include "catch_amalgamated.hpp"
-#include "api/internal/variables.hpp"
+#include "varjus_api/internal/variables.hpp"
 
 #include <string>
 

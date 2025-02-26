@@ -4,8 +4,8 @@
 #include <memory>
 #include <unordered_map>
 
-#include "api/types/internal/references.hpp"
-#include "api/internal/globalDefinitions.hpp"
+#include "varjus_api/types/internal/references.hpp"
+#include "varjus_api/internal/globalDefinitions.hpp"
 
 template <typename T>
 using VectorOf = std::vector<T>;

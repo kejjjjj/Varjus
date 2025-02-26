@@ -2,7 +2,7 @@
 
 #include "opt_variables.hpp"
 #include "linter/optimizations/optimizations.hpp"
-#include "api/internal/runtime.hpp"
+#include "varjus_api/internal/runtime.hpp"
 
 CConstEvalVariable::CConstEvalVariable() {}
 CConstEvalVariable::~CConstEvalVariable() = default;

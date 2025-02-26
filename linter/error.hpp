@@ -17,7 +17,7 @@ public:
 	}
     CLinterError(const std::string& filePath, const std::string& error, const CodePosition* pos);
 
-    [[nodiscard]] char const* what() const noexcept override{
+    [[nodiscard]] char const* what() const noexcept override {
         return m_oErrorMessageFormatted.size() ? m_oErrorMessageFormatted.c_str() : "Unknown exception";
     }
 

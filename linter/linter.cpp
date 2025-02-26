@@ -1,6 +1,6 @@
 #include "context.hpp"
 #include "error.hpp"
-#include "api/internal/globalEnums.hpp"
+#include "varjus_api/internal/globalEnums.hpp"
 #include "linter.hpp"
 #include "token.hpp"
 
@@ -23,8 +23,8 @@
 #include "statements/try_catch/try_catch.hpp"
 #include "statements/while/while.hpp"
 
-#include "api/types/internal/objects.hpp"
-#include "api/types/internal/callbacks.hpp"
+#include "varjus_api/types/internal/objects.hpp"
+#include "varjus_api/types/internal/callbacks.hpp"
 
 
 #include <cassert>

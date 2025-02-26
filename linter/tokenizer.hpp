@@ -18,7 +18,6 @@ public:
 	CBufferTokenizer(class CProgramInformation* const program, const std::string_view& buffer);
 	~CBufferTokenizer();
 	[[maybe_unused]] Success Tokenize();
-
 	[[nodiscard]] std::vector<CToken*> GetTokens();
 
 private:

@@ -8,7 +8,7 @@
 #include <cstdint>
 #include <memory>
 
-#include "api/internal/globalDefinitions.hpp"
+#include "varjus_api/internal/globalDefinitions.hpp"
 
 class IConstEvalValue;
 

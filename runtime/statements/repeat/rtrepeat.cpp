@@ -1,8 +1,8 @@
-#include "api/types/types.hpp"
+#include "varjus_api/types/types.hpp"
 #include "runtime/exceptions/exception.hpp"
-#include "api/internal/runtime.hpp"
-#include "api/internal/structure.hpp"
-#include "api/internal/variables.hpp"
+#include "varjus_api/internal/runtime.hpp"
+#include "varjus_api/internal/structure.hpp"
+#include "varjus_api/internal/variables.hpp"
 
 #include <algorithm>
 #include <ranges>

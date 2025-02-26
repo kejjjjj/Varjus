@@ -2,7 +2,7 @@
 
 #include "definitions.hpp"
 
-#include "api/internal/structure.hpp"
+#include "varjus_api/internal/structure.hpp"
 
 class AbstractSyntaxTree;
 class IPostfixBase;

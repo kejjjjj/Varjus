@@ -8,7 +8,7 @@
 #include "linter/expressions/ast.hpp"
 #include "linter/modules/module.hpp"
 #include "linter/functions/stack.hpp"
-#include "api/internal/globalEnums.hpp"
+#include "varjus_api/internal/globalEnums.hpp"
 
 #include <cassert>
 

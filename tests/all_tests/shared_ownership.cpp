@@ -1,7 +1,7 @@
 #include "tests/tests.hpp"
 #include "tests/utils.hpp"
 
-#include "api/internal/runtime.hpp"
+#include "varjus_api/internal/runtime.hpp"
 
 #define PATH_PREFIX "shared_ownership"
 #define JP(x) (std::string(PATH_PREFIX) + DIRECTORY_SEPARATOR + x)

@@ -1,7 +1,7 @@
 #include "manager_function.hpp"
 #include "linter/functions/stack.hpp"
 #include "linter/error.hpp"
-#include "api/internal/structure.hpp"
+#include "varjus_api/internal/structure.hpp"
 
 
 #include <cassert>

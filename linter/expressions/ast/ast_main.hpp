@@ -5,10 +5,10 @@
 #include <stdexcept>
 #include <variant>
 
-#include "api/internal/globalDefinitions.hpp"
+#include "varjus_api/internal/globalDefinitions.hpp"
 #include "linter/expressions/definitions.hpp"
 #include "linter/punctuation.hpp"
-#include "api/types/internal/references.hpp"
+#include "varjus_api/types/internal/references.hpp"
 
 class AbstractSyntaxTree;
 using ASTNode = std::shared_ptr<AbstractSyntaxTree>;

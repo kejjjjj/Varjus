@@ -3,7 +3,7 @@
 #include "fs/fs_io.hpp"
 #include "fs/fs_globals.hpp"
 
-#include "api/varjus_api.hpp"
+#include "varjus_api/varjus_api.hpp"
 #include <thread>
 #include <array>
 
@@ -25,11 +25,11 @@ void PerThread(std::size_t i)
     Varjus::State state;
 
 
-    const auto reader = VarjusIOReader("\\scripts\\script.var");
+    const auto reader = VarjusIOReader(DIRECTORY_SEPARATOR_CHAR + "scripts"s + DIRECTORY_SEPARATOR_CHAR + "script.var"s);
+
     const auto GetError = [](const std::optional<std::string>& errorMsg) {
         return errorMsg ? *errorMsg : "unknown error!";
     };
-
 
     if (!state.UseStdLibrary() || !state.AddNewCallback("cppFunc", CppFunc, 1)) {
         std::cout << "state error: " << GetError(state.GetErrorMessage()) << " in " << i << '\n';

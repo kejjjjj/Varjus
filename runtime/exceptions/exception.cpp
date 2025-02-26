@@ -1,5 +1,5 @@
 #include "exception.hpp"
-#include "api/internal/runtime.hpp"
+#include "varjus_api/internal/runtime.hpp"
 
 CRuntimeError::CRuntimeError(CProgramRuntime* const runtime, const std::string& error)
     : m_oErrorMessage(error) {

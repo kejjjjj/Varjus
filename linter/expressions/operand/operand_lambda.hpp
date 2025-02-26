@@ -2,8 +2,8 @@
 
 #include "operand.hpp"
 
-#include "api/types/internal/references.hpp"
-#include "api/internal/structure.hpp"
+#include "varjus_api/types/internal/references.hpp"
+#include "varjus_api/internal/structure.hpp"
 
 class CRuntimeFunctionBase;
 using ElementIndex = std::size_t;

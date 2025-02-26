@@ -16,7 +16,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 # Recursively add all .cpp files
 file(GLOB_RECURSE PROJECT_SOURCES 
     "${CMAKE_CURRENT_SOURCE_DIR}/main.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/api/*.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/VarjusAPI/include/*.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/fs/*.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/linter/*.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/runtime/*.cpp"
@@ -28,7 +28,8 @@ list(FILTER PROJECT_SOURCES EXCLUDE REGEX "CMakeCXXCompilerId\\.cpp$")
 add_executable(Varjus ${PROJECT_SOURCES})
 
 # Add the root directory as an include directory
-target_include_directories(Varjus PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(Varjus PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
+target_include_directories(Varjus PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/VarjusAPI/include/")
 
 set_target_properties(Varjus PROPERTIES 
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"

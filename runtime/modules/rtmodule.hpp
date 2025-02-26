@@ -3,13 +3,14 @@
 #include <vector>
 #include <memory>
 
-#include "api/internal/globalDefinitions.hpp"
+#include "varjus_api/internal/globalDefinitions.hpp"
 #include "linter/context.hpp"
 
 class CVariable;
 class CRuntimeFunctionBase;
 class IRuntimeStructure;
 class CModule;
+class CProgramRuntime;
 
 using RuntimeFunction = std::unique_ptr<CRuntimeFunctionBase>;
 using RuntimeBlock = std::unique_ptr<IRuntimeStructure>;

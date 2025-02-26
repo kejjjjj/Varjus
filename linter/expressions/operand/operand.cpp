@@ -9,7 +9,7 @@
 #include "linter/error.hpp"
 #include "linter/modules/module.hpp"
 
-#include "api/internal/globalEnums.hpp"
+#include "varjus_api/internal/globalEnums.hpp"
 
 #include <cassert>
 

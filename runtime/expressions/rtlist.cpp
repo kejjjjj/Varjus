@@ -1,5 +1,5 @@
-#include "api/internal/structure.hpp"
-#include "api/types/types.hpp"
+#include "varjus_api/internal/structure.hpp"
+#include "varjus_api/types/types.hpp"
 
 VectorOf<IValue*> CRuntimeExpression::EvaluateList(CRuntimeContext* const ctx, const ExpressionList& list)
 {

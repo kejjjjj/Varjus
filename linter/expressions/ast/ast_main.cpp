@@ -9,7 +9,7 @@
 #include "linter/functions/stack.hpp"
 #include "linter/functions/function.hpp"
 #include "linter/modules/module.hpp"
-#include "api/types/internal/references.hpp"
+#include "varjus_api/types/internal/references.hpp"
 #include "linter/error.hpp"
 #include "linter/expressions/operand/operand_fmt_string.hpp"
 

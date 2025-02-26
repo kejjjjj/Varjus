@@ -11,7 +11,7 @@
 #include "linter/punctuation.hpp"
 #include "linter/functions/stack.hpp"
 #include "linter/modules/module.hpp"
-#include "api/internal/globalEnums.hpp"
+#include "varjus_api/internal/globalEnums.hpp"
 
 #include <cassert>
 

@@ -6,7 +6,7 @@
 #include "linter/expressions/definitions.hpp"
 #include "linter/expressions/expression_context.hpp"
 
-#include "api/internal/globalEnums.hpp"
+#include "varjus_api/internal/globalEnums.hpp"
 
 class CMemory;
 class CScope;

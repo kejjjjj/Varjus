@@ -9,7 +9,7 @@
 
 #include "ast.hpp"
 #include "expression.hpp"
-#include "api/internal/globalEnums.hpp"
+#include "varjus_api/internal/globalEnums.hpp"
 
 #include <cassert>
 #include <ranges>

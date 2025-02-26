@@ -1,7 +1,7 @@
 #include "ast.hpp"
 #include "expression.hpp"
 #include "expression_context.hpp"
-#include "api/internal/globalEnums.hpp"
+#include "varjus_api/internal/globalEnums.hpp"
 #include "identifier.hpp"
 #include "linter/error.hpp"
 #include "linter/functions/stack.hpp"

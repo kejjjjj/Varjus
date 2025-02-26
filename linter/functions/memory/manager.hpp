@@ -2,8 +2,8 @@
 #include <string>
 #include <memory>
 
-#include "api/internal/globalDefinitions.hpp"
-#include "api/types/internal/references.hpp"
+#include "varjus_api/internal/globalDefinitions.hpp"
+#include "varjus_api/types/internal/references.hpp"
 
 enum EMemoryIdentifierType
 {

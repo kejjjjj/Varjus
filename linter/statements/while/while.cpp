@@ -7,7 +7,7 @@
 #include "linter/expressions/ast.hpp"
 #include "linter/scopes/scope.hpp"
 
-#include "api/internal/globalDefinitions.hpp"
+#include "varjus_api/internal/globalDefinitions.hpp"
 
 #include <cassert>
 

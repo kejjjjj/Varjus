@@ -6,9 +6,9 @@
 #include "linter/linter.hpp"
 #include "linter/modules/module.hpp"
 
-#include "api/varjus_api.hpp"
+#include "varjus_api/varjus_api.hpp"
 
-#include "api/internal/runtime.hpp"
+#include "varjus_api/internal/runtime.hpp"
 #include "runtime/modules/rtmodule.hpp"
 
 #include <iostream>

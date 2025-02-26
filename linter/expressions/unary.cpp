@@ -5,7 +5,7 @@
 #include "linter/expressions/ast/ast_unary.hpp"
 #include "linter/error.hpp"
 
-#include "api/internal/globalEnums.hpp"
+#include "varjus_api/internal/globalEnums.hpp"
 
 #include <cassert>
 CUnaryLinter::CUnaryLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack) 

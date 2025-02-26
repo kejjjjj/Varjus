@@ -1,9 +1,9 @@
 #pragma once
 
 #include <string>
-#include "api/internal/globalEnums.hpp"
+#include "varjus_api/internal/globalEnums.hpp"
 #include "linter/expressions/definitions.hpp"
-#include "api/internal/structure.hpp"
+#include "varjus_api/internal/structure.hpp"
 
 class CMemory;
 struct CLinterVariable;

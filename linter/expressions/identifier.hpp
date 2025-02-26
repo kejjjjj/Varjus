@@ -1,7 +1,7 @@
 #pragma once
 
 #include "definitions.hpp"
-#include "api/internal/globalDefinitions.hpp"
+#include "varjus_api/internal/globalDefinitions.hpp"
 
 class CMemory;
 class CScope;

@@ -4,7 +4,7 @@
 #include <memory>
 #include <set>
 
-#include "api/internal/globalDefinitions.hpp"
+#include "varjus_api/internal/globalDefinitions.hpp"
 
 #include "memory/manager_variable.hpp"
 #include "memory/manager_function.hpp"

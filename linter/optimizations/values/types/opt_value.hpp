@@ -2,7 +2,7 @@
 
 #ifdef OPTIMIZATIONS
 
-#include "api/internal/globalDefinitions.hpp"
+#include "varjus_api/internal/globalDefinitions.hpp"
 
 
 #include <string>

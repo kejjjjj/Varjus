@@ -1,5 +1,5 @@
-#include "api/internal/structure.hpp"
-#include "api/types/default.hpp"
+#include "varjus_api/internal/structure.hpp"
+#include "varjus_api/types/default.hpp"
 
 ObjectInitializer CRuntimeExpression::EvaluateObject(CRuntimeContext* const ctx, const ObjectInitializerData& obj)
 {

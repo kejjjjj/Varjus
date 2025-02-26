@@ -73,6 +73,7 @@ Success CStatementLinter::ParseScope()
 		.m_iterEnd = m_iterEnd,
 		.scope = m_pThisScope,
 		.memory = m_pOwner,
+		.m_pModule = m_pOwner->GetModule(),
 		.m_bAddInstructions = !m_pOwner->IsHoisting()
 	};
 

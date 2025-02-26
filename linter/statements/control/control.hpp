@@ -2,7 +2,7 @@
 
 #include "linter/token.hpp"
 #include "linter/statements/statement.hpp"
-#include "api/internal/structure.hpp"
+#include "varjus_api/internal/structure.hpp"
 
 class IRuntimeStructure;
 class AbstractSyntaxTree;

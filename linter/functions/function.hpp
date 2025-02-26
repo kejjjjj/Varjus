@@ -2,7 +2,7 @@
 
 #include "linter/expressions/definitions.hpp"
 #include "linter/functions/stack.hpp"
-#include "api/internal/structure.hpp"
+#include "varjus_api/internal/structure.hpp"
 
 class IRuntimeStructure;
 struct CFunctionBlock;

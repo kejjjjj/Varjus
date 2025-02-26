@@ -1,12 +1,11 @@
 #include "rtmodule.hpp"
 
-#include "api/types/internal/objects.hpp"
-
 #include "linter/modules/module.hpp"
 
-#include "api/internal/runtime.hpp"
-#include "api/internal/variables.hpp"
-#include "api/internal/structure.hpp"
+#include "varjus_api/internal/runtime.hpp"
+#include "varjus_api/internal/variables.hpp"
+#include "varjus_api/internal/structure.hpp"
+#include "varjus_api/types/internal/objects.hpp"
 
 #include <ranges>
 #include <runtime/exceptions/exception.hpp>

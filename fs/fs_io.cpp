@@ -1,7 +1,7 @@
 #include "fs_io.hpp"
 #include "fs_globals.hpp"
 
-#include "api/internal/globalDefinitions.hpp"
+#include "varjus_api/internal/globalDefinitions.hpp"
 
 #include <algorithm>
 /***********************************************************************

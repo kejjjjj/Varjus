@@ -1,4 +1,4 @@
-#include "api/internal/globalEnums.hpp"
+#include "varjus_api/internal/globalEnums.hpp"
 #include "context.hpp"
 #include "error.hpp"
 #include "expressions/operand/operand_fmt_string.hpp"

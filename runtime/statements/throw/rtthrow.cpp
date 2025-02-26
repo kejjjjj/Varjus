@@ -1,5 +1,5 @@
-#include "api/internal/structure.hpp"
-#include "api/internal/runtime.hpp"
+#include "varjus_api/internal/structure.hpp"
+#include "varjus_api/internal/runtime.hpp"
 
 #include "linter/expressions/ast.hpp"
 

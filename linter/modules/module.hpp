@@ -4,7 +4,7 @@
 #include "linter/context.hpp"
 #include "linter/error.hpp"
 
-#include "api/internal/structure.hpp"
+#include "varjus_api/internal/structure.hpp"
 
 #include <unordered_set>
 #include <optional>

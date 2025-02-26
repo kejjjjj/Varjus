@@ -6,9 +6,9 @@
 #include "linter/error.hpp"
 #include "linter/modules/module.hpp"
 
-#include "api/internal/structure.hpp"
+#include "varjus_api/internal/structure.hpp"
 
-#include "api/internal/globalEnums.hpp"
+#include "varjus_api/internal/globalEnums.hpp"
 
 #include <cassert>
 
@@ -33,6 +33,7 @@ Success CScopeLinter::Parse()
 	.m_iterEnd = m_iterEnd,
 	.scope = m_pScope,
 	.memory = m_pOwner,
+	.m_pModule = m_pOwner->GetModule(),
 	.m_bAddInstructions = !m_pOwner->IsHoisting()
 	};
 

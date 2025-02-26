@@ -1,6 +1,8 @@
 #pragma once
 
-#include "api/internal/globalDefinitions.hpp"
+#include <memory>
+
+#include "varjus_api/internal/globalDefinitions.hpp"
 #include "declarations/members.hpp"
 #include "error.hpp"
 
