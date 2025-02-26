@@ -8,7 +8,7 @@
 [Vv]arjus.sln
 
 tests/all_tests/build/
-tests/all_tests/Varjus.exe
+tests/all_tests/Varjus*
 VarjusAPI/build/
 VarjusAPI/VarjusAPI/
 build/
