@@ -53,28 +53,34 @@ void CAggregate::Release()
 }
 IValue* CAggregate::ElementLookup(GlobalMemberIndex index) const
 {
+	assert(m_pAllMembers);
 	if (!m_oIndexLookup.contains(index)) {
 		throw CRuntimeError(m_pAllocator, std::format("this aggregate doesn't have the attribute \"{}\"",
-			CFileContext::m_oAllMembers.At(index)
+			m_pAllMembers->At(index)
 		));
 	}
 	return m_oIndexLookup.at(index)->GetValue();
 }
 bool CAggregate::Contains(const std::string& item) const {
 	
-	if (!CFileContext::m_oAllMembers.Contains(item))
+	assert(m_pAllMembers);
+
+	if (!m_pAllMembers->Contains(item))
 		return false;
 
-	const auto key = CFileContext::m_oAllMembers.At(item);
+	const auto key = m_pAllMembers->At(item);
 
 	return m_oIndexLookup.contains(key);
 }
 IValue* CAggregate::Get(const std::string& item) const
 {
-	if (!CFileContext::m_oAllMembers.Contains(item))
+	assert(m_pAllocator->GetInformation());
+	auto& members = m_pAllocator->GetInformation()->m_oAllMembers;
+
+	if (!members.Contains(item))
 		return nullptr;
 
-	const auto key = CFileContext::m_oAllMembers.At(item);
+	const auto key = members.At(item);
 
 	if (!m_oIndexLookup.contains(key))
 		return nullptr;

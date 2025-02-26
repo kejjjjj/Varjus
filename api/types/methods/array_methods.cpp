@@ -34,9 +34,9 @@ FORWARD_DECLARE_METHOD(Resize);
 FORWARD_DECLARE_METHOD(Fill);
 
 
-std::unique_ptr<BuiltInMethod_t> CArrayValue::ConstructMethods()
+std::unique_ptr<BuiltInMethod_t> CArrayValue::ConstructMethods(CProgramInformation* const info)
 {
-	auto m_oMethods = std::make_unique<BuiltInMethod_t>();
+	auto m_oMethods = std::make_unique<BuiltInMethod_t>(info);
 
 	m_oMethods->AddMethod("push",            Push,          1u);
 	m_oMethods->AddMethod("push_front",      PushFront,     1u);
@@ -63,9 +63,9 @@ std::unique_ptr<BuiltInMethod_t> CArrayValue::ConstructMethods()
 
 FORWARD_DECLARE_PROPERTY(ArrayLength);
 
-std::unique_ptr<BuiltInProperty_t> CArrayValue::ConstructProperties()
+std::unique_ptr<BuiltInProperty_t> CArrayValue::ConstructProperties(CProgramInformation* const info)
 {
-	auto m_oProperties = std::make_unique<BuiltInProperty_t>();
+	auto m_oProperties = std::make_unique<BuiltInProperty_t>(info);
 	m_oProperties->AddProperty("length", ArrayLength);
 
 	return m_oProperties;

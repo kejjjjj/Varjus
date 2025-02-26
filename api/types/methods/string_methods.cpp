@@ -26,9 +26,9 @@ FORWARD_DECLARE_METHOD(Repeat);
 
 FORWARD_DECLARE_METHOD(GetCodeAt);
 
-std::unique_ptr<BuiltInMethod_t> CStringValue::ConstructMethods()
+std::unique_ptr<BuiltInMethod_t> CStringValue::ConstructMethods(CProgramInformation* const info)
 {
-	auto m_oMethods = std::make_unique<BuiltInMethod_t>();
+	auto m_oMethods = std::make_unique<BuiltInMethod_t>(info);
 
 	m_oMethods->AddMethod("toupper",     ToUpper,   0u);
 	m_oMethods->AddMethod("tolower",     ToLower,   0u);
@@ -44,9 +44,9 @@ std::unique_ptr<BuiltInMethod_t> CStringValue::ConstructMethods()
 
 FORWARD_DECLARE_PROPERTY(StringLength);
 
-std::unique_ptr<BuiltInProperty_t> CStringValue::ConstructProperties()
+std::unique_ptr<BuiltInProperty_t> CStringValue::ConstructProperties(CProgramInformation* const info)
 {
-	auto m_oProperties = std::make_unique<BuiltInProperty_t>();
+	auto m_oProperties = std::make_unique<BuiltInProperty_t>(info);
 	m_oProperties->AddProperty("length", StringLength);
 
 	return m_oProperties;

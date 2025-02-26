@@ -14,13 +14,14 @@
 
 #define VALUEPOOL_INIT_SIZE size_t(100)
 
-CProgramRuntime::CProgramRuntime(std::unique_ptr<CProgramInformation>&& information, RuntimeModules&& modules)
-	: m_oDefaultObjects(
-		CDefaultObject<CStringValue>(CStringValue::ConstructMethods(), CStringValue::ConstructProperties()),
-		CDefaultObject<CArrayValue>(CArrayValue::ConstructMethods(), CArrayValue::ConstructProperties()),
-		CDefaultObject<CObjectValue>(CObjectValue::ConstructMethods(), CObjectValue::ConstructProperties())),
-	m_pInformation(std::move(information)),
+CProgramRuntime::CProgramRuntime(std::unique_ptr<CProgramInformation>&& info, RuntimeModules&& modules)
+	: m_pInformation(std::move(info)), 
+	m_oDefaultObjects(
+		CDefaultObject<CStringValue>(CStringValue::ConstructMethods(m_pInformation.get()), CStringValue::ConstructProperties(m_pInformation.get())),
+		CDefaultObject<CArrayValue>(CArrayValue::ConstructMethods(m_pInformation.get()), CArrayValue::ConstructProperties(m_pInformation.get())),
+		CDefaultObject<CObjectValue>(CObjectValue::ConstructMethods(m_pInformation.get()), CObjectValue::ConstructProperties(m_pInformation.get()))),
 	m_oModules(std::move(modules)) {	
+
 	AllocatePools(VALUEPOOL_INIT_SIZE);
 }
 

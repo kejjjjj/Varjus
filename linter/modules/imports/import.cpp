@@ -127,16 +127,20 @@ Success CImportLinter::ParseFile()
 		CModule* thisModule = modules->FindCachedModule(m_oTargetFile);
 
 		if (!thisModule) { // means this file hasn't been parsed yet
-			if (!modules->CheckCircularDependencies(sourceFile, modules->m_oDependencyGraph))
+			if (auto str = modules->CheckCircularDependencies(sourceFile, modules->m_oDependencyGraph)) {
+				m_pOwner->GetModule()->PushError(*str);
 				return failure;
+			}
 		}
 	} else {
 		modules->m_oVisitedModules.insert(m_oTargetFile);
 	}
 
 	modules->m_oDependencyGraph[sourceFile].push_back(m_oTargetFile);
-	if (!modules->CheckCircularDependencies(sourceFile, modules->m_oDependencyGraph))
+	if (auto str = modules->CheckCircularDependencies(sourceFile, modules->m_oDependencyGraph)) {
+		m_pOwner->GetModule()->PushError(*str);
 		return failure;
+	}
 
 	CModule* thisModule = GetFileModule();
 
@@ -171,13 +175,15 @@ Success CImportLinter::ParseFile()
 }
 CModule* CImportLinter::GetFileModule() const
 {
-	auto modules = m_pOwner->GetProgramInformation()->GetModules();
+	const auto pinfo = m_pOwner->GetProgramInformation();
+	assert(pinfo);
+	auto modules = pinfo->GetModules();
 	assert(modules);
 
 	if (auto cachedModule = modules->FindCachedModule(m_oTargetFile))
 		return cachedModule;
 	
-	auto uniqueTokens = CBufferTokenizer::ParseFileFromFilePath(m_oTargetFile);
+	auto uniqueTokens = CBufferTokenizer::ParseFileFromFilePath(pinfo, m_oTargetFile);
 	auto tokens = CBufferTokenizer::ConvertTokensToReadOnly(uniqueTokens);
 	auto begin = tokens.begin();
 	auto end = tokens.end();
@@ -196,17 +202,16 @@ CModule* CImportLinter::GetFileModule() const
 Success CImportLinter::DeclareVariable(const std::string& symbolName,
 	CExportedSymbol* const s, std::size_t moduleIndex)
 {
-	auto modules = m_pOwner->GetProgramInformation()->GetModules();
-	assert(modules);
+
 	auto scope = m_pScope.lock();
 
 	if (!scope) {
-		modules->PushError("CImportLinter: internal error", GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError("CImportLinter: internal error", GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 
 	if (!scope->DeclareVariable(symbolName)) {
-		CLinterErrors::PushError(std::format("variable \"{}\" already declared", symbolName), (*m_iterPos)->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError(std::format("variable \"{}\" already declared", symbolName), (*m_iterPos)->m_oSourcePosition);
 		return failure;
 	}
 
@@ -223,7 +228,7 @@ Success CImportLinter::DeclareFunction(const std::string& symbolName,
 {
 
 	if (m_pOwner->m_FunctionManager->ContainsFunction(symbolName)) {
-		CLinterErrors::PushError(std::format("function \"{}\" already declared", symbolName), (*m_iterPos)->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError(std::format("function \"{}\" already declared", symbolName), (*m_iterPos)->m_oSourcePosition);
 		return failure;
 	}
 

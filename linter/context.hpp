@@ -31,7 +31,7 @@ public:
 	CProgramInformation();
 	~CProgramInformation();
 
-	[[nodiscard]] constexpr auto GetModules() const { return m_pModules.get(); }
+	[[nodiscard]] inline auto GetModules() const { return m_pModules.get(); }
 
 
 	[[nodiscard]] inline auto PushError(const std::string& err) noexcept { m_oErrors.PushError("", err); }

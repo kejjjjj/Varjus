@@ -44,9 +44,9 @@ FORWARD_DECLARE_METHOD(Random);
 #define TWO_ARG_METHOD(name, func) m_oMethods.AddMethod(name, func, 2u)
 
 
-BuiltInMethod_t CMathValue::ConstructMethods()
+BuiltInMethod_t CMathValue::ConstructMethods(CProgramInformation* const info)
 {
-	BuiltInMethod_t m_oMethods;
+	BuiltInMethod_t m_oMethods(info);
 
 	SINGLE_ARG_METHOD("sqrt", Sqrt);
 	SINGLE_ARG_METHOD("abs", Abs);
@@ -100,9 +100,9 @@ FORWARD_DECLARE_PROPERTY(Math_INV_SQRT2);
 FORWARD_DECLARE_PROPERTY(Math_DEG2RAD);
 FORWARD_DECLARE_PROPERTY(Math_RAD2DEG);
 
-BuiltInProperty_t CMathValue::ConstructProperties()
+BuiltInProperty_t CMathValue::ConstructProperties(CProgramInformation* const info)
 {
-	BuiltInProperty_t m_oProperties;
+	BuiltInProperty_t m_oProperties(info);
 
 	m_oProperties.AddProperty("PI", Math_PI);
 	m_oProperties.AddProperty("TAU", Math_TAU);

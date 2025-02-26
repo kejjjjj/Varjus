@@ -33,7 +33,7 @@ CBufferLinter::CBufferLinter(CProgramInformation* const program, LinterIterator&
 	: CLinter(start, end), m_oInitialPosition(start), m_sFilePath(filePath), m_pProgram(program) {}
 CBufferLinter::~CBufferLinter() = default;
 
-static Success AddInstruction(LinterIterator& pos, RuntimeBlock&& block, const WeakScope& scope)
+static Success AddInstruction(RuntimeBlock&& block, const WeakScope& scope)
 {
 	if (block) { //nullptr when no initializer
 
@@ -61,7 +61,7 @@ template<typename Linter> Success Lint(const CLinterContext& ctx)
 		return success;
 
 	else if(ctx.m_bAddInstructions)
-		return AddInstruction(ctx.m_iterPos, linter.ToRuntimeObject(), ctx.scope);
+		return AddInstruction(linter.ToRuntimeObject(), ctx.scope);
 	else
 		return success;
 }

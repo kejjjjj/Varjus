@@ -1,50 +1,11 @@
-fn computeLPSArray(pattern) {
-    let lps = [].resize(pattern.length).fill(0);
-    let length = 0;
-    let i = 1;
-
-    while (i < pattern.length) {
-        if (pattern[i] === pattern[length]) {
-            length++;
-            lps[i] = length;
-            i++;
-        } else {
-            if (length !== 0) {
-                length = lps[length - 1];
-            } else {
-                lps[i] = 0;
-                i++;
-            }
-        }
-    }
-    return lps;
-}
-
-fn kmpSearch(text, pattern) {
-    let lps = computeLPSArray(pattern);
-    let i = 0;
-    let j = 0;
-
-    while (i < text.length) {
-        if (pattern[j] === text[i]) {
-            i++;
-            j++;
-        }
-        if (j == pattern.length) {
-            return i - j;
-        } else if (i < text.length && pattern[j] !== text[i]) {
-            if (j !== 0) {
-                j = lps[j - 1];
-            } else {
-                i++;
-            }
-        }
-    }
-    return -1;
-}
-
+import pushFrontArray from "other.var";
 
 fn main()
 {
-    return kmpSearch("ababcababcabc", "abc");
+	let arr = [1,2,3];
+	arr.pop_front();
+
+	pushFrontArray(arr);
+
+	return arr;
 }

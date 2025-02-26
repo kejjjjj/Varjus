@@ -21,17 +21,17 @@ Success CExportLinter::Parse()
 {
 
 	if (IsEndOfBuffer() || (*m_iterPos)->Type() != tt_export) {
-		CLinterErrors::PushError("expected \"tt_export\"", GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError("expected \"tt_export\"", GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 
 	if(!m_pOwner->IsGlobalMemory())
-		CLinterErrors::PushError("exports are only allowed in the global scope", GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError("exports are only allowed in the global scope", GetIteratorSafe()->m_oSourcePosition);
 
 	std::advance(m_iterPos, 1); // skip export
 
 	if (IsEndOfBuffer()) {
-		CLinterErrors::PushError("expected a declaration", GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError("expected a declaration", GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 
@@ -41,7 +41,7 @@ Success CExportLinter::Parse()
 		return ParseFunctionDeclaration();
 	}
 
-	CLinterErrors::PushError("expected a declaration", GetIteratorSafe()->m_oSourcePosition);
+	m_pOwner->GetModule()->PushError("expected a declaration", GetIteratorSafe()->m_oSourcePosition);
 	return failure;
 }
 Success CExportLinter::ParseVariableDeclaration()

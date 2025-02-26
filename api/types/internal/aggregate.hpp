@@ -8,6 +8,7 @@
 class IValue;
 class CVariable;
 class AbstractSyntaxTree;
+class CStringIntegerHashMap;
 
 using GlobalMemberIndex = std::size_t;
 using ElementIndex = std::size_t;
@@ -37,7 +38,10 @@ public:
 	[[nodiscard]] auto Length() const noexcept { return m_oIndexLookup.size(); }
 
 	constexpr void SetAllocator(CProgramRuntime* alloc) noexcept { m_pAllocator = alloc; }
+	constexpr void SetRuntimeInformation(CStringIntegerHashMap* members) noexcept { m_pAllMembers = members; }
+
 	[[nodiscard]] constexpr auto GetAllocator() const noexcept { return m_pAllocator; }
+	[[nodiscard]] constexpr auto& GetRuntimeInformation() const noexcept { return m_pAllMembers; }
 
 #ifdef RUNNING_TESTS
 	[[nodiscard]] IValue* ElementLookupNoExcept(GlobalMemberIndex index) const noexcept;
@@ -48,4 +52,5 @@ protected:
 	std::map<ElementIndex, CVariable*> m_oIndexLookup;
 	std::size_t m_uModuleIndex{};
 	CProgramRuntime* m_pAllocator{ nullptr };
+	CStringIntegerHashMap* m_pAllMembers{ nullptr }; // a pointer to a list of all declared members... to save computing power
 };

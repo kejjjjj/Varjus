@@ -20,6 +20,7 @@ CObjectValue* CObjectValue::Construct(CProgramRuntime* const runtime, std::size_
 	ptr->MakeShared();
 	auto internal = ptr->Internal();
 	internal->GetAggregateValue().SetAllocator(runtime);
+	internal->GetAggregateValue().SetRuntimeInformation(&runtime->GetInformation()->m_oAllMembers);
 	internal->Set(moduleIndex, std::move(values));
 	return ptr;
 }
@@ -50,13 +51,16 @@ CInternalObjectValue* CObjectValue::Internal() const {
 }
 IValue* CObjectValue::Index(IValue* index) {
 
+	auto members = Internal()->GetAllRuntimeMembers();
+	assert(members);
+
 	const auto key = index->ValueAsString();
 
-	if (!CFileContext::m_oAllMembers.Contains(key)) {
+	if (!members->Contains(key)) {
 		throw CRuntimeError(m_pAllocator, std::format("this aggregate doesn't have the attribute \"{}\"", key));
 	}
 
-	return Internal()->GetAggregateValue().ElementLookup(CFileContext::m_oAllMembers.At(key));
+	return Internal()->GetAggregateValue().ElementLookup(members->At(key));
 }
 IValue* CObjectValue::GetAggregate(std::size_t memberIdx) {
 
@@ -82,8 +86,11 @@ std::string CObjectValue::ValueAsString() const
 {
 	std::stringstream ss;
 
+	auto members = Internal()->GetAllRuntimeMembers();
+
 	for (const auto& [key, value] : GetShared()->GetAggregateValue().Iterator()) {
-		ss << "    " << CFileContext::m_oAllMembers.At(key);
+		assert(members);
+		ss << "    " << members->At(key);
 		ss << ": " << value->GetValue()->ValueAsString() << ",\n";
 	}
 

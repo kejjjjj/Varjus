@@ -28,6 +28,9 @@ class CProjectModules
 {
 	NONCOPYABLE(CProjectModules);
 public:
+	CProjectModules();
+	~CProjectModules();
+
 	[[nodiscard]] CModule* CreateNewModule(const std::string& filePath);
 	[[nodiscard]] CModule* FindCachedModule(const std::string& filePath);
 	[[nodiscard]] RuntimeModules ToRuntimeModules();

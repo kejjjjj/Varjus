@@ -30,7 +30,7 @@ private:
 };
 
 template<typename Type> requires std::is_same_v<BuiltInMethod_t, Type> || std::is_same_v<BuiltInProperty_t, Type>
-using OptionalCtor = std::optional<std::function<Type()>>;
+using OptionalCtor = std::optional<std::function<Type(class CProgramInformation*)>>;
 
 struct CBuiltInObjectPairs
 {

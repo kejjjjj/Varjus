@@ -128,7 +128,7 @@ Success CLambdaChecker::ParseInternal(
 		var->m_bParameter = true;
 
 		if (!newScope->DeclareVariable(param)) {
-			CLinterErrors::PushError("well then", (*m_iterPos)->m_oSourcePosition);
+			m_pOwner->GetModule()->PushError("well then", (*m_iterPos)->m_oSourcePosition);
 			return failure;
 		}
 	}

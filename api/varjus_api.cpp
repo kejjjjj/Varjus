@@ -28,9 +28,11 @@ Varjus::State::~State() {
 Success Varjus::State::UseStdLibrary()
 {
     if (!m_pLinter || !m_pLinter->m_oBuiltInObjects) {
-        m_sErrorMessage = "Varjus::State::UseStdLibrary(): no linter context... internal bug?";
+        m_sErrorMessage = "Varjus::State::UseStdLibrary(): no linter context... did you forget to create a new state?";
         return failure;
     }
+
+    auto thing = std::make_optional(std::function(CConsoleValue::ConstructMethods));
 
     m_pLinter->m_oBuiltInObjects->AddNewGlobalObject("console", CConsoleValue::ConstructMethods);
     m_pLinter->m_oBuiltInObjects->AddNewGlobalObject("math", CMathValue::ConstructMethods, CMathValue::ConstructProperties);
@@ -41,7 +43,7 @@ Success Varjus::State::UseStdLibrary()
 Success Varjus::State::LoadScriptFromFile(const std::string& fullFilePath)
 {
     if (!m_pLinter || !m_pLinter->m_oBuiltInObjects) {
-        m_sErrorMessage = "Varjus::State::LoadScriptFromFile(): no linter context... internal bug?";
+        m_sErrorMessage = "Varjus::State::LoadScriptFromFile(): no linter context... did you forget to create a new state?";
         return failure;
     }
 
@@ -71,7 +73,7 @@ IValue* Varjus::State::ExecuteScript()
 {
 
     if (!m_pLinter || !m_pLinter->m_oBuiltInObjects) {
-        m_sErrorMessage = "Varjus::State::ExecuteScript(): no linter context... internal bug?";
+        m_sErrorMessage = "Varjus::State::ExecuteScript(): no linter context... did you forget to create a new state?";
         return nullptr;
     }
 
@@ -82,7 +84,7 @@ IValue* Varjus::State::ExecuteScript()
 
     try {
         if (auto modules = m_pLinter->GetModules()) {
-            m_pRuntime = std::make_unique<CProgramRuntime>(modules->ToRuntimeModules());
+            m_pRuntime = std::make_unique<CProgramRuntime>(std::move(m_pLinter), modules->ToRuntimeModules());
         } else {
             m_sErrorMessage = "Varjus::State::ExecuteScript(): no modules... internal bug?";
             return nullptr;
@@ -109,8 +111,8 @@ std::optional<std::string> Varjus::State::GetErrorMessage() {
 }
 
 Success Varjus::State::AddNewGlobalObject(const std::string& name,
-    const OptionalCtor<BuiltInMethod_t>& createMethods = std::nullopt,
-    const OptionalCtor<BuiltInProperty_t>& createProperties = std::nullopt)
+    const OptionalCtor<BuiltInMethod_t>& createMethods,
+    const OptionalCtor<BuiltInProperty_t>& createProperties)
 {
     if (!m_pLinter || !m_pLinter->m_oBuiltInObjects) {
         m_sErrorMessage = "Varjus::State::AddNewGlobalObject(): no linter context... internal bug?";
@@ -118,7 +120,7 @@ Success Varjus::State::AddNewGlobalObject(const std::string& name,
     }
 
     m_pLinter->m_oBuiltInObjects->AddNewGlobalObject(name, createMethods, createProperties);
-
+    return success;
 }
 
 Success Varjus::State::AddNewCallback(const std::string& name, const Function_t& callback, std::size_t numArgs)
@@ -129,4 +131,5 @@ Success Varjus::State::AddNewCallback(const std::string& name, const Function_t&
     }
 
     m_pLinter->m_oBuiltInFunctions->AddNewGlobalCallable(name, callback, numArgs);
+    return success;
 }

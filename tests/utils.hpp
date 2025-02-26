@@ -73,7 +73,10 @@ void AssertObject(IValue* retVal, const AssertObjectValue<T>& assertValue)
 
 	REQUIRE(items.size() == assertValue.m_targetValues.size());
 
-	auto& allMembers = CFileContext::m_oAllMembers;
+	REQUIRE(retVal->GetAllocator());
+	REQUIRE(retVal->GetAllocator()->GetInformation());
+
+	auto& allMembers = retVal->GetAllocator()->GetInformation()->m_oAllMembers;
 
 	for (auto& [name, value] : assertValue.m_targetValues) {
 		REQUIRE(allMembers.Contains(name));

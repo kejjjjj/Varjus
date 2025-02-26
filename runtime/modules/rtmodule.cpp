@@ -32,12 +32,12 @@ void CRuntimeModule::SetupGlobalVariables(CProgramRuntime* const runtime) {
 
 	std::vector<std::pair<BuiltInMethod_t, BuiltInProperty_t>> classData;
 
-
-	for (auto& [_, v] : runtime->m_pInformation->m_oBuiltInObjects->Iterator()) {
+	auto info = runtime->m_pInformation.get();
+	for (auto& [_, v] : info->m_oBuiltInObjects->Iterator()) {
 		const auto& [methodCtor, propertyCtor] = v;
 
-		BuiltInMethod_t methods = methodCtor ? (*methodCtor)() : BuiltInMethod_t{};
-		BuiltInProperty_t properties = propertyCtor ? (*propertyCtor)() : BuiltInProperty_t{};
+		BuiltInMethod_t methods = methodCtor ? (*methodCtor)(info) : BuiltInMethod_t(info);
+		BuiltInProperty_t properties = propertyCtor ? (*propertyCtor)(info) : BuiltInProperty_t(info);
 
 		classData.emplace_back(std::move(methods), std::move(properties));
 	}

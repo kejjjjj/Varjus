@@ -50,6 +50,9 @@ CExportedSymbol* CModule::GetExport(const std::string& name) const {
  > 
 ***********************************************************************/
 
+CProjectModules::CProjectModules() = default;
+CProjectModules::~CProjectModules() = default;
+
 CModule* CProjectModules::CreateNewModule(const std::string& filePath)
 {
 	auto index = m_oAllModules.size();

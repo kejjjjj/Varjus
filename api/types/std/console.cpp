@@ -7,9 +7,9 @@
 
 FORWARD_DECLARE_METHOD(LogConsole);
 
-BuiltInMethod_t CConsoleValue::ConstructMethods()
+BuiltInMethod_t CConsoleValue::ConstructMethods(CProgramInformation* const info)
 {
-	BuiltInMethod_t m_oMethods;
+	BuiltInMethod_t m_oMethods(info);
 	m_oMethods.AddMethod("log", LogConsole, UNCHECKED_PARAMETER_COUNT);
 
 	return m_oMethods;

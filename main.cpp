@@ -4,14 +4,12 @@
 #include "fs/fs_globals.hpp"
 
 #include "api/varjus_api.hpp"
+#include <thread>
+#include <array>
 
 
 int ExitApp(int v)
 {
-    Varjus::Cleanup();
-#if _DEBUG
-    Varjus::PrintMemoryUsage();
-#endif
     std::cout << "Press ENTER to exit\n";
     std::cin.get();
     return v;
@@ -21,31 +19,44 @@ DEFINE_CALLBACK(CppFunc, args) {
     return CStringValue::Construct(ctx->m_pRuntime, "Hello from C++: " + args[0]->ValueAsString());
 }
 
-int main()
+void PerThread(std::size_t i)
 {
-    Varjus::AddNewCallback("cppFunc", CppFunc, 1);
-
-    Varjus::UseStdLibrary();
-
+    Varjus::State state;
 
     const auto reader = VarjusIOReader("\\scripts\\script.var");
     const auto GetError = [](const std::optional<std::string>& errorMsg) {
         return errorMsg ? *errorMsg : "unknown error!";
     };
 
-    if (!Varjus::LoadScriptFromFile(reader.GetFilePath())) {
-        std::cout << "syntax error: " << GetError(Varjus::GetErrorMessage()) << '\n';
-        return ExitApp(0);
+    if (!state.UseStdLibrary()) {
+        std::cout << "state error: " << GetError(state.GetErrorMessage()) << " in " << i << '\n';
+        return;
     }
 
-    if (const auto returnValue = Varjus::ExecuteScript()) {
-        std::cout << "the program returned: " << returnValue->ToPrintableString() << '\n';
+    if (!state.LoadScriptFromFile(reader.GetFilePath())) {
+        std::cout << "syntax error: " << GetError(state.GetErrorMessage()) << " in " << i << '\n';
+        return;
+    }
+
+    if (const auto returnValue = state.ExecuteScript()) {
+        std::cout << "the program returned: " << returnValue->ToPrintableString() << " in " << i << '\n';
     }
     else {
-        std::cout << "runtime error: " << GetError(Varjus::GetErrorMessage()) << '\n';
+        std::cout << "runtime error: " << GetError(state.GetErrorMessage()) << " in " << i << '\n';
     }
-    
-    return ExitApp(1);
+}
 
+int main()
+{
+    
+    std::array<std::thread, 16> threads;
+
+    for (std::size_t i{}; auto& thread : threads)
+        thread = std::thread(PerThread, i++);
+    
+    for (auto& thread : threads)
+        thread.join();
+
+    return ExitApp(1);
 }
 

@@ -18,9 +18,9 @@ FORWARD_DECLARE_METHOD(Object_Remove);
 FORWARD_DECLARE_METHOD(Object_Contains);
 FORWARD_DECLARE_METHOD(Object_ToArray);
 
-std::unique_ptr<BuiltInMethod_t> CObjectValue::ConstructMethods()
+std::unique_ptr<BuiltInMethod_t> CObjectValue::ConstructMethods(CProgramInformation* const info)
 {
-	auto m_oMethods = std::make_unique<BuiltInMethod_t>();
+	auto m_oMethods = std::make_unique<BuiltInMethod_t>(info);
 
 	m_oMethods->AddMethod("keys",     Object_Keys,     0u);
 	m_oMethods->AddMethod("values",   Object_Values,   0u);
@@ -33,9 +33,9 @@ std::unique_ptr<BuiltInMethod_t> CObjectValue::ConstructMethods()
 }
 
 FORWARD_DECLARE_PROPERTY(ObjectLength);
-std::unique_ptr<BuiltInProperty_t> CObjectValue::ConstructProperties()
+std::unique_ptr<BuiltInProperty_t> CObjectValue::ConstructProperties(CProgramInformation* const info)
 {
-	auto m_oProperties = std::make_unique<BuiltInProperty_t>();
+	auto m_oProperties = std::make_unique<BuiltInProperty_t>(info);
 	m_oProperties->AddProperty("length", ObjectLength);
 
 	return m_oProperties;
@@ -54,9 +54,12 @@ DEFINE_METHOD(Object_Keys, args)
 
 	IValues results(vars.size());
 
+	auto members = __this->Internal()->GetAllRuntimeMembers();
+	assert(members);
+
 	//result array
 	for (auto i = std::size_t(0); const auto& [index, var] : vars) {
-		results[i++] = CStringValue::Construct(ctx->m_pRuntime, CFileContext::m_oAllMembers.At(index));
+		results[i++] = CStringValue::Construct(ctx->m_pRuntime, members->At(index));
 	}
 
 	return CArrayValue::Construct(ctx->m_pRuntime, std::move(results));
@@ -85,8 +88,11 @@ static void AddAttribute(CObjectValue* obj, IValue* const key, IValue* value)
 {
 	auto& aggregate = obj->Internal()->GetAggregateValue();
 
+	auto members = obj->Internal()->GetAllRuntimeMembers();
+	assert(members);
+
 	//insert the member if necessary
-	auto var = aggregate.AddAttribute(CFileContext::m_oAllMembers[key->ValueAsString()]);
+	auto var = aggregate.AddAttribute((*members)[key->ValueAsString()]);
 	var->SetValue(value->Copy());
 }
 
@@ -116,10 +122,13 @@ DEFINE_METHOD(Object_Remove, args)
 	auto& aggregate = __this->Internal()->GetAggregateValue();
 	auto keyStr = key->ValueAsString();
 
-	if(!CFileContext::m_oAllMembers.Contains(keyStr))
+	auto members = __this->Internal()->GetAllRuntimeMembers();
+	assert(members);
+
+	if(!members->Contains(keyStr))
 		return CBooleanValue::Construct(ctx->m_pRuntime, false);
 
-	return CBooleanValue::Construct(ctx->m_pRuntime, aggregate.RemoveAttribute(CFileContext::m_oAllMembers.At(keyStr)));
+	return CBooleanValue::Construct(ctx->m_pRuntime, aggregate.RemoveAttribute(members->At(keyStr)));
 }
 
 static auto Contains(CObjectValue* obj, IValue* const key)
@@ -137,12 +146,14 @@ DEFINE_METHOD(Object_ToArray, args)
 	auto __this = GetThisObject(_this);
 
 	const auto& aggregate = __this->Internal()->GetAggregateValue().Iterator();
+	auto members = __this->Internal()->GetAllRuntimeMembers();
+	assert(members);
 
 	IValues values;
 
 	for (const auto& [i, var] : aggregate) {
 
-		auto key = CStringValue::Construct(ctx->m_pRuntime, CFileContext::m_oAllMembers.At(i));
+		auto key = CStringValue::Construct(ctx->m_pRuntime, members->At(i));
 		auto value = var->GetValue()->Copy();
 
 		values.push_back(CArrayValue::Construct(ctx->m_pRuntime, { key, value }));

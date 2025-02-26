@@ -32,6 +32,9 @@ public:
 	[[nodiscard]] constexpr auto& GetAggregateValue() const noexcept { return Get(); }
 	[[nodiscard]] constexpr auto& GetAggregateValue() noexcept { return Get(); }
 
+	[[nodiscard]] constexpr auto& GetAllRuntimeMembers() noexcept { return Get().GetRuntimeInformation(); }
+
+
 protected:
 	CAggregate m_oValue;
 };
@@ -43,8 +46,8 @@ public:
 	~CObjectValue();
 
 	[[nodiscard]] static CObjectValue* Construct(CProgramRuntime* const runtime, std::size_t moduleIndex, ObjectInitializer&& values);
-	[[nodiscard]] static std::unique_ptr<struct BuiltInMethod_t> ConstructMethods(); //only called once during init
-	[[nodiscard]] static std::unique_ptr<struct BuiltInProperty_t> ConstructProperties(); //only called once during init
+	[[nodiscard]] static std::unique_ptr<struct BuiltInMethod_t> ConstructMethods(class CProgramInformation* const info);
+	[[nodiscard]] static std::unique_ptr<struct BuiltInProperty_t> ConstructProperties(class CProgramInformation* const info); 
 
 	//copy constructor
 	[[nodiscard]] EValueType Type() const noexcept override { return t_object; };

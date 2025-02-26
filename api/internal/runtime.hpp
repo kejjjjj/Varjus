@@ -73,6 +73,8 @@ public:
 	void PrintAllLeaks();
 
 private:
+	//very important that I am initialied before m_oValuePools
+	std::unique_ptr<CProgramInformation> m_pInformation;
 
 	std::tuple<
 		COwningObjectPool<CVariable>,
@@ -178,6 +180,8 @@ public:
 		GetPool<T>().Release(value);
 	}
 
+	[[nodiscard]] inline auto GetInformation() const noexcept { return m_pInformation.get(); }
+
 private:
 
 	[[nodiscard]] IValue* BeginExecution(CRuntimeFunction* entryFunc);
@@ -185,7 +189,6 @@ private:
 
 	void FreeAllPools();
 
-	std::unique_ptr<CProgramInformation> m_pInformation;
 	RuntimeModules m_oModules;
 	const CodePosition* m_pCodePosition{};
 	bool m_bExceptionThrown{};

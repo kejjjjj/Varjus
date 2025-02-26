@@ -61,6 +61,8 @@ namespace Varjus
 {
     struct State
     {
+        NONCOPYABLE(State);
+
         State();
         ~State();
 
@@ -88,10 +90,10 @@ namespace Varjus
     private: // All of this is managed by the class, so there should never be a need to publicly access these :)
 
         std::string m_sErrorMessage;
-        Success m_bScriptLoaded;
+        Success m_bScriptLoaded{ failure };
         std::unique_ptr<CProgramInformation> m_pLinter;
         std::unique_ptr<CProgramRuntime> m_pRuntime;
-        IValue* m_pReturnValue;
+        IValue* m_pReturnValue{ nullptr };
     };
 
 }
