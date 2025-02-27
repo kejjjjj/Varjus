@@ -35,3 +35,14 @@ TEST_CASE("operator precedence tests in sequences")
 	REQUIRE(retVal->HasOwner() == false);
 	TEST_END(retVal);
 }
+
+TEST_CASE("operator precedence in ternary operations") {
+
+	auto retVal = TEST_ExecuteFile(JP("ternary.var"));
+
+	//false == undefined in this case
+	AssertArray(retVal, AssertArrayValue<ASSERT_STRING>(t_string, { "f", "f2", "f", "t2" }));
+
+	REQUIRE(retVal->HasOwner() == false);
+	TEST_END(retVal);
+}

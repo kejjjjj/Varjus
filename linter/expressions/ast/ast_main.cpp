@@ -20,9 +20,10 @@
 
 AbstractSyntaxTree::~AbstractSyntaxTree() = default;
 
+
+
 //TODO -> add a parameter called "can discard meaningless expression"
-ASTNode AbstractSyntaxTree::CreateAST(CMemory* const owner,
-	VectorOf<CLinterOperand*>& operands, VectorOf<CLinterOperator*>& operators)
+ASTNode AbstractSyntaxTree::CreateAST(CMemory* const owner, Operands& operands, Operators& operators)
 {
 	assert(!operands.empty());
 
@@ -33,7 +34,7 @@ ASTNode AbstractSyntaxTree::CreateAST(CMemory* const owner,
 		root = std::make_shared<OperatorASTNode>((*itr)->GetToken()->m_oSourcePosition, (*itr)->GetPunctuation());
 	}
 	
-	root->CreateRecursively(owner, operands, operators);
+	root->CreateRecursively(root, owner, operands, operators);
 #ifdef OPTIMIZATIONS
 	if (root->IsLeaf())
 		OptimizeLeaf(owner, root);
@@ -51,7 +52,7 @@ ASTNode AbstractSyntaxTree::CreateAST(CMemory* const owner,
 	return root;
 }
 
-ASTNode AbstractSyntaxTree::GetLeaf(VectorOf<CLinterOperand*>& operands, [[maybe_unused]] VectorOf<CLinterOperator*>& operators)
+ASTNode AbstractSyntaxTree::GetLeaf(Operands& operands, [[maybe_unused]] Operators& operators)
 {
 
 	ASTNode node;
@@ -67,8 +68,8 @@ ASTNode AbstractSyntaxTree::GetLeaf(VectorOf<CLinterOperand*>& operands, [[maybe
 	return node;
 }
 
-void AbstractSyntaxTree::CreateRecursively(CMemory* const owner, 
-	VectorOf<CLinterOperand*>& operands, VectorOf<CLinterOperator*>& operators)
+
+void AbstractSyntaxTree::CreateRecursively(ASTNode& _this, CMemory* const owner, Operands& operands, Operators& operators)
 {
 	if (operands.empty()) {
 		assert(operators.empty());
@@ -86,51 +87,90 @@ void AbstractSyntaxTree::CreateRecursively(CMemory* const owner,
 	const auto operandLhs = operands.begin() + std::distance(operators.begin(), itr1) + 1;
 	const auto operandRhs = operands.begin() + std::distance(operators.begin(), itr1) + 1;
 
-	auto lhsOperands = VectorOf<CLinterOperand*>(operands.begin(), operandLhs);
-	auto rhsOperands = VectorOf<CLinterOperand*>(operandRhs, operands.end());
+	auto lhsOperands = Operands(operands.begin(), operandLhs);
+	auto rhsOperands = Operands(operandRhs, operands.end());
 
-	auto lhsOperators = VectorOf<CLinterOperator*>(operators.begin(), opLhs);
-	auto rhsOperators = VectorOf<CLinterOperator*>(opRhs, operators.end());
+	auto lhsOperators = Operators(operators.begin(), opLhs);
+	auto rhsOperators = Operators(opRhs, operators.end());
 
+	if ((*itr1)->GetPunctuation() == p_question_mark) {
+		return CreateTernary(_this, owner, lhsOperands, lhsOperators, rhsOperands, rhsOperators);
+	}
 
-	assert(IsOperator());
+	assert(_this->IsOperator());
 
 	//check size to avoid unnecessary allocations
-	if (lhsOperands.size()) {
-		if (left = GetLeaf(lhsOperands, lhsOperators), !left) {
+	if (lhsOperands.size()) 
+	{
+
+		if (_this->left = GetLeaf(lhsOperands, lhsOperators), !_this->left) {
 			const OperatorIterator l = FindLowestPriorityOperator(lhsOperators);
-			left = std::make_shared<OperatorASTNode>((*l)->GetToken()->m_oSourcePosition, (*l)->GetPunctuation());
+
+			_this->left = std::make_shared<OperatorASTNode>((*l)->GetToken()->m_oSourcePosition, (*l)->GetPunctuation());
 #ifdef OPTIMIZATIONS
-			left->parent = shared_from_this();
+			_this->left->parent = shared_from_this();
 #endif
-			left->CreateRecursively(owner, lhsOperands, lhsOperators);
+			CreateRecursively(_this->left, owner, lhsOperands, lhsOperators);
 
 		}
 	} if (rhsOperands.size()) {
-		if (right = GetLeaf(rhsOperands, rhsOperators), !right) {
+		if (_this->right = GetLeaf(rhsOperands, rhsOperators), !_this->right) {
 			const OperatorIterator l = FindLowestPriorityOperator(rhsOperators);
-			right = std::make_shared<OperatorASTNode>((*l)->GetToken()->m_oSourcePosition, (*l)->GetPunctuation());
+
+
+			_this->right = std::make_shared<OperatorASTNode>((*l)->GetToken()->m_oSourcePosition, (*l)->GetPunctuation());
 #ifdef OPTIMIZATIONS
-			right->parent = shared_from_this();
+			_this->right->parent = shared_from_this();
 #endif
-			right->CreateRecursively(owner, rhsOperands, rhsOperators);
+			CreateRecursively(_this->right, owner, rhsOperands, rhsOperators);
+			
 		}
 	}
 
-	if (IsAssignment()) {
-		CheckConstness(owner);
-		CheckSelfCapture(owner);
+	if (_this->IsAssignment()) {
+		_this->CheckConstness(owner);
+		_this->CheckSelfCapture(owner);
 	}
 }
-//void AbstractSyntaxTree::CreateTernary(CMemory* const owner, VectorOf<CLinterOperand*>& operands, VectorOf<CLinterOperator*>& operators)
-//{
-//	assert(operators.front()->GetPunctuation() == p_question_mark);
-//
-//
-//
-//
-//}
-OperatorIterator AbstractSyntaxTree::FindLowestPriorityOperator(VectorOf<CLinterOperator*>& operators)
+void AbstractSyntaxTree::CreateTernary(ASTNode& self, CMemory* const owner, Operands& lhs_operands,
+ Operators& lhs_operators, Operands& rhs_operands, Operators& rhs_operators)
+{
+	//everything to the left of the ? is the condition
+	ASTNode condition = AbstractSyntaxTree::CreateAST(owner, lhs_operands, lhs_operators);
+
+	auto it = std::ranges::find(rhs_operators, op_conditional2, [](const CLinterOperator* o) { return o->GetPriority(); });
+
+	if (it == rhs_operators.end()) {
+		owner->GetModule()->PushError("expected a \":\" after \"?\" condition (misleading code position lol)", condition->GetCodePosition());
+		return;
+	}
+
+	const auto distance = std::distance(rhs_operators.begin(), it);
+
+	const auto trueOperand = rhs_operands.begin() + distance + 1;
+	const auto trueOperatorEnd = rhs_operators.begin() + distance;
+
+	auto trueOperands = Operands(rhs_operands.begin(), trueOperand);
+	auto trueOperators = Operators(rhs_operators.begin(), trueOperatorEnd);
+
+	assert(trueOperands.size());
+	ASTNode trueExpression = AbstractSyntaxTree::CreateAST(owner, trueOperands, trueOperators);
+
+	auto falseOperands = Operands(trueOperand, rhs_operands.end());
+	auto falseOperators = Operators(trueOperatorEnd + 1, rhs_operators.end());
+
+	assert(falseOperands.size());
+	ASTNode falseExpression = AbstractSyntaxTree::CreateAST(owner, falseOperands, falseOperators);
+
+	self = std::make_shared<TernaryASTNode>(
+		condition->GetCodePosition(),
+		condition, 
+		trueExpression, 
+		falseExpression
+	);
+
+}
+OperatorIterator AbstractSyntaxTree::FindLowestPriorityOperator(Operators& operators)
 {
 	assert(!operators.empty());
 
@@ -218,12 +258,11 @@ ObjectASTNode::ObjectASTNode(const CodePosition& pos, VectorOf<KeyValue<std::siz
 }
 ObjectASTNode::~ObjectASTNode() = default;
 
-TernaryASTNode::TernaryASTNode(const CodePosition& pos, CTernaryOperand* operand)
+TernaryASTNode::TernaryASTNode(const CodePosition& pos, ASTNode& value, ASTNode& m_true, ASTNode& m_false)
 	: AbstractSyntaxTree(pos),
-	m_pOperand(std::move(operand->m_pValue)),
-	m_pTrue(std::move(operand->m_pTrue)),
-	m_pFalse(std::move(operand->m_pFalse)) {
-}
+	m_pOperand(std::move(value)),
+	m_pTrue(std::move(m_true)),
+	m_pFalse(std::move(m_false)) {}
 TernaryASTNode::~TernaryASTNode() = default;
 
 LambdaASTNode::LambdaASTNode(const CodePosition& pos, RuntimeFunction&& operand, VectorOf<CCrossModuleReference>&& captures)

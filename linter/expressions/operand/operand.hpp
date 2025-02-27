@@ -24,7 +24,6 @@ enum EOperandBaseType : char {
 	ot_abstract_syntax_tree,
 	ot_array,
 	ot_object,
-	ot_ternary,
 	ot_lambda,
 	ot_fmt_string,
 };
@@ -54,15 +53,10 @@ public:
 	[[nodiscard]] Success ParseOperand(std::optional<PairMatcher>& eoe);
 	[[nodiscard]] ASTNode ToAST();
 
-
-	[[nodiscard]] inline bool IsTernary() const noexcept { 
-		return m_pOperand && m_pOperand->Type() == ot_ternary; }
-
 private:
 	[[nodiscard]] std::unique_ptr<IOperand> ParseImmediate();
 	[[nodiscard]] std::unique_ptr<IOperand> ParseParentheses(std::optional<PairMatcher>&);
 	[[nodiscard]] std::unique_ptr<IOperand> ParseIdentifier();
-	[[nodiscard]] std::unique_ptr<IOperand> ParseTernary(std::optional<PairMatcher>& eoe);
 
 	[[nodiscard]] std::unique_ptr<IOperand> ParseArray();
 	[[nodiscard]] std::unique_ptr<CKeyValue>ParseKeyValue(std::optional<PairMatcher> eoe);

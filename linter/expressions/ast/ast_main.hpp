@@ -42,6 +42,9 @@ concept Pointer = std::is_pointer_v<T> || std::is_reference_v<T>;
 using RuntimeFunction = std::unique_ptr<CRuntimeFunctionBase>;
 using ElementIndex = std::size_t;
 
+using Operands = VectorOf<CLinterOperand*>;
+using Operators = VectorOf<CLinterOperator*>;
+
 class AbstractSyntaxTree : public std::enable_shared_from_this<AbstractSyntaxTree>
 {
 public:
@@ -81,15 +84,15 @@ public:
 	ASTNode right;
 
 public:
-	[[nodiscard]] static ASTNode CreateAST(CMemory* const owner,
-		VectorOf<CLinterOperand*>& operands, VectorOf<CLinterOperator*>& operators);
+	[[nodiscard]] static ASTNode CreateAST(CMemory* const owner, Operands& operands, Operators& operators);
 
 private:
-	[[nodiscard]] static std::shared_ptr<AbstractSyntaxTree> GetLeaf(VectorOf<CLinterOperand*>& operands, VectorOf<CLinterOperator*>& operators);
-	[[nodiscard]] static OperatorIterator FindLowestPriorityOperator(VectorOf<CLinterOperator*>& operators);
+	[[nodiscard]] static ASTNode GetLeaf(Operands& operands, Operators& operators);
+	[[nodiscard]] static OperatorIterator FindLowestPriorityOperator(Operators& operators);
 
-	void CreateRecursively(CMemory* const owner, VectorOf<CLinterOperand*>& operands, VectorOf<CLinterOperator*>& operators);
-	void CreateTernary(CMemory* const owner, VectorOf<CLinterOperand*>& operands, VectorOf<CLinterOperator*>& operators);
+	static void CreateRecursively(ASTNode& _this, CMemory* const owner, Operands& operands, Operators& operators);
+	static void CreateTernary(ASTNode& _this, CMemory* const owner,
+		Operands& lhs_operands, Operators& lhs_operators, Operands& rhs_operands, Operators& rhs_operators);
 
 	[[nodiscard]] bool IsAssignment() const noexcept;
 	
@@ -213,7 +216,7 @@ class TernaryASTNode final : public AbstractSyntaxTree
 
 public:
 
-	TernaryASTNode(const CodePosition& pos, struct CTernaryOperand* operand);
+	TernaryASTNode(const CodePosition& pos, ASTNode& value, ASTNode& m_true, ASTNode& m_false);
 	~TernaryASTNode();
 
 	[[nodiscard]] constexpr bool IsLeaf() const noexcept override { return true; }

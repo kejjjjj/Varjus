@@ -5,5 +5,4 @@
 #include "operand_identifier.hpp"
 #include "operand_immediate.hpp"
 #include "operand_object.hpp"
-#include "operand_ternary.hpp"
 #include "operand_lambda.hpp"

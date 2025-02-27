@@ -7,7 +7,8 @@ enum OperatorPriority : char
 {
 	op_failure,
 	op_assignment,		//	= += -= *= /= %= >>= <<= &= ^= |=
-	op_conditional,		//	?:
+	op_conditional,		//	?
+	op_conditional2,    //  :  
 	op_logical_or,		//	||
 	op_logical_and,		//	&&
 	op_bitwise_or,		//  | 
@@ -156,7 +157,7 @@ constexpr std::array<CPunctuation, 46u> punctuations
 	CPunctuation{",", p_comma},
 	CPunctuation{".", p_period, op_postfix},
 	CPunctuation{";", p_semicolon },
-	CPunctuation{":", p_colon},
+	CPunctuation{":", p_colon, op_conditional2},
 	CPunctuation{"?", p_question_mark, op_conditional},
 	CPunctuation{"!", p_exclamation, op_unary}
 

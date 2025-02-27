@@ -78,8 +78,8 @@ public:
 	[[nodiscard]] CExportedSymbol* GetExport(const std::string& name) const;
 	[[nodiscard]] constexpr auto& GetExports() const noexcept { return m_oModuleExports; }
 
-	[[nodiscard]] inline auto PushError(const std::string& err) noexcept { m_oErrors.PushError(GetFilePath(), err); }
-	[[nodiscard]] inline auto PushError(const std::string& err, const CodePosition& pos) noexcept {
+	[[nodiscard]] inline auto PushError(const std::string& err) { m_oErrors.PushError(GetFilePath(), err); }
+	[[nodiscard]] inline auto PushError(const std::string& err, const CodePosition& pos) {
 		m_oErrors.PushError(GetFilePath(), err, pos); 
 	}
 

@@ -65,11 +65,11 @@ Success CLinterOperand::ParseOperand(std::optional<PairMatcher>& eoe)
 	m_oUnaryOperators = unaryLinter.Move();
 	m_oPostfixes = postfix.Move();
 
-	if (!IsEndOfBuffer() && (*m_iterPos)->IsOperator(p_question_mark)) {
-		m_pOperand = ParseTernary(eoe);
-		m_oPostfixes.clear();
-		m_oUnaryOperators.clear();
-	}
+	//if (!IsEndOfBuffer() && (*m_iterPos)->IsOperator(p_question_mark)) {
+	//	m_pOperand = ParseTernary(eoe);
+	//	m_oPostfixes.clear();
+	//	m_oUnaryOperators.clear();
+	//}
 
 	return success;
 }

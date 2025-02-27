@@ -1,10 +1,5 @@
 
 fn main()
 {
-	const arr = [];
-
-	for(let i = 0; i < 10; i++)
-		arr.push(cppFunc(i));
-
-	return arr;
+	return 5 < 2 ? "hi" : false ? "hello" : "false";
 }

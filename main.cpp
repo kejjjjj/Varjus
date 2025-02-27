@@ -4,9 +4,6 @@
 #include "fs/fs_globals.hpp"
 
 #include "varjus_api/varjus_api.hpp"
-#include <thread>
-#include <array>
-
 
 int ExitApp(int v)
 {
@@ -19,9 +16,9 @@ DEFINE_CALLBACK(CppFunc, args) {
     return CStringValue::Construct(ctx->m_pRuntime, "Hello from C++: " + args[0]->ValueAsString());
 }
 
-
-void PerThread(std::size_t i)
+int main()
 {
+    
     Varjus::State state;
 
 
@@ -29,36 +26,24 @@ void PerThread(std::size_t i)
 
     const auto GetError = [](const std::optional<std::string>& errorMsg) {
         return errorMsg ? *errorMsg : "unknown error!";
-    };
+        };
 
     if (!state.UseStdLibrary() || !state.AddNewCallback("cppFunc", CppFunc, 1)) {
-        std::cout << "state error: " << GetError(state.GetErrorMessage()) << " in " << i << '\n';
-        return;
+        std::cout << "state error: " << GetError(state.GetErrorMessage()) << '\n';
+        return ExitApp(0);
     }
 
     if (!state.LoadScriptFromFile(reader.GetFilePath())) {
-        std::cout << "syntax error: " << GetError(state.GetErrorMessage()) << " in " << i << '\n';
-        return;
+        std::cout << "syntax error: " << GetError(state.GetErrorMessage()) << '\n';
+        return ExitApp(0);
     }
 
     if (const auto returnValue = state.ExecuteScript()) {
-        std::cout << "the program returned: " << returnValue->ToPrintableString() << " in " << i << '\n';
+        std::cout << "the program returned: " << returnValue->ToPrintableString() << '\n';
     }
     else {
-        std::cout << "runtime error: " << GetError(state.GetErrorMessage()) << " in " << i << '\n';
+        std::cout << "runtime error: " << GetError(state.GetErrorMessage()) << '\n';
     }
-}
-
-int main()
-{
-    
-    std::array<std::thread, 16> threads;
-
-    for (std::size_t i{}; auto& thread : threads)
-        thread = std::thread(PerThread, i++);
-    
-    for (auto& thread : threads)
-        thread.join();
 
     return ExitApp(1);
 }
