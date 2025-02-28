@@ -18,7 +18,7 @@ TEST_CASE("assignment operators") {
 		10 << 2,
 		10 >> 2,
 		10 | 2,
-		10 ^ 2,
+		10 ^ static_cast<int>(2),
 		10 & 2
 	}));
 
