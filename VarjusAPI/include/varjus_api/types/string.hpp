@@ -48,6 +48,7 @@ public:
 	[[nodiscard]] constexpr bool IsArithmetic() const noexcept override { return false; }
 	[[nodiscard]] constexpr bool IsIndexable() const noexcept override { return true; }
 	[[nodiscard]] constexpr bool IsAggregate() const noexcept override { return true; }
+	[[nodiscard]] constexpr bool IsIterable() const noexcept override { return true; }
 
 	[[nodiscard]] bool ToBoolean() const override { return !Internal()->GetString().empty(); }
 	[[nodiscard]] VarjusInt ToInt() const override { return static_cast<VarjusInt>(ToBoolean()); }
@@ -61,6 +62,7 @@ public:
 
 	[[nodiscard]] IValue* Index(IValue* index) override;
 	[[nodiscard]] IValue* GetAggregate(std::size_t memberIdx) override;
+	[[nodiscard]] IValues ToIterable() const override;
 
 private:
 	[[nodiscard]] std::string TypeAsString() const override { return "string"s; }

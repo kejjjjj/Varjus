@@ -5,6 +5,8 @@
 
 #include "varjus_api/varjus_api.hpp"
 
+#include "varjus_api/internal/runtime.hpp"
+
 int ExitApp(int v)
 {
     std::cout << "Press ENTER to exit\n";
@@ -12,23 +14,18 @@ int ExitApp(int v)
     return v;
 }
 
-DEFINE_CALLBACK(CppFunc, args) {
-    return CStringValue::Construct(ctx->m_pRuntime, "Hello from C++: " + args[0]->ValueAsString());
-}
-
 int main()
 {
     
     Varjus::State state;
 
-
     const auto reader = VarjusIOReader(DIRECTORY_SEPARATOR_CHAR + "scripts"s + DIRECTORY_SEPARATOR_CHAR + "script.var"s);
 
     const auto GetError = [](const std::optional<std::string>& errorMsg) {
         return errorMsg ? *errorMsg : "unknown error!";
-        };
+    };
 
-    if (!state.UseStdLibrary() || !state.AddNewCallback("cppFunc", CppFunc, 1)) {
+    if (!state.UseStdLibrary()) {
         std::cout << "state error: " << GetError(state.GetErrorMessage()) << '\n';
         return ExitApp(0);
     }
@@ -40,8 +37,9 @@ int main()
 
     if (const auto returnValue = state.ExecuteScript()) {
         std::cout << "the program returned: " << returnValue->ToPrintableString() << '\n';
-    }
-    else {
+
+        returnValue->GetAllocator()->PrintAllLeaks();
+    } else {
         std::cout << "runtime error: " << GetError(state.GetErrorMessage()) << '\n';
     }
 

@@ -105,8 +105,8 @@ inline IValue* EvaluateVariable(CRuntimeContext* const ctx, const VariableASTNod
 		variable->m_bSelfCapturing = true;
 
 	auto& v = variable->GetValue();
-	if (var->m_bIsConst)
-		v->MakeImmutable();
+	//if (var->m_bIsConst) // this was already validated during linting
+	//	v->MakeImmutable();
 
 	return v;
 }

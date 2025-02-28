@@ -58,6 +58,7 @@ public:
 	[[nodiscard]] constexpr bool IsIndexable() const noexcept override { return true; }
 	[[nodiscard]] constexpr bool IsAggregate() const noexcept override { return true; }
 	[[nodiscard]] constexpr bool IsBooleanConvertible() const noexcept override { return false; }
+	[[nodiscard]] constexpr bool IsIterable() const noexcept override { return true; }
 
 	[[nodiscard]] IValue* Copy() override;
 	[[nodiscard]] CArrayValue* ToArray() override;
@@ -66,6 +67,7 @@ public:
 	
 	[[nodiscard]] IValue* Index(IValue* index) override;
 	[[nodiscard]] IValue* GetAggregate(std::size_t memberIdx) override;
+	[[nodiscard]] IValues ToIterable() const override;
 
 	[[nodiscard]] std::size_t AddressOf() const noexcept override { 
 		return reinterpret_cast<std::size_t>(GetShared().get()); 

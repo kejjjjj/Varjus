@@ -1,5 +1,10 @@
 
 fn main()
 {
-	return 5 < 2 ? "hi" : false ? "hello" : "false";
+	const s = [21,231,2,2];
+	const a = 2;
+	for(a : s){
+		console.log(a);
+	}
+
 }

@@ -73,6 +73,19 @@ IValue* CStringValue::GetAggregate(std::size_t memberIdx)
 	return nullptr;
 
 }
+IValues CStringValue::ToIterable() const
+{
+	auto& str = Internal()->GetString();
+
+	IValues results(str.size());
+
+	for (std::size_t i = {}; auto var : str) {
+		results[i++] = CStringValue::Construct(m_pAllocator, std::string(size_t(1), var));
+	}
+
+	return results;
+}
+
 CInternalStringValue::~CInternalStringValue() = default;
 
 void CInternalStringValue::Release()

@@ -20,6 +20,10 @@ public:
 	~CVariableDeclarationLinter();
 
 	[[nodiscard]] Success Parse();
+
+	[[nodiscard]] Success ParseIdentifier();
+	[[nodiscard]] Success ParseInitializer();
+
 	[[nodiscard]] RuntimeBlock ToRuntimeObject() const override;
 	[[nodiscard]] ASTNode&& MoveInitializer();
 
@@ -39,4 +43,5 @@ private:
 	CLinterVariable* m_sDeclaredVariable{ nullptr };
 #endif
 	ASTNode m_pInitializerAST;
+	bool m_bIsConst{};
 };

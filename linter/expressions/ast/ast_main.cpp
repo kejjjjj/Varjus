@@ -93,8 +93,11 @@ void AbstractSyntaxTree::CreateRecursively(ASTNode& _this, CMemory* const owner,
 	auto lhsOperators = Operators(operators.begin(), opLhs);
 	auto rhsOperators = Operators(opRhs, operators.end());
 
-	if ((*itr1)->GetPunctuation() == p_question_mark) {
+	if ((*itr1)->GetPriority() == op_conditional) {
 		return CreateTernary(_this, owner, lhsOperands, lhsOperators, rhsOperands, rhsOperators);
+	} else if ((*itr1)->GetPriority() == op_conditional2) {
+		owner->GetModule()->PushError("\":\" can't be used in this context.. did you intend to use \"?:\"", (*itr1)->GetToken()->m_oSourcePosition);
+		return;
 	}
 
 	assert(_this->IsOperator());

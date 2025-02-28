@@ -22,15 +22,18 @@ CVariableDeclarationLinter::CVariableDeclarationLinter(LinterIterator& pos, Lint
 }
 CVariableDeclarationLinter::~CVariableDeclarationLinter() = default;
 
-Success CVariableDeclarationLinter::Parse()
-{
+Success CVariableDeclarationLinter::Parse(){
+	return ParseIdentifier() && ParseInitializer() ? success : failure;
+}
 
+Success CVariableDeclarationLinter::ParseIdentifier()
+{
 	if (IsEndOfBuffer() || !IsDeclaration(*m_iterPos)) {
-		m_pOwner->GetModule()->PushError("expected \"let\"", GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError("expected \"let\" or \"const\"", GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 
-	const auto isConst = (*m_iterPos)->Type() == tt_const;
+	m_bIsConst = (*m_iterPos)->Type() == tt_const;
 
 	std::advance(m_iterPos, 1);
 
@@ -59,12 +62,18 @@ Success CVariableDeclarationLinter::Parse()
 #else
 		m_sDeclaredVariable = m_pOwner->m_VariableManager->DeclareVariable(varName);
 #endif
-	} else {
+	}
+	else {
 		m_pOwner->GetModule()->PushError("!(const auto scope = currentScope.lock())", (*m_iterPos)->m_oSourcePosition);
 		return failure;
 	}
 
 	std::advance(m_iterPos, 1); // skip identifier
+	return success;
+}
+
+Success CVariableDeclarationLinter::ParseInitializer()
+{
 
 	if (IsEndOfBuffer()) {
 		m_pOwner->GetModule()->PushError("expected \";\"", GetIteratorSafe()->m_oSourcePosition);
@@ -79,7 +88,7 @@ Success CVariableDeclarationLinter::Parse()
 
 	//let var;
 	if ((*m_iterPos)->IsOperator(p_semicolon)) {
-		m_sDeclaredVariable->m_bConst = isConst;
+		m_sDeclaredVariable->m_bConst = m_bIsConst;
 		return success;
 	}
 
@@ -96,7 +105,7 @@ Success CVariableDeclarationLinter::Parse()
 	if (!linter.Parse())
 		return failure;
 
-	m_sDeclaredVariable->m_bConst = isConst;
+	m_sDeclaredVariable->m_bConst = m_bIsConst;
 
 	m_pInitializerAST = linter.ToMergedAST();
 	return success;

@@ -84,13 +84,13 @@ public:
 	[[nodiscard]] constexpr virtual bool IsAggregate() const noexcept { return false; }
 	[[nodiscard]] constexpr virtual bool IsBooleanConvertible() const noexcept { return true; }
 	[[nodiscard]] constexpr virtual bool IsBuiltInMemberCallable() const noexcept { return false; }
+	[[nodiscard]] constexpr virtual bool IsIterable() const noexcept { return false; }
 
 	[[nodiscard]] virtual IValue* Index(IValue* index);
 	[[nodiscard]] virtual IValue* GetAggregate([[maybe_unused]] std::size_t memberIdx) { return nullptr; }
+	[[nodiscard]] virtual IValue* Call([[maybe_unused]] struct CRuntimeContext* const ctx, [[maybe_unused]] const IValues& args) { return nullptr; }
+	[[nodiscard]] virtual IValues ToIterable() const { return {}; }
 
-	[[nodiscard]] virtual IValue* Call([[maybe_unused]] struct CRuntimeContext* const ctx, [[maybe_unused]] const IValues& args) {
-		return nullptr;
-	}
 	[[nodiscard]] bool& AsBoolean();
 	[[nodiscard]] VarjusInt& AsInt();
 	[[nodiscard]] VarjusUInt& AsUInt();

@@ -23,6 +23,11 @@ Varjus::State::~State() {
         m_pReturnValue->Release();
 #endif
 
+#if _MSC_VER && _DEBUG
+    if (m_pRuntime)
+        m_pRuntime->PrintAllLeaks();
+#endif
+
 }
 
 Success Varjus::State::UseStdLibrary()

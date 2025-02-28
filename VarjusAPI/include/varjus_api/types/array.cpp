@@ -87,6 +87,19 @@ IValue* CArrayValue::GetAggregate(std::size_t memberIdx)
 	return nullptr;
 }
 
+IValues CArrayValue::ToIterable() const
+{
+	auto& vars = GetVariables();
+	IValues results(vars.size());
+
+	for (std::size_t i = {}; auto& var : GetVariables()) {
+		results[i] = var->GetValue()->Copy();
+		i++;
+	}
+
+	return results;
+}
+
 VectorOf<CVariable*>& CArrayValue::GetVariables() {
 	return GetShared()->GetVariables();
 }

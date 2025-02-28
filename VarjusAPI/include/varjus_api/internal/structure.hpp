@@ -21,6 +21,7 @@ enum EStructureType
 	st_expression,
 	st_conditional,
 	st_for,
+	st_ranged_for,
 	st_while,
 	st_return,
 	st_loop_control,
@@ -300,6 +301,23 @@ private:
 	std::unique_ptr<CRuntimeExpression> m_pInitializer;
 	std::unique_ptr<CRuntimeExpression> m_pCondition;
 	std::unique_ptr<CRuntimeExpression> m_pOnEnd;
+};
+class VariableASTNode;
+class CRuntimeRangedForStatement final : public IRuntimeStructureSequence
+{
+	NONCOPYABLE(CRuntimeRangedForStatement);
+public:
+	CRuntimeRangedForStatement(std::shared_ptr<VariableASTNode>&& iterator, ASTNode&& iterable, InstructionSequence&& insns);
+	~CRuntimeRangedForStatement();
+
+	[[maybe_unused]] IValue* Execute(CRuntimeContext* const ctx) override;
+
+protected:
+	[[nodiscard]] constexpr EStructureType Type() const noexcept override { return st_ranged_for; };
+
+private:
+	std::shared_ptr<VariableASTNode> m_pIterator;
+	std::unique_ptr<CRuntimeExpression> m_pIterable;
 };
 
 class CRuntimeWhileStatement final : public IRuntimeStructureSequence

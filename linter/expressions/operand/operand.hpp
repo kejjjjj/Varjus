@@ -44,6 +44,7 @@ struct IOperand
 class CLinterOperand final : public CLinterSingle<CToken>
 {
 	NONCOPYABLE(CLinterOperand);
+	friend class CForStatementLinter; //for ParseIdentifier
 public:
 
 	CLinterOperand() = delete;
