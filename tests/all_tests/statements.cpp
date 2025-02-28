@@ -146,3 +146,39 @@ TEST_CASE("repeat-while iterates to 5 and continues when even") {
 	REQUIRE(retVal->HasOwner() == false);
 	TEST_END(retVal);
 }
+TEST_CASE("ranged for loop iterates [1, 2, 3]") {
+
+	auto retVal = TEST_ExecuteFile(JP("ranged_for_temp_array.var"));
+
+	AssertArray(retVal, AssertArrayValue<ASSERT_INT>{t_int, { 1,2,3 }});
+
+	REQUIRE(retVal->HasOwner() == false);
+	TEST_END(retVal);
+}
+TEST_CASE("ranged for loop iterates variable [1, 2, 3]") {
+
+	auto retVal = TEST_ExecuteFile(JP("ranged_for_array.var"));
+
+	AssertArray(retVal, AssertArrayValue<ASSERT_INT>{t_int, { 1,2,3 }});
+
+	REQUIRE(retVal->HasOwner() == false);
+	TEST_END(retVal);
+}
+TEST_CASE("ranged for loop iterates \"hello\"") {
+
+	auto retVal = TEST_ExecuteFile(JP("ranged_for_temp_string.var"));
+
+	AssertArray(retVal, AssertArrayValue<ASSERT_STRING>{t_string, { "h", "e", "l", "l", "o"}});
+
+	REQUIRE(retVal->HasOwner() == false);
+	TEST_END(retVal);
+}
+TEST_CASE("ranged for loop iterates variable \"hello\"") {
+
+	auto retVal = TEST_ExecuteFile(JP("ranged_for_string.var"));
+
+	AssertArray(retVal, AssertArrayValue<ASSERT_STRING>{t_string, { "h", "e", "l", "l", "o" }});
+
+	REQUIRE(retVal->HasOwner() == false);
+	TEST_END(retVal);
+}

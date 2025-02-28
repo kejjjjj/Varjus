@@ -174,10 +174,16 @@ Success CForStatementLinter::ParseRangedForLoop()
 	if (m_pOwner->IsHoisting())
 		return success;
 
+	
 	m_oData = RangedForLoop{ 
 		.m_pIterator = std::dynamic_pointer_cast<VariableASTNode>(ast),
 		.m_pIterable = lintIterable.ToMergedAST()
 	};
+
+	if (std::get<1>(m_oData).m_pIterator && std::get<1>(m_oData).m_pIterator->m_bIsConst) {
+		m_pOwner->GetModule()->PushError("assignment to a constant", std::get<1>(m_oData).m_pIterator->GetCodePosition());
+		return failure;
+	}
 
 	return success;
 }
