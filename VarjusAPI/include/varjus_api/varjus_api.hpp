@@ -1,5 +1,9 @@
 #pragma once
 
+/***********************************************************************
+ALWAYS CHECK RETURN VALUES!!!!
+***********************************************************************/
+
 #define VARJUS_API
 #define __ND [[nodiscard]]
 
@@ -8,50 +12,43 @@
 #include "types/internal/objects.hpp"
 #include "types/types.hpp"
 
-
 #include <optional>
 #include <string>
 
-/***********************************************************************
-ALWAYS CHECK RETURN VALUES!!!!
-***********************************************************************/
 
 /***********************************************************************
-Example copy paste code:
+ > EXAMPLE COPY PASTE CODE
+************************************************************************
 
 #include <iostream>
 #include "varjus_api/varjus_api.hpp"
 
-int ExitApp(int v)
-{
-    Varjus::Cleanup();
-    Varjus::PrintMemoryUsage();
-    std::cout << "Press any key to exit\n";
-    std::cin.get();
-    return v;
-}
-
 int main()
 {
-    Varjus::UseStdLibrary();
+
+    Varjus::State state;
 
     const auto GetError = [](const std::optional<std::string>& errorMsg) {
         return errorMsg ? *errorMsg : "unknown error!";
     };
 
-    if (!Varjus::LoadScriptFromFile("C:\\temp\\script.var")) {
-        std::cout << "syntax error: " << GetError(Varjus::GetErrorMessage()) << '\n';
-        return ExitApp(0);
+    if (!state.UseStdLibrary()) {
+        std::cout << "state error: " << GetError(state.GetErrorMessage()) << '\n';
+        return 0;
     }
 
-    if (const auto returnValue = Varjus::ExecuteScript()) {
+    if (!state.LoadScriptFromFile("C:\\Temp\\script.var")) {
+        std::cout << "syntax error: " << GetError(state.GetErrorMessage()) << '\n';
+        return 0;
+    }
+
+    if (const auto returnValue = state.ExecuteScript()) {
         std::cout << "the program returned: " << returnValue->ToPrintableString() << '\n';
     } else {
-        std::cout << "runtime error: " << GetError(Varjus::GetErrorMessage()) << '\n';
+        std::cout << "runtime error: " << GetError(state.GetErrorMessage()) << '\n';
     }
 
-    return ExitApp(1);
-
+    return 1;
 }
 ***********************************************************************/
 
