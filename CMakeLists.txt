@@ -39,34 +39,19 @@ if(CMAKE_BUILD_TYPE STREQUAL "Release")
     message(STATUS "Building in Release mode")
 
     if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-        target_compile_options(Varjus PRIVATE -Wall -Wextra -Werror -pedantic -O3)
+        set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Wall -Wextra -Werror -pedantic -O3")
     elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-        target_compile_options(Varjus PRIVATE /W4 /WX)
+        set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /W4 /WX /O2 /MT")
     endif()
 
 elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
     message(STATUS "Building in Debug mode")
 
     if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-        target_compile_options(Varjus PRIVATE 
-            -Wall -Wextra -Werror -pedantic
-            -O0 -g  # Disable optimizations and enable debugging
-        )
+        set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -Wextra -Werror -pedantic -O0 -g")
     elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-        target_compile_options(Varjus PRIVATE 
-            /W4 /WX /external:W3
-            /Od /D_DEBUG  # Disable optimizations and enable debug mode
-            /ZI  # Enable Debug Information
-            /RTC1  # Enable runtime checks (Debug mode)
-
-            /wd4514 # Unreferenced inline function has been removed
-            /wd4626 # Assignment operator implicitly deleted
-            /wd4820 # Padding added for alignment
-            /wd5267 # Definition hides non-virtual function
-            /wd4351 # Base class member initialized
-            /wd5045 # Spectre mitigation info
-            /wd4371 # Layout of base class has changed
-        )
+        set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /W4 /WX /external:W3 /Od /D_DEBUG /ZI /RTC1")
+        set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /wd4514 /wd4626 /wd4820 /wd5267 /wd4351 /wd5045 /wd4371")
     endif()
 
     target_compile_definitions(Varjus PRIVATE DEBUG)
