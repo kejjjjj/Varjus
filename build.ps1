@@ -23,7 +23,7 @@ switch ($choice) {
     }
 }
 
-$buildDir = $targetChoice + "/build";
+$buildDir = $targetPath + "/build";
 
 # Handle existing build folder
 if (Test-Path "$buildDir") {
