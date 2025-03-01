@@ -97,9 +97,8 @@ std::optional<std::string> CProjectModules::CheckCircularDependencies(const std:
 			for (const auto& dependency : graph.at(amodule)) {
 
 				if (std::find(recursionStack.begin(), recursionStack.end(), dependency) != recursionStack.end()) {
-
-					for(auto i : std::views::iota(0ull, recursionStack.size() - 1))
-						conflictDetails.emplace_back(recursionStack[i], recursionStack[i + 1]);
+					for(auto i : std::views::iota(VarjusUInt(0), recursionStack.size() - VarjusUInt(1)))
+						conflictDetails.emplace_back(recursionStack[i], recursionStack[i + VarjusUInt(1)]);
 					
 					return false;
 

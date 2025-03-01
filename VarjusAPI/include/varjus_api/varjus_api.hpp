@@ -73,6 +73,10 @@ namespace Varjus
         //This function expects a full file path, not a relative one
         VARJUS_API __ND Success LoadScriptFromFile(const std::string& fullFilePath);
 
+        //This function expects a script
+        //It should be noted that modules cannot be used as there is no working directory
+        VARJUS_API __ND Success LoadScript(const std::string& script);
+
         //Call me after you have loaded a script with LoadScriptFromFile or LoadScript
         //Don't do any memory management to the return value as it's managed by the API
         VARJUS_API __ND IValue* ExecuteScript();

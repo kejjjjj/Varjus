@@ -58,8 +58,13 @@ int main()
         return ExitApp(0);
     }
 
-    if (!state.LoadScriptFromFile(reader.GetFilePath())) {
-        std::cout << "syntax error: " << GetError(state.GetErrorMessage()) << '\n';
+    if ([[maybe_unused]]auto buff = reader.IO_Read()) {
+        if (!state.LoadScript("fn main() { return `hi: ${200 + 5}`; }")) {
+            std::cout << "syntax error: " << GetError(state.GetErrorMessage()) << '\n';
+            return ExitApp(0);
+        }
+    } else {
+        std::cout << "couldn't read the file\n";
         return ExitApp(0);
     }
 

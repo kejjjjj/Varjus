@@ -36,8 +36,8 @@ public:
 	[[nodiscard]] inline auto GetModules() const { return m_pModules.get(); }
 
 
-	[[nodiscard]] inline auto PushError(const std::string& err) noexcept { m_oErrors.PushError("", err); }
-	[[nodiscard]] inline auto PushError(const std::string& err, const CodePosition& pos) noexcept {
+	[[nodiscard]] inline auto PushError(const std::string& err) { m_oErrors.PushError("", err); }
+	[[nodiscard]] inline auto PushError(const std::string& err, const CodePosition& pos) {
 		m_oErrors.PushError("", err, pos);
 	}
 

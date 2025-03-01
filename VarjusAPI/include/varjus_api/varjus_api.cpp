@@ -75,6 +75,43 @@ Success Varjus::State::LoadScriptFromFile(const std::string& fullFilePath)
 
     return failure;
 }
+Success Varjus::State::LoadScript(const std::string& script)
+{
+    if (!m_pLinter || !m_pLinter->m_oBuiltInObjects) {
+        m_sErrorMessage = "Varjus::State::LoadScript(): no linter context... did you forget to create a new state?";
+        return failure;
+    }
+
+    try {
+        CBufferTokenizer buffer(m_pLinter.get(), script);
+
+        if (!buffer.Tokenize()) {
+            m_sErrorMessage = "Varjus::State::LoadScript(): tokenization failure.. syntax error?";
+            return failure;
+        }
+
+        auto tokens = buffer.GetTokens();
+        auto begin = tokens.begin();
+        auto end = tokens.end();
+
+        CBufferLinter linter(m_pLinter.get(), begin, end);
+
+        if (!linter.Parse()) {
+            m_pLinter->PushError("couldn't parse the input script");
+            return failure;
+        }
+
+        return m_bScriptLoaded = success;
+    }
+    catch (CLinterError& ex) {
+        m_sErrorMessage = ex.what();
+    }
+    catch (std::exception& ex) {
+        m_sErrorMessage = "Unexpected exception: " + std::string(ex.what());
+    }
+
+    return failure;
+}
 IValue* Varjus::State::ExecuteScript()
 {
 

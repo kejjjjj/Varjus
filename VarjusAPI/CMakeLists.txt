@@ -32,11 +32,29 @@ add_library(VarjusAPI STATIC ${API_SOURCES})
 target_include_directories(VarjusAPI PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/..")
 target_include_directories(VarjusAPI PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include/")
 
-# Compiler options
-if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-    target_compile_options(VarjusAPI PRIVATE -Wall -Wextra -Werror -pedantic -O3)
-elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-    target_compile_options(VarjusAPI PRIVATE /W4 /WX)
+if(CMAKE_BUILD_TYPE STREQUAL "Release")
+    message(STATUS "Building in Release mode")
+
+    if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+        set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Wall -Wextra -Werror -pedantic -O3")
+    elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+        set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /W4 /WX /O2 /MT")
+    endif()
+
+elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    message(STATUS "Building in Debug mode")
+
+    if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+        set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -Wextra -Werror -pedantic -O0 -g")
+    elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+        set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /W4 /WX /external:W3 /Od /D_DEBUG /ZI /RTC1")
+        set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /wd4514 /wd4626 /wd4820 /wd5267 /wd4351 /wd5045 /wd4371")
+    endif()
+
+    target_compile_definitions(VarjusAPI PRIVATE DEBUG)
+
+else()
+    message(FATAL_ERROR "Invalid CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}. Please specify either 'Debug' or 'Release' with 'cmake -DCMAKE_BUILD_TYPE=Type'.")
 endif()
 
 # Define output directory
