@@ -55,14 +55,14 @@ IValue* CArrayValue::Index(IValue* vIndex)
 	if (!vIndex->IsIntegral())
 		throw CRuntimeError(m_pAllocator, std::format("array accessor must be integral, but is \"{}\"", vIndex->TypeAsString()));
 
-	auto index = vIndex->ToInt();
+	auto index = vIndex->ToUInt();
 
 	auto& vec = GetShared()->GetVariables();
 
-	if (index < 0 || static_cast<size_t>(index) >= vec.size())
-		throw CRuntimeError(m_pAllocator, "array index out of bounds");
+	if (index >= vec.size())
+		throw CRuntimeError(m_pAllocator, std::format("array index {} out of bounds (len: {})", index, Internal()->Length()));
 
-	return vec[static_cast<size_t>(index)]->GetValue();
+	return vec[index]->GetValue();
 }
 IValue* CArrayValue::GetAggregate(std::size_t memberIdx)
 {

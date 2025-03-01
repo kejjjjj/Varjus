@@ -33,12 +33,19 @@ void CRuntimeModule::SetupGlobalVariables(CProgramRuntime* const runtime) {
 
 	auto info = runtime->m_pInformation.get();
 	for (auto& [_, v] : info->m_oBuiltInObjects->Iterator()) {
-		const auto& [methodCtor, propertyCtor] = v;
+		const auto& ctor = v.constructor;
 
-		BuiltInMethod_t methods = methodCtor ? (*methodCtor)(info) : BuiltInMethod_t(info);
-		BuiltInProperty_t properties = propertyCtor ? (*propertyCtor)(info) : BuiltInProperty_t(info);
+		if (!ctor || !*ctor)
+			continue;
 
-		classData.emplace_back(std::move(methods), std::move(properties));
+
+		ObjectDeclaration_t decl(info);
+		
+		//decl receives info from here
+		(*ctor)(decl);
+
+		// if(decl.m_oMethods.size() || decl.m_oProperties.size()) //don't add if empty
+			classData.emplace_back(std::move(decl.m_oMethods), std::move(decl.m_oProperties));
 	}
 
 	assert(m_oGlobalVariables.size() >= classData.size());

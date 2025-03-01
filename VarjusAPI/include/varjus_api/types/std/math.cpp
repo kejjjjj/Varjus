@@ -39,14 +39,29 @@ FORWARD_DECLARE_METHOD(Max);
 FORWARD_DECLARE_METHOD(Min);
 FORWARD_DECLARE_METHOD(Random);
 
+FORWARD_DECLARE_PROPERTY(Math_PI);
+FORWARD_DECLARE_PROPERTY(Math_TAU);
+FORWARD_DECLARE_PROPERTY(Math_E);
+FORWARD_DECLARE_PROPERTY(Math_SQRT2);
+FORWARD_DECLARE_PROPERTY(Math_SQRT3);
+FORWARD_DECLARE_PROPERTY(Math_SQRT5);
+FORWARD_DECLARE_PROPERTY(Math_GOLDEN);
+FORWARD_DECLARE_PROPERTY(Math_LN2);
+FORWARD_DECLARE_PROPERTY(Math_LN10);
+FORWARD_DECLARE_PROPERTY(Math_LOG2E);
+FORWARD_DECLARE_PROPERTY(Math_LOG10E);
+FORWARD_DECLARE_PROPERTY(Math_INV_PI);
+FORWARD_DECLARE_PROPERTY(Math_INV_SQRT2);
+FORWARD_DECLARE_PROPERTY(Math_DEG2RAD);
+FORWARD_DECLARE_PROPERTY(Math_RAD2DEG);
 
-#define SINGLE_ARG_METHOD(name, func) m_oMethods.AddMethod(name, func, 1u)
-#define TWO_ARG_METHOD(name, func) m_oMethods.AddMethod(name, func, 2u)
+
+#define SINGLE_ARG_METHOD(name, func) receiver.AddMethod(name, func, 1u)
+#define TWO_ARG_METHOD(name, func) receiver.AddMethod(name, func, 2u)
 
 
-BuiltInMethod_t CMathValue::ConstructMethods(CProgramInformation* const info)
+void CMathValue::Construct(ObjectDeclaration_t& receiver)
 {
-	BuiltInMethod_t m_oMethods(info);
 
 	SINGLE_ARG_METHOD("sqrt", Sqrt);
 	SINGLE_ARG_METHOD("abs", Abs);
@@ -77,51 +92,26 @@ BuiltInMethod_t CMathValue::ConstructMethods(CProgramInformation* const info)
 	TWO_ARG_METHOD("hypot", Hypot);
 	TWO_ARG_METHOD("max", Max);
 	TWO_ARG_METHOD("min", Min);
-
 	TWO_ARG_METHOD("random", Random);
 
-
-	return m_oMethods;
+	receiver.AddProperty("PI", Math_PI);
+	receiver.AddProperty("TAU", Math_TAU);
+	receiver.AddProperty("E", Math_E);
+	receiver.AddProperty("SQRT2", Math_SQRT2);
+	receiver.AddProperty("SQRT3", Math_SQRT3);
+	receiver.AddProperty("SQRT5", Math_SQRT5);
+	receiver.AddProperty("GOLDEN", Math_GOLDEN);
+	receiver.AddProperty("LN2", Math_LN2);
+	receiver.AddProperty("LN10", Math_LN10);
+	receiver.AddProperty("LOG2E", Math_LOG2E);
+	receiver.AddProperty("LOG10E", Math_LOG10E);
+	receiver.AddProperty("INV_PI", Math_INV_PI);
+	receiver.AddProperty("INV_SQRT2", Math_INV_SQRT2);
+	receiver.AddProperty("DEG2RAD", Math_DEG2RAD);
+	receiver.AddProperty("RAD2DEG", Math_RAD2DEG);
 }
 
-FORWARD_DECLARE_PROPERTY(Math_PI);
-FORWARD_DECLARE_PROPERTY(Math_TAU);
-FORWARD_DECLARE_PROPERTY(Math_E);
-FORWARD_DECLARE_PROPERTY(Math_SQRT2);
-FORWARD_DECLARE_PROPERTY(Math_SQRT3);
-FORWARD_DECLARE_PROPERTY(Math_SQRT5);
-FORWARD_DECLARE_PROPERTY(Math_GOLDEN);
-FORWARD_DECLARE_PROPERTY(Math_LN2);
-FORWARD_DECLARE_PROPERTY(Math_LN10);
-FORWARD_DECLARE_PROPERTY(Math_LOG2E);
-FORWARD_DECLARE_PROPERTY(Math_LOG10E);
-FORWARD_DECLARE_PROPERTY(Math_INV_PI);
-FORWARD_DECLARE_PROPERTY(Math_INV_SQRT2);
-FORWARD_DECLARE_PROPERTY(Math_DEG2RAD);
-FORWARD_DECLARE_PROPERTY(Math_RAD2DEG);
 
-BuiltInProperty_t CMathValue::ConstructProperties(CProgramInformation* const info)
-{
-	BuiltInProperty_t m_oProperties(info);
-
-	m_oProperties.AddProperty("PI", Math_PI);
-	m_oProperties.AddProperty("TAU", Math_TAU);
-	m_oProperties.AddProperty("E", Math_E);
-	m_oProperties.AddProperty("SQRT2", Math_SQRT2);
-	m_oProperties.AddProperty("SQRT3", Math_SQRT3);
-	m_oProperties.AddProperty("SQRT5", Math_SQRT5);
-	m_oProperties.AddProperty("GOLDEN", Math_GOLDEN);
-	m_oProperties.AddProperty("LN2", Math_LN2);
-	m_oProperties.AddProperty("LN10", Math_LN10);
-	m_oProperties.AddProperty("LOG2E", Math_LOG2E);
-	m_oProperties.AddProperty("LOG10E", Math_LOG10E);
-	m_oProperties.AddProperty("INV_PI", Math_INV_PI);
-	m_oProperties.AddProperty("INV_SQRT2", Math_INV_SQRT2);
-	m_oProperties.AddProperty("DEG2RAD", Math_DEG2RAD);
-	m_oProperties.AddProperty("RAD2DEG", Math_RAD2DEG);
-
-	return m_oProperties;
-}
 
 #define ConstructDouble(v) CDoubleValue::Construct(runtime, v)
 

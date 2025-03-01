@@ -21,12 +21,15 @@ Varjus::State::~State() {
 #ifndef RUNNING_TESTS
     if (m_pReturnValue)
         m_pReturnValue->Release();
+
+    #if _MSC_VER && _DEBUG
+        if (m_pRuntime && m_pReturnValue) {
+            m_pRuntime->PrintAllLeaks();
+        }
+    #endif
 #endif
 
-#if _MSC_VER && _DEBUG
-    if (m_pRuntime)
-        m_pRuntime->PrintAllLeaks();
-#endif
+
 
 }
 
@@ -37,10 +40,8 @@ Success Varjus::State::UseStdLibrary()
         return failure;
     }
 
-    auto thing = std::make_optional(std::function(CConsoleValue::ConstructMethods));
-
-    m_pLinter->m_oBuiltInObjects->AddNewGlobalObject("console", CConsoleValue::ConstructMethods);
-    m_pLinter->m_oBuiltInObjects->AddNewGlobalObject("math", CMathValue::ConstructMethods, CMathValue::ConstructProperties);
+    m_pLinter->m_oBuiltInObjects->AddNewStaticObject("console", CConsoleValue::Construct);
+    m_pLinter->m_oBuiltInObjects->AddNewStaticObject("math", CMathValue::Construct);
 
     return success;
 }
@@ -115,23 +116,21 @@ std::optional<std::string> Varjus::State::GetErrorMessage() {
     return m_sErrorMessage.size() ? std::make_optional<std::string>(m_sErrorMessage) : std::nullopt;
 }
 
-Success Varjus::State::AddNewGlobalObject(const std::string& name,
-    const OptionalCtor<BuiltInMethod_t>& createMethods,
-    const OptionalCtor<BuiltInProperty_t>& createProperties)
+Success Varjus::State::AddNewStaticObject(const std::string& name, const OptionalCtor<void>& constructor)
 {
     if (!m_pLinter || !m_pLinter->m_oBuiltInObjects) {
-        m_sErrorMessage = "Varjus::State::AddNewGlobalObject(): no linter context... internal bug?";
+        m_sErrorMessage = "Varjus::State::AddNewStaticObject(): no linter context... did you forget to create a new state?";
         return failure;
     }
 
-    m_pLinter->m_oBuiltInObjects->AddNewGlobalObject(name, createMethods, createProperties);
+    m_pLinter->m_oBuiltInObjects->AddNewStaticObject(name, constructor);
     return success;
 }
 
 Success Varjus::State::AddNewCallback(const std::string& name, const Function_t& callback, std::size_t numArgs)
 {
     if (!m_pLinter || !m_pLinter->m_oBuiltInFunctions) {
-        m_sErrorMessage = "Varjus::State::AddNewCallback(): no linter context... internal bug?";
+        m_sErrorMessage = "Varjus::State::AddNewCallback(): no linter context... did you forget to create a new state?";
         return failure;
     }
 

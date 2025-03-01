@@ -9,6 +9,7 @@
 
 struct BuiltInMethod_t;
 struct BuiltInProperty_t;
+struct ObjectDeclaration_t;
 
 class CBuiltInObject final : public CObjectValue
 {
@@ -29,24 +30,20 @@ private:
 	std::shared_ptr<BuiltInProperty_t> m_oProperties;
 };
 
-template<typename Type> requires std::is_same_v<BuiltInMethod_t, Type> || std::is_same_v<BuiltInProperty_t, Type>
-using OptionalCtor = std::optional<std::function<Type(class CProgramInformation*)>>;
+template<typename Type> requires std::is_same_v<void, std::remove_reference_t<Type>>
+using OptionalCtor = std::optional<std::function<Type(ObjectDeclaration_t&)>>;
 
 struct CBuiltInObjectPairs
 {
 	~CBuiltInObjectPairs();
-	OptionalCtor<BuiltInMethod_t> methods;
-	OptionalCtor<BuiltInProperty_t> properties;
+	OptionalCtor<void> constructor;
 };
 
 class CBuiltInObjects {
 public:
-	void AddNewGlobalObject(const std::string& name, 
-		const OptionalCtor<BuiltInMethod_t>& createMethods=std::nullopt,
-		const OptionalCtor<BuiltInProperty_t>& createProperties=std::nullopt);
-
-	[[nodiscard]] auto& Iterator() noexcept { return m_arrData; }
+	void AddNewStaticObject(const std::string& name, const OptionalCtor<void>& constructorFunc = std::nullopt);
 	void Reset() noexcept { m_arrData.clear(); }
+	[[nodiscard]] auto& Iterator() noexcept { return m_arrData; }
 private:
 	std::vector<std::pair<std::string, CBuiltInObjectPairs>> m_arrData;
 

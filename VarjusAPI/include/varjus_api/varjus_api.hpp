@@ -81,9 +81,8 @@ namespace Varjus
         VARJUS_API __ND std::optional<std::string> GetErrorMessage();
 
         //Declare a new global variable with its custom methods and properties (callbacks)
-        VARJUS_API __ND Success AddNewGlobalObject(const std::string& name,
-            const OptionalCtor<BuiltInMethod_t>& createMethods = std::nullopt,
-            const OptionalCtor<BuiltInProperty_t>& createProperties = std::nullopt);
+        VARJUS_API __ND Success AddNewStaticObject(const std::string& name,
+            const OptionalCtor<void>& constructor = std::nullopt);
 
         //When this function is referenced in code, it calls the callback
         VARJUS_API __ND Success AddNewCallback(const std::string& name, const Function_t& callback, std::size_t numArgs);

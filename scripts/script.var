@@ -1,10 +1,6 @@
 
 fn main()
 {
-	const s = [21,231,2,2];
-	const a = 2;
-	for(a : s){
-		console.log(a);
-	}
-
+	const obj = hello;
+	return [ obj.method(), obj.property, cppFunc() ];
 }

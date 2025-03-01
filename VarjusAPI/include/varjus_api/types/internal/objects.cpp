@@ -16,6 +16,9 @@ CBuiltInObject* CBuiltInObject::Construct(CProgramRuntime* const runtime, BuiltI
 	ptr->MakeShared();
 	ptr->m_oMethods = std::make_shared<BuiltInMethod_t>(std::move(methods));
 	ptr->m_oProperties = std::make_shared<BuiltInProperty_t>(std::move(properties));
+	auto internal = ptr->Internal();
+	internal->GetAggregateValue().SetAllocator(runtime);
+	internal->GetAggregateValue().SetRuntimeInformation(&runtime->GetInformation()->m_oAllMembers);
 	return ptr;
 }
 
@@ -58,9 +61,7 @@ IValue* CBuiltInObject::GetAggregate(std::size_t memberIdx) {
 
 CBuiltInObjectPairs::~CBuiltInObjectPairs() = default;
 
-void CBuiltInObjects::AddNewGlobalObject(const std::string& name,
-	const OptionalCtor<BuiltInMethod_t>& createMethods,
-	const OptionalCtor<BuiltInProperty_t>& createProperties)
+void CBuiltInObjects::AddNewStaticObject(const std::string& name, const OptionalCtor<void>& constructorFunc)
 {
-	m_arrData.push_back({ name, { createMethods, createProperties} });
+	m_arrData.push_back({ name, { constructorFunc } });
 }

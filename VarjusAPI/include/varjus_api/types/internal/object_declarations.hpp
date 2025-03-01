@@ -35,6 +35,10 @@ using IValues = VectorOf<IValue*>;
 using Method_t = IValue*(*)(struct CRuntimeContext* const, IValue*, const IValues&);
 using Property_t = IValue*(*)(class CProgramRuntime* const, IValue*);
 
+
+#define VARJUS_DEFINE_STATIC_OBJECT(Name, receiver)\
+void Name(ObjectDeclaration_t& receiver)
+
 #include "varjus_api/internal/structure.hpp"
 
 //msvc is unable to use the move constructor for the unique_ptr, so it has to be explicitly defined pagman
@@ -66,6 +70,26 @@ struct BuiltInProperty_t : std::unordered_map<std::size_t, Property_t>
 	void AddProperty(const std::string& name, Property_t property);
 private:
 	CProgramInformation* m_pInfo{};
+};
+
+struct ObjectDeclaration_t
+{
+    NONCOPYABLE(ObjectDeclaration_t);
+    friend class CRuntimeModule;
+
+    ObjectDeclaration_t(CProgramInformation* const ptr) 
+        : m_oMethods(ptr), m_oProperties(ptr) {}
+    
+    void AddMethod(const std::string& name, Method_t method, std::size_t numArgs) {
+        m_oMethods.AddMethod(name, method, numArgs);
+    }
+    void AddProperty(const std::string& name, Property_t property){
+        m_oProperties.AddProperty(name, property);
+    }
+
+private:
+    BuiltInMethod_t m_oMethods;
+    BuiltInProperty_t m_oProperties;
 };
 
 #define METHOD_BIND(v, methods, value) \

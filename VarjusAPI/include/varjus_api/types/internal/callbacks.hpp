@@ -10,9 +10,9 @@ template<typename T>
 using VectorOf = std::vector<T>;
 using IValues = VectorOf<IValue*>;
 
-#define FORWARD_DECLARE_CALLBACK(name)\
+#define VARJUS_FORWARD_DECLARE_CALLBACK(name)\
 IValue* name(struct CRuntimeContext* const ctx, const IValues& args);
-#define DEFINE_CALLBACK(name, args)\
+#define VARJUS_DEFINE_CALLBACK(name, ctx, args)\
 IValue* name([[maybe_unused]] struct CRuntimeContext* const ctx, [[maybe_unused]] const IValues& args)
 
 using Function_t = IValue*(*)(struct CRuntimeContext* const, const IValues&);
