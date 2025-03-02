@@ -5,6 +5,21 @@
 #define PATH_PREFIX "unary"
 #define JP(x) (std::string(PATH_PREFIX) + DIRECTORY_SEPARATOR + x)
 
+TEST_CASE("Unary negation") {
+
+	auto retVal = TEST_ExecuteFile(JP("negation.var"));
+
+	AssertArray(retVal, AssertArrayValue<ASSERT_STRING>(t_string, { 
+		"-5",
+		"5",
+		"-5.500000", 
+		"5.500000"
+	}));
+
+	REQUIRE(retVal->HasOwner() == false);
+	TEST_END(retVal);
+}
+
 TEST_CASE("Unary typeof") {
 
 	auto retVal = TEST_ExecuteFile(JP("typeof.var"));

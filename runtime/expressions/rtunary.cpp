@@ -53,7 +53,7 @@ IValue* EvaluateNegation(CProgramRuntime* const runtime, IValue* operand)
 	if (operand->Type() == t_int) {
 		return CIntValue::Construct(runtime, -operand->AsInt());
 	}
-	
+
 	if (operand->Type() == t_double) {
 		return CDoubleValue::Construct(runtime, -operand->AsDouble());
 	}

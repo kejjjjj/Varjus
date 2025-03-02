@@ -60,7 +60,6 @@ elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
         set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /wd4514 /wd4626 /wd4820 /wd5267 /wd4351 /wd5045 /wd4371")
     endif()
 
-    target_compile_definitions(VarjusAPI PRIVATE DEBUG)
     target_link_options(Varjus PRIVATE /DEBUG)
 
 else()
