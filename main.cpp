@@ -1,13 +1,12 @@
 #include <iostream>
 #include "varjus_api/varjus_api.hpp"
 
-int main([[maybe_unused]]int argc, [[maybe_unused]] char** argv)
+int main(int argc, char** argv)
 {
 
     if (argc != 2) {
         std::cout << "usage: <file path>\n";
-        std::cin.get();
-        return 0;
+        return 1;
     }
 
     Varjus::State state;
@@ -17,22 +16,23 @@ int main([[maybe_unused]]int argc, [[maybe_unused]] char** argv)
     };
 
     if (!state.UseStdLibrary()) {
-        std::cout << "state error: " << GetError(state.GetErrorMessage()) << '\n';
-        return 0;
+        std::cerr << "state error: " << GetError(state.GetErrorMessage()) << '\n';
+        return 1;
     }
 
     if (!state.LoadScriptFromFile(argv[1])) {
-        std::cout << "syntax error: " << GetError(state.GetErrorMessage()) << '\n';
-        return 0;
+        std::cerr << "syntax error: " << GetError(state.GetErrorMessage()) << '\n';
+        return 1;
     }
 
 
     if (const auto returnValue = state.ExecuteScript()) {
-        std::cout << "the program returned: " << returnValue->ToPrintableString() << '\n';
+        std::cout << "the program returned: " << returnValue->ToPrintableString() << std::endl;
     }
     else {
-        std::cout << "runtime error: " << GetError(state.GetErrorMessage()) << '\n';
+        std::cerr << "runtime error: " << GetError(state.GetErrorMessage()) << '\n';
+        return 1;
     }
 
-    return 1;
+    return 0;
 }

@@ -23,8 +23,13 @@ ALWAYS CHECK RETURN VALUES!!!!
 #include <iostream>
 #include "varjus_api/varjus_api.hpp"
 
-int main()
+int main(int argc, char** argv)
 {
+
+    if (argc != 2) {
+        std::cout << "usage: <file path>\n";
+        return 1;
+    }
 
     Varjus::State state;
 
@@ -33,22 +38,25 @@ int main()
     };
 
     if (!state.UseStdLibrary()) {
-        std::cout << "state error: " << GetError(state.GetErrorMessage()) << '\n';
-        return 0;
+        std::cerr << "state error: " << GetError(state.GetErrorMessage()) << '\n';
+        return 1;
     }
 
-    if (!state.LoadScriptFromFile("C:\\Temp\\script.var")) {
-        std::cout << "syntax error: " << GetError(state.GetErrorMessage()) << '\n';
-        return 0;
+    if (!state.LoadScriptFromFile(argv[1])) {
+        std::cerr << "syntax error: " << GetError(state.GetErrorMessage()) << '\n';
+        return 1;
     }
+
 
     if (const auto returnValue = state.ExecuteScript()) {
-        std::cout << "the program returned: " << returnValue->ToPrintableString() << '\n';
-    } else {
-        std::cout << "runtime error: " << GetError(state.GetErrorMessage()) << '\n';
+        std::cout << "the program returned: " << returnValue->ToPrintableString() << std::endl;
+    }
+    else {
+        std::cerr << "runtime error: " << GetError(state.GetErrorMessage()) << '\n';
+        return 1;
     }
 
-    return 1;
+    return 0;
 }
 ***********************************************************************/
 
