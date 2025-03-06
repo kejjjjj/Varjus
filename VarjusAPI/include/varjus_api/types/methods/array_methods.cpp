@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <ranges>
+#include <stack>
 
 [[nodiscard]] CArrayValue* GetThisArray(IValue* _this) {
 	return _this->ToArray();
@@ -570,6 +571,44 @@ DEFINE_METHOD(Slice, args) {
 
 	return CArrayValue::Construct(ctx->m_pRuntime, std::move(valuesAsCopy));
 }
+[[nodiscard]] bool doSort(CRuntimeContext* const ctx, IValue*& left, IValue*& right, IValue* const callback);
+
+void IterativeQuickSort(CRuntimeContext* const ctx, IValues& vars, IValue* const callback)
+{
+	if (vars.empty())
+		return;
+
+	std::stack<std::pair<VarjusInt, VarjusInt>> stk;
+	stk.push({ VarjusInt(0), static_cast<VarjusInt>(vars.size()) - VarjusInt(1) });
+
+	while (!stk.empty()) {
+
+		auto [low, high] = stk.top();
+		stk.pop();
+
+		if (low >= high) 
+			continue;
+
+		auto& pivot = vars[high];
+		auto i = low - VarjusInt(1);
+
+		for (auto j = low; j < high; j++) {
+
+			if (doSort(ctx, vars[j], pivot, callback))
+				std::swap(vars[++i], vars[j]);
+
+			if (ctx->m_pRuntime->ExceptionThrown())
+				return;
+
+		}
+
+		std::swap(vars[i + VarjusInt(1)], vars[high]);
+		auto pivotIndex = i + VarjusInt(1);
+
+		stk.push({ low, pivotIndex - VarjusInt(1) });
+		stk.push({ pivotIndex + VarjusInt(1), high });
+	}
+}
 
 [[nodiscard]] bool doSort(CRuntimeContext* const ctx, IValue*& left, IValue*& right, IValue* const callback)
 {
@@ -578,68 +617,16 @@ DEFINE_METHOD(Slice, args) {
 	auto returnValue = callback->Call(ctx, args);  // Call callback on swap
 
 	if (ctx->m_pRuntime->ExceptionThrown()) {
-		throw CRuntimeError(ctx->m_pRuntime, std::format("array.sort callback must not throw"));
+		return false;
 	}
 
-	if (!returnValue->IsBooleanConvertible())
+	if (returnValue->Type() != t_boolean)
 		throw CRuntimeError(ctx->m_pRuntime, std::format("array.sort expected a boolean return value", returnValue->TypeAsString()));
 
 	const auto rtVal = returnValue->ToBoolean();
 	returnValue->Release(); // nothing meaningful, release it
 
 	return rtVal;
-}
-struct SortContext
-{
-	NONCOPYABLE(SortContext);
-	SortContext(CRuntimeContext* const c, IValue* v) : ctx(c), callback(v){}
-
-	CRuntimeContext* const ctx;
-	std::size_t failedIterations{};
-	IValue* const callback;
-};
-
-[[nodiscard]] auto Partition(SortContext& ctx, IValues& arr, std::size_t low, std::size_t high)
-{
-	auto pivot = arr[low];
-	std::size_t left = low + 1;
-	std::size_t right = high;
-
-	//std::size_t prev_left = left;
-	//std::size_t prev_right = right;
-
-	while (true) {
-
-		while (left <= high && (arr[left] == pivot || doSort(ctx.ctx, arr[left], pivot, ctx.callback))) left++;
-		while (right > low && (arr[right] == pivot || doSort(ctx.ctx, pivot, arr[right], ctx.callback))) right--;
-
-		if (left >= right) 
-			break;
-
-		std::swap(arr[left], arr[right]);
-
-		//if (left == prev_left && right == prev_right) {
-		//	throw CRuntimeError(ctx->m_pRuntime, "array.sort wasn't making any progress due to a repeating condition.. probably an internal bug");
-		//}
-
-		//prev_left = left;
-		//prev_right = right;
-	}
-
-	std::swap(arr[low], arr[right]);
-	return right;
-}
-
-void QuickSort(SortContext& ctx, IValues& values, std::size_t low, std::size_t high)
-{
-
-	if (low < high) {
-		auto pi = Partition(ctx, values, low, high);
-		if (pi > low) 
-			QuickSort(ctx, values, low, pi - 1);
-		if (pi + 1 < high) 
-			QuickSort(ctx, values, pi + 1, high);
-	}
 }
 
 DEFINE_METHOD(Sort, args)
@@ -656,12 +643,17 @@ DEFINE_METHOD(Sort, args)
 	IValues valuesAsCopy(vars.size());
 
 	for (auto i = size_t(0); auto & var : vars)
-		valuesAsCopy[i++] = var->GetValue()->Copy();
+		valuesAsCopy[i++] = var->GetValue();
 
-	SortContext context(ctx, mapFunc);
-	QuickSort(context, valuesAsCopy, 0, valuesAsCopy.size() - 1);
+	IterativeQuickSort(ctx, valuesAsCopy, mapFunc);
 
-	return CArrayValue::Construct(ctx->m_pRuntime, std::move(valuesAsCopy));
+	if (ctx->m_pRuntime->ExceptionThrown())
+		return ctx->m_pRuntime->GetExceptionValue();
+
+	for (auto i = std::size_t(0); auto & v : vars)
+		std::swap(v->GetValue(), valuesAsCopy[i++]);
+
+	return __this->Copy();
 }
 
 DEFINE_METHOD(Resize, args)
