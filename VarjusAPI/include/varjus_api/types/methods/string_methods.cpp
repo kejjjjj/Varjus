@@ -22,7 +22,7 @@ FORWARD_DECLARE_METHOD(Substring);
 FORWARD_DECLARE_METHOD(Split);
 
 FORWARD_DECLARE_METHOD(Replace);
-FORWARD_DECLARE_METHOD(Repeat);
+FORWARD_DECLARE_METHOD(Reproduce);
 
 FORWARD_DECLARE_METHOD(GetCodeAt);
 
@@ -35,7 +35,7 @@ std::unique_ptr<BuiltInMethod_t> CStringValue::ConstructMethods(CProgramInformat
 	m_oMethods->AddMethod("substring",   Substring, 2u);
 	m_oMethods->AddMethod("split",       Split,     1u);
 	m_oMethods->AddMethod("replace",     Replace,   2u);
-	m_oMethods->AddMethod("repeat",      Repeat,    1u);
+	m_oMethods->AddMethod("reproduce",   Reproduce, 1u);
 	m_oMethods->AddMethod("get_code_at", GetCodeAt, 1u);
 
 	return m_oMethods;
@@ -176,18 +176,18 @@ DEFINE_METHOD(Replace, args) {
 	return CStringValue::Construct(ctx->m_pRuntime, ReplaceAll(v, a->AsString(), b->AsString()));
 }
 
-DEFINE_METHOD(Repeat, args) {
+DEFINE_METHOD(Reproduce, args) {
 
 	auto __this = GetThisString(_this);
 	const auto& v = __this->ToString();
 
 	auto& countValue = args[0];
 	if (!countValue->IsIntegral())
-		throw CRuntimeError(ctx->m_pRuntime, std::format("string.repeat expected an integral value, but got \"{}\"", countValue->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, std::format("string.reproduce expected an integral value, but got \"{}\"", countValue->TypeAsString()));
 
 	auto count = countValue->ToInt();
 	if (count < 0)
-		throw CRuntimeError(ctx->m_pRuntime, "string.repeat expected count to be >= 0");
+		throw CRuntimeError(ctx->m_pRuntime, "string.reproduce expected count to be >= 0");
 
 	std::string result;
 	for ([[maybe_unused]] const auto i : std::views::iota(0ll, count))

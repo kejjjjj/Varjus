@@ -1,6 +1,3 @@
-
-fn main()
-{
-
-	return [ hello.property, hello.method(200) ].for_each((v) => console.log(typeof v));
+fn main() {
+	return 'Hello World!'.reproduce(2);
 }
