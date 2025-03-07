@@ -250,7 +250,7 @@ private:
 	[[nodiscard]] static IValue* EvaluateTernary(CRuntimeContext* const ctx, const TernaryASTNode* node);
 	[[nodiscard]] static IValue* EvaluateFmtString(CRuntimeContext* const ctx, const FmtStringASTNode* node);
 
-	[[nodiscard]] static IValue* EvaluateMemberAccess(IValue* operand, const MemberAccessASTNode* node);
+	[[nodiscard]] static IValue* EvaluateMemberAccess(CRuntimeContext* const ctx, IValue* operand, const MemberAccessASTNode* node);
 	[[nodiscard]] static IValue* EvaluateSubscript(CRuntimeContext* const ctx, IValue* operand, const SubscriptASTNode* node);
 	[[nodiscard]] static IValue* EvaluateFunctionCall(CRuntimeContext* const ctx, IValue* operand, const FunctionCallASTNode* node);
 

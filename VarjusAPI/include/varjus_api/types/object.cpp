@@ -62,7 +62,7 @@ IValue* CObjectValue::Index(IValue* index) {
 
 	return Internal()->GetAggregateValue().ElementLookup(members->At(key));
 }
-IValue* CObjectValue::GetAggregate(std::size_t memberIdx) {
+IValue* CObjectValue::GetAggregate(CRuntimeContext* const ctx, std::size_t memberIdx) {
 
 	auto& obj = m_pAllocator->GetDefaultObject<CObjectValue>();
 	auto methods = obj.GetMethods();
@@ -76,7 +76,7 @@ IValue* CObjectValue::GetAggregate(std::size_t memberIdx) {
 	auto properties = obj.GetProperties();
 	assert(properties);
 	if (properties->contains(memberIdx)) {
-		return properties->at(memberIdx)(m_pAllocator, this);
+		return properties->at(memberIdx)(ctx, this);
 	}
 
 	return Internal()->GetAggregateValue().ElementLookup(memberIdx);

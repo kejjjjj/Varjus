@@ -63,7 +63,7 @@ public:
 	[[nodiscard]] CInternalObjectValue* Internal() const;
 
 	[[nodiscard]] IValue* Index(IValue* index) override;
-	[[nodiscard]] virtual IValue* GetAggregate(std::size_t memberIdx) override;
+	[[nodiscard]] virtual IValue* GetAggregate(CRuntimeContext* const ctx, std::size_t memberIdx) override;
 
 	[[nodiscard]] CObjectValue* ToObject() override { return this; }
 

@@ -54,7 +54,7 @@ std::unique_ptr<BuiltInProperty_t> CStringValue::ConstructProperties(CProgramInf
 
 DEFINE_PROPERTY(StringLength) {
 	auto __this = GetThisString(_this);
-	return CUIntValue::Construct(runtime, static_cast<VarjusUInt>(__this->Internal()->Length()));
+	return CUIntValue::Construct(ctx->m_pRuntime, static_cast<VarjusUInt>(__this->Internal()->Length()));
 }
 
 DEFINE_METHOD(ToUpper, args)

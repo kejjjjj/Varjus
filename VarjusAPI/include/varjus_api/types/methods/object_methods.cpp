@@ -43,7 +43,7 @@ std::unique_ptr<BuiltInProperty_t> CObjectValue::ConstructProperties(CProgramInf
 
 DEFINE_PROPERTY(ObjectLength) {
 	auto __this = GetThisObject(_this);
-	return CUIntValue::Construct(runtime, static_cast<VarjusUInt>(__this->Internal()->GetAggregateValue().Length()));
+	return CUIntValue::Construct(ctx->m_pRuntime, static_cast<VarjusUInt>(__this->Internal()->GetAggregateValue().Length()));
 }
 
 

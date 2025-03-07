@@ -44,7 +44,7 @@ IValue* CBuiltInObject::Copy() {
 	return ptr;
 }
 
-IValue* CBuiltInObject::GetAggregate(std::size_t memberIdx) {
+IValue* CBuiltInObject::GetAggregate(CRuntimeContext* const ctx, std::size_t memberIdx) {
 
 	if (m_oMethods->contains(memberIdx)) {
 		auto v = m_pAllocator->AcquireNewValue<CCallableValue>();
@@ -53,10 +53,10 @@ IValue* CBuiltInObject::GetAggregate(std::size_t memberIdx) {
 	}
 
 	if (m_oProperties->contains(memberIdx)) {
-		return m_oProperties->at(memberIdx)(m_pAllocator, this);
+		return m_oProperties->at(memberIdx)(ctx, this);
 	}
 
-	return CObjectValue::GetAggregate(memberIdx);
+	return CObjectValue::GetAggregate(ctx, memberIdx);
 }
 
 CBuiltInObjectPairs::~CBuiltInObjectPairs() = default;

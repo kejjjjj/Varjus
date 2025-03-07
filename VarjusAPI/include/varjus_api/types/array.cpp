@@ -64,7 +64,7 @@ IValue* CArrayValue::Index(IValue* vIndex)
 
 	return vec[index]->GetValue();
 }
-IValue* CArrayValue::GetAggregate(std::size_t memberIdx)
+IValue* CArrayValue::GetAggregate(CRuntimeContext* const ctx, std::size_t memberIdx)
 {
 
 	auto& obj = m_pAllocator->GetDefaultObject<CArrayValue>();
@@ -79,9 +79,8 @@ IValue* CArrayValue::GetAggregate(std::size_t memberIdx)
 	auto properties = obj.GetProperties();
 	assert(properties);
 	if (properties->contains(memberIdx)) {
-		return properties->at(memberIdx)(m_pAllocator, this);
+		return properties->at(memberIdx)(ctx, this);
 	}
-
 
 	assert(false);
 	return nullptr;

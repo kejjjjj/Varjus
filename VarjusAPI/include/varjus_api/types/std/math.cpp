@@ -113,7 +113,7 @@ void CMathValue::Construct(ObjectDeclaration_t& receiver)
 
 
 
-#define ConstructDouble(v) CDoubleValue::Construct(runtime, v)
+#define ConstructDouble(v) CDoubleValue::Construct(ctx->m_pRuntime, v)
 
 DEFINE_PROPERTY(Math_PI) { return ConstructDouble(3.141592653589793); }
 DEFINE_PROPERTY(Math_TAU) { return ConstructDouble(6.283185307179586); }

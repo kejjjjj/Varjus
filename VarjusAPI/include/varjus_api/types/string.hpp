@@ -61,7 +61,7 @@ public:
 	[[nodiscard]] const CInternalStringValue* Internal() const;
 
 	[[nodiscard]] IValue* Index(IValue* index) override;
-	[[nodiscard]] IValue* GetAggregate(std::size_t memberIdx) override;
+	[[nodiscard]] IValue* GetAggregate(CRuntimeContext* const ctx, std::size_t memberIdx) override;
 	[[nodiscard]] IValues ToIterable() const override;
 
 private:

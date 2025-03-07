@@ -33,6 +33,7 @@ FORWARD_DECLARE_METHOD(Slice);
 FORWARD_DECLARE_METHOD(Sort);
 FORWARD_DECLARE_METHOD(Resize);
 FORWARD_DECLARE_METHOD(Fill);
+FORWARD_DECLARE_METHOD(ForEach);
 
 
 std::unique_ptr<BuiltInMethod_t> CArrayValue::ConstructMethods(CProgramInformation* const info)
@@ -58,6 +59,7 @@ std::unique_ptr<BuiltInMethod_t> CArrayValue::ConstructMethods(CProgramInformati
 	m_oMethods->AddMethod("sort",            Sort,          1u);
 	m_oMethods->AddMethod("resize",          Resize,        1u);
 	m_oMethods->AddMethod("fill",            Fill,          1u);
+	m_oMethods->AddMethod("for_each",        ForEach,       1u);
 
 	return m_oMethods;
 }
@@ -75,7 +77,7 @@ std::unique_ptr<BuiltInProperty_t> CArrayValue::ConstructProperties(CProgramInfo
 
 DEFINE_PROPERTY(ArrayLength) {
 	auto __this = GetThisArray(_this);
-	return CUIntValue::Construct(runtime, static_cast<VarjusUInt>(__this->Internal()->Length()));
+	return CUIntValue::Construct(ctx->m_pRuntime, static_cast<VarjusUInt>(__this->Internal()->Length()));
 }
 
 DEFINE_METHOD(Push, args)
@@ -710,4 +712,41 @@ DEFINE_METHOD(Fill, args)
 	}
 
 	return __this->Copy();
+}
+DEFINE_METHOD(ForEach, args)
+{
+	assert(args.size() == 1);
+	auto& mapFunc = args.front();
+
+	if (!mapFunc->IsCallable())
+		throw CRuntimeError(ctx->m_pRuntime, std::format("array.for_each expected \"callable\", but got \"{}\"", mapFunc->TypeAsString()));
+
+	auto __this = GetThisArray(_this);
+	auto& vars = __this->GetVariables();
+
+	IValues call_args(1);
+	IValue* exception{ nullptr };
+
+	//result array
+	for (const auto& var : vars) {
+		call_args[0] = var->GetValue()->Copy();
+
+		IValue* thisIteration = mapFunc->Call(ctx, call_args);
+
+		if (ctx->m_pRuntime->ExceptionThrown()) {
+			exception = thisIteration;
+			break;
+		}
+
+		thisIteration->Release(); // nothing meaningful, release it
+
+		if (ctx->m_pRuntime->ExceptionThrown())
+			break;
+	}
+
+	if (ctx->m_pRuntime->ExceptionThrown()) {
+		return exception;
+	}
+
+	return IValue::Construct(ctx->m_pRuntime);
 }

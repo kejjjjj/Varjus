@@ -32,7 +32,7 @@ IValue* CRuntimeExpression::EvaluatePostfix(CRuntimeContext* const ctx, const Po
 	} else if (node->IsFunctionCall()) {
 		returnVal = EvaluateFunctionCall(ctx, operand, node->GetFunctionCall());
 	} else if (node->IsMemberAccess()) {
-		returnVal = EvaluateMemberAccess(operand, node->GetMemberAccess());
+		returnVal = EvaluateMemberAccess(ctx, operand, node->GetMemberAccess());
 
 		if (operand->IsHanging() && operand->Type() == t_object) {
 			returnVal = returnVal->Copy(); //accessing a temporary e.g. {a: 50, b: 1, c: 2}.a
@@ -50,13 +50,13 @@ IValue* CRuntimeExpression::EvaluatePostfix(CRuntimeContext* const ctx, const Po
 	assert(returnVal);
 	return returnVal;
 }
-IValue* CRuntimeExpression::EvaluateMemberAccess(IValue* operand, const MemberAccessASTNode* node)
+IValue* CRuntimeExpression::EvaluateMemberAccess(CRuntimeContext* const ctx, IValue* operand, const MemberAccessASTNode* node)
 {
 
 	if(!operand->IsAggregate())
 		throw CRuntimeError(operand->GetAllocator(), std::format("a value of type \"{}\" is not aggregate", operand->TypeAsString()));
 
-	return operand->GetAggregate(node->m_uGlobalMemberIndex);
+	return operand->GetAggregate(ctx, node->m_uGlobalMemberIndex);
 
 }
 IValue* CRuntimeExpression::EvaluateSubscript(CRuntimeContext* const ctx, IValue* operand, const SubscriptASTNode* node)

@@ -199,3 +199,12 @@ TEST_CASE("Array[1,2,3].pop_front()") {
 	REQUIRE(retVal->HasOwner() == false);
 	TEST_END(retVal);
 }
+TEST_CASE("Array[4,2,6,3,1,5].for_each()") {
+
+	auto retVal = TEST_ExecuteFile(JP("for_each.var"));
+
+	AssertArray(retVal, AssertArrayValue<ASSERT_INT>(t_int, { 4,2,6,3,1,5 }));
+
+	REQUIRE(retVal->HasOwner() == false);
+	TEST_END(retVal);
+}

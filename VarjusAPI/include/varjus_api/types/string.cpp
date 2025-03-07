@@ -52,7 +52,7 @@ IValue* CStringValue::Index(IValue* vIndex)
 	v->MakeImmutable(); //cannot modify parts
 	return v;
 }
-IValue* CStringValue::GetAggregate(std::size_t memberIdx)
+IValue* CStringValue::GetAggregate(CRuntimeContext* const ctx, std::size_t memberIdx)
 {
 	auto& obj = m_pAllocator->GetDefaultObject<CStringValue>();
 	auto methods = obj.GetMethods();
@@ -66,7 +66,7 @@ IValue* CStringValue::GetAggregate(std::size_t memberIdx)
 	auto properties = obj.GetProperties();
 	assert(properties);
 	if (properties->contains(memberIdx)) {
-		return properties->at(memberIdx)(m_pAllocator, this);
+		return properties->at(memberIdx)(ctx, this);
 	}
 
 	if (auto info = m_pAllocator->GetInformation()) {
