@@ -3,25 +3,13 @@
 
 #define __MU [[maybe_unused]]
 
-void DefineObject(ObjectDeclaration_t& obj)
-{
-    
-    obj.AddProperty("property", [](CRuntimeContext* const ctx, __MU IValue* _this) -> IValue* {
-        return CStringValue::Construct(ctx->m_pRuntime, "hello!");
-    });
-
-    obj.AddMethod("method", [](CRuntimeContext* const ctx, __MU IValue* _this, __MU const IValues& args) -> IValue* {
-        return CStringValue::Construct(ctx->m_pRuntime, std::format("method({})", args[0]->ValueAsString()));
-    }, 1);
-
-}
 
 int main(int argc, char** argv)
 {
 
     if (argc != 2) {
         std::cout << "usage: <file path>\n";
-        return 1;
+        return 0;
     }
 
     Varjus::State state;
@@ -30,14 +18,14 @@ int main(int argc, char** argv)
         return errorMsg ? *errorMsg : "unknown error!";
     };
 
-    if (!state.UseStdLibrary() || !state.AddNewStaticObject("hello", DefineObject)) {
+    if (!state.UseStdLibrary()) {
         std::cerr << "state error: " << GetError(state.GetErrorMessage()) << '\n';
-        return 1;
+        return 0;
     }
 
     if (!state.LoadScriptFromFile(argv[1])) {
         std::cerr << "syntax error: " << GetError(state.GetErrorMessage()) << '\n';
-        return 1;
+        return 0;
     }
 
     if (const auto returnValue = state.ExecuteScript()) {
@@ -45,7 +33,7 @@ int main(int argc, char** argv)
     }
     else {
         std::cerr << "runtime error: " << GetError(state.GetErrorMessage()) << '\n';
-        return 1;
+        return 0;
     }
 
     return 0;

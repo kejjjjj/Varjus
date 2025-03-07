@@ -25,7 +25,7 @@ private:
     std::string GetStringFormatted(const std::string& filePath, const std::string& err) const noexcept {
 
         std::stringstream ss;
-        ss << "Error: " << err << "\nAt: " << std::get<0>(m_oSourcePosition) << ':' << std::get<1>(m_oSourcePosition)
+        ss << err << "\nAt: " << std::get<0>(m_oSourcePosition) << ':' << std::get<1>(m_oSourcePosition)
             << " in \"" << filePath << "\"";
         return ss.str();
     }
