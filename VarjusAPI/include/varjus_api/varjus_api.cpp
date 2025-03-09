@@ -46,7 +46,7 @@ Success Varjus::State::UseStdLibrary()
     return success;
 }
 
-Success Varjus::State::LoadScriptFromFile(const VarjusString& fullFilePath)
+Success Varjus::State::LoadScriptFromFile(const VarjusString& fullFilePath, EncodingType fileEncoding)
 {
     if (!m_pLinter || !m_pLinter->m_oBuiltInObjects) {
         m_sErrorMessage = VSL("Varjus::State::LoadScriptFromFile(): no linter context... did you forget to create a new state?");
@@ -54,7 +54,7 @@ Success Varjus::State::LoadScriptFromFile(const VarjusString& fullFilePath)
     }
 
     try {
-        auto uniqueTokens = CBufferTokenizer::ParseFileFromFilePath(m_pLinter.get(), fullFilePath);
+        auto uniqueTokens = CBufferTokenizer::ParseFileFromFilePath(m_pLinter.get(), fullFilePath, fileEncoding);
         auto tokens = CBufferTokenizer::ConvertTokensToReadOnly(uniqueTokens);
         auto begin = tokens.begin();
         auto end = tokens.end();
@@ -80,7 +80,7 @@ Success Varjus::State::LoadScriptFromFile(const VarjusString& fullFilePath)
 
     return failure;
 }
-Success Varjus::State::LoadScript(const VarjusString& script)
+Success Varjus::State::LoadScript(VarjusString script, EncodingType encoding)
 {
     if (!m_pLinter || !m_pLinter->m_oBuiltInObjects) {
         m_sErrorMessage = VSL("Varjus::State::LoadScript(): no linter context... did you forget to create a new state?");
@@ -88,6 +88,21 @@ Success Varjus::State::LoadScript(const VarjusString& script)
     }
 
     try {
+        switch (encoding) {
+        case e_utf8:
+            break;
+#ifdef UNICODE
+        case e_utf16le:
+            script = CBufferTokenizer::FixLittleEndianness(script);
+            break;
+        case e_utf16be:
+            script = CBufferTokenizer::FixLittleEndianness(script.substr(1) + VSL('\0'));
+            break;
+#endif
+        default:
+            m_sErrorMessage = VSL("Varjus::State::LoadScript(): unsupported encoding");
+            return failure;
+        }
         CBufferTokenizer buffer(m_pLinter.get(), script);
 
         if (!buffer.Tokenize()) {

@@ -1,4 +1,4 @@
-﻿fn main()
+fn main()
 {
 	let var = fn() { return 1; };
 	return var;

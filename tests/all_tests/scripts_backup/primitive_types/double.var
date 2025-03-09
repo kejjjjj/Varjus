@@ -1,4 +1,0 @@
-fn main()
-{
-	return 64.0;
-}

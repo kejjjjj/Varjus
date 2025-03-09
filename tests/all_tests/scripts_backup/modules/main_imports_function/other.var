@@ -1,5 +1,0 @@
-
-export fn func()
-{
-	return 50;
-}

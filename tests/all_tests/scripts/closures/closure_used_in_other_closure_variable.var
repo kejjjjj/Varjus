@@ -1,4 +1,4 @@
-﻿
+
 fn closureA()
 {
 	let v = 0;

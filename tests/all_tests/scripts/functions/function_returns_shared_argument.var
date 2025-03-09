@@ -1,4 +1,4 @@
-﻿fn testPass(value)
+fn testPass(value)
 {
 	return value;
 }

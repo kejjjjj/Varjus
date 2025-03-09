@@ -1,4 +1,4 @@
-﻿//using array.push might be too much for this simple test
+//using array.push might be too much for this simple test
 
 fn main()
 {	

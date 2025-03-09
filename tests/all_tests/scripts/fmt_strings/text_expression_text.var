@@ -1,4 +1,4 @@
-﻿fn main()
+fn main()
 {
 	return `before ${0xffff} after`;
 }

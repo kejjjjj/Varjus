@@ -1,4 +1,0 @@
-fn main()
-{
-	return ((a, b) => a + b)(2, 4);
-}

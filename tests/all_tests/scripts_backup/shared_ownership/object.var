@@ -1,8 +1,0 @@
-fn main()
-{
-	let initial = {a: 0, b: 1};
-	let copy = initial;
-	copy.a = 50;
-
-	return initial;
-}

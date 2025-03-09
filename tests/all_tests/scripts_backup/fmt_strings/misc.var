@@ -1,6 +1,0 @@
-
-fn main()
-{
-    const f = (a, b) => a + b;
-    return `${[(f(2,3))][0]}`;
-}

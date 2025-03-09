@@ -74,27 +74,7 @@ bool IOWriter::CreateMissingDirectoriesFromPath(VarjusString path) const
 /***********************************************************************
  >                             IOReader
 ***********************************************************************/
-#ifdef UNICODE
-static std::wstring FixLittleEndianness(const std::wstring& src)
-{
-    if (src.length() % 2 != 0)
-        throw std::runtime_error("corrupted eof byte in file");
 
-    std::wstring fixed;
-
-    for (auto it = src.begin(); it != src.end(); it += 2) {
-
-        if (*std::next(it) == '\0') {
-            fixed.push_back(*it);
-            continue;
-        }
-        auto combined = static_cast<VarjusChar>((*it << 8) | static_cast<VarjusChar>(*std::next(it)));
-        fixed.push_back(combined);
-    }
-
-    return fixed;
-}
-#endif
 
 std::optional<VarjusString> IOReader::IO_Read(/*size_t num_bytes*/) const {
 
@@ -109,14 +89,6 @@ std::optional<VarjusString> IOReader::IO_Read(/*size_t num_bytes*/) const {
     }
 
     auto content = IO_ReadStream(file);
-
-#ifdef UNICODE
-    if (m_eEncodingType == UTF16_LE) {
-        content = FixLittleEndianness(content);
-    }else if (m_eEncodingType == UTF16_BE) {
-        content = FixLittleEndianness(content.substr(1) + L'\0');
-    }
-#endif
 
     file.close();
     return content.length() ? std::make_optional(content) : std::nullopt;
@@ -136,13 +108,14 @@ VarjusString IOReader::IO_ReadStream(STD_IFSTREAM& stream) const {
         stream.read((wchar_t*)bom, 1);
 
         if(bom[0] == 0xBF)
-            m_eEncodingType = UTF8;
+            m_eEncodingType = e_utf8;
     }
-    else if (bom[0] == 0xFF && bom[2] == 0xFE) m_eEncodingType = UTF16_LE;
-    else if (bom[0] == 0xFE && bom[2] == 0xFF) m_eEncodingType = UTF16_BE;
+    else if (bom[0] == 0xFF && bom[2] == 0xFE) m_eEncodingType = e_utf16le;
+    else if (bom[0] == 0xFE && bom[2] == 0xFF) m_eEncodingType = e_utf16be;
 
-    if (m_eEncodingType == UNKNOWN) {
-        throw CLinterError(m_sFileName, L"the input file must include the byte order mark!\n", nullptr);
+    if (m_eEncodingType == e_unknown) {
+        stream.clear();
+        stream.seekg(0, std::ios::beg);
     }
 
 #else
@@ -152,12 +125,12 @@ VarjusString IOReader::IO_ReadStream(STD_IFSTREAM& stream) const {
 
         stream.read(reinterpret_cast<char*>(bom), 1);
         if(bom[0] == 0xBF)
-            m_eEncodingType = UTF8;
+            m_eEncodingType = e_utf8;
     }
-    else if (bom[0] == 0xFF && bom[1] == 0xFE) m_eEncodingType = UTF16_LE;
-    else if (bom[0] == 0xFE && bom[1] == 0xFF) m_eEncodingType = UTF16_BE;
+    else if (bom[0] == 0xFF && bom[1] == 0xFE) m_eEncodingType = e_utf16le;
+    else if (bom[0] == 0xFE && bom[1] == 0xFF) m_eEncodingType = e_utf16be;
 
-    if (m_eEncodingType == UNKNOWN) {
+    if (m_eEncodingType == e_unknown) {
         stream.clear();
         stream.seekg(0, std::ios::beg);
     }

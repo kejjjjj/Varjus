@@ -1,3 +1,0 @@
-import b from "b.var";
-
-export let a = b + 50;

@@ -1,4 +1,4 @@
-﻿
+
 import throwFunc from "a.var";
 
 fn main()

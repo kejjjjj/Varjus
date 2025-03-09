@@ -1,4 +1,0 @@
-fn main()
-{
-	return `${0xffff} and ${0.2}`;
-}

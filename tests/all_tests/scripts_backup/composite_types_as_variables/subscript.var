@@ -1,5 +1,0 @@
-fn main()
-{
-	let var = [50,1,2];
-	return var[0];
-}

@@ -183,7 +183,7 @@ CModule* CImportLinter::GetFileModule() const
 	if (auto cachedModule = modules->FindCachedModule(m_oTargetFile))
 		return cachedModule;
 	
-	auto uniqueTokens = CBufferTokenizer::ParseFileFromFilePath(pinfo, m_oTargetFile);
+	auto uniqueTokens = CBufferTokenizer::ParseFileFromFilePath(pinfo, m_oTargetFile, e_auto);
 	auto tokens = CBufferTokenizer::ConvertTokensToReadOnly(uniqueTokens);
 	auto begin = tokens.begin();
 	auto end = tokens.end();

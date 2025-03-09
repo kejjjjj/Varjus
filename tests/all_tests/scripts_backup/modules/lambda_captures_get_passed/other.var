@@ -1,4 +1,0 @@
-export fn lambdaSetter(lambda)
-{
-	lambda(50);
-}

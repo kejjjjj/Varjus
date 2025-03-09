@@ -9,7 +9,6 @@
 
 struct IOItem
 {
-    enum EncodingType { UNKNOWN, UTF8, UTF16_LE, UTF16_BE };
 
     IOItem(const VarjusString& filename, bool in_binary_mode) 
         : m_bBinary(in_binary_mode), m_sFileName(filename) {}

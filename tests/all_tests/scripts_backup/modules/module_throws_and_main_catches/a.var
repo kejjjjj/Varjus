@@ -1,7 +1,0 @@
-
-const globalVariable = [1,2,3];
-
-export fn throwFunc()
-{
-	throw globalVariable;
-}

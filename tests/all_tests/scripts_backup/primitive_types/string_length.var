@@ -1,4 +1,0 @@
-fn main()
-{
-	return "Hello, World!".length;
-}

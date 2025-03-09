@@ -1,6 +1,0 @@
-
-fn main()
-{
-	const arr = [];
-	return [4,2,6,3,1,5].for_each((v) => arr.push(v)), arr;
-}

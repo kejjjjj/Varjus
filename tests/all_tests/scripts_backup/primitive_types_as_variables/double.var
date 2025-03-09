@@ -1,5 +1,0 @@
-fn main()
-{
-	let var = 64.0;
-	return var;
-}

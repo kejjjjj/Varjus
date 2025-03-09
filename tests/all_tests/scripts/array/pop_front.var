@@ -1,4 +1,4 @@
-﻿fn main()
+fn main()
 {
 
 	const arr = [1,2,3];

@@ -1,9 +1,0 @@
-fn testPass(value)
-{
-	return value;
-}
-
-fn main()
-{
-	return testPass(50);
-}

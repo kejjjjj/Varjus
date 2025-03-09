@@ -1,4 +1,4 @@
-﻿fn isPrime(n) {
+fn isPrime(n) {
     if (n < 2) 
         return false;
 

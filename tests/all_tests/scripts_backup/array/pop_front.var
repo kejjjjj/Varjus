@@ -1,8 +1,0 @@
-fn main()
-{
-
-	const arr = [1,2,3];
-	const front = arr.pop_front();
-	
-	return [front, arr[0], arr[1], arr.length].map((v) => tostring v);
-}

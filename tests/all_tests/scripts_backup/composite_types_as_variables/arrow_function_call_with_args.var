@@ -1,5 +1,0 @@
-fn main()
-{
-	let v = (a, b) => a + b;
-	return v(2, 4);
-}

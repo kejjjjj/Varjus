@@ -1,5 +1,0 @@
-
-export fn pushFrontArray(array)
-{
-	array.push_front(50);
-}

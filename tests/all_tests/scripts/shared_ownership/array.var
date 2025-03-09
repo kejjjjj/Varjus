@@ -1,4 +1,4 @@
-﻿fn main()
+fn main()
 {
 	let initial = [ 0, 1 ];
 	let copy = initial;

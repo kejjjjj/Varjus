@@ -1,8 +1,0 @@
-
-fn main()
-{
-	const obj = { key0: "value0" }.set("key1", "value1");
-	obj.set("key2", "value2");
-	obj.set("key3", "value3");
-	return obj.set("key2", "value2_edited");
-}

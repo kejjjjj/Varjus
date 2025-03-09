@@ -1,9 +1,0 @@
-fn main()
-{
-	return hoistedFunc();
-}
-
-fn hoistedFunc()
-{
-	return 50;
-}

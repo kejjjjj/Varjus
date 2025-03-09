@@ -623,12 +623,32 @@ std::unique_ptr<CToken> CBufferTokenizer::ReadPunctuation() noexcept
 	return nullptr;
 }
 
+#ifdef UNICODE
+std::wstring CBufferTokenizer::FixLittleEndianness(const std::wstring& src)
+{
+	if (src.length() % 2 != 0)
+		throw std::runtime_error("corrupted eof byte in file");
 
+	std::wstring fixed;
+
+	for (auto it = src.begin(); it != src.end(); it += 2) {
+
+		if (*std::next(it) == '\0') {
+			fixed.push_back(*it);
+			continue;
+		}
+		auto combined = static_cast<VarjusChar>((*it << 8) | static_cast<VarjusChar>(*std::next(it)));
+		fixed.push_back(combined);
+	}
+
+	return fixed;
+}
+#endif
 
 /***********************************************************************
  > 
 ***********************************************************************/
-std::vector<std::unique_ptr<CToken>> CBufferTokenizer::ParseFileFromFilePath(CProgramInformation* const program, const VarjusString& filePath)
+std::vector<std::unique_ptr<CToken>> CBufferTokenizer::ParseFileFromFilePath(CProgramInformation* const program, const VarjusString& filePath, EncodingType encoding)
 {
 
 	if (!std::filesystem::exists(filePath)) {
@@ -639,15 +659,39 @@ std::vector<std::unique_ptr<CToken>> CBufferTokenizer::ParseFileFromFilePath(CPr
 	const auto reader = IOReader(filePath, false);
 	auto fileBuf = reader.IO_Read();
 
-
 	if (!fileBuf) {
 		program->PushError(VSL("couldn't read the file buffer"));
 		return {};
 	}
 
-#ifndef UNICODE
-	if (reader.GetEncoding() != IOItem::UTF8) {
-		program->PushError(VSL("the utf8 build of Varjus does not support this file encoding"));
+	if (encoding == e_auto) {
+#ifdef UNICODE
+		encoding = reader.GetEncoding();
+#else
+		encoding = e_utf8;
+#endif
+		if (encoding == e_unknown) {
+			throw CLinterError(filePath, VSL("the input file must include the byte order mark!\n"), nullptr);
+		}
+
+	}
+#ifdef UNICODE
+	switch (encoding) {
+	case e_utf8:
+		break;
+	case e_utf16le:
+		*fileBuf = FixLittleEndianness(*fileBuf);
+		break;
+	case e_utf16be:
+		*fileBuf = FixLittleEndianness(fileBuf->substr(1) + L'\0');
+		break;
+	default:
+		program->PushError(std::format(VSL("encoding type not specified for \"{}\""), filePath));
+		return {};
+	}
+#else
+	if (encoding != e_utf8) {
+		program->PushError(std::format(VSL("the utf8 build of Varjus does not support this encoding for the file\n\"{}\""), filePath));
 		return {};
 	}
 #endif
@@ -662,7 +706,7 @@ std::vector<std::unique_ptr<CToken>> CBufferTokenizer::ParseFileFromFilePath(CPr
 	auto tokenizer = CBufferTokenizer(program, *fileBuf);
 
 	if (!tokenizer.Tokenize()) {
-		program->PushError(VSL("the input file didn't have any parsable tokens"));
+		program->PushError(VSL("the input file didn't have any parseable tokens"));
 		return {};
 	}
 

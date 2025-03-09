@@ -65,8 +65,10 @@ private:
 	CProgramInformation* const m_pProgram{};
 
 public:
-
-	static UniqueTokenVector ParseFileFromFilePath(CProgramInformation* const program, const VarjusString& filePath);
+#ifdef UNICODE
+	static std::wstring FixLittleEndianness(const std::wstring& src);
+#endif
+	static UniqueTokenVector ParseFileFromFilePath(CProgramInformation* const program, const VarjusString& filePath, EncodingType encoding);
 	static std::vector<CToken*> ConvertTokensToReadOnly(UniqueTokenVector& src);
 };
 

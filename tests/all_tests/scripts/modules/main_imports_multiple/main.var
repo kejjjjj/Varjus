@@ -1,4 +1,4 @@
-﻿
+
 import variable, func from "a.var";
 
 fn main()

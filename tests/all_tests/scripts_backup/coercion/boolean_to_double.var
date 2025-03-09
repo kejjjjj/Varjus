@@ -1,4 +1,0 @@
-fn main()
-{
-	return true + 2.0;
-}

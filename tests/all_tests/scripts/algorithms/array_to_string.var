@@ -1,4 +1,4 @@
-﻿
+
 fn arrayToString(value)
 {
     if(typeof value !== "array")

@@ -1,4 +1,4 @@
-﻿fn computeLPSArray(pattern) {
+fn computeLPSArray(pattern) {
     let lps = [].resize(pattern.length).fill(0);
     let length = 0;
     let i = 1;

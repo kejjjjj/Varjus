@@ -1,4 +1,4 @@
-﻿
+
 fn return50()
 {
 	return 50;

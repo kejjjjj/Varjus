@@ -1,4 +1,4 @@
-﻿fn main()
+fn main()
 {
 	let lambda = fn() { return 50; };
 	return lambda();

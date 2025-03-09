@@ -1,4 +1,4 @@
-﻿fn isPalindrome(str) {
+fn isPalindrome(str) {
     return str === str.split('').reversed().join('');
 }
 

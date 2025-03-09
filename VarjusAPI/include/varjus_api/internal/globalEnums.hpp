@@ -19,3 +19,18 @@ enum EValueType : unsigned char
 	t_array,
 	t_object,
 };
+
+enum EncodingType : signed char 
+{ 
+	// !!! don't use me !!!
+	e_unknown, 
+
+	//automatically determine the encoding (requires that the input stream has a byte order mark)
+	// !!! don't use me !!!
+	e_auto, 
+
+	e_utf8, 
+	e_utf16le, 
+	e_utf16be 
+
+};

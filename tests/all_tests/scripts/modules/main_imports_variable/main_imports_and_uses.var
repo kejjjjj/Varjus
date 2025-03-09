@@ -1,4 +1,4 @@
-﻿
+
 import variable from "other.var";
 
 fn main()

@@ -1,5 +1,0 @@
-fn main()
-{
-	let var = main;
-	return var;
-}

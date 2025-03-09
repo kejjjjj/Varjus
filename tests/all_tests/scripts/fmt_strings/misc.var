@@ -1,4 +1,4 @@
-﻿
+
 fn main()
 {
     const f = (a, b) => a + b;

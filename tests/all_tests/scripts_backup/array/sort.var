@@ -1,5 +1,0 @@
-
-fn main()
-{
-	return [4,2,6,3,1,5].sort((a, b) => a < b);
-}
