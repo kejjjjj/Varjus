@@ -4,56 +4,60 @@
 #include <limits>
 #include <optional>
 
+#include "varjus_api/internal/globalDefinitions.hpp"
+
+
 struct IOItem
 {
+    enum EncodingType { UNKNOWN, UTF8, UTF16_LE, UTF16_BE };
 
-    IOItem(const std::string& filename, bool in_binary_mode) 
+    IOItem(const VarjusString& filename, bool in_binary_mode) 
         : m_bBinary(in_binary_mode), m_sFileName(filename) {}
     virtual ~IOItem() = default;
 
-    [[nodiscard]] constexpr std::string GetFilePath() const noexcept { return m_sFileName; }
-    [[nodiscard]] constexpr auto ContainsUnicode() const noexcept { return m_bContainsUnicode; }
+    [[nodiscard]] constexpr VarjusString GetFilePath() const noexcept { return m_sFileName; }
+    [[nodiscard]] constexpr EncodingType GetEncoding() const noexcept { return m_eEncodingType; }
 protected:
     bool m_bBinary = false;
     bool m_bErrorOccurred = false;
-    mutable bool m_bContainsUnicode = false;
-    std::string m_sFileName;
+    VarjusString m_sFileName;
+    mutable EncodingType m_eEncodingType{};
 };
 
 struct IOWriter : public IOItem
 {
-    IOWriter(const std::string& filename, bool in_binary_mode) : IOItem(filename, in_binary_mode)
+    IOWriter(const VarjusString& filename, bool in_binary_mode) : IOItem(filename, in_binary_mode)
     {
         m_bErrorOccurred = !CreateMissingDirectoriesFromPath(filename);
     }
 
-    [[nodiscard]] virtual bool IO_Write(const std::string& content) const;
-    [[nodiscard]] virtual bool IO_Append(const std::string& content) const;
+    [[nodiscard]] virtual bool IO_Write(const VarjusString& content) const;
+    [[nodiscard]] virtual bool IO_Append(const VarjusString& content) const;
 
 private:
-    [[nodiscard]] bool CreateMissingDirectoriesFromPath(std::string path) const;
-    void IO_WriteStream(std::ofstream& stream, const std::string& content) const {
+    [[nodiscard]] bool CreateMissingDirectoriesFromPath(VarjusString path) const;
+    void IO_WriteStream(STD_OFSTREAM& stream, const VarjusString& content) const {
         stream.write(content.data(), std::streamsize(content.size()));
     }
 };
 
 struct IOReader : public IOItem
 {
-    IOReader(const std::string& filename, bool in_binary_mode) : IOItem(filename, in_binary_mode) {}
+    IOReader(const VarjusString& filename, bool in_binary_mode) : IOItem(filename, in_binary_mode) {}
 
-    [[nodiscard]] virtual std::optional<std::string> IO_Read(/*size_t num_bytes = std::numeric_limits<size_t>::max()*/) const;
+    [[nodiscard]] virtual std::optional<VarjusString> IO_Read(/*size_t num_bytes = std::numeric_limits<size_t>::max()*/) const;
 
 private:
-    [[nodiscard]] std::string IO_ReadStream(std::ifstream& stream) const;
+    [[nodiscard]] VarjusString IO_ReadStream(STD_IFSTREAM& stream) const;
 
 };
 
 #ifdef __linux__
-#define DIRECTORY_SEPARATOR "/"
+#define DIRECTORY_SEPARATOR VSL("/")
 #define DIRECTORY_SEPARATOR_CHAR '/'
 #else
-#define DIRECTORY_SEPARATOR "\\"
-#define DIRECTORY_SEPARATOR_CHAR '\\'
+#define DIRECTORY_SEPARATOR VSL("\\")
+#define DIRECTORY_SEPARATOR_CHAR VarjusChar('\\')
 
 #endif
 
@@ -62,9 +66,9 @@ private:
 
 struct VarjusIOWriter : public IOWriter
 {
-    VarjusIOWriter(const std::string& relative_path, bool binary = false);
+    VarjusIOWriter(const VarjusString& relative_path, bool binary = false);
 };
 struct VarjusIOReader : public IOReader
 {
-    VarjusIOReader(const std::string& relative_path, bool binary = false);
+    VarjusIOReader(const VarjusString& relative_path, bool binary = false);
 };

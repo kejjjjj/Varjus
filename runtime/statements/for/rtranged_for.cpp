@@ -41,7 +41,7 @@ IValue* CRuntimeRangedForStatement::Execute(CRuntimeContext* const ctx)
 	auto iteratableExpression = m_pIterable->Evaluate(ctx);
 
 	if (!iteratableExpression->IsIterable()) {
-		throw CRuntimeError(ctx->m_pRuntime, std::format("\"{}\" is not iterable", iteratableExpression->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, std::format(VSL("\"{}\" is not iterable"), iteratableExpression->TypeAsString()));
 	}
 
 	//returns a copy, remember to free!

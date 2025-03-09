@@ -1,63 +1,63 @@
 #include "tests/tests.hpp"
 #include "tests/utils.hpp"
 
-#define PATH_PREFIX "object"
-#define JP(x) (std::string(PATH_PREFIX) + DIRECTORY_SEPARATOR + x)
+#define PATH_PREFIX VSL("object")
+#define JP(x) (VarjusString(PATH_PREFIX) + DIRECTORY_SEPARATOR + x)
 
-TEST_CASE("Object.set") {
+TEST_CASE(("Object.set")) {
 
-	auto retVal = TEST_ExecuteFile(JP("set.var"));
+	auto retVal = TEST_ExecuteFile(JP(VSL("set.var")));
 
 	AssertObject(retVal, AssertObjectValue<ASSERT_STRING>(t_string, { 
-		{"key0", "value0" },
-		{"key1", "value1" },
-		{"key2", "value2_edited" },
-		{"key3", "value3" }
+		{VSL("key0"), VSL("value0") },
+		{VSL("key1"), VSL("value1") },
+		{VSL("key2"), VSL("value2_edited") },
+		{VSL("key3"), VSL("value3") }
 	}));
 
 	REQUIRE(retVal->HasOwner() == false);
 	TEST_END(retVal);
 }
-TEST_CASE("Object.remove") {
+TEST_CASE(("Object.remove")) {
 
-	auto retVal = TEST_ExecuteFile(JP("remove.var"));
+	auto retVal = TEST_ExecuteFile(JP(VSL("remove.var")));
 
 	AssertArray(retVal, AssertArrayValue<ASSERT_STRING>(t_string, {
-		"true", "false", "false", "2", "key1value1", "key2value2"
+		VSL("true"), VSL("false"), VSL("false"), VSL("2"), VSL("key1value1"), VSL("key2value2")
 	}));
 
 	REQUIRE(retVal->HasOwner() == false);
 	TEST_END(retVal);
 }
-TEST_CASE("Object.keys") {
+TEST_CASE(("Object.keys")) {
 
-	auto retVal = TEST_ExecuteFile(JP("keys.var"));
+	auto retVal = TEST_ExecuteFile(JP(VSL("keys.var")));
 
 	AssertArray(retVal, AssertArrayValue<ASSERT_STRING>(t_string, {
-		"key0",
-		"key1",
-		"key2"
+		VSL("key0"),
+		VSL("key1"),
+		VSL("key2")
 	}));
 
 	REQUIRE(retVal->HasOwner() == false);
 	TEST_END(retVal);
 }
-TEST_CASE("Object.values") {
+TEST_CASE(("Object.values")) {
 
-	auto retVal = TEST_ExecuteFile(JP("values.var"));
+	auto retVal = TEST_ExecuteFile(JP(VSL("values.var")));
 
 	AssertArray(retVal, AssertArrayValue<ASSERT_STRING>(t_string, {
-		"value0",
-		"value1",
-		"value2" 
+		VSL("value0"),
+		VSL("value1"),
+		VSL("value2") 
 	}));
 
 	REQUIRE(retVal->HasOwner() == false);
 	TEST_END(retVal);
 }
-TEST_CASE("Object.contains") {
+TEST_CASE(("Object.contains")) {
 
-	auto retVal = TEST_ExecuteFile(JP("contains.var"));
+	auto retVal = TEST_ExecuteFile(JP(VSL("contains.var")));
 
 	AssertArray(retVal, AssertArrayValue<ASSERT_BOOL>(t_boolean, {
 		true,
@@ -68,12 +68,12 @@ TEST_CASE("Object.contains") {
 	REQUIRE(retVal->HasOwner() == false);
 	TEST_END(retVal);
 }
-TEST_CASE("Object.to_array") {
+TEST_CASE(("Object.to_array")) {
 
-	auto retVal = TEST_ExecuteFile(JP("to_array.var"));
+	auto retVal = TEST_ExecuteFile(JP(VSL("to_array.var")));
 
 	AssertArray(retVal, AssertArrayValue<ASSERT_STRING>(t_string, {
-		"key0value0", "key1value1", "key2value2"
+		VSL("key0value0"), VSL("key1value1"), VSL("key2value2")
 	}));
 
 	REQUIRE(retVal->HasOwner() == false);

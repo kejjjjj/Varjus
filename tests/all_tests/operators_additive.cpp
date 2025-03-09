@@ -2,12 +2,12 @@
 #include "tests/utils.hpp"
 
 
-#define PATH_PREFIX std::string("operators") + DIRECTORY_SEPARATOR + "additive"
-#define JP(x) (std::string(PATH_PREFIX) + DIRECTORY_SEPARATOR + x)
+#define PATH_PREFIX VarjusString(VSL("operators")) + DIRECTORY_SEPARATOR + VSL("additive")
+#define JP(x) (VarjusString(PATH_PREFIX) + DIRECTORY_SEPARATOR + x)
 
-TEST_CASE("integer additive operations") {
+TEST_CASE(("integer additive operations")) {
 
-	auto retVal = TEST_ExecuteFile(JP("int.var"));
+	auto retVal = TEST_ExecuteFile(JP(VSL("int.var")));
 
 	AssertArray(retVal, AssertArrayValue<ASSERT_INT>(t_int, { 
 		1 + 2,
@@ -19,9 +19,9 @@ TEST_CASE("integer additive operations") {
 	REQUIRE(retVal->HasOwner() == false);
 	TEST_END(retVal);
 }
-TEST_CASE("uinteger additive operations") {
+TEST_CASE(("uinteger additive operations")) {
 
-	auto retVal = TEST_ExecuteFile(JP("uint.var"));
+	auto retVal = TEST_ExecuteFile(JP(VSL("uint.var")));
 
 	AssertArray(retVal, AssertArrayValue<ASSERT_UINT>(t_uint, {
 		1 + 2,
@@ -34,9 +34,9 @@ TEST_CASE("uinteger additive operations") {
 	TEST_END(retVal);
 }
 
-TEST_CASE("double additive operations") {
+TEST_CASE(("double additive operations")) {
 
-	auto retVal = TEST_ExecuteFile(JP("double.var"));
+	auto retVal = TEST_ExecuteFile(JP(VSL("double.var")));
 
 	AssertArray(retVal, AssertArrayValue<ASSERT_DOUBLE>(t_double, { 
 		1.2 + 2.6,
@@ -49,16 +49,16 @@ TEST_CASE("double additive operations") {
 	TEST_END(retVal);
 }
 
-TEST_CASE("string additive operations") {
+TEST_CASE(("string additive operations")) {
 
-	auto retVal = TEST_ExecuteFile(JP("string.var"));
+	auto retVal = TEST_ExecuteFile(JP(VSL("string.var")));
 
 	AssertArray(retVal, AssertArrayValue<ASSERT_STRING>(t_string, {
-		"hello world",
-		"\"h\"\"e\"",
-		"hello\n		world",
-		"\'hello, world\'",
-		"\"hello, world\""
+		VSL("hello world"),
+		VSL("\"h\"\"e\""),
+		VSL("hello\n		world"),
+		VSL("\'hello, world\'"),
+		VSL("\"hello, world\"")
 		}));
 
 	REQUIRE(retVal->HasOwner() == false);

@@ -1,4 +1,4 @@
-fn binarySearch(nums, target) {
+﻿fn binarySearch(nums, target) {
     let left = 0;
     let right = nums.length - 1;
 

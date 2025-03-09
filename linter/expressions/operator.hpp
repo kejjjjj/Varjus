@@ -27,7 +27,7 @@ public:
 
 	[[nodiscard]] inline const CPunctuationToken* GetToken() const noexcept { return m_pToken; }
 
-	[[nodiscard]] std::string ToString() const noexcept;
+	[[nodiscard]] VarjusString ToString() const noexcept;
 
 private:
 	OperatorPriority m_ePriority{};

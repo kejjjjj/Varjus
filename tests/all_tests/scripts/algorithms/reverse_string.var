@@ -1,4 +1,4 @@
-fn reverseString(str)
+﻿fn reverseString(str)
 {
 	return str.split('').reversed().join('');
 }

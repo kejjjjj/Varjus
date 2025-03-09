@@ -2,12 +2,12 @@
 #include "tests/utils.hpp"
 
 
-#define PATH_PREFIX std::string("operators") + DIRECTORY_SEPARATOR + "shift"
-#define JP(x) (std::string(PATH_PREFIX) + DIRECTORY_SEPARATOR + x)
+#define PATH_PREFIX VarjusString(VSL("operators")) + DIRECTORY_SEPARATOR + VSL("shift")
+#define JP(x) (VarjusString(PATH_PREFIX) + DIRECTORY_SEPARATOR + x)
 
-TEST_CASE("integer shift operations") {
+TEST_CASE(("integer shift operations")) {
 
-	auto retVal = TEST_ExecuteFile(JP("int.var"));
+	auto retVal = TEST_ExecuteFile(JP(VSL("int.var")));
 
 	AssertArray(retVal, AssertArrayValue<ASSERT_INT>(t_int, { 
 		2 << 16,
@@ -17,9 +17,9 @@ TEST_CASE("integer shift operations") {
 	REQUIRE(retVal->HasOwner() == false);
 	TEST_END(retVal);
 }
-TEST_CASE("uinteger shift operations") {
+TEST_CASE(("uinteger shift operations")) {
 
-	auto retVal = TEST_ExecuteFile(JP("uint.var"));
+	auto retVal = TEST_ExecuteFile(JP(VSL("uint.var")));
 
 	AssertArray(retVal, AssertArrayValue<ASSERT_UINT>(t_uint, {
 		VarjusUInt(2) << 30,

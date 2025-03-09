@@ -27,6 +27,15 @@ list(FILTER PROJECT_SOURCES EXCLUDE REGEX "CMakeCXXCompilerId\\.cpp$")
 
 add_executable(Varjus ${PROJECT_SOURCES})
 
+if(USE_UNICODE STREQUAL "ON")
+    add_compile_definitions(UNICODE=1 _UNICODE=1 UNICODE)
+    message(STATUS "Building with Unicode")
+else()
+    remove_definitions(UNICODE _UNICODE)
+    message(STATUS "Building with UTF8")
+endif()
+
+
 # Add the root directory as an include directory
 target_include_directories(Varjus PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 target_include_directories(Varjus PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/VarjusAPI/include/")

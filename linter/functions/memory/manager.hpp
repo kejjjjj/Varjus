@@ -1,5 +1,5 @@
 #pragma once
-#include <string>
+
 #include <memory>
 
 #include "varjus_api/internal/globalDefinitions.hpp"
@@ -14,13 +14,13 @@ enum EMemoryIdentifierType
 struct CMemoryIdentifier : public CCrossModuleReference
 {
 	CMemoryIdentifier() = delete;
-	CMemoryIdentifier(const std::string& name, const CCrossModuleReference& ref)
+	CMemoryIdentifier(const VarjusString& name, const CCrossModuleReference& ref)
 		: CCrossModuleReference(ref), m_sName(name) { }
 
 	virtual ~CMemoryIdentifier() = default;
 
 	[[nodiscard]] virtual constexpr EMemoryIdentifierType Type() const noexcept = 0;
 
-	std::string m_sName;
+	VarjusString m_sName;
 };
 

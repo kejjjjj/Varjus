@@ -27,6 +27,6 @@ public:
 	[[nodiscard]] CUIntValue* ToCUInt() override { return this; }
 
 private:
-	[[nodiscard]] std::string TypeAsString() const override { return "uint"s; }
-	[[nodiscard]] std::string ValueAsString() const override { return std::to_string(Get()); }
+	[[nodiscard]] VarjusString TypeAsString() const override { return VSL("uint"); }
+	[[nodiscard]] VarjusString ValueAsString() const override { return STD_TO_STRING(Get()); }
 };

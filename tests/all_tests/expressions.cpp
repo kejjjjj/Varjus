@@ -1,13 +1,13 @@
 #include "tests/tests.hpp"
 #include "tests/utils.hpp"
 
-#define PATH_PREFIX "expressions"
-#define JP(x) (std::string(PATH_PREFIX) + DIRECTORY_SEPARATOR + x)
+#define PATH_PREFIX VSL("expressions")
+#define JP(x) (VarjusString(PATH_PREFIX) + DIRECTORY_SEPARATOR + x)
 
 
-TEST_CASE("operator precedence tests in simple expressions")
+TEST_CASE(("operator precedence tests in simple expressions"))
 {
-	auto retVal = TEST_ExecuteFile(JP("operator_precedence.var"));
+	auto retVal = TEST_ExecuteFile(JP(VSL("operator_precedence.var")));
 
 	AssertArray(retVal, AssertArrayValue<ASSERT_INT>(t_int, { 
 		2 + 3 * 2,
@@ -21,9 +21,9 @@ TEST_CASE("operator precedence tests in simple expressions")
 	TEST_END(retVal);
 }
 
-TEST_CASE("operator precedence tests in sequences")
+TEST_CASE(("operator precedence tests in sequences"))
 {
-	auto retVal = TEST_ExecuteFile(JP("sequence.var"));
+	auto retVal = TEST_ExecuteFile(JP(VSL("sequence.var")));
 
 	AssertArray(retVal, AssertArrayValue<ASSERT_INT>(t_int, {
 		(static_cast<void>(2 + 3), static_cast<void>(2), 4),
@@ -36,12 +36,12 @@ TEST_CASE("operator precedence tests in sequences")
 	TEST_END(retVal);
 }
 
-TEST_CASE("operator precedence in ternary operations") {
+TEST_CASE(("operator precedence in ternary operations")) {
 
-	auto retVal = TEST_ExecuteFile(JP("ternary.var"));
+	auto retVal = TEST_ExecuteFile(JP(VSL("ternary.var")));
 
 	//false == undefined in this case
-	AssertArray(retVal, AssertArrayValue<ASSERT_STRING>(t_string, { "f", "f2", "f", "t2" }));
+	AssertArray(retVal, AssertArrayValue<ASSERT_STRING>(t_string, { VSL("f"), VSL("f2"), VSL("f"), VSL("t2") }));
 
 	REQUIRE(retVal->HasOwner() == false);
 	TEST_END(retVal);

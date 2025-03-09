@@ -30,7 +30,7 @@ Success CForStatementLinter::Parse()
 		return failure;
 
 	if (IsEndOfBuffer() || !(*m_iterPos)->IsOperator(p_par_open)) {
-		m_pOwner->GetModule()->PushError("expected a \"(\"", GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError(VSL("expected a \"(\""), GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 
@@ -59,7 +59,7 @@ Success CForStatementLinter::Parse()
 Success CForStatementLinter::ParseInitializer() {
 
 	if (IsEndOfBuffer()) {
-		m_pOwner->GetModule()->PushError("expected an expression", GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError(VSL("expected an expression"), GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 
@@ -108,7 +108,7 @@ Success CForStatementLinter::ParseInitializer() {
 Success CForStatementLinter::ParseCondition() {
 
 	if (IsEndOfBuffer()) {
-		m_pOwner->GetModule()->PushError("expected an expression", GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError(VSL("expected an expression"), GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 
@@ -126,7 +126,7 @@ Success CForStatementLinter::ParseCondition() {
 }
 Success CForStatementLinter::ParseEndExpression() {
 	if (IsEndOfBuffer()) {
-		m_pOwner->GetModule()->PushError("expected an expression", GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError(VSL("expected an expression"), GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 
@@ -157,7 +157,7 @@ Success CForStatementLinter::ParseRangedForLoop()
 	auto ast = m_pOwner->IsHoisting() ? nullptr : oper->ToAST();
 
 	if (!m_pOwner->IsHoisting() && (!ast || !ast->IsVariable())) {
-		m_pOwner->GetModule()->PushError("expected an expression", GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError(VSL("expected an expression"), GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 
@@ -181,7 +181,7 @@ Success CForStatementLinter::ParseRangedForLoop()
 	};
 
 	if (std::get<1>(m_oData).m_pIterator && std::get<1>(m_oData).m_pIterator->m_bIsConst) {
-		m_pOwner->GetModule()->PushError("assignment to a constant", std::get<1>(m_oData).m_pIterator->GetCodePosition());
+		m_pOwner->GetModule()->PushError(VSL("assignment to a constant"), std::get<1>(m_oData).m_pIterator->GetCodePosition());
 		return failure;
 	}
 

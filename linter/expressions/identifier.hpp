@@ -22,13 +22,13 @@ public:
 private:
 	[[nodiscard]] bool CheckIdentifier(const CToken* token) const noexcept;
 
-	[[nodiscard]] bool ContainsFunction(const std::string& str) const noexcept;
+	[[nodiscard]] bool ContainsFunction(const VarjusString& str) const noexcept;
 
 
 	template<typename T>
-	[[nodiscard]] CLinterVariable* GetVariableByIdentifier(const std::string& str) const noexcept;
+	[[nodiscard]] CLinterVariable* GetVariableByIdentifier(const VarjusString& str) const noexcept;
 
-	[[nodiscard]] CLinterFunction* GetFunctionByIdentifier(const std::string& str) const noexcept;
+	[[nodiscard]] CLinterFunction* GetFunctionByIdentifier(const VarjusString& str) const noexcept;
 
 
 	WeakScope m_pScope;

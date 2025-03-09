@@ -1,0 +1,13 @@
+
+let glob = 0;
+
+fn editGlob()
+{
+	glob = 50;
+}
+
+fn main()
+{
+	editGlob();
+	return glob;
+}

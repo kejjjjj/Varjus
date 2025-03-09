@@ -26,7 +26,7 @@ Success CIdentifierLinter::ParseIdentifier()
 	auto iterPos = GetIteratorSafe();
 
 	if (IsEndOfBuffer() || !CheckIdentifier(iterPos)) {
-		m_pOwner->GetModule()->PushError("expected an identifier, but found: " + iterPos->Source(), iterPos->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError(VSL("expected an identifier, but found: ") + iterPos->Source(), iterPos->m_oSourcePosition);
 		return failure;
 	}
 
@@ -59,7 +59,7 @@ Success CIdentifierLinter::ParseIdentifier()
 
 	//ignore when hoisting
 	if (!m_pOwner->IsHoisting() && !m_pIdentifier) {
-		m_pOwner->GetModule()->PushError("Use of an undefined identifier: " + str, m_pToken->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError(VSL("Use of an undefined identifier: ") + str, m_pToken->m_oSourcePosition);
 		return failure;
 	}
 	
@@ -67,9 +67,9 @@ Success CIdentifierLinter::ParseIdentifier()
 	return success;
 }
 
-template CLinterVariable* CIdentifierLinter::GetVariableByIdentifier<CLinterVariable>(const std::string& str) const noexcept;
+template CLinterVariable* CIdentifierLinter::GetVariableByIdentifier<CLinterVariable>(const VarjusString& str) const noexcept;
 #ifdef OPTIMIZATIONS
-template CLinterVariable* CIdentifierLinter::GetVariableByIdentifier<CConstEvalLinterVariable>(const std::string& str) const noexcept;
+template CLinterVariable* CIdentifierLinter::GetVariableByIdentifier<CConstEvalLinterVariable>(const VarjusString& str) const noexcept;
 #endif
 
 template<typename T>
@@ -78,14 +78,14 @@ template<typename T>
 		return memory->m_VariableManager.get();
 	else
 #ifndef OPTIMIZATIONS
-		static_assert(false, "if constexpr (std::is_same_v<T, CLinterVariable>");
+		static_assert(false, VSL("if constexpr (std::is_same_v<T, CLinterVariable>"));
 #else
 		return memory->m_ConstEvalVariableManager.get();
 #endif
 }
 
 template<typename T>
-CLinterVariable* CIdentifierLinter::GetVariableByIdentifier(const std::string& str) const noexcept
+CLinterVariable* CIdentifierLinter::GetVariableByIdentifier(const VarjusString& str) const noexcept
 {
 
 	//find the global variable first... unlike some languages :)
@@ -110,7 +110,7 @@ CLinterVariable* CIdentifierLinter::GetVariableByIdentifier(const std::string& s
 	return GetVariableManager<T>(m_pOwner)->GetVariable(str);
 }
 
-bool CIdentifierLinter::ContainsFunction(const std::string& str) const noexcept
+bool CIdentifierLinter::ContainsFunction(const VarjusString& str) const noexcept
 {
 	if (m_pOwner->HasHoistedData()) {
 		auto& hoister = m_pOwner->GetHoister();
@@ -120,7 +120,7 @@ bool CIdentifierLinter::ContainsFunction(const std::string& str) const noexcept
 	return false;
 }
 
-CLinterFunction* CIdentifierLinter::GetFunctionByIdentifier(const std::string& str) const noexcept
+CLinterFunction* CIdentifierLinter::GetFunctionByIdentifier(const VarjusString& str) const noexcept
 {
 	//yeaaaaahhhh this is fine
 	if (m_pOwner->IsHoisting())

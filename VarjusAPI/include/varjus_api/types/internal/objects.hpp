@@ -41,10 +41,10 @@ struct CBuiltInObjectPairs
 
 class CBuiltInObjects {
 public:
-	void AddNewStaticObject(const std::string& name, const OptionalCtor<void>& constructorFunc = std::nullopt);
+	void AddNewStaticObject(const VarjusString& name, const OptionalCtor<void>& constructorFunc = std::nullopt);
 	void Reset() noexcept { m_arrData.clear(); }
 	[[nodiscard]] auto& Iterator() noexcept { return m_arrData; }
 private:
-	std::vector<std::pair<std::string, CBuiltInObjectPairs>> m_arrData;
+	std::vector<std::pair<VarjusString, CBuiltInObjectPairs>> m_arrData;
 
 };

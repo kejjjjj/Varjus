@@ -9,9 +9,9 @@
 struct CFileContext
 {
 	CFileContext() = default;
-	CFileContext(const std::string& wd) : m_sFilePath(wd){}
+	CFileContext(const VarjusString& wd) : m_sFilePath(wd){}
 
-	std::string m_sFilePath;
+	VarjusString m_sFilePath;
 
 	CStringIntegerHashMap m_oAllVariables;
 	CStringIntegerHashMap m_oAllGlobalVariables;
@@ -36,9 +36,9 @@ public:
 	[[nodiscard]] inline auto GetModules() const { return m_pModules.get(); }
 
 
-	[[nodiscard]] inline auto PushError(const std::string& err) { m_oErrors.PushError("", err); }
-	[[nodiscard]] inline auto PushError(const std::string& err, const CodePosition& pos) {
-		m_oErrors.PushError("", err, pos);
+	[[nodiscard]] inline auto PushError(const VarjusString& err) { m_oErrors.PushError(VSL(""), err); }
+	[[nodiscard]] inline auto PushError(const VarjusString& err, const CodePosition& pos) {
+		m_oErrors.PushError(VSL(""), err, pos);
 	}
 
 	CStringIntegerHashMap m_oAllMembers;

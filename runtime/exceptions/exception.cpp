@@ -1,16 +1,16 @@
 #include "exception.hpp"
 #include "varjus_api/internal/runtime.hpp"
 
-CRuntimeError::CRuntimeError(CProgramRuntime* const runtime, const std::string& error)
+CRuntimeError::CRuntimeError(CProgramRuntime* const runtime, const VarjusString& error)
     : m_oErrorMessage(error) {
 
     assert(runtime);
 
     if (!runtime->GetExecutionPosition()) {
-        m_oErrorMessage += std::format(" | near main function");
+        m_oErrorMessage += std::format(VSL(" | near main function"));
         return;
     }
 
     auto& [l, c] = *runtime->GetExecutionPosition();
-    m_oErrorMessage += std::format(" | near [{}, {}]", l, c);
+    m_oErrorMessage += std::format(VSL(" | near [{}, {}]"), l, c);
 }

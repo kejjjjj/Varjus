@@ -1,13 +1,13 @@
 #include "tests/tests.hpp"
 #include "tests/utils.hpp"
 
-#define PATH_PREFIX "global_variables"
-#define JP(x) (std::string(PATH_PREFIX) + DIRECTORY_SEPARATOR + x)
+#define PATH_PREFIX VSL("global_variables")
+#define JP(x) (VarjusString(PATH_PREFIX) + DIRECTORY_SEPARATOR + x)
 
 
-TEST_CASE("Main function references global variable") {
+TEST_CASE(("Main function references global variable")) {
 
-	auto retVal = TEST_ExecuteFile(JP("main_references_global.var"));
+	auto retVal = TEST_ExecuteFile(JP(VSL("main_references_global.var")));
 
 	REQUIRE(retVal != nullptr);
 	REQUIRE(retVal->Type() == t_int);
@@ -16,9 +16,9 @@ TEST_CASE("Main function references global variable") {
 	REQUIRE(retVal->HasOwner() == false);
 	TEST_END(retVal);
 }
-TEST_CASE("Main function edits global variable") {
+TEST_CASE(("Main function edits global variable")) {
 
-	auto retVal = TEST_ExecuteFile(JP("main_edits_global.var"));
+	auto retVal = TEST_ExecuteFile(JP(VSL("main_edits_global.var")));
 
 	REQUIRE(retVal != nullptr);
 	REQUIRE(retVal->Type() == t_int);
@@ -28,9 +28,9 @@ TEST_CASE("Main function edits global variable") {
 	TEST_END(retVal);
 }
 
-TEST_CASE("Main function and global scope edit global variable") {
+TEST_CASE(("Main function and global scope edit global variable")) {
 
-	auto retVal = TEST_ExecuteFile(JP("main_and_global_edit_global.var"));
+	auto retVal = TEST_ExecuteFile(JP(VSL("main_and_global_edit_global.var")));
 
 	REQUIRE(retVal != nullptr);
 	REQUIRE(retVal->Type() == t_int);

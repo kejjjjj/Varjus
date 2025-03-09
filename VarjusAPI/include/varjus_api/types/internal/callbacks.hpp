@@ -2,8 +2,11 @@
 
 #include <memory>
 #include <unordered_map>
-#include <string>
+
 #include <vector>
+
+#include "varjus_api/internal/globalDefinitions.hpp"
+
 
 class IValue;
 template<typename T>
@@ -23,18 +26,18 @@ struct FunctionData_t
 	std::size_t numArgs;
 };
 
-using BuiltInFunction_t = std::unordered_map<std::string, FunctionData_t>;
+using BuiltInFunction_t = std::unordered_map<VarjusString, FunctionData_t>;
 
 
 class CBuiltInFunctions {
 public:
-	inline void AddNewGlobalCallable(const std::string& name, const Function_t& callable, std::size_t numArgs) {
+	inline void AddNewGlobalCallable(const VarjusString& name, const Function_t& callable, std::size_t numArgs) {
 		m_arrData[name] = { callable, numArgs };
 	}
 
 	[[nodiscard]] inline auto& Iterator() noexcept { return m_arrData; }
-	[[nodiscard]] inline auto& At(const std::string& s) { return m_arrData.at(s); }
-	[[nodiscard]] inline auto Contains(const std::string& s) { return m_arrData.contains(s); }
+	[[nodiscard]] inline auto& At(const VarjusString& s) { return m_arrData.at(s); }
+	[[nodiscard]] inline auto Contains(const VarjusString& s) { return m_arrData.contains(s); }
 	inline void Reset() noexcept { m_arrData.clear(); }
 
 private:

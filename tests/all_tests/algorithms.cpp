@@ -1,24 +1,12 @@
 #include "tests/tests.hpp"
 #include "tests/utils.hpp"
 
-#define PATH_PREFIX "algorithms"
-#define JP(x) (std::string(PATH_PREFIX) + DIRECTORY_SEPARATOR + x)
+#define PATH_PREFIX VSL("algorithms")
+#define JP(x) (VarjusString(PATH_PREFIX) + DIRECTORY_SEPARATOR + x)
 
-TEST_CASE("Fibonacci(7)") {
+TEST_CASE(("Fibonacci(7)")) {
 
-	auto retVal = TEST_ExecuteFile(JP("fibonacci.var"));
-
-	REQUIRE(retVal != nullptr);
-	REQUIRE(retVal->Type() == t_int);
-	REQUIRE(retVal->ToInt() == 13);
-
-	REQUIRE(retVal->HasOwner() == false);
-	TEST_END(retVal);
-}
-
-TEST_CASE("IterativeFibonacci(7)") {
-
-	auto retVal = TEST_ExecuteFile(JP("fibonacci_iterative.var"));
+	auto retVal = TEST_ExecuteFile(JP(VSL("fibonacci.var")));
 
 	REQUIRE(retVal != nullptr);
 	REQUIRE(retVal->Type() == t_int);
@@ -28,9 +16,21 @@ TEST_CASE("IterativeFibonacci(7)") {
 	TEST_END(retVal);
 }
 
-TEST_CASE("Factorial(7)") {
+TEST_CASE(("IterativeFibonacci(7)")) {
 
-	auto retVal = TEST_ExecuteFile(JP("factorial.var"));
+	auto retVal = TEST_ExecuteFile(JP(VSL("fibonacci_iterative.var")));
+
+	REQUIRE(retVal != nullptr);
+	REQUIRE(retVal->Type() == t_int);
+	REQUIRE(retVal->ToInt() == 13);
+
+	REQUIRE(retVal->HasOwner() == false);
+	TEST_END(retVal);
+}
+
+TEST_CASE(("Factorial(7)")) {
+
+	auto retVal = TEST_ExecuteFile(JP(VSL("factorial.var")));
 
 	REQUIRE(retVal != nullptr);
 	REQUIRE(retVal->Type() == t_int);
@@ -39,9 +39,9 @@ TEST_CASE("Factorial(7)") {
 	REQUIRE(retVal->HasOwner() == false);
 	TEST_END(retVal);
 }
-TEST_CASE("FactorialIterative(7)") {
+TEST_CASE(("FactorialIterative(7)")) {
 
-	auto retVal = TEST_ExecuteFile(JP("factorial_iterative.var"));
+	auto retVal = TEST_ExecuteFile(JP(VSL("factorial_iterative.var")));
 
 	REQUIRE(retVal != nullptr);
 	REQUIRE(retVal->Type() == t_int);
@@ -51,21 +51,21 @@ TEST_CASE("FactorialIterative(7)") {
 	TEST_END(retVal);
 }
 
-TEST_CASE("ReverseString(hello)") {
+TEST_CASE(("ReverseString(hello)")) {
 
-	auto retVal = TEST_ExecuteFile(JP("reverse_string.var"));
+	auto retVal = TEST_ExecuteFile(JP(VSL("reverse_string.var")));
 
 	REQUIRE(retVal != nullptr);
 	REQUIRE(retVal->Type() == t_string);
-	REQUIRE(retVal->ToString() == "olleh");
+	REQUIRE(retVal->ToString() == VSL("olleh"));
 
 	REQUIRE(retVal->HasOwner() == false);
 	TEST_END(retVal);
 }
 
-TEST_CASE("Counter(Hello, World!)") {
+TEST_CASE(("Counter(Hello, World!)")) {
 
-	auto retVal = TEST_ExecuteFile(JP("counter.var"));
+	auto retVal = TEST_ExecuteFile(JP(VSL("counter.var")));
 
 	AssertArray(retVal, AssertArrayValue<ASSERT_INT>(t_int, { 13, 11 }));
 
@@ -73,9 +73,9 @@ TEST_CASE("Counter(Hello, World!)") {
 	TEST_END(retVal);
 }
 
-TEST_CASE("MaxSubArray([-2, 1, -3, 4, -1, 2, 1, -5, 4])") {
+TEST_CASE(("MaxSubArray([-2, 1, -3, 4, -1, 2, 1, -5, 4])")) {
 
-	auto retVal = TEST_ExecuteFile(JP("max_sub_array.var"));
+	auto retVal = TEST_ExecuteFile(JP(VSL("max_sub_array.var")));
 
 	REQUIRE(retVal != nullptr);
 	REQUIRE(retVal->Type() == t_int);
@@ -85,28 +85,28 @@ TEST_CASE("MaxSubArray([-2, 1, -3, 4, -1, 2, 1, -5, 4])") {
 	TEST_END(retVal);
 }
 
-TEST_CASE("GenerateParenthesis(3)") {
+TEST_CASE(("GenerateParenthesis(3)")) {
 
-	auto retVal = TEST_ExecuteFile(JP("generate_parenthesis.var"));
+	auto retVal = TEST_ExecuteFile(JP(VSL("generate_parenthesis.var")));
 
-	AssertArray(retVal, AssertArrayValue<ASSERT_STRING>(t_string, { "((()))","(()())","(())()","()(())","()()()" }));
+	AssertArray(retVal, AssertArrayValue<ASSERT_STRING>(t_string, { VSL("((()))"),VSL("(()())"),VSL("(())()"),VSL("()(())"),VSL("()()()") }));
 
 	REQUIRE(retVal->HasOwner() == false);
 	TEST_END(retVal);
 }
 
-TEST_CASE("RemoveDuplicates([1, 1, 2, 2, 3, 3])") {
+TEST_CASE(("RemoveDuplicates([1, 1, 2, 2, 3, 3])")) {
 
-	auto retVal = TEST_ExecuteFile(JP("remove_duplicates.var"));
+	auto retVal = TEST_ExecuteFile(JP(VSL("remove_duplicates.var")));
 
 	AssertArray(retVal, AssertArrayValue<ASSERT_INT>(t_int, { 1, 2, 3 }));
 
 	REQUIRE(retVal->HasOwner() == false);
 	TEST_END(retVal);
 }
-TEST_CASE("BinarySearch([1, 2, 3, 4, 5, 6])") {
+TEST_CASE(("BinarySearch([1, 2, 3, 4, 5, 6])")) {
 
-	auto retVal = TEST_ExecuteFile(JP("binary_search.var"));
+	auto retVal = TEST_ExecuteFile(JP(VSL("binary_search.var")));
 
 	REQUIRE(retVal != nullptr);
 	REQUIRE(retVal->Type() == t_int);
@@ -115,9 +115,9 @@ TEST_CASE("BinarySearch([1, 2, 3, 4, 5, 6])") {
 	REQUIRE(retVal->HasOwner() == false);
 	TEST_END(retVal);
 }
-TEST_CASE("SumArray([10, 15, 20])") {
+TEST_CASE(("SumArray([10, 15, 20])")) {
 
-	auto retVal = TEST_ExecuteFile(JP("sum_array.var"));
+	auto retVal = TEST_ExecuteFile(JP(VSL("sum_array.var")));
 
 	REQUIRE(retVal != nullptr);
 	REQUIRE(retVal->Type() == t_int);
@@ -127,9 +127,9 @@ TEST_CASE("SumArray([10, 15, 20])") {
 	TEST_END(retVal);
 }
 
-TEST_CASE("IsPrime() with 29 and 12") {
+TEST_CASE(("IsPrime() with 29 and 12")) {
 
-	auto retVal = TEST_ExecuteFile(JP("is_prime.var"));
+	auto retVal = TEST_ExecuteFile(JP(VSL("is_prime.var")));
 
 	AssertArray(retVal, AssertArrayValue<ASSERT_BOOL>(t_boolean, { true, false }));
 
@@ -137,27 +137,27 @@ TEST_CASE("IsPrime() with 29 and 12") {
 	TEST_END(retVal);
 }
 
-TEST_CASE("isPalindrome() with 29 and 12") {
+TEST_CASE(("isPalindrome() with 29 and 12")) {
 
-	auto retVal = TEST_ExecuteFile(JP("is_palindrome.var"));
+	auto retVal = TEST_ExecuteFile(JP(VSL("is_palindrome.var")));
 
 	AssertArray(retVal, AssertArrayValue<ASSERT_BOOL>(t_boolean, { true, false, true }));
 
 	REQUIRE(retVal->HasOwner() == false);
 	TEST_END(retVal);
 }
-TEST_CASE("MergeSort([38, 27, 43, 3, 9, 82, 10])") {
+TEST_CASE(("MergeSort([38, 27, 43, 3, 9, 82, 10])")) {
 
-	auto retVal = TEST_ExecuteFile(JP("merge_sort.var"));
+	auto retVal = TEST_ExecuteFile(JP(VSL("merge_sort.var")));
 
 	AssertArray(retVal, AssertArrayValue<ASSERT_INT>(t_int, { 3, 9, 10, 27, 38, 43, 82 }));
 
 	REQUIRE(retVal->HasOwner() == false);
 	TEST_END(retVal);
 }
-TEST_CASE("KMPStringMatch(ababcababcabc, abc)") {
+TEST_CASE(("KMPStringMatch(ababcababcabc, abc)")) {
 
-	auto retVal = TEST_ExecuteFile(JP("kmp_string_match.var"));
+	auto retVal = TEST_ExecuteFile(JP(VSL("kmp_string_match.var")));
 
 	REQUIRE(retVal != nullptr);
 	REQUIRE(retVal->Type() == t_int);
@@ -167,19 +167,19 @@ TEST_CASE("KMPStringMatch(ababcababcabc, abc)") {
 	TEST_END(retVal);
 }
 
-TEST_CASE("ArrayToString([ 1, [ 2, [3, [] ] ], 4 ])") {
+TEST_CASE(("ArrayToString([ 1, [ 2, [3, [] ] ], 4 ])")) {
 
-	auto retVal = TEST_ExecuteFile(JP("array_to_string.var"));
+	auto retVal = TEST_ExecuteFile(JP(VSL("array_to_string.var")));
 
 	REQUIRE(retVal->Type() == t_string);
-	REQUIRE(retVal->ToString() == "123empty4");
+	REQUIRE(retVal->ToString() == VSL("123empty4"));
 
 	REQUIRE(retVal->HasOwner() == false);
 	TEST_END(retVal);
 }
-TEST_CASE("StressTest") {
+TEST_CASE(("StressTest")) {
 
-	auto retVal = TEST_ExecuteFile(JP("stress_test.var"));
+	auto retVal = TEST_ExecuteFile(JP(VSL("stress_test.var")));
 
 	AssertArray(retVal, AssertArrayValue<ASSERT_INT>(t_int, { 93, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 }));
 

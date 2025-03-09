@@ -1,0 +1,9 @@
+fn main()
+{
+	const arr = [];
+
+	for(const iter : "hello")
+		arr.push(iter);
+
+	return arr;
+}

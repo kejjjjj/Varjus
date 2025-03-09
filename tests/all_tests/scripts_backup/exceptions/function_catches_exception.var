@@ -1,0 +1,18 @@
+
+fn throwFunc()
+{
+	try{
+		throw "caught";
+	}catch(ex){
+		return ex;
+	}
+}
+
+fn main()
+{
+	try{
+		return throwFunc();
+	}catch(ex){
+		return "failure";
+	}
+}

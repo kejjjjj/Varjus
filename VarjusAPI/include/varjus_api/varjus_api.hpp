@@ -13,7 +13,7 @@ ALWAYS CHECK RETURN VALUES!!!!
 #include "types/types.hpp"
 
 #include <optional>
-#include <string>
+
 
 
 /***********************************************************************
@@ -27,32 +27,32 @@ int main(int argc, char** argv)
 {
 
     if (argc != 2) {
-        std::cout << "usage: <file path>\n";
+        STD_COUT << VSL("usage: <file path>\n");
         return 1;
     }
 
     Varjus::State state;
 
-    const auto GetError = [](const std::optional<std::string>& errorMsg) {
-        return errorMsg ? *errorMsg : "unknown error!";
+    const auto GetError = [](const std::optional<VarjusString>& errorMsg) {
+        return errorMsg ? *errorMsg : VSL("unknown error!");
     };
 
     if (!state.UseStdLibrary()) {
-        std::cerr << "state error: " << GetError(state.GetErrorMessage()) << '\n';
+        STD_CERR << VSL("state error: ") << GetError(state.GetErrorMessage()) << '\n';
         return 1;
     }
 
     if (!state.LoadScriptFromFile(argv[1])) {
-        std::cerr << "syntax error: " << GetError(state.GetErrorMessage()) << '\n';
+        STD_CERR << VSL("syntax error: ") << GetError(state.GetErrorMessage()) << '\n';
         return 1;
     }
 
 
     if (const auto returnValue = state.ExecuteScript()) {
-        std::cout << "the program returned: " << returnValue->ToPrintableString() << std::endl;
+        STD_COUT << VSL("the program returned: ") << returnValue->ToPrintableString() << std::endl;
     }
     else {
-        std::cerr << "runtime error: " << GetError(state.GetErrorMessage()) << '\n';
+        STD_CERR << VSL("runtime error: ") << GetError(state.GetErrorMessage()) << '\n';
         return 1;
     }
 
@@ -76,29 +76,29 @@ namespace Varjus
         VARJUS_API __ND Success UseStdLibrary();
 
         //This function expects a full file path, not a relative one
-        VARJUS_API __ND Success LoadScriptFromFile(const std::string& fullFilePath);
+        VARJUS_API __ND Success LoadScriptFromFile(const VarjusString& fullFilePath);
 
         //This function expects a script
         //It should be noted that modules cannot be used as there is no working directory
-        VARJUS_API __ND Success LoadScript(const std::string& script);
+        VARJUS_API __ND Success LoadScript(const VarjusString& script);
 
         //Call me after you have loaded a script with LoadScriptFromFile or LoadScript
         //Don't do any memory management to the return value as it's managed by the API
         VARJUS_API __ND IValue* ExecuteScript();
 
         //When a function doesn't return a success
-        VARJUS_API __ND std::optional<std::string> GetErrorMessage();
+        VARJUS_API __ND std::optional<VarjusString> GetErrorMessage();
 
         //Declare a new global variable with its custom methods and properties (callbacks)
-        VARJUS_API __ND Success AddNewStaticObject(const std::string& name,
+        VARJUS_API __ND Success AddNewStaticObject(const VarjusString& name,
             const OptionalCtor<void>& constructor = std::nullopt);
 
         //When this function is referenced in code, it calls the callback
-        VARJUS_API __ND Success AddNewCallback(const std::string& name, const Function_t& callback, std::size_t numArgs);
+        VARJUS_API __ND Success AddNewCallback(const VarjusString& name, const Function_t& callback, std::size_t numArgs);
 
     private: // All of this is managed by the class, so there should never be a need to publicly access these :)
 
-        std::string m_sErrorMessage;
+        VarjusString m_sErrorMessage;
         Success m_bScriptLoaded{ failure };
         std::unique_ptr<CProgramInformation> m_pLinter;
         std::unique_ptr<CProgramRuntime> m_pRuntime;

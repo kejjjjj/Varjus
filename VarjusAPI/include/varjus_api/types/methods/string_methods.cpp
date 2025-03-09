@@ -30,13 +30,13 @@ std::unique_ptr<BuiltInMethod_t> CStringValue::ConstructMethods(CProgramInformat
 {
 	auto m_oMethods = std::make_unique<BuiltInMethod_t>(info);
 
-	m_oMethods->AddMethod("toupper",     ToUpper,   0u);
-	m_oMethods->AddMethod("tolower",     ToLower,   0u);
-	m_oMethods->AddMethod("substring",   Substring, 2u);
-	m_oMethods->AddMethod("split",       Split,     1u);
-	m_oMethods->AddMethod("replace",     Replace,   2u);
-	m_oMethods->AddMethod("reproduce",   Reproduce, 1u);
-	m_oMethods->AddMethod("get_code_at", GetCodeAt, 1u);
+	m_oMethods->AddMethod(VSL("toupper"),     ToUpper,   0u);
+	m_oMethods->AddMethod(VSL("tolower"),     ToLower,   0u);
+	m_oMethods->AddMethod(VSL("substring"),   Substring, 2u);
+	m_oMethods->AddMethod(VSL("split"),       Split,     1u);
+	m_oMethods->AddMethod(VSL("replace"),     Replace,   2u);
+	m_oMethods->AddMethod(VSL("reproduce"),   Reproduce, 1u);
+	m_oMethods->AddMethod(VSL("get_code_at"), GetCodeAt, 1u);
 
 	return m_oMethods;
 
@@ -47,7 +47,7 @@ FORWARD_DECLARE_PROPERTY(StringLength);
 std::unique_ptr<BuiltInProperty_t> CStringValue::ConstructProperties(CProgramInformation* const info)
 {
 	auto m_oProperties = std::make_unique<BuiltInProperty_t>(info);
-	m_oProperties->AddProperty("length", StringLength);
+	m_oProperties->AddProperty(VSL("length"), StringLength);
 
 	return m_oProperties;
 }
@@ -60,19 +60,19 @@ DEFINE_PROPERTY(StringLength) {
 DEFINE_METHOD(ToUpper, args)
 {
 	auto __this = GetThisString(_this);
-	std::string v = __this->ToString();
+	VarjusString v = __this->ToString();
 
-	std::ranges::transform(v, v.begin(), [](std::int8_t c) { 
-		return static_cast<std::int8_t>(std::toupper(static_cast<std::int32_t>(c))); });
+	std::ranges::transform(v, v.begin(), [](VarjusChar c) { 
+		return static_cast<VarjusChar>(std::toupper(static_cast<std::int32_t>(c))); });
 	return CStringValue::Construct(ctx->m_pRuntime, v);
 }
 DEFINE_METHOD(ToLower, args)
 {
 	auto __this = GetThisString(_this);
-	std::string v = __this->ToString();
+	VarjusString v = __this->ToString();
 
-	std::ranges::transform(v, v.begin(), [](std::int8_t c) {
-		return static_cast<std::int8_t>(std::tolower(static_cast<std::int32_t>(c))); });
+	std::ranges::transform(v, v.begin(), [](VarjusChar c) {
+		return static_cast<VarjusChar>(std::tolower(static_cast<std::int32_t>(c))); });
 	return CStringValue::Construct(ctx->m_pRuntime, v);
 }
 DEFINE_METHOD(Substring, args)
@@ -85,7 +85,7 @@ DEFINE_METHOD(Substring, args)
 
 	const auto CheckSanity = [&ctx](const IValue* v) {
 		if (!v->IsIntegral())
-			throw CRuntimeError(ctx->m_pRuntime, std::format("string.substring expected an integral value, but got \"{}\"", v->TypeAsString()));
+			throw CRuntimeError(ctx->m_pRuntime, std::format(VSL("string.substring expected an integral value, but got \"{}\""), v->TypeAsString()));
 	};
 
 	CheckSanity(a);
@@ -96,30 +96,30 @@ DEFINE_METHOD(Substring, args)
 
 	const auto CheckRange = [&v, &ctx](const auto value) {
 		if(value < 0 || value >= static_cast<VarjusInt>(v.length()))
-			throw CRuntimeError(ctx->m_pRuntime, "string.substring index out of range");
+			throw CRuntimeError(ctx->m_pRuntime, VSL("string.substring index out of range"));
 	};
 
 	CheckRange(start);
 	CheckRange(end);
 
 	if(start >= end)
-		throw CRuntimeError(ctx->m_pRuntime, "string.substring expected start < end");
+		throw CRuntimeError(ctx->m_pRuntime, VSL("string.substring expected start < end"));
 
 	return CStringValue::Construct(ctx->m_pRuntime, v.substr(static_cast<std::size_t>(start), static_cast<std::size_t>(end)));
 }
 
-std::vector<std::string> SplitString(const std::string& str, const std::string& delimiter) {
-	std::vector<std::string> result;
+std::vector<VarjusString> SplitString(const VarjusString& str, const VarjusString& delimiter) {
+	std::vector<VarjusString> result;
 	std::size_t start{}, end{};
 
 	if (delimiter.empty()) {
-		for (char c : str) {
-			result.push_back(std::string(1, c));
+		for (auto c : str) {
+			result.push_back(VarjusString(1, c));
 		}
 		return result;
 	}
 
-	while ((end = str.find(delimiter, start)) != std::string::npos) {
+	while ((end = str.find(delimiter, start)) != VarjusString::npos) {
 		result.push_back(str.substr(start, end - start));
 		start = end + delimiter.length();
 	}
@@ -136,7 +136,7 @@ DEFINE_METHOD(Split, args) {
 	auto& delimiter = args.front();
 
 	if(delimiter->Type() != t_string)
-		throw CRuntimeError(ctx->m_pRuntime, std::format("string.split expected a \"string\", but got \"{}\"", delimiter->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, std::format(VSL("string.split expected a \"string\", but got \"{}\""), delimiter->TypeAsString()));
 
 	auto tokens = SplitString(v, delimiter->AsString());
 	IValues tokensAsValues;
@@ -145,11 +145,11 @@ DEFINE_METHOD(Split, args) {
 
 	return CArrayValue::Construct(ctx->m_pRuntime, std::move(tokensAsValues));
 }
-std::string ReplaceAll(const std::string& str, const std::string& oldSub, const std::string& newSub) {
-	std::string result = str;
+VarjusString ReplaceAll(const VarjusString& str, const VarjusString& oldSub, const VarjusString& newSub) {
+	VarjusString result = str;
 	size_t pos = 0;
 
-	while ((pos = result.find(oldSub, pos)) != std::string::npos) {
+	while ((pos = result.find(oldSub, pos)) != VarjusString::npos) {
 		result.replace(pos, oldSub.length(), newSub);
 		pos += newSub.length(); // move past the new substring to avoid infinite loops
 	}
@@ -164,7 +164,7 @@ DEFINE_METHOD(Replace, args) {
 
 	const auto CheckSanity = [&ctx](const IValue* v) {
 		if (v->Type() != t_string)
-			throw CRuntimeError(ctx->m_pRuntime, std::format("string.substring expected a \"string\", but got \"{}\"", v->TypeAsString()));
+			throw CRuntimeError(ctx->m_pRuntime, std::format(VSL("string.substring expected a \"string\", but got \"{}\""), v->TypeAsString()));
 	};
 
 	auto& a = args[0];
@@ -183,13 +183,13 @@ DEFINE_METHOD(Reproduce, args) {
 
 	auto& countValue = args[0];
 	if (!countValue->IsIntegral())
-		throw CRuntimeError(ctx->m_pRuntime, std::format("string.reproduce expected an integral value, but got \"{}\"", countValue->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, std::format(VSL("string.reproduce expected an integral value, but got \"{}\""), countValue->TypeAsString()));
 
 	auto count = countValue->ToInt();
 	if (count < 0)
-		throw CRuntimeError(ctx->m_pRuntime, "string.reproduce expected count to be >= 0");
+		throw CRuntimeError(ctx->m_pRuntime, VSL("string.reproduce expected count to be >= 0"));
 
-	std::string result;
+	VarjusString result;
 	for ([[maybe_unused]] const auto i : std::views::iota(0ll, count))
 		result += v;
 
@@ -202,12 +202,12 @@ DEFINE_METHOD(GetCodeAt, args) {
 
 	auto& idx = args[0];
 	if (!idx->IsIntegral())
-		throw CRuntimeError(ctx->m_pRuntime, std::format("string.get_code_at expected an integral value, but got \"{}\"", idx->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, std::format(VSL("string.get_code_at expected an integral value, but got \"{}\""), idx->TypeAsString()));
 
 	const auto index = idx->ToInt();
 
 	if (index < 0 || index >= static_cast<VarjusInt>(v.length()))
-		throw CRuntimeError(ctx->m_pRuntime, "string.get_code_at index out of range");
+		throw CRuntimeError(ctx->m_pRuntime, VSL("string.get_code_at index out of range"));
 
 	const auto asUnsigned = static_cast<std::size_t>(index);
 

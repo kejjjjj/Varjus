@@ -28,8 +28,8 @@ public:
 
 
 private:
-	[[nodiscard]] std::string TypeAsString() const override { return "boolean"s; }
-	[[nodiscard]] std::string ValueAsString() const override { return Get() ? "true"s : "false"s; }
+	[[nodiscard]] VarjusString TypeAsString() const override { return VSL("boolean"); }
+	[[nodiscard]] VarjusString ValueAsString() const override { return Get() ? VSL("true") : VSL("false"); }
 
 public:
 };

@@ -1,9 +1,11 @@
 #pragma once
 
-#include <string>
+
 #include <tuple>
 #include <array>
 #include <cassert>
+
+#include "varjus_api/internal/globalDefinitions.hpp"
 
 
 enum TokenType : signed char
@@ -43,37 +45,37 @@ enum TokenType : signed char
 
 #define IS_IMMEDIATE(v) v >= TokenType::tt_undefined && v <= TokenType::tt_string
 
-constexpr std::array<const char*, tt_unused_count> tokenTypeStrings = {{
-	"error",
-	"undefined",
-	"false",
-	"true",
-	"int",
-	"uint",
-	"double",
-	"string",
-	"fmt_string",
-	"name",
-	"operator",
-	"let",
-	"const",
-	"fn",
-	"if",
-	"else",
-	"for",
-	"while",
-	"repeat",
-	"return",
-	"break",
-	"continue",
-	"try",
-	"catch",
-	"throw",
-	"typeof",
-	"tostring",
-	"import",
-	"from",
-	"export"
+constexpr std::array<const VarjusChar*, tt_unused_count> tokenTypeStrings = {{
+	VSL("error"),
+	VSL("undefined"),
+	VSL("false"),
+	VSL("true"),
+	VSL("int"),
+	VSL("uint"),
+	VSL("double"),
+	VSL("string"),
+	VSL("fmt_string"),
+	VSL("name"),
+	VSL("operator"),
+	VSL("let"),
+	VSL("const"),
+	VSL("fn"),
+	VSL("if"),
+	VSL("else"),
+	VSL("for"),
+	VSL("while"),
+	VSL("repeat"),
+	VSL("return"),
+	VSL("break"),
+	VSL("continue"),
+	VSL("try"),
+	VSL("catch"),
+	VSL("throw"),
+	VSL("typeof"),
+	VSL("tostring"),
+	VSL("import"),
+	VSL("from"),
+	VSL("export")
 }};
 
 static_assert(tokenTypeStrings.size() == tt_unused_count);
@@ -91,7 +93,7 @@ public:
 
 	//expects a parsed string
 	CToken() = default;
-	CToken(const std::string_view& token, TokenType tt) : m_eTokenType(tt), m_sSource(token){
+	CToken(const STD_STRING_VIEW& token, TokenType tt) : m_eTokenType(tt), m_sSource(token){
 		assert(token.data() && token.size());
 		assert(m_eTokenType != tt_error);
 
@@ -109,7 +111,7 @@ public:
 private:
 	TokenType m_eTokenType{ tt_error };
 protected:
-	std::string m_sSource;
+	VarjusString m_sSource;
 };
 
 class CPunctuationToken final : public CToken

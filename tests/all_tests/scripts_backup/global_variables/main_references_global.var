@@ -1,0 +1,6 @@
+let glob = 30;
+
+fn main()
+{
+	return glob;
+}

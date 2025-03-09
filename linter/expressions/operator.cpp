@@ -14,7 +14,7 @@
 
 Punctuation CLinterOperator::GetPunctuation() const noexcept { return m_pToken->m_ePunctuation; }
 
-std::string CLinterOperator::ToString() const noexcept
+VarjusString CLinterOperator::ToString() const noexcept
 {
 	assert(m_pToken != nullptr && m_ePriority != op_failure);
 	return m_pToken->Source();
@@ -35,7 +35,7 @@ Success CLinterOperatorParser::ParseOperator(std::optional<PairMatcher>& eoe,
 		return failure;
 
 	if (IsEndOfBuffer() || !CheckOperator()) {
-		m_pOwner->GetModule()->PushError("unexpected end of expression: " + (*m_iterPos)->Source(), GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError(VSL("unexpected end of expression: ") + (*m_iterPos)->Source(), GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 
@@ -56,7 +56,7 @@ Success CLinterOperatorParser::ParseOperator(std::optional<PairMatcher>& eoe,
 	}
 
 	if (!IsOperator(asPunctuation)) {
-		m_pOwner->GetModule()->PushError("unexpected end of expression: " + iterPos->Source(), GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError(VSL("unexpected end of expression: ") + iterPos->Source(), GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 

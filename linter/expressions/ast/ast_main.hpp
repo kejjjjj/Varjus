@@ -161,7 +161,7 @@ class ConstantASTNode final : public AbstractSyntaxTree
 
 public:
 	ConstantASTNode(ConstantASTNode&& other) = default;
-	ConstantASTNode(const CodePosition& pos, const std::string& data, EValueType datatype);
+	ConstantASTNode(const CodePosition& pos, const VarjusString& data, EValueType datatype);
 	~ConstantASTNode();
 
 	[[nodiscard]] constexpr bool IsLeaf() const noexcept override { return true; }
@@ -173,7 +173,7 @@ public:
 #endif
 
 	// contains the raw data for the constant
-	std::string m_pConstant;
+	VarjusString m_pConstant;
 	EValueType m_eDataType{};
 };
 class ArrayASTNode final : public AbstractSyntaxTree
@@ -250,9 +250,9 @@ public:
 
 struct FmtStringAST {
 	enum FmtNodeASTType { TEXT, PLACEHOLDER } type;
-	std::variant<std::string, ASTNode> value; // Raw text for TEXT, variable name for PLACEHOLDER
+	std::variant<VarjusString, ASTNode> value; // Raw text for TEXT, variable name for PLACEHOLDER
 
-	explicit FmtStringAST(const std::string& raw) : type(TEXT), value(raw) {}
+	explicit FmtStringAST(const VarjusString& raw) : type(TEXT), value(raw) {}
 	explicit FmtStringAST(ASTNode&& raw) : type(PLACEHOLDER), value(std::move(raw)) {}
 };
 

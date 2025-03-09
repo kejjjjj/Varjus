@@ -29,7 +29,7 @@
 
 #include <cassert>
 
-CBufferLinter::CBufferLinter(CProgramInformation* const program, LinterIterator& start, LinterIterator& end, const std::string& filePath)
+CBufferLinter::CBufferLinter(CProgramInformation* const program, LinterIterator& start, LinterIterator& end, const VarjusString& filePath)
 	: CLinter(start, end), m_oInitialPosition(start), m_sFilePath(filePath), m_pProgram(program) {}
 CBufferLinter::~CBufferLinter() = default;
 
@@ -80,7 +80,7 @@ Success CBufferLinter::LintScope(const CLinterContext& ctx)
 {
 
 	if (ctx.memory->IsGlobalMemory()) {
-		ctx.m_pModule->PushError("unnamed scopes are not allowed in the global scope", (*ctx.m_iterPos)->m_oSourcePosition);
+		ctx.m_pModule->PushError(VSL("unnamed scopes are not allowed in the global scope"), (*ctx.m_iterPos)->m_oSourcePosition);
 		return failure;
 	}
 	auto s = ctx.scope.lock();
@@ -160,7 +160,7 @@ Success CBufferLinter::LintToken(const CLinterContext& ctx)
 	case tt_from:
 	case tt_unused_count:
 	default:
-		ctx.m_pModule->PushError("unexpected token: " + (*ctx.m_iterPos)->Source(), (*ctx.m_iterPos)->m_oSourcePosition);
+		ctx.m_pModule->PushError(VSL("unexpected token: ") + (*ctx.m_iterPos)->Source(), (*ctx.m_iterPos)->m_oSourcePosition);
 		return failure;
 	}
 
@@ -182,12 +182,12 @@ static void DeclareGlobalObjects(CMemory* m_pOwner, CScope* const scope)
 	auto info = m_pOwner->GetProgramInformation();
 
 	if(!info || !info->m_oBuiltInObjects)
-		return m_pOwner->GetModule()->PushError("internal bug in DeclareGlobalObjects: !info || !info->m_oBuiltInObjects");
+		return m_pOwner->GetModule()->PushError(VSL("internal bug in DeclareGlobalObjects: !info || !info->m_oBuiltInObjects"));
 
 	for (auto& [k, v] : info->m_oBuiltInObjects->Iterator()) {
 		m_pOwner->m_VariableManager->DeclareVariable(k);
 		if (!scope->DeclareVariable(k))
-			return m_pOwner->GetModule()->PushError("internal bug in DeclareGlobalObjects");
+			return m_pOwner->GetModule()->PushError(VSL("internal bug in DeclareGlobalObjects"));
 	}
 }
 static void DeclareBuiltInFunctions(CMemory* m_pOwner)
@@ -195,7 +195,7 @@ static void DeclareBuiltInFunctions(CMemory* m_pOwner)
 	auto info = m_pOwner->GetProgramInformation();
 
 	if (!info || !info->m_oBuiltInFunctions)
-		return m_pOwner->GetModule()->PushError("internal bug in DeclareGlobalObjects: !info || !info->m_oBuiltInObjects");
+		return m_pOwner->GetModule()->PushError(VSL("internal bug in DeclareGlobalObjects: !info || !info->m_oBuiltInObjects"));
 
 	for (auto& [k, v] : info->m_oBuiltInFunctions->Iterator()) {
 		auto& [callable, numArgs] = v;

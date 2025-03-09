@@ -1,4 +1,4 @@
-fn arrToString(arr)
+﻿fn arrToString(arr)
 {
 	const newArr = [];
 	for(const iter : arr)

@@ -31,9 +31,9 @@ template<typename T>
 concept PrintableValue = VariableT<T> || IValueChild<T>;
 
 template<PrintableValue T>
-void PrintLeaks(CProgramRuntime* _this, const char* name) {
+void PrintLeaks(CProgramRuntime* _this, const VarjusString& name) {
 	if(const auto count = _this->GetPool<T>().GetInUseCount())
-		std::cout << std::format("LEAK -> {}: {}\n", name, count);
+		STD_COUT << std::format(VSL("LEAK -> {}: {}\n"), name, count);
 }
 
 template<PrintableValue T>
@@ -55,7 +55,7 @@ IValue* CProgramRuntime::Execute()
 	CRuntimeFunction* mainFunction = FindMainFunction(m_oModules);
 
 	if (!mainFunction) {
-		throw CRuntimeError(this, "couldn't find the \"main\" function");
+		throw CRuntimeError(this, VSL("couldn't find the \"main\" function"));
 	}
 
 	for (auto& mod : m_oModules) {
@@ -101,7 +101,7 @@ CRuntimeFunction* CProgramRuntime::FindMainFunction(const RuntimeModules& module
 {
 	for (auto& mod : modules) {
 
-		const auto iMainFunction = std::ranges::find(mod->m_oFunctions, "main", [](const RuntimeFunction& rf) { return rf->GetName(); });
+		const auto iMainFunction = std::ranges::find(mod->m_oFunctions, VSL("main"), [](const RuntimeFunction& rf) { return rf->GetName(); });
 
 		if (iMainFunction != mod->m_oFunctions.end() && (*iMainFunction)->FunctionType() == fn_regular) {
 			return dynamic_cast<CRuntimeFunction*>(iMainFunction->get());
@@ -138,17 +138,17 @@ bool CProgramRuntime::HasLeaks()
 }
 void CProgramRuntime::PrintAllLeaks()
 {
-	PrintLeaks<IValue>(this, "undefined");
-	PrintLeaks<CBooleanValue>(this, "boolean");
-	PrintLeaks<CIntValue>(this, "int");
-	PrintLeaks<CUIntValue>(this, "uint");
-	PrintLeaks<CDoubleValue>(this, "VarjusDouble");
-	PrintLeaks<CStringValue>(this, "string");
-	PrintLeaks<CCallableValue>(this, "callable");
-	PrintLeaks<CArrayValue>(this, "array");
-	PrintLeaks<CObjectValue>(this, "object");
-	PrintLeaks<CVariable>(this, "variable");
-	PrintLeaks<CBuiltInObject>(this, "built-in object");
+	PrintLeaks<IValue>(this, VSL("undefined"));
+	PrintLeaks<CBooleanValue>(this, VSL("boolean"));
+	PrintLeaks<CIntValue>(this, VSL("int"));
+	PrintLeaks<CUIntValue>(this, VSL("uint"));
+	PrintLeaks<CDoubleValue>(this, VSL("VarjusDouble"));
+	PrintLeaks<CStringValue>(this, VSL("string"));
+	PrintLeaks<CCallableValue>(this, VSL("callable"));
+	PrintLeaks<CArrayValue>(this, VSL("array"));
+	PrintLeaks<CObjectValue>(this, VSL("object"));
+	PrintLeaks<CVariable>(this, VSL("variable"));
+	PrintLeaks<CBuiltInObject>(this, VSL("built-in object"));
 }
 void CProgramRuntime::FreeAllPools()
 {

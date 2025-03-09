@@ -78,7 +78,7 @@ std::unique_ptr<IPostfixBase> CPostfixLinter::ParseMemberAccess()
 	std::advance(m_iterPos, 1); // skip .
 
 	if (IsEndOfBuffer() || (*m_iterPos)->Type() != tt_name) {
-		m_pOwner->GetModule()->PushError(std::format("expected a member name instead of \"{}\"", GetIteratorSafe()->Source()),
+		m_pOwner->GetModule()->PushError(std::format(VSL("expected a member name instead of \"{}\""), GetIteratorSafe()->Source()),
 			GetIteratorSafe()->m_oSourcePosition);
 		return nullptr;
 	}
@@ -108,7 +108,7 @@ std::unique_ptr<IPostfixBase> CPostfixLinter::ParseFunctionCall()
 {
 
 	if (m_pOwner == m_pOwner->GetGlobalMemory()) {
-		m_pOwner->GetModule()->PushError("don't call functions in the global scope - use the main function", GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError(VSL("don't call functions in the global scope - use the main function"), GetIteratorSafe()->m_oSourcePosition);
 		return nullptr;
 	}
 	assert((*m_iterPos)->IsOperator(p_par_open));

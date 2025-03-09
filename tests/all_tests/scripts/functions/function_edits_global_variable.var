@@ -1,4 +1,4 @@
-
+﻿
 let glob = 0;
 
 fn editGlob()

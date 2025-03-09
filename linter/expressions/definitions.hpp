@@ -1,7 +1,7 @@
 #pragma once
 
 #include <vector>
-#include <string>
+
 #include <memory>
 
 #include "varjus_api/internal/globalDefinitions.hpp"
@@ -32,7 +32,7 @@ template<class ContainerType>
 class CLinter
 {
 	static_assert(std::is_same_v<ContainerType, CToken> || std::is_same_v<ContainerType, CPunctuationToken>, 
-		"ContainerType must have CToken as the base");
+		VSL("ContainerType must have CToken as the base"));
 public:
 	CLinter() = delete;
 

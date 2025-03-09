@@ -2,12 +2,12 @@
 #include "tests/utils.hpp"
 
 
-#define PATH_PREFIX "modules"
-#define JP(x) (std::string(PATH_PREFIX) + DIRECTORY_SEPARATOR + x)
+#define PATH_PREFIX VSL("modules")
+#define JP(x) (VarjusString(PATH_PREFIX) + DIRECTORY_SEPARATOR + x)
 
-TEST_CASE("Main imports global variable") {
+TEST_CASE(("Main imports global variable")) {
 
-	auto retVal = TEST_ExecuteFile(JP("main_imports_variable" + DIRECTORY_SEPARATOR + "main.var"));
+	auto retVal = TEST_ExecuteFile(JP(VSL("main_imports_variable") + DIRECTORY_SEPARATOR + VSL("main.var")));
 
 	REQUIRE(retVal != nullptr);
 	REQUIRE(retVal->Type() == t_int);
@@ -16,9 +16,9 @@ TEST_CASE("Main imports global variable") {
 	REQUIRE(retVal->HasOwner() == false);
 	TEST_END(retVal);
 }
-TEST_CASE("Main imports global variable and edits it") {
+TEST_CASE(("Main imports global variable and edits it")) {
 
-	auto retVal = TEST_ExecuteFile(JP("main_imports_variable" + DIRECTORY_SEPARATOR + "main_imports_and_uses.var"));
+	auto retVal = TEST_ExecuteFile(JP(VSL("main_imports_variable") + DIRECTORY_SEPARATOR + VSL("main_imports_and_uses.var")));
 
 	REQUIRE(retVal != nullptr);
 	REQUIRE(retVal->Type() == t_int);
@@ -27,9 +27,9 @@ TEST_CASE("Main imports global variable and edits it") {
 	REQUIRE(retVal->HasOwner() == false);
 	TEST_END(retVal);
 }
-TEST_CASE("Main imports function") {
+TEST_CASE(("Main imports function")) {
 
-	auto retVal = TEST_ExecuteFile(JP("main_imports_function" + DIRECTORY_SEPARATOR + "main.var"));
+	auto retVal = TEST_ExecuteFile(JP(VSL("main_imports_function") + DIRECTORY_SEPARATOR + VSL("main.var")));
 
 	REQUIRE(retVal != nullptr);
 	REQUIRE(retVal->Type() == t_callable);
@@ -38,21 +38,9 @@ TEST_CASE("Main imports function") {
 	REQUIRE(retVal->HasOwner() == false);
 	TEST_END(retVal);
 }
-TEST_CASE("Main imports function and calls it") {
+TEST_CASE(("Main imports function and calls it")) {
 
-	auto retVal = TEST_ExecuteFile(JP("main_imports_function" + DIRECTORY_SEPARATOR + "main_calls_exported.var"));
-
-	REQUIRE(retVal != nullptr);
-	REQUIRE(retVal->Type() == t_int);
-	REQUIRE(retVal->ToInt() == 50);
-
-	REQUIRE(retVal->HasOwner() == false);
-	TEST_END(retVal);
-}
-
-TEST_CASE("Imported function edits lambda capture") {
-
-	auto retVal = TEST_ExecuteFile(JP("lambda_captures_get_passed" + DIRECTORY_SEPARATOR + "main.var"));
+	auto retVal = TEST_ExecuteFile(JP(VSL("main_imports_function") + DIRECTORY_SEPARATOR + VSL("main_calls_exported.var")));
 
 	REQUIRE(retVal != nullptr);
 	REQUIRE(retVal->Type() == t_int);
@@ -62,10 +50,22 @@ TEST_CASE("Imported function edits lambda capture") {
 	TEST_END(retVal);
 }
 
+TEST_CASE(("Imported function edits lambda capture")) {
 
-TEST_CASE("VarjusDouble import (main imports from a and a imports from b)") {
+	auto retVal = TEST_ExecuteFile(JP(VSL("lambda_captures_get_passed") + DIRECTORY_SEPARATOR + VSL("main.var")));
 
-	auto retVal = TEST_ExecuteFile(JP("double_import" + DIRECTORY_SEPARATOR + "main.var"));
+	REQUIRE(retVal != nullptr);
+	REQUIRE(retVal->Type() == t_int);
+	REQUIRE(retVal->ToInt() == 50);
+
+	REQUIRE(retVal->HasOwner() == false);
+	TEST_END(retVal);
+}
+
+
+TEST_CASE(("VarjusDouble import (main imports from a and a imports from b)")) {
+
+	auto retVal = TEST_ExecuteFile(JP(VSL("double_import") + DIRECTORY_SEPARATOR + VSL("main.var")));
 
 	REQUIRE(retVal != nullptr);
 	REQUIRE(retVal->Type() == t_int);
@@ -75,9 +75,9 @@ TEST_CASE("VarjusDouble import (main imports from a and a imports from b)") {
 	TEST_END(retVal);
 }
 
-TEST_CASE("Main imports variable and func then the variable gets edited in func") {
+TEST_CASE(("Main imports variable and func then the variable gets edited in func")) {
 
-	auto retVal = TEST_ExecuteFile(JP("main_imports_multiple" + DIRECTORY_SEPARATOR + "main.var"));
+	auto retVal = TEST_ExecuteFile(JP(VSL("main_imports_multiple") + DIRECTORY_SEPARATOR + VSL("main.var")));
 
 	AssertArray(retVal, AssertArrayValue<ASSERT_INT>(t_int, { 50, 111 }));
 
@@ -85,18 +85,18 @@ TEST_CASE("Main imports variable and func then the variable gets edited in func"
 	TEST_END(retVal);
 }
 
-TEST_CASE("Main and other call array methods") {
+TEST_CASE(("Main and other call array methods")) {
 
-	auto retVal = TEST_ExecuteFile(JP("calling_methods_in_separate_files" + DIRECTORY_SEPARATOR + "main.var"));
+	auto retVal = TEST_ExecuteFile(JP(VSL("calling_methods_in_separate_files") + DIRECTORY_SEPARATOR + VSL("main.var")));
 
 	AssertArray(retVal, AssertArrayValue<ASSERT_INT>(t_int, { 50, 2, 3}));
 
 	REQUIRE(retVal->HasOwner() == false);
 	TEST_END(retVal);
 }
-TEST_CASE("Module throws and main catches it") {
+TEST_CASE(("Module throws and main catches it")) {
 
-	auto retVal = TEST_ExecuteFile(JP("module_throws_and_main_catches" + DIRECTORY_SEPARATOR + "main.var"));
+	auto retVal = TEST_ExecuteFile(JP(VSL("module_throws_and_main_catches") + DIRECTORY_SEPARATOR + VSL("main.var")));
 
 	AssertArray(retVal, AssertArrayValue<ASSERT_INT>(t_int, { 1, 2, 3 }));
 

@@ -25,7 +25,7 @@ Success CImportLinter::Parse()
 
 	if (IsEndOfBuffer() || (*m_iterPos)->Type() != tt_import) {
 
-		m_pOwner->GetModule()->PushError( "expected \"import\"", GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError( VSL("expected \"import\""), GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 
@@ -35,7 +35,7 @@ Success CImportLinter::Parse()
 		return failure;
 
 	if (IsEndOfBuffer() || (*m_iterPos)->Type() != tt_from) {
-		m_pOwner->GetModule()->PushError("expected \"from\"", GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError(VSL("expected \"from\""), GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 
@@ -48,7 +48,7 @@ Success CImportLinter::Parse()
 		return failure;
 
 	if (IsEndOfBuffer() || !(*m_iterPos)->IsOperator(p_semicolon)) {
-		m_pOwner->GetModule()->PushError("expected \";\"", GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError(VSL("expected \";\""), GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 
@@ -60,12 +60,12 @@ Success CImportLinter::ParseIdentifierRecursively()
 {
 
 	if (IsEndOfBuffer() || (*m_iterPos)->Type() != tt_name) {
-		m_pOwner->GetModule()->PushError("expected a name", GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError(VSL("expected a name"), GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 
 	if (m_pOwner->GetContext()->m_sFilePath.empty()) {
-		m_pOwner->GetModule()->PushError("imports are not supported when there is no working directory",
+		m_pOwner->GetModule()->PushError(VSL("imports are not supported when there is no working directory"),
 			GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
@@ -86,7 +86,7 @@ Success CImportLinter::ParseIdentifierRecursively()
 Success CImportLinter::ParseFilePath()
 {
 	if (IsEndOfBuffer() || (*m_iterPos)->Type() != tt_string) {
-		m_pOwner->GetModule()->PushError("expected a string", GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError(VSL("expected a string"), GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 
@@ -96,14 +96,14 @@ Success CImportLinter::ParseFilePath()
 	const auto fullPath = wd + DIRECTORY_SEPARATOR_CHAR + relativePath;
 
 	if (!fs::file_exists(fullPath)) {
-		m_pOwner->GetModule()->PushError(std::format("\"{}\" does not exist", fullPath), GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError(std::format(VSL("\"{}\" does not exist"), fullPath), GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 
 	m_oTargetFile = fullPath;
 
 	if (m_oTargetFile == m_pOwner->GetModule()->GetFilePath()) {
-		m_pOwner->GetModule()->PushError(std::format("attempted to import a symbol that is exported in the same file", fullPath),
+		m_pOwner->GetModule()->PushError(std::format(VSL("attempted to import a symbol that is exported in the same file"), fullPath),
 			GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
@@ -151,7 +151,7 @@ Success CImportLinter::ParseFile()
 		const auto exportedSymbol = thisModule->GetExport(name);
 
 		if (!exportedSymbol) {
-			thisModule->PushError(std::format("\"{}\" is not an exported symbol", name), GetIteratorSafe()->m_oSourcePosition);
+			thisModule->PushError(std::format(VSL("\"{}\" is not an exported symbol"), name), GetIteratorSafe()->m_oSourcePosition);
 			return failure;
 		}
 		if (exportedSymbol->Type() == es_variable) {
@@ -199,19 +199,19 @@ CModule* CImportLinter::GetFileModule() const
 
 }
 
-Success CImportLinter::DeclareVariable(const std::string& symbolName,
+Success CImportLinter::DeclareVariable(const VarjusString& symbolName,
 	CExportedSymbol* const s, std::size_t moduleIndex)
 {
 
 	auto scope = m_pScope.lock();
 
 	if (!scope) {
-		m_pOwner->GetModule()->PushError("CImportLinter: internal error", GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError(VSL("CImportLinter: internal error"), GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 
 	if (!scope->DeclareVariable(symbolName)) {
-		m_pOwner->GetModule()->PushError(std::format("variable \"{}\" already declared", symbolName), (*m_iterPos)->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError(std::format(VSL("variable \"{}\" already declared"), symbolName), (*m_iterPos)->m_oSourcePosition);
 		return failure;
 	}
 
@@ -223,12 +223,12 @@ Success CImportLinter::DeclareVariable(const std::string& symbolName,
 	return success;
 }
 
-Success CImportLinter::DeclareFunction(const std::string& symbolName,
+Success CImportLinter::DeclareFunction(const VarjusString& symbolName,
 	CExportedSymbol* const s, std::size_t moduleIndex)
 {
 
 	if (m_pOwner->m_FunctionManager->ContainsFunction(symbolName)) {
-		m_pOwner->GetModule()->PushError(std::format("function \"{}\" already declared", symbolName), (*m_iterPos)->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError(std::format(VSL("function \"{}\" already declared"), symbolName), (*m_iterPos)->m_oSourcePosition);
 		return failure;
 	}
 

@@ -5,7 +5,7 @@
 
 #include <vector>
 #include <memory>
-#include <string>
+
 
 class CInternalArrayValue;
 class CVariable;
@@ -78,8 +78,8 @@ public:
 
 
 private:
-	[[nodiscard]] std::string TypeAsString() const override { return "array"s; }
-	[[nodiscard]] std::string ValueAsString() const override;
+	[[nodiscard]] VarjusString TypeAsString() const override { return VSL("array"); }
+	[[nodiscard]] VarjusString ValueAsString() const override;
 
 };
 

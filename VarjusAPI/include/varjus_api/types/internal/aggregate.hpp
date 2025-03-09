@@ -3,7 +3,10 @@
 #include <map>
 #include <vector>
 #include <memory>
-#include <string>
+
+
+#include "varjus_api/internal/globalDefinitions.hpp"
+
 
 class IValue;
 class CVariable;
@@ -32,8 +35,8 @@ public:
 	[[nodiscard]] bool RemoveAttribute(ElementIndex elem);
 
 	[[nodiscard]] IValue* ElementLookup(GlobalMemberIndex index) const;
-	[[nodiscard]] bool Contains(const std::string& item) const;
-	[[nodiscard]] IValue* Get(const std::string& item) const;
+	[[nodiscard]] bool Contains(const VarjusString& item) const;
+	[[nodiscard]] IValue* Get(const VarjusString& item) const;
 
 	[[nodiscard]] auto Length() const noexcept { return m_oIndexLookup.size(); }
 

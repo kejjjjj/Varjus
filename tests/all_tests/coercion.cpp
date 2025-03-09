@@ -1,12 +1,12 @@
 #include "tests/tests.hpp"
 #include "tests/utils.hpp"
 
-#define PATH_PREFIX "coercion"
-#define JP(x) (std::string(PATH_PREFIX) + DIRECTORY_SEPARATOR + x)
+#define PATH_PREFIX VSL("coercion")
+#define JP(x) (VarjusString(PATH_PREFIX) + DIRECTORY_SEPARATOR + x)
 
-TEST_CASE("Boolean gets coerced to int") {
+TEST_CASE(("Boolean gets coerced to int")) {
 
-	auto retVal = TEST_ExecuteFile(JP("boolean_to_int.var"));
+	auto retVal = TEST_ExecuteFile(JP(VSL("boolean_to_int.var")));
 
 	REQUIRE(retVal != nullptr);
 	REQUIRE(retVal->Type() == t_int);
@@ -15,9 +15,9 @@ TEST_CASE("Boolean gets coerced to int") {
 	REQUIRE(retVal->HasOwner() == false);
 	TEST_END(retVal);
 }
-TEST_CASE("Boolean gets coerced to uint") {
+TEST_CASE(("Boolean gets coerced to uint")) {
 
-	auto retVal = TEST_ExecuteFile(JP("boolean_to_uint.var"));
+	auto retVal = TEST_ExecuteFile(JP(VSL("boolean_to_uint.var")));
 
 	REQUIRE(retVal != nullptr);
 	REQUIRE(retVal->Type() == t_uint);
@@ -26,9 +26,9 @@ TEST_CASE("Boolean gets coerced to uint") {
 	REQUIRE(retVal->HasOwner() == false);
 	TEST_END(retVal);
 }
-TEST_CASE("Boolean gets coerced to double") {
+TEST_CASE(("Boolean gets coerced to double")) {
 
-	auto retVal = TEST_ExecuteFile(JP("boolean_to_double.var"));
+	auto retVal = TEST_ExecuteFile(JP(VSL("boolean_to_double.var")));
 
 	REQUIRE(retVal != nullptr);
 	REQUIRE(retVal->Type() == t_double);
@@ -37,9 +37,9 @@ TEST_CASE("Boolean gets coerced to double") {
 	REQUIRE(retVal->HasOwner() == false);
 	TEST_END(retVal);
 }
-TEST_CASE("UInt gets coerced to int") {
+TEST_CASE(("UInt gets coerced to int")) {
 
-	auto retVal = TEST_ExecuteFile(JP("uint_to_int.var"));
+	auto retVal = TEST_ExecuteFile(JP(VSL("uint_to_int.var")));
 
 	REQUIRE(retVal != nullptr);
 	REQUIRE(retVal->Type() == t_int);
@@ -48,9 +48,9 @@ TEST_CASE("UInt gets coerced to int") {
 	REQUIRE(retVal->HasOwner() == false);
 	TEST_END(retVal);
 }
-TEST_CASE("Int gets coerced to double") {
+TEST_CASE(("Int gets coerced to double")) {
 
-	auto retVal = TEST_ExecuteFile(JP("int_to_double.var"));
+	auto retVal = TEST_ExecuteFile(JP(VSL("int_to_double.var")));
 
 	REQUIRE(retVal != nullptr);
 	REQUIRE(retVal->Type() == t_double);
@@ -59,9 +59,9 @@ TEST_CASE("Int gets coerced to double") {
 	REQUIRE(retVal->HasOwner() == false);
 	TEST_END(retVal);
 }
-TEST_CASE("UInt gets coerced to double") {
+TEST_CASE(("UInt gets coerced to double")) {
 
-	auto retVal = TEST_ExecuteFile(JP("uint_to_double.var"));
+	auto retVal = TEST_ExecuteFile(JP(VSL("uint_to_double.var")));
 
 	REQUIRE(retVal != nullptr);
 	REQUIRE(retVal->Type() == t_double);

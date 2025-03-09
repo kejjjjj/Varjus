@@ -14,7 +14,7 @@ IConstEvalValue* CConstEvalDoubleValue::Copy()
 }
 std::shared_ptr<ConstantASTNode> CConstEvalDoubleValue::ToAST() const
 {
-	std::string data;
+	VarjusString data;
 	data.append(reinterpret_cast<const char*>(&Get()), sizeof(Get()));
 	return std::make_shared<ConstantASTNode>(m_oApproximatePosition, data, t_double);
 }

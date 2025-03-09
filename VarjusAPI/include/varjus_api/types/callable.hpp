@@ -76,8 +76,8 @@ public:
 	}
 
 private:
-	[[nodiscard]] std::string TypeAsString() const override { return "callable"s; }
-	[[nodiscard]] std::string ValueAsString() const override { 
-		return std::format("{:x}", (std::size_t)GetShared()->GetCallable()); }
+	[[nodiscard]] VarjusString TypeAsString() const override { return VSL("callable"); }
+	[[nodiscard]] VarjusString ValueAsString() const override { 
+		return std::format(VSL("{:x}"), (std::size_t)GetShared()->GetCallable()); }
 
 };

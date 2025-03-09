@@ -1,0 +1,12 @@
+
+fn main()
+{
+
+	let i = 0;
+
+	repeat {
+		i++;
+	}while(i < 5);
+
+	return i;
+}

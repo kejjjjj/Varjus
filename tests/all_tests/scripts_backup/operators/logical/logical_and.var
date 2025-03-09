@@ -1,0 +1,21 @@
+fn main()
+{
+
+	return [
+
+		true && true,
+		true && false,
+		false && true,
+
+		undefined && undefined,
+
+		1 && 1,
+		0 && 0,
+		1 && 0,
+
+		1.0 && 1.0,
+		0.0 && 0.0,
+		1.0 && 0.0
+	];
+
+}

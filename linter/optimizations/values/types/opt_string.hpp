@@ -4,7 +4,7 @@
 
 #include "opt_value.hpp"
 
-class CConstEvalStringValue final : public CConstEvalValue<std::string>
+class CConstEvalStringValue final : public CConstEvalValue<VarjusString>
 {
 public:
 	CConstEvalStringValue() = default;
@@ -21,13 +21,13 @@ public:
 	[[nodiscard]] bool ToBoolean() const override { return !m_oValue.empty(); }
 	[[nodiscard]] VarjusInt ToInt() const override { return static_cast<VarjusInt>(ToBoolean()); }
 	[[nodiscard]] VarjusDouble ToDouble() const override { return static_cast<VarjusDouble>(ToBoolean()); }
-	[[nodiscard]] const std::string& ToString() const override { return m_oValue; }
+	[[nodiscard]] const VarjusString& ToString() const override { return m_oValue; }
 
 	[[nodiscard]] CConstEvalStringValue* ToCString() override { return this; }
 
 private:
-	[[nodiscard]] std::string TypeAsString() const override { return "string"s; }
-	[[nodiscard]] std::string ValueAsString() const override { return m_oValue; }
+	[[nodiscard]] VarjusString TypeAsString() const override { return VSL("string"); }
+	[[nodiscard]] VarjusString ValueAsString() const override { return m_oValue; }
 };
 
 #endif

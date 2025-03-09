@@ -1,4 +1,4 @@
-fn main()
+﻿fn main()
 {
 	let var = [ 0, 1, 2 ];
 	return var;

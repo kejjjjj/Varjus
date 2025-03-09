@@ -57,7 +57,7 @@ IValue* CObjectValue::Index(IValue* index) {
 	const auto key = index->ValueAsString();
 
 	if (!members->Contains(key)) {
-		throw CRuntimeError(m_pAllocator, std::format("this aggregate doesn't have the attribute \"{}\"", key));
+		throw CRuntimeError(m_pAllocator, std::format(VSL("this aggregate doesn't have the attribute \"{}\""), key));
 	}
 
 	return Internal()->GetAggregateValue().ElementLookup(members->At(key));
@@ -82,26 +82,26 @@ IValue* CObjectValue::GetAggregate(CRuntimeContext* const ctx, std::size_t membe
 	return Internal()->GetAggregateValue().ElementLookup(memberIdx);
 }
 
-std::string CObjectValue::ValueAsString() const 
+VarjusString CObjectValue::ValueAsString() const 
 {
-	std::stringstream ss;
+	STD_STRINGSTREAM ss;
 
 	auto members = Internal()->GetAllRuntimeMembers();
 
 	for (const auto& [key, value] : GetShared()->GetAggregateValue().Iterator()) {
 		assert(members);
-		ss << "    " << members->At(key);
-		ss << ": " << value->GetValue()->ValueAsString() << ",\n";
+		ss << VSL("    ") << members->At(key);
+		ss << VSL(": ") << value->GetValue()->ValueAsString() << VSL(",\n");
 	}
 
 	auto result = ss.str();
 
 	if (result.empty())
-		return "{}";
+		return VSL("{}");
 
 	result.erase(result.size() - 2, 2);
 
-	return "{\n" + result + "\n}";
+	return VSL("{\n") + result + VSL("\n}");
 }
 /***********************************************************************
  > 

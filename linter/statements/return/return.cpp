@@ -24,11 +24,11 @@ Success CReturnStatementLinter::Parse()
 
 	if (const auto scope = m_pScope.lock()) {
 		if (scope->IsGlobalScope()) {
-			m_pOwner->GetModule()->PushError("cannot return in the global scope", GetIteratorSafe()->m_oSourcePosition);
+			m_pOwner->GetModule()->PushError(VSL("cannot return in the global scope"), GetIteratorSafe()->m_oSourcePosition);
 			return failure;
 		}
 	} else {
-		m_pOwner->GetModule()->PushError("!(const auto scope = m_pScope.lock())", GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError(VSL("!(const auto scope = m_pScope.lock())"), GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 

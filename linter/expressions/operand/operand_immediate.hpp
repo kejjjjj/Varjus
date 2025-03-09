@@ -17,7 +17,7 @@ struct CImmediateOperand final : public IOperand
 private:
 	[[nodiscard]] EValueType GetImmediateType() const noexcept;
 	[[nodiscard]] std::size_t GetImmediateSize() const noexcept;
-	[[nodiscard]] std::string ToData() const noexcept;
+	[[nodiscard]] VarjusString ToData() const noexcept;
 
 	const CToken* m_pToken{};
 };

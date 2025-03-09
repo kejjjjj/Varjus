@@ -21,7 +21,7 @@ std::unique_ptr<IOperand> CLinterOperand::ParseLambda()
 	auto& oldIter = m_iterPos;
 
 	if (m_pOwner->IsLocalFunction()) {
-		m_pOwner->GetModule()->PushError("nested lambdas are not supported", GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError(VSL("nested lambdas are not supported"), GetIteratorSafe()->m_oSourcePosition);
 		return nullptr;
 	}
 
@@ -46,7 +46,7 @@ std::unique_ptr<IOperand> CLinterOperand::ParseLambda()
 	if (m_pOwner->IsHoisting())
 		return nullptr;
 
-	fnLinter.m_oFunctionName = "lambda";
+	fnLinter.m_oFunctionName = VSL("lambda");
 	fnLinter.m_pThisStack->m_pFunction = fnLinter.ToFunction();
 
 	VectorOf<CCrossModuleReference> refs = m_pOwner->IsStack()
@@ -120,7 +120,7 @@ Success CLambdaChecker::ParseInternal(
 	auto& newScope = fnLinter.m_pThisScope;
 	auto& newStack = fnLinter.m_pThisStack;
 
-	fnLinter.m_oFunctionName = "arrow";
+	fnLinter.m_oFunctionName = VSL("arrow");
 	fnLinter.m_oParameters = m_oParameters;
 
 	for (auto& param : m_oParameters) {
@@ -128,7 +128,7 @@ Success CLambdaChecker::ParseInternal(
 		var->m_bParameter = true;
 
 		if (!newScope->DeclareVariable(param)) {
-			m_pOwner->GetModule()->PushError("well then", (*m_iterPos)->m_oSourcePosition);
+			m_pOwner->GetModule()->PushError(VSL("well then"), (*m_iterPos)->m_oSourcePosition);
 			return failure;
 		}
 	}

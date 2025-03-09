@@ -2,12 +2,12 @@
 #include "tests/utils.hpp"
 
 
-#define PATH_PREFIX std::string("operators") + DIRECTORY_SEPARATOR + "equality"
-#define JP(x) (std::string(PATH_PREFIX) + DIRECTORY_SEPARATOR + x)
+#define PATH_PREFIX VarjusString(VSL("operators")) + DIRECTORY_SEPARATOR + VSL("equality")
+#define JP(x) (VarjusString(PATH_PREFIX) + DIRECTORY_SEPARATOR + x)
 
-TEST_CASE("equality operations") {
+TEST_CASE(("equality operations")) {
 
-	auto retVal = TEST_ExecuteFile(JP("equality.var"));
+	auto retVal = TEST_ExecuteFile(JP(VSL("equality.var")));
 
 	AssertArray(retVal, AssertArrayValue<ASSERT_BOOL>(t_boolean, { 
 		1 == 1,
@@ -19,8 +19,8 @@ TEST_CASE("equality operations") {
 		1 == false,
 		1 == 1.1,
 
-		true,  //"hello" == "hello"
-		false, //"hello1" == "hello"
+		true,  //VSL("hello") == VSL("hello")
+		false, //VSL("hello1") == VSL("hello")
 
 		true,  //undefined == undefined
 
@@ -37,9 +37,9 @@ TEST_CASE("equality operations") {
 	TEST_END(retVal);
 }
 
-TEST_CASE("strict equality operations") {
+TEST_CASE(("strict equality operations")) {
 
-	auto retVal = TEST_ExecuteFile(JP("strict_equality.var"));
+	auto retVal = TEST_ExecuteFile(JP(VSL("strict_equality.var")));
 
 	AssertArray(retVal, AssertArrayValue<ASSERT_BOOL>(t_boolean, {
 		1 == 1,
@@ -51,8 +51,8 @@ TEST_CASE("strict equality operations") {
 		false, //1 === false
 		false, // 1 === 1.1
 
-		true,  //"hello" === "hello"
-		false, //"hello1" === "hello"
+		true,  //VSL("hello") === VSL("hello")
+		false, //VSL("hello1") === VSL("hello")
 
 		true,  //undefined === undefined
 
@@ -69,9 +69,9 @@ TEST_CASE("strict equality operations") {
 	TEST_END(retVal);
 }
 
-TEST_CASE("unequality operations") {
+TEST_CASE(("unequality operations")) {
 
-	auto retVal = TEST_ExecuteFile(JP("unequality.var"));
+	auto retVal = TEST_ExecuteFile(JP(VSL("unequality.var")));
 
 	AssertArray(retVal, AssertArrayValue<ASSERT_BOOL>(t_boolean, {
 		1 != 1,
@@ -83,8 +83,8 @@ TEST_CASE("unequality operations") {
 		1 != false,
 		1 != 1.1,
 
-		false, //"hello" != "hello"
-		true,  //"hello1" != "hello"
+		false, //VSL("hello") != VSL("hello")
+		true,  //VSL("hello1") != VSL("hello")
 
 		false, //undefined != undefined
 
@@ -101,9 +101,9 @@ TEST_CASE("unequality operations") {
 	TEST_END(retVal);
 }
 
-TEST_CASE("strict unequality operations") {
+TEST_CASE(("strict unequality operations")) {
 
-	auto retVal = TEST_ExecuteFile(JP("strict_unequality.var"));
+	auto retVal = TEST_ExecuteFile(JP(VSL("strict_unequality.var")));
 
 	AssertArray(retVal, AssertArrayValue<ASSERT_BOOL>(t_boolean, {
 		1 != 1,
@@ -115,8 +115,8 @@ TEST_CASE("strict unequality operations") {
 		1 != false, // 1 !== false
 		1 != 1.1,
 
-		false, //"hello" !== "hello"
-		true,  //"hello1" !== "hello"
+		false, //VSL("hello") !== VSL("hello")
+		true,  //VSL("hello1") !== VSL("hello")
 
 		false, //undefined !== undefined
 

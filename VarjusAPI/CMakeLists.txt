@@ -28,6 +28,14 @@ list(FILTER PROJECT_SOURCES EXCLUDE REGEX "CMakeCXXCompilerId\\.cpp$")
 # Create a static library
 add_library(VarjusAPI STATIC ${API_SOURCES})
 
+if(USE_UNICODE STREQUAL "ON")
+    add_compile_definitions(UNICODE=1 _UNICODE=1 UNICODE)
+    message(STATUS "Building with Unicode")
+else()
+    remove_definitions(UNICODE _UNICODE)
+    message(STATUS "Building with UTF8")
+endif()
+
 # Set include directories
 target_include_directories(VarjusAPI PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/..")
 target_include_directories(VarjusAPI PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include/")

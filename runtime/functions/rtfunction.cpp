@@ -31,7 +31,7 @@ IValue* CRuntimeFunction::Execute(CRuntimeContext* const ctx, [[maybe_unused]] I
 {
 	assert(ctx->m_pRuntime);
 	if (m_uNumArguments != args.size())
-		throw CRuntimeError(ctx->m_pRuntime, std::format("the callable expected {} arguments instead of {}", m_uNumArguments, args.size()));
+		throw CRuntimeError(ctx->m_pRuntime, std::format(VSL("the callable expected {} arguments instead of {}"), m_uNumArguments, args.size()));
 
 
 	auto func = CFunction(ctx->m_pRuntime, args, captures, *this);
@@ -49,7 +49,7 @@ IValue* CRuntimeFunction::Execute(CRuntimeContext* const ctx, [[maybe_unused]] I
 		if (returnVal = insn->Execute(&thisContext), returnVal) {
 
 			if (isMainFunction && thisContext.m_pRuntime->ExceptionThrown())
-				throw CRuntimeError(thisContext.m_pRuntime, std::format("an uncaught exception: {}", returnVal->ToPrintableString()));
+				throw CRuntimeError(thisContext.m_pRuntime, std::format(VSL("an uncaught exception: {}"), returnVal->ToPrintableString()));
 
 			break;
 		}
@@ -76,7 +76,7 @@ IValue* CRuntimeFunction::Execute(CRuntimeContext* const ctx, [[maybe_unused]] I
 }
 
 CBuiltInRuntimeMethod::CBuiltInRuntimeMethod(Method_t method, std::size_t numArgs)
-	: CRuntimeFunctionBase("method", numArgs), m_pMethod(method) { }
+	: CRuntimeFunctionBase(VSL("method"), numArgs), m_pMethod(method) { }
 
 CBuiltInRuntimeMethod::~CBuiltInRuntimeMethod() = default;
 
@@ -87,7 +87,7 @@ IValue* CBuiltInRuntimeMethod::ExecuteFunction( CRuntimeContext* const ctx, IVal
 	assert(m_pMethod);
 
 	if (m_uNumArguments != UNCHECKED_PARAMETER_COUNT && m_uNumArguments != args.size())
-		throw CRuntimeError(ctx->m_pRuntime, std::format("the method expected {} arguments instead of {}", m_uNumArguments, args.size()));
+		throw CRuntimeError(ctx->m_pRuntime, std::format(VSL("the method expected {} arguments instead of {}"), m_uNumArguments, args.size()));
 
 	auto returnVal = m_pMethod(ctx, _this, args);
 
@@ -98,7 +98,7 @@ IValue* CBuiltInRuntimeMethod::ExecuteFunction( CRuntimeContext* const ctx, IVal
 	return returnVal;
 }
 
-CBuiltInRuntimeFunction::CBuiltInRuntimeFunction(const std::string& name, Function_t function, std::size_t numArgs)
+CBuiltInRuntimeFunction::CBuiltInRuntimeFunction(const VarjusString& name, Function_t function, std::size_t numArgs)
 	: CRuntimeFunctionBase(name, numArgs), m_pFunction(function) {
 }
 
@@ -111,12 +111,12 @@ IValue* CBuiltInRuntimeFunction::ExecuteFunction(CRuntimeContext* const ctx, [[m
 	assert(m_pFunction);
 
 	if (m_uNumArguments != UNCHECKED_PARAMETER_COUNT && m_uNumArguments != args.size())
-		throw CRuntimeError(ctx->m_pRuntime, std::format("the callable \"{}\" expected {} arguments instead of {}", m_sName, m_uNumArguments, args.size()));
+		throw CRuntimeError(ctx->m_pRuntime, std::format(VSL("the callable \"{}\" expected {} arguments instead of {}"), m_sName, m_uNumArguments, args.size()));
 
 	auto returnVal = m_pFunction(ctx, args);
 
 	if(!returnVal)
-		throw CRuntimeError(ctx->m_pRuntime, std::format("you forgot to return a value from an internal function \"{}\"", m_sName, args.size()));
+		throw CRuntimeError(ctx->m_pRuntime, std::format(VSL("you forgot to return a value from an internal function \"{}\""), m_sName, args.size()));
 
 	for (auto& val : args)
 		val->Release();

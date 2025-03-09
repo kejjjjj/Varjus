@@ -8,7 +8,7 @@
 
 #include <unordered_set>
 #include <optional>
-#include <string>
+
 
 class IRuntimeStructure;
 class CRuntimeFunctionBase;
@@ -21,8 +21,8 @@ using RuntimeFunction = std::unique_ptr<CRuntimeFunctionBase>;
 using UniqueExportedSymbol = std::unique_ptr<CExportedSymbol>;
 
 using RuntimeModules = VectorOf<std::unique_ptr<CRuntimeModule>>;
-using ModuleExports = std::unordered_map<std::string, UniqueExportedSymbol>;
-using DependencyGraph = std::unordered_map<std::string, VectorOf<std::string>>;
+using ModuleExports = std::unordered_map<VarjusString, UniqueExportedSymbol>;
+using DependencyGraph = std::unordered_map<VarjusString, VectorOf<VarjusString>>;
 
 class CProjectModules
 {
@@ -31,19 +31,19 @@ public:
 	CProjectModules();
 	~CProjectModules();
 
-	[[nodiscard]] CModule* CreateNewModule(const std::string& filePath);
-	[[nodiscard]] CModule* FindCachedModule(const std::string& filePath);
+	[[nodiscard]] CModule* CreateNewModule(const VarjusString& filePath);
+	[[nodiscard]] CModule* FindCachedModule(const VarjusString& filePath);
 	[[nodiscard]] RuntimeModules ToRuntimeModules();
 
-	[[nodiscard]] std::string DependencyGraphToString() noexcept;
-	[[nodiscard]] std::optional<std::string> CheckCircularDependencies(const std::string& src, const DependencyGraph& graph);
+	[[nodiscard]] VarjusString DependencyGraphToString() noexcept;
+	[[nodiscard]] std::optional<VarjusString> CheckCircularDependencies(const VarjusString& src, const DependencyGraph& graph);
 
 	DependencyGraph m_oDependencyGraph;
-	std::unordered_set<std::string> m_oVisitedModules;
+	std::unordered_set<VarjusString> m_oVisitedModules;
 
 private:
 	VectorOf<std::unique_ptr<CModule>> m_oAllModules;
-	std::unordered_map<std::string, CModule*> m_oCachedModules;
+	std::unordered_map<VarjusString, CModule*> m_oCachedModules;
 };
 
 class CModule final
@@ -56,10 +56,10 @@ class CModule final
 public:
 
 	CModule();
-	CModule(const std::string& filePath);
+	CModule(const VarjusString& filePath);
 	~CModule();
 
-	[[nodiscard]] CRuntimeFunctionBase* FindFunction(const std::string& v) const;
+	[[nodiscard]] CRuntimeFunctionBase* FindFunction(const VarjusString& v) const;
 	[[nodiscard]] size_t GetFunctionCount() const noexcept;
 
 	void AddFunction(RuntimeFunction&& func);
@@ -74,12 +74,12 @@ public:
 
 	[[nodiscard]] constexpr auto& GetFilePath() const noexcept { return m_oContext.m_sFilePath; }
 
-	void AddExport(const std::string& name, UniqueExportedSymbol&& symbol);
-	[[nodiscard]] CExportedSymbol* GetExport(const std::string& name) const;
+	void AddExport(const VarjusString& name, UniqueExportedSymbol&& symbol);
+	[[nodiscard]] CExportedSymbol* GetExport(const VarjusString& name) const;
 	[[nodiscard]] constexpr auto& GetExports() const noexcept { return m_oModuleExports; }
 
-	[[nodiscard]] inline auto PushError(const std::string& err) { m_oErrors.PushError(GetFilePath(), err); }
-	[[nodiscard]] inline auto PushError(const std::string& err, const CodePosition& pos) {
+	[[nodiscard]] inline auto PushError(const VarjusString& err) { m_oErrors.PushError(GetFilePath(), err); }
+	[[nodiscard]] inline auto PushError(const VarjusString& err, const CodePosition& pos) {
 		m_oErrors.PushError(GetFilePath(), err, pos); 
 	}
 

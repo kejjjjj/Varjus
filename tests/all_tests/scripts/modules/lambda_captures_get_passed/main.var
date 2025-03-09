@@ -1,4 +1,4 @@
-
+﻿
 import lambdaSetter from "other.var";
 
 fn main()

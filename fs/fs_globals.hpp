@@ -1,28 +1,26 @@
 #pragma once
 
-#include <string>
+
 #include <vector>
+
+#include "varjus_api/internal/globalDefinitions.hpp"
 
 namespace fs
 {
 
 
-	std::string exe_file_name();
-	std::string exe_path();
-	std::string get_extension(const std::string& path);
-	std::string previous_directory(const std::string& directory);
-	std::string get_file_name(const std::string& fullpath);
-	std::string get_file_name_no_extension(const std::string& fullpath);
+	VarjusString exe_file_name();
+	VarjusString exe_path();
+	VarjusString get_extension(const VarjusString& path);
+	VarjusString previous_directory(const VarjusString& directory);
+	VarjusString get_file_name(const VarjusString& fullpath);
+	VarjusString get_file_name_no_extension(const VarjusString& fullpath);
 
-	void create_file(const std::string& path);
-	bool create_directory(const std::string& path);
+	bool create_directory(const VarjusString& path);
 
-	std::vector<std::string> files_in_directory(const std::string& path);
-	std::vector<std::string> items_in_directory_formatted(const std::string& path);
+	bool directory_exists(const VarjusString& d);
+	bool file_exists(const VarjusString& f);
 
-	bool directory_exists(const std::string& d);
-	bool file_exists(const std::string& f);
-
-	bool valid_file_name(const std::string& name);
+	bool valid_file_name(const VarjusString& name);
 
 }

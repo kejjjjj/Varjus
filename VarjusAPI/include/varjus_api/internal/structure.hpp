@@ -7,7 +7,7 @@
 
 #include <vector>
 #include <memory>
-#include <string>
+
 #include <unordered_map>
 
 /***********************************************************************
@@ -144,7 +144,7 @@ class CRuntimeFunctionBase
 {
 	NONCOPYABLE(CRuntimeFunctionBase);
 public:
-	CRuntimeFunctionBase(const std::string& name, std::size_t numArgs) : m_sName(name), m_uNumArguments(numArgs) {}
+	CRuntimeFunctionBase(const VarjusString& name, std::size_t numArgs) : m_sName(name), m_uNumArguments(numArgs) {}
 	virtual ~CRuntimeFunctionBase() = default;
 	[[nodiscard]] constexpr virtual RuntimeFunctionType FunctionType() const noexcept = 0;
 
@@ -154,7 +154,7 @@ public:
 	[[nodiscard]] constexpr auto& GetName() const noexcept { return m_sName; }
 
 protected:
-	std::string m_sName;
+	VarjusString m_sName;
 	std::size_t m_uNumArguments{ 0u };
 };
 
@@ -212,7 +212,7 @@ class CBuiltInRuntimeFunction : public CRuntimeFunctionBase
 	NONCOPYABLE(CBuiltInRuntimeFunction);
 
 public:
-	CBuiltInRuntimeFunction(const std::string& name, Function_t function, std::size_t numArgs);
+	CBuiltInRuntimeFunction(const VarjusString& name, Function_t function, std::size_t numArgs);
 	~CBuiltInRuntimeFunction();
 
 	[[nodiscard]] constexpr RuntimeFunctionType FunctionType() const noexcept override { return fn_built_in; }

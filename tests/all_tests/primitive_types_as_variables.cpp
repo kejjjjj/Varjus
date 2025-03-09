@@ -2,12 +2,12 @@
 #include "tests/utils.hpp"
 
 
-#define PATH_PREFIX "primitive_types_as_variables"
-#define JP(x) (std::string(PATH_PREFIX) + DIRECTORY_SEPARATOR + x)
+#define PATH_PREFIX VSL("primitive_types_as_variables")
+#define JP(x) (VarjusString(PATH_PREFIX) + DIRECTORY_SEPARATOR + x)
 
-TEST_CASE("Returns an undefined in variable context") {
+TEST_CASE(("Returns an undefined in variable context")) {
 
-	auto retVal = TEST_ExecuteFile(JP("undefined.var"));
+	auto retVal = TEST_ExecuteFile(JP(VSL("undefined.var")));
 
 	REQUIRE(retVal != nullptr);
 	REQUIRE(retVal->Type() == t_undefined);
@@ -16,9 +16,9 @@ TEST_CASE("Returns an undefined in variable context") {
 	TEST_END(retVal);
 
 }
-TEST_CASE("Returns a boolean true in variable context") {
+TEST_CASE(("Returns a boolean true in variable context")) {
 
-	auto retVal = TEST_ExecuteFile(JP("boolean.var"));
+	auto retVal = TEST_ExecuteFile(JP(VSL("boolean.var")));
 
 	REQUIRE(retVal != nullptr);
 	REQUIRE(retVal->Type() == t_boolean);
@@ -27,9 +27,9 @@ TEST_CASE("Returns a boolean true in variable context") {
 	REQUIRE(retVal->HasOwner() == false);
 	TEST_END(retVal);
 }
-TEST_CASE("Returns an integer 64 in variable context") {
+TEST_CASE(("Returns an integer 64 in variable context")) {
 
-	auto retVal = TEST_ExecuteFile(JP("integer.var"));
+	auto retVal = TEST_ExecuteFile(JP(VSL("integer.var")));
 
 	REQUIRE(retVal != nullptr);
 	REQUIRE(retVal->Type() == t_int);
@@ -38,9 +38,9 @@ TEST_CASE("Returns an integer 64 in variable context") {
 	REQUIRE(retVal->HasOwner() == false);
 	TEST_END(retVal);
 }
-TEST_CASE("Returns a uinteger 64 in variable context") {
+TEST_CASE(("Returns a uinteger 64 in variable context")) {
 
-	auto retVal = TEST_ExecuteFile(JP("uinteger.var"));
+	auto retVal = TEST_ExecuteFile(JP(VSL("uinteger.var")));
 
 	REQUIRE(retVal != nullptr);
 	REQUIRE(retVal->Type() == t_uint);
@@ -49,9 +49,9 @@ TEST_CASE("Returns a uinteger 64 in variable context") {
 	REQUIRE(retVal->HasOwner() == false);
 	TEST_END(retVal);
 }
-TEST_CASE("Returns a double 64.0 in variable context") {
+TEST_CASE(("Returns a double 64.0 in variable context")) {
 
-	auto retVal = TEST_ExecuteFile(JP("double.var"));
+	auto retVal = TEST_ExecuteFile(JP(VSL("double.var")));
 
 	REQUIRE(retVal != nullptr);
 	REQUIRE(retVal->Type() == t_double);
@@ -60,20 +60,20 @@ TEST_CASE("Returns a double 64.0 in variable context") {
 	REQUIRE(retVal->HasOwner() == false);
 	TEST_END(retVal);
 }
-TEST_CASE("Returns a string Hello, World! in variable context") {
+TEST_CASE(("Returns a string Hello, World! in variable context")) {
 
-	auto retVal = TEST_ExecuteFile(JP("string.var"));
+	auto retVal = TEST_ExecuteFile(JP(VSL("string.var")));
 
 	REQUIRE(retVal != nullptr);
 	REQUIRE(retVal->Type() == t_string);
-	REQUIRE(retVal->ToString() == "Hello, World!");
+	REQUIRE(retVal->ToString() == VSL("Hello, World!"));
 
 	REQUIRE(retVal->HasOwner() == false);
 	TEST_END(retVal);
 }
-TEST_CASE("Returns string length of Hello, World! in variable context") {
+TEST_CASE(("Returns string length of Hello, World! in variable context")) {
 
-	auto retVal = TEST_ExecuteFile(JP("string_length.var"));
+	auto retVal = TEST_ExecuteFile(JP(VSL("string_length.var")));
 
 	REQUIRE(retVal != nullptr);
 	REQUIRE(retVal->Type() == t_uint);

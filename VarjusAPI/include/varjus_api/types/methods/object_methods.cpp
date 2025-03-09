@@ -22,12 +22,12 @@ std::unique_ptr<BuiltInMethod_t> CObjectValue::ConstructMethods(CProgramInformat
 {
 	auto m_oMethods = std::make_unique<BuiltInMethod_t>(info);
 
-	m_oMethods->AddMethod("keys",     Object_Keys,     0u);
-	m_oMethods->AddMethod("values",   Object_Values,   0u);
-	m_oMethods->AddMethod("set",      Object_Set,      2u);
-	m_oMethods->AddMethod("remove",   Object_Remove,   1u);
-	m_oMethods->AddMethod("contains", Object_Contains, 1u);
-	m_oMethods->AddMethod("to_array", Object_ToArray,  0u);
+	m_oMethods->AddMethod(VSL("keys"),     Object_Keys,     0u);
+	m_oMethods->AddMethod(VSL("values"),   Object_Values,   0u);
+	m_oMethods->AddMethod(VSL("set"),      Object_Set,      2u);
+	m_oMethods->AddMethod(VSL("remove"),   Object_Remove,   1u);
+	m_oMethods->AddMethod(VSL("contains"), Object_Contains, 1u);
+	m_oMethods->AddMethod(VSL("to_array"), Object_ToArray,  0u);
 
 	return m_oMethods;
 }
@@ -36,7 +36,7 @@ FORWARD_DECLARE_PROPERTY(ObjectLength);
 std::unique_ptr<BuiltInProperty_t> CObjectValue::ConstructProperties(CProgramInformation* const info)
 {
 	auto m_oProperties = std::make_unique<BuiltInProperty_t>(info);
-	m_oProperties->AddProperty("length", ObjectLength);
+	m_oProperties->AddProperty(VSL("length"), ObjectLength);
 
 	return m_oProperties;
 }

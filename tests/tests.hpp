@@ -4,9 +4,9 @@
 #include "catch_amalgamated.hpp"
 #include "varjus_api/internal/variables.hpp"
 
-#include <string>
 
-IValue* TEST_ExecuteFile(const std::string& srcFile);
+
+IValue* TEST_ExecuteFile(const VarjusString& srcFile);
 
 #define TEST_END(retVal)\
 auto allocator = retVal->GetAllocator();\

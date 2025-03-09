@@ -12,17 +12,6 @@ switch ($targetChoice) {
     }
 }
 
-# Select build type
-$choice = Read-Host "Enter 1 for Release or 2 for Debug mode"
-switch ($choice) {
-    1 { $type = "Release" }
-    2 { $type = "Debug" }
-    default {
-        Write-Host "Invalid input. Defaulting to Release."
-        $type = "Release"
-    }
-}
-
 $buildDir = $targetPath + "/build";
 
 # Handle existing build folder
@@ -34,6 +23,34 @@ if (Test-Path "$buildDir") {
         Write-Host "Skipping deletion."
     }
 }
+
+# Select build type
+$choice = Read-Host "Enter 1 for Unicode or 2 for UTF8"
+switch ($choice) {
+    1 { $_unicode = "ON" }
+    2 { $_unicode = "OFF" }
+    default {
+        Write-Host "Invalid input. Defaulting to Unicode."
+        $type = "ON"
+    }
+}
+
+if ($_unicode -eq "ON" -and $targetPath -eq "tests/all_tests"){
+    Write-Host "Make sure all test script files have been encoded with utf8/16 LE/BE with bom :)"
+}
+
+# Select build type
+$choice = Read-Host "Enter 1 for Release or 2 for Debug mode"
+switch ($choice) {
+    1 { $type = "Release" }
+    2 { $type = "Debug" }
+    default {
+        Write-Host "Invalid input. Defaulting to Release."
+        $type = "Release"
+    }
+}
+
+
 
 # Detect Windows
 $windows = $env:OS -eq "Windows_NT" -or $env:PROCESSOR_ARCHITECTURE -match "AMD64|x86"
@@ -48,10 +65,10 @@ if ($windows) {
             $arch = "x64"
         }
     }
-    cmake -S "$targetPath" -B "$buildDir" -A "$arch" -DCMAKE_BUILD_TYPE="$type"
+    cmake -S "$targetPath" -B "$buildDir" -A "$arch" -DCMAKE_BUILD_TYPE="$type" -DUSE_UNICODE="$_unicode"
     cmake --build "$buildDir" --config "$type"
 } else {
-    cmake -S "$targetPath" -B "$buildDir" -DCMAKE_BUILD_TYPE="$type"
+    cmake -S "$targetPath" -B "$buildDir" -DCMAKE_BUILD_TYPE="$type" -DUSE_UNICODE="$_unicode"
     cmake --build "$buildDir"
 }
 

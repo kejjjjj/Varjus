@@ -13,7 +13,7 @@
 
 #include <iostream>
 
-IValue* TEST_ExecuteFile(const std::string& srcFile)
+IValue* TEST_ExecuteFile(const VarjusString& srcFile)
 {
     try {
         //silly
@@ -23,21 +23,21 @@ IValue* TEST_ExecuteFile(const std::string& srcFile)
         if (!state->UseStdLibrary())
             return nullptr;
 
-        const auto reader = VarjusIOReader(DIRECTORY_SEPARATOR + std::string("scripts") + DIRECTORY_SEPARATOR + srcFile);
-        std::cout << reader.GetFilePath() << '\n';
+        const auto reader = VarjusIOReader(DIRECTORY_SEPARATOR + VarjusString(VSL("scripts")) + DIRECTORY_SEPARATOR + srcFile);
+        STD_COUT << reader.GetFilePath() << '\n';
 
-        const auto GetError = [](const std::optional<std::string>& errorMsg) {
-            return errorMsg ? *errorMsg : "unknown error!";
+        const auto GetError = [](const std::optional<VarjusString>& errorMsg) {
+            return errorMsg ? *errorMsg : VSL("unknown error!");
         };
     
         if (!state->LoadScriptFromFile(reader.GetFilePath())) {
-            std::cout << "syntax error: " << GetError(state->GetErrorMessage()) << '\n';
+            STD_COUT << VSL("syntax error: ") << GetError(state->GetErrorMessage()) << '\n';
             return nullptr;
         }
         return state->ExecuteScript();
     }
     catch (std::exception& ex) {
-        std::cout << "\n\nERROR:\n" << ex.what() << "\n\n";
+        STD_COUT << VSL("\n\nERROR:\n") << ex.what() << VSL("\n\n");
         return nullptr;
     }
     catch (...) {

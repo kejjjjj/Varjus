@@ -1,0 +1,9 @@
+fn main()
+{
+
+	const arr = [1,2,3];
+	const front = arr.push_front(4);
+	
+	return [front, arr[0], arr[1], arr[2], arr[3], arr.length].map((v) => tostring v);
+
+}

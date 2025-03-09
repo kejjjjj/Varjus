@@ -1,4 +1,4 @@
-
+﻿
 fn funnyThing(sortFunc)
 {
     const capture = 3;

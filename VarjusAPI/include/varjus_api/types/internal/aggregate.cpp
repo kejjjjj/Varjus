@@ -55,13 +55,13 @@ IValue* CAggregate::ElementLookup(GlobalMemberIndex index) const
 {
 	assert(m_pAllMembers);
 	if (!m_oIndexLookup.contains(index)) {
-		throw CRuntimeError(m_pAllocator, std::format("this aggregate doesn't have the attribute \"{}\"",
+		throw CRuntimeError(m_pAllocator, std::format(VSL("this aggregate doesn't have the attribute \"{}\""),
 			m_pAllMembers->At(index)
 		));
 	}
 	return m_oIndexLookup.at(index)->GetValue();
 }
-bool CAggregate::Contains(const std::string& item) const {
+bool CAggregate::Contains(const VarjusString& item) const {
 	
 	assert(m_pAllMembers);
 
@@ -72,7 +72,7 @@ bool CAggregate::Contains(const std::string& item) const {
 
 	return m_oIndexLookup.contains(key);
 }
-IValue* CAggregate::Get(const std::string& item) const
+IValue* CAggregate::Get(const VarjusString& item) const
 {
 	assert(m_pAllocator->GetInformation());
 	auto& members = m_pAllocator->GetInformation()->m_oAllMembers;

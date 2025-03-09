@@ -1,0 +1,12 @@
+
+fn main()
+{
+	let str = undefined;
+	try{
+		throw "test exception";
+	}catch(ex){
+		str = ex;
+	}
+
+	return str;
+}

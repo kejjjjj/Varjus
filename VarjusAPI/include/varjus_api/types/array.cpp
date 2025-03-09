@@ -53,14 +53,14 @@ CInternalArrayValue* CArrayValue::Internal() const {
 IValue* CArrayValue::Index(IValue* vIndex)
 {
 	if (!vIndex->IsIntegral())
-		throw CRuntimeError(m_pAllocator, std::format("array accessor must be integral, but is \"{}\"", vIndex->TypeAsString()));
+		throw CRuntimeError(m_pAllocator, std::format(VSL("array accessor must be integral, but is \"{}\""), vIndex->TypeAsString()));
 
 	auto index = vIndex->ToUInt();
 
 	auto& vec = GetShared()->GetVariables();
 
 	if (index >= vec.size())
-		throw CRuntimeError(m_pAllocator, std::format("array index {} out of bounds (len: {})", index, Internal()->Length()));
+		throw CRuntimeError(m_pAllocator, std::format(VSL("array index {} out of bounds (len: {})"), index, Internal()->Length()));
 
 	return vec[index]->GetValue();
 }
@@ -124,22 +124,22 @@ std::size_t CInternalArrayValue::Length() const noexcept
 {
 	return GetVariables().size();
 }
-std::string CArrayValue::ValueAsString() const
+VarjusString CArrayValue::ValueAsString() const
 {
 	auto& vec = Internal()->GetVariables();
 
 	if (vec.empty())
-		return "[]";
+		return VSL("[]");
 
-	std::stringstream ss;
+	STD_STRINGSTREAM ss;
 
 	for (const auto& v : vec)
-		ss << v->GetValue()->ValueAsString() << ", ";
+		ss << v->GetValue()->ValueAsString() << VSL(", ");
 
 	auto result = ss.str();
 	result.erase(result.size() - 2, 2);
 
-	return "[ " + result + " ]";
+	return VSL("[ ") + result + VSL(" ]");
 }
 
 

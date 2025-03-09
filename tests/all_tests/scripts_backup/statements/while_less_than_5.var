@@ -1,0 +1,10 @@
+
+fn main()
+{
+	let v = 0;
+
+	while(v < 5)
+		v++;
+
+	return v;
+}

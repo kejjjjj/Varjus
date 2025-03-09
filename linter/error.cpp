@@ -3,7 +3,7 @@
 
 #include <format>
 
-CLinterError::CLinterError(const std::string& filePath, const std::string& error, const CodePosition* pos)
+CLinterError::CLinterError(const VarjusString& filePath, const VarjusString& error, const CodePosition* pos)
     : m_oErrorMessageFormatted(error) {
 
     if (!pos) {
@@ -11,7 +11,7 @@ CLinterError::CLinterError(const std::string& filePath, const std::string& error
     }
 
     auto& [l, c] = *pos;
-    m_oErrorMessageFormatted += std::format(" | near [{}, {}] in \"{}\"", l, c, filePath);
+    m_oErrorMessageFormatted += std::format(VSL(" | near [{}, {}] in \"{}\""), l, c, filePath);
 }
 
 void CLinterErrors::PushError(const CLinterError& error) {
@@ -19,11 +19,11 @@ void CLinterErrors::PushError(const CLinterError& error) {
     throw errorStack.back();
 
 }
-void CLinterErrors::PushError(const std::string& filePath, const std::string& error, const CodePosition& position) {
+void CLinterErrors::PushError(const VarjusString& filePath, const VarjusString& error, const CodePosition& position) {
     errorStack.emplace_back(CLinterError(filePath, error, position));
     throw errorStack.back();
 }
-void CLinterErrors::PushError(const std::string& filePath, const std::string& error) {
+void CLinterErrors::PushError(const VarjusString& filePath, const VarjusString& error) {
     errorStack.emplace_back(CLinterError(filePath, error, nullptr));
     throw errorStack.back();
 }

@@ -1,0 +1,5 @@
+fn main()
+{
+	let var = "Hello, World!";
+	return var.length;
+}

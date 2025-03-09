@@ -9,7 +9,7 @@
 #include "linter/context.hpp"
 
 
-CStringValue* CStringValue::Construct(CProgramRuntime* const runtime, const std::string& v)
+CStringValue* CStringValue::Construct(CProgramRuntime* const runtime, const VarjusString& v)
 {
 
 	auto str = runtime->AcquireNewValue<CStringValue>();
@@ -40,14 +40,14 @@ const CInternalStringValue* CStringValue::Internal() const {
 IValue* CStringValue::Index(IValue* vIndex)
 {
 	if (!vIndex->IsIntegral())
-		throw CRuntimeError(m_pAllocator, std::format("array accessor must be integral, but is \"{}\"", vIndex->TypeAsString()));
+		throw CRuntimeError(m_pAllocator, std::format(VSL("array accessor must be integral, but is \"{}\""), vIndex->TypeAsString()));
 
 	auto index = vIndex->ToUInt();
 
 	if (index >= Internal()->Length())
-		throw CRuntimeError(m_pAllocator, std::format("string index {} out of bounds (len: {})", index, Internal()->Length()));
+		throw CRuntimeError(m_pAllocator, std::format(VSL("string index {} out of bounds (len: {})"), index, Internal()->Length()));
 
-	auto newStr = std::string(size_t(1), Internal()->GetString()[index]);
+	auto newStr = VarjusString(size_t(1), Internal()->GetString()[index]);
 	auto v = Construct(m_pAllocator, newStr);
 	v->MakeImmutable(); //cannot modify parts
 	return v;
@@ -70,7 +70,7 @@ IValue* CStringValue::GetAggregate(CRuntimeContext* const ctx, std::size_t membe
 	}
 
 	if (auto info = m_pAllocator->GetInformation()) {
-		throw CRuntimeError(m_pAllocator, std::format("this aggregate doesn't have the attribute \"{}\"", info->m_oAllMembers.At(memberIdx)));
+		throw CRuntimeError(m_pAllocator, std::format(VSL("this aggregate doesn't have the attribute \"{}\""), info->m_oAllMembers.At(memberIdx)));
 	}
 
 	assert(false);
@@ -84,7 +84,7 @@ IValues CStringValue::ToIterable() const
 	IValues results(str.size());
 
 	for (std::size_t i = {}; auto var : str) {
-		results[i++] = CStringValue::Construct(m_pAllocator, std::string(size_t(1), var));
+		results[i++] = CStringValue::Construct(m_pAllocator, VarjusString(size_t(1), var));
 	}
 
 	return results;
@@ -95,7 +95,7 @@ CInternalStringValue::~CInternalStringValue() = default;
 void CInternalStringValue::Release()
 {
 }
-void CInternalStringValue::Set(const std::string& value) {
+void CInternalStringValue::Set(const VarjusString& value) {
 	m_oValue.m_sString = value;
 }
 

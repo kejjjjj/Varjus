@@ -20,7 +20,7 @@ IConstEvalValue* IConstEvalValue::Copy()
 }
 std::shared_ptr<ConstantASTNode> IConstEvalValue::ToAST() const
 {
-	return std::make_shared<ConstantASTNode>(m_oApproximatePosition, "", t_undefined);
+	return std::make_shared<ConstantASTNode>(m_oApproximatePosition, VSL(""), t_undefined);
 }
 
 bool& IConstEvalValue::AsBoolean() {
@@ -32,7 +32,7 @@ VarjusInt& IConstEvalValue::AsInt() {
 VarjusDouble& IConstEvalValue::AsDouble() {
 	return ToCDouble()->Get();
 }
-std::string& IConstEvalValue::AsString() {
+VarjusString& IConstEvalValue::AsString() {
 	return ToCString()->Get();
 }
 

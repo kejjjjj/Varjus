@@ -30,7 +30,7 @@ Success CLinterOperand::ParseOperand(std::optional<PairMatcher>& eoe)
 		return failure;
 
 	if (m_iterPos == m_iterEnd) {
-		m_pOwner->GetModule()->PushError("unexpected end of buffer");
+		m_pOwner->GetModule()->PushError(VSL("unexpected end of buffer"));
 		return failure;
 	}
 
@@ -53,7 +53,7 @@ Success CLinterOperand::ParseOperand(std::optional<PairMatcher>& eoe)
 	}
 
 	if (m_iterPos == m_iterEnd) {
-		m_pOwner->GetModule()->PushError("unexpected end of buffer");
+		m_pOwner->GetModule()->PushError(VSL("unexpected end of buffer"));
 		return failure;
 	}
 

@@ -28,7 +28,7 @@ class CBufferLinter final : public CLinter<CToken>
 {
 	NONCOPYABLE(CBufferLinter);
 public:
-	CBufferLinter(CProgramInformation* const program, LinterIterator& start, LinterIterator& end, const std::string& filePath="");
+	CBufferLinter(CProgramInformation* const program, LinterIterator& start, LinterIterator& end, const VarjusString& filePath=VSL(""));
 	~CBufferLinter();
 	[[nodiscard]] static Success LintToken(const CLinterContext& ctx);
 	[[nodiscard]] static Success LintOperator(const CLinterContext& ctx);
@@ -47,7 +47,7 @@ private:
 	CModule* m_pModule{ nullptr };
 	LinterIterator m_oInitialPosition;
 	std::unique_ptr<CHoister> m_pHoister;
-	std::string m_sFilePath;
+	VarjusString m_sFilePath;
 	CProgramInformation* const m_pProgram{};
 };
 

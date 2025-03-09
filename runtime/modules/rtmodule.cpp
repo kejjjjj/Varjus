@@ -23,7 +23,7 @@ CRuntimeModule::~CRuntimeModule() = default;
 void CRuntimeModule::SetupGlobalVariables(CProgramRuntime* const runtime) {
 
 	if (!runtime->m_pInformation || !runtime->m_pInformation->m_oBuiltInObjects) {
-		throw CRuntimeError(runtime, "no runtime context!");
+		throw CRuntimeError(runtime, VSL("no runtime context!"));
 	}
 		
 	//create global variables

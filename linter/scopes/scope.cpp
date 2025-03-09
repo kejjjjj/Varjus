@@ -24,7 +24,7 @@ Success CScopeLinter::Parse()
 	std::advance(m_iterPos, 1);
 
 	if (!IsEndOfBuffer() && (*m_iterPos)->IsOperator(p_curlybracket_close)) {
-		m_pOwner->GetModule()->PushError("empty scopes are not allowed", GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError(VSL("empty scopes are not allowed"), GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 
@@ -84,7 +84,7 @@ CScope* CScope::DeleteScope(CScope* scope)
 	return temp;
 }
 
-Success CScope::DeclareVariable(const std::string& var)
+Success CScope::DeclareVariable(const VarjusString& var)
 {
 	if (VariableExists(var))
 		return failure;
@@ -92,7 +92,7 @@ Success CScope::DeclareVariable(const std::string& var)
 	m_oLocalVariables.insert(var);
 	return success;
 }
-bool CScope::VariableExists(const std::string& var) const
+bool CScope::VariableExists(const VarjusString& var) const
 {
 	const auto found = m_oLocalVariables.find(var) != m_oLocalVariables.end();
 

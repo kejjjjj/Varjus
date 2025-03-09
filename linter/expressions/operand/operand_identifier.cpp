@@ -11,7 +11,7 @@ std::unique_ptr<IOperand> CLinterOperand::ParseIdentifier()
 	auto& oldIter = m_iterPos;
 	auto operand = std::make_unique<CIdentifierLinter>(m_iterPos, m_iterEnd, m_pScope, m_pOwner);
 
-	if (!operand->ParseIdentifier()) {
+	if (!operand->ParseIdentifier() || IsEndOfBuffer()) {
 		return nullptr;
 	}
 

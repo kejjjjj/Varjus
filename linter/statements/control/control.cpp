@@ -30,22 +30,22 @@ Success CLoopControlStatement::Parse()
 	}else if ((*m_iterPos)->Type() == tt_continue) {
 		m_eType = lc_continue;
 	} else {
-		m_pOwner->GetModule()->PushError("expected \"break\" or \"continue\"", GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError(VSL("expected \"break\" or \"continue\""), GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 
-	constexpr std::array<const char*, 3> quick_lookup = {{ "null", "break", "continue"}};
+	std::array<VarjusString, 3> quick_lookup = {{ VSL("null"), VSL("break"), VSL("continue")}};
 
 	if (const auto scope = m_pScope.lock()) {
 		if (!scope->IsLoopScope()) {
 			m_pOwner->GetModule()->PushError(
-				std::format("the \"{}\" statement can only be used in a loop context", quick_lookup[(std::size_t)m_eType]),
+				std::format(VSL("the \"{}\" statement can only be used in a loop context"), quick_lookup[(std::size_t)m_eType]),
 				GetIteratorSafe()->m_oSourcePosition);
 			return failure;
 		}
 	}
 	else {
-		m_pOwner->GetModule()->PushError("!(const auto scope = m_pScope.lock())", GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError(VSL("!(const auto scope = m_pScope.lock())"), GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 	

@@ -10,14 +10,14 @@
 #include <linter/error.hpp>
 
 CModule::CModule() = default;
-CModule::CModule(const std::string& filePath) : m_oContext(filePath) {}
+CModule::CModule(const VarjusString& filePath) : m_oContext(filePath) {}
 CModule::~CModule() = default;
 
 
 void CModule::AddFunction(RuntimeFunction&& func) {
 	m_oFunctions.emplace_back(std::move(func)); 
 }
-CRuntimeFunctionBase* CModule::FindFunction(const std::string& v) const
+CRuntimeFunctionBase* CModule::FindFunction(const VarjusString& v) const
 {
 	const auto it = std::ranges::find(m_oFunctions, v, [](const RuntimeFunction& v) { return v->GetName(); });
 	return it != m_oFunctions.end() ? it->get() : nullptr;
@@ -36,10 +36,10 @@ void CModule::SetGlobalVariableCount(std::size_t v) {
 std::unique_ptr<CRuntimeModule> CModule::ToRuntimeModule(){
 	return std::make_unique<CRuntimeModule>(*this);
 }
-void CModule::AddExport(const std::string& name, UniqueExportedSymbol&& symbol) {
+void CModule::AddExport(const VarjusString& name, UniqueExportedSymbol&& symbol) {
 	m_oModuleExports[name] = std::move(symbol);
 }
-CExportedSymbol* CModule::GetExport(const std::string& name) const {
+CExportedSymbol* CModule::GetExport(const VarjusString& name) const {
 	if (!m_oModuleExports.contains(name))
 		return nullptr;
 
@@ -53,7 +53,7 @@ CExportedSymbol* CModule::GetExport(const std::string& name) const {
 CProjectModules::CProjectModules() = default;
 CProjectModules::~CProjectModules() = default;
 
-CModule* CProjectModules::CreateNewModule(const std::string& filePath)
+CModule* CProjectModules::CreateNewModule(const VarjusString& filePath)
 {
 	auto index = m_oAllModules.size();
 	auto& thisModule = m_oAllModules.emplace_back(std::make_unique<CModule>(filePath));
@@ -61,7 +61,7 @@ CModule* CProjectModules::CreateNewModule(const std::string& filePath)
 	m_oCachedModules[filePath] = thisModule.get();
 	return thisModule.get();
 }
-CModule* CProjectModules::FindCachedModule(const std::string& filePath)
+CModule* CProjectModules::FindCachedModule(const VarjusString& filePath)
 {
 	if (!m_oCachedModules.contains(filePath))
 		return nullptr;
@@ -79,16 +79,16 @@ RuntimeModules CProjectModules::ToRuntimeModules()
 	return modules;
 }
 
-std::optional<std::string> CProjectModules::CheckCircularDependencies(const std::string& src, const DependencyGraph& graph)
+std::optional<VarjusString> CProjectModules::CheckCircularDependencies(const VarjusString& src, const DependencyGraph& graph)
 {
 	if (graph.empty())
 		return std::nullopt;
 
-	std::unordered_set<std::string> visited;
-	VectorOf<std::string> recursionStack;
-	VectorOf<std::pair<std::string, std::string>> conflictDetails;
+	std::unordered_set<VarjusString> visited;
+	VectorOf<VarjusString> recursionStack;
+	VectorOf<std::pair<VarjusString, VarjusString>> conflictDetails;
 
-	std::function<bool(const std::string&)> DFS = [&](const std::string& amodule) {
+	std::function<bool(const VarjusString&)> DFS = [&](const VarjusString& amodule) {
 		
 		visited.insert(amodule);
 		recursionStack.push_back(amodule);
@@ -115,10 +115,10 @@ std::optional<std::string> CProjectModules::CheckCircularDependencies(const std:
 
 	if (!DFS(src)) {
 
-		std::stringstream ss;
-		ss << "circular dependency detected involving the following files:\n";
+		STD_STRINGSTREAM ss;
+		ss << VSL("circular dependency detected involving the following files:\n");
 		for (const auto& [source, target] : conflictDetails)
-			ss << " - " << source << " <-> " << target << '\n';
+			ss << VSL(" - ") << source << VSL(" <-> ") << target << '\n';
 
 		return std::make_optional(ss.str());
 	}
@@ -126,19 +126,19 @@ std::optional<std::string> CProjectModules::CheckCircularDependencies(const std:
 	return std::nullopt;
 }
 
-std::string CProjectModules::DependencyGraphToString() noexcept
+VarjusString CProjectModules::DependencyGraphToString() noexcept
 {
-	std::stringstream ss;
+	STD_STRINGSTREAM ss;
 
 	for (const auto& [sourceFile, dependencies] : m_oDependencyGraph) {
-		ss << sourceFile << " imports:\n";
+		ss << sourceFile << VSL(" imports:\n");
 
 		if (dependencies.empty()) {
-			ss << " - None\n"; 
+			ss << VSL(" - None\n"); 
 		}
 		else {
 			for (const auto& dependency : dependencies) {
-				ss << " - " << dependency << '\n';
+				ss << VSL(" - ") << dependency << '\n';
 			}
 		}
 	}

@@ -1,0 +1,14 @@
+
+fn makeClosure()
+{
+	let v = 0;
+	return fn(newValue) { 
+		v = newValue;
+		return v; 
+	};
+}
+
+fn main()
+{
+	return makeClosure()(50);
+}

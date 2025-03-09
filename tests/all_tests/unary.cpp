@@ -2,54 +2,54 @@
 #include "tests/utils.hpp"
 
 
-#define PATH_PREFIX "unary"
-#define JP(x) (std::string(PATH_PREFIX) + DIRECTORY_SEPARATOR + x)
+#define PATH_PREFIX VSL("unary")
+#define JP(x) (VarjusString(PATH_PREFIX) + DIRECTORY_SEPARATOR + x)
 
-TEST_CASE("Unary negation") {
+TEST_CASE(("Unary negation")) {
 
-	auto retVal = TEST_ExecuteFile(JP("negation.var"));
+	auto retVal = TEST_ExecuteFile(JP(VSL("negation.var")));
 
 	AssertArray(retVal, AssertArrayValue<ASSERT_STRING>(t_string, { 
-		"-5",
-		"5",
-		"-5.500000", 
-		"5.500000"
+		VSL("-5"),
+		VSL("5"),
+		VSL("-5.500000"), 
+		VSL("5.500000")
 	}));
 
 	REQUIRE(retVal->HasOwner() == false);
 	TEST_END(retVal);
 }
 
-TEST_CASE("Unary typeof") {
+TEST_CASE(("Unary typeof")) {
 
-	auto retVal = TEST_ExecuteFile(JP("typeof.var"));
+	auto retVal = TEST_ExecuteFile(JP(VSL("typeof.var")));
 
 	AssertArray(retVal, AssertArrayValue<ASSERT_STRING>(t_string, {
-		"undefined",
-		"boolean",
-		"int",
-		"uint",
-		"double",
-		"string",
-		"callable",
-		"callable",
-		"array",
-		"object"
+		VSL("undefined"),
+		VSL("boolean"),
+		VSL("int"),
+		VSL("uint"),
+		VSL("double"),
+		VSL("string"),
+		VSL("callable"),
+		VSL("callable"),
+		VSL("array"),
+		VSL("object")
 	}));
 
 	REQUIRE(retVal->HasOwner() == false);
 	TEST_END(retVal);
 }
 
-TEST_CASE("Unary tostring") {
+TEST_CASE(("Unary tostring")) {
 
-	auto retVal = TEST_ExecuteFile(JP("tostring.var"));
+	auto retVal = TEST_ExecuteFile(JP(VSL("tostring.var")));
 
 	AssertArray(retVal, AssertArrayValue<ASSERT_STRING>(t_string, {
-		"true",
-		"[ 1, 2 ]",
-		"{\n    a: hello,\n    b: world\n}",
-		"2.400000",
+		VSL("true"),
+		VSL("[ 1, 2 ]"),
+		VSL("{\n    a: hello,\n    b: world\n}"),
+		VSL("2.400000"),
 	}));
 
 	REQUIRE(retVal->HasOwner() == false);

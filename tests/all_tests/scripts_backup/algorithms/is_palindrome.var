@@ -1,0 +1,12 @@
+fn isPalindrome(str) {
+    return str === str.split('').reversed().join('');
+}
+
+fn main()
+{
+    return [ 
+        isPalindrome("madam"), 
+        isPalindrome("hello"), 
+        isPalindrome("racecar") 
+    ];   
+}

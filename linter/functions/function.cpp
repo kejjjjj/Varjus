@@ -30,7 +30,7 @@ CFunctionLinter::CFunctionLinter(LinterIterator& pos, LinterIterator& end, const
 		m_pThisScope = s->CreateScope();
 	}
 	else {
-		m_pOwner->GetModule()->PushError("!(const auto s = m_pScope.lock())", (*m_iterPos)->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError(VSL("!(const auto s = m_pScope.lock())"), (*m_iterPos)->m_oSourcePosition);
 	}
 
 	m_pThisStack->m_pLowerRegion = m_pOwner;
@@ -82,24 +82,24 @@ Success CFunctionLinter::ParseFunctionDeclaration()
 {
 
 	if (IsEndOfBuffer() || !IsFn((*m_iterPos))) {
-		m_pOwner->GetModule()->PushError("expected \"fn\"", GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError(VSL("expected \"fn\""), GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 
 	if (const auto scope = m_pScope.lock()) {
 		if (!scope->IsGlobalScope()) {
-			m_pOwner->GetModule()->PushError("function declarations are only allowed in the global scope", (*m_iterPos)->m_oSourcePosition);
+			m_pOwner->GetModule()->PushError(VSL("function declarations are only allowed in the global scope"), (*m_iterPos)->m_oSourcePosition);
 			return failure;
 		}
 	} else {
-		m_pOwner->GetModule()->PushError("!(const auto scope = m_pScope.lock())", (*m_iterPos)->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError(VSL("!(const auto scope = m_pScope.lock())"), (*m_iterPos)->m_oSourcePosition);
 		return failure;
 	}
 
 	std::advance(m_iterPos, 1); //skip fn
 
 	if (IsEndOfBuffer() || !IsIdentifier((*m_iterPos))) {
-		m_pOwner->GetModule()->PushError("expected an identifier", GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError(VSL("expected an identifier"), GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 
@@ -109,7 +109,7 @@ Success CFunctionLinter::ParseFunctionDeclaration()
 	const auto containsVar = m_pOwner->m_VariableManager->ContainsVariable(m_oFunctionName);
 
 	if ((containsFunc && m_pOwner->IsHoisting()) || containsVar) {
-		m_pOwner->GetModule()->PushError(std::format("\"{}\" is already defined", m_oFunctionName), GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError(std::format(VSL("\"{}\" is already defined"), m_oFunctionName), GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 
@@ -124,7 +124,7 @@ Success CFunctionLinter::ParseFunctionDeclaration()
 Success CFunctionLinter::ParseFunctionParameters()
 {
 	if (IsEndOfBuffer() || !(*m_iterPos)->IsOperator(p_par_open)) {
-		m_pOwner->GetModule()->PushError("expected a \"(\"", GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError(VSL("expected a \"(\""), GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 	std::advance(m_iterPos, 1); //skip (
@@ -145,12 +145,12 @@ Success CFunctionLinter::ParseFunctionParameters()
 Success CFunctionLinter::ParseFunctionParametersRecursively()
 {
 	if (IsEndOfBuffer() || !IsIdentifier((*m_iterPos))) {
-		m_pOwner->GetModule()->PushError("expected an identifier", GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError(VSL("expected an identifier"), GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 	
 	if (!m_pThisScope->DeclareVariable((*m_iterPos)->Source())) {
-		m_pOwner->GetModule()->PushError("variable " + (*m_iterPos)->Source() + " already declared", (*m_iterPos)->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError(VSL("variable ") + (*m_iterPos)->Source() + VSL(" already declared"), (*m_iterPos)->m_oSourcePosition);
 		return failure;
 	}
 
@@ -161,7 +161,7 @@ Success CFunctionLinter::ParseFunctionParametersRecursively()
 	std::advance(m_iterPos, 1); //skip identifier
 
 	if (IsEndOfBuffer()) {
-		m_pOwner->GetModule()->PushError("expected \",\" or \")\"", GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError(VSL("expected \",\" or \")\""), GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 
@@ -172,14 +172,14 @@ Success CFunctionLinter::ParseFunctionParametersRecursively()
 		return success;
 	}
 
-	m_pOwner->GetModule()->PushError("expected \",\" or \")\"", GetIteratorSafe()->m_oSourcePosition);
+	m_pOwner->GetModule()->PushError(VSL("expected \",\" or \")\""), GetIteratorSafe()->m_oSourcePosition);
 	return failure;
 }
 
 Success CFunctionLinter::ParseFunctionScope()
 {
 	if (IsEndOfBuffer() || !(*m_iterPos)->IsOperator(p_curlybracket_open)) {
-		m_pOwner->GetModule()->PushError("expected a \"{\" or an expression", GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError(VSL("expected a \"{\" or an expression"), GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 

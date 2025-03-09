@@ -23,14 +23,14 @@ void CStatementLinter::CreateThisScope()
 	if (const auto s = m_pScope.lock()) {
 		m_pThisScope = s->CreateScope();
 	} else {
-		m_pOwner->GetModule()->PushError("!(const auto scope = m_pScope.lock())", (*m_iterPos)->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError(VSL("!(const auto scope = m_pScope.lock())"), (*m_iterPos)->m_oSourcePosition);
 		return;
 	}
 }
 Success CStatementLinter::ParseIdentifier(TokenType tt)
 {
 	if (IsEndOfBuffer() || (*m_iterPos)->Type() != tt) {
-		m_pOwner->GetModule()->PushError(std::format("expected \"{}\"", tokenTypeStrings[tt]),
+		m_pOwner->GetModule()->PushError(std::format(VSL("expected \"{}\""), tokenTypeStrings[tt]),
 			GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
@@ -43,7 +43,7 @@ Success CStatementLinter::ParseIdentifier(TokenType tt)
 ASTNode CStatementLinter::ParseExpression()
 {
 	if (IsEndOfBuffer() || !(*m_iterPos)->IsOperator(p_par_open)) {
-		m_pOwner->GetModule()->PushError("expected a \"(\"", GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError(VSL("expected a \"(\""), GetIteratorSafe()->m_oSourcePosition);
 		return nullptr;
 	}
 
@@ -64,7 +64,7 @@ ASTNode CStatementLinter::ParseExpression()
 Success CStatementLinter::ParseScope()
 {
 	if (IsEndOfBuffer()) {
-		m_pOwner->GetModule()->PushError("expected a \"{\" or an expression", (*std::prev(m_iterPos))->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError(VSL("expected a \"{\" or an expression"), (*std::prev(m_iterPos))->m_oSourcePosition);
 		return failure;
 	}
 

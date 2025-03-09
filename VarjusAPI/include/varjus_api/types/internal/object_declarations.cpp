@@ -4,7 +4,7 @@
 #include "linter/context.hpp"
 #include <cassert>
 
-void BuiltInMethod_t::AddMethod(const std::string& name, Method_t method, std::size_t numArgs)
+void BuiltInMethod_t::AddMethod(const VarjusString& name, Method_t method, std::size_t numArgs)
 {
 	assert(m_pInfo);
 	if (m_pInfo->m_oAllMembers.Contains(name)) {
@@ -15,7 +15,7 @@ void BuiltInMethod_t::AddMethod(const std::string& name, Method_t method, std::s
 }
 
 
-void BuiltInProperty_t::AddProperty(const std::string& name, Property_t property)
+void BuiltInProperty_t::AddProperty(const VarjusString& name, Property_t property)
 {
 	assert(m_pInfo);
 	if (m_pInfo->m_oAllMembers.Contains(name)) {

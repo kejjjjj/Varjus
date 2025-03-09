@@ -1,4 +1,4 @@
-fn removeDuplicates(nums) {
+﻿fn removeDuplicates(nums) {
     if (nums.length === 0) return 0;
 
     let writeIndex = 1;

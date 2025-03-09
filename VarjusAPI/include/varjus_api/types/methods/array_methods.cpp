@@ -40,26 +40,26 @@ std::unique_ptr<BuiltInMethod_t> CArrayValue::ConstructMethods(CProgramInformati
 {
 	auto m_oMethods = std::make_unique<BuiltInMethod_t>(info);
 
-	m_oMethods->AddMethod("push",            Push,          1u);
-	m_oMethods->AddMethod("push_front",      PushFront,     1u);
-	m_oMethods->AddMethod("pop",             Pop,           0u);
-	m_oMethods->AddMethod("pop_front",       PopFront,      0u);
-	m_oMethods->AddMethod("map",             Map,           1u);
-	m_oMethods->AddMethod("find",            Find,          1u);
-	m_oMethods->AddMethod("find_last",       FindLast,      1u);
-	m_oMethods->AddMethod("find_index",      FindIndex,     1u);
-	m_oMethods->AddMethod("find_last_index", FindLastIndex, 1u);
-	m_oMethods->AddMethod("filter",          Filter,        1u);
-	m_oMethods->AddMethod("contains",        Contains,      1u);
-	m_oMethods->AddMethod("reversed",        Reversed,      0u);
-	m_oMethods->AddMethod("join",            Join,          1u);
-	m_oMethods->AddMethod("all",             All,           1u);
-	m_oMethods->AddMethod("any",             Any,           1u);
-	m_oMethods->AddMethod("slice",	         Slice,         2u);
-	m_oMethods->AddMethod("sort",            Sort,          1u);
-	m_oMethods->AddMethod("resize",          Resize,        1u);
-	m_oMethods->AddMethod("fill",            Fill,          1u);
-	m_oMethods->AddMethod("for_each",        ForEach,       1u);
+	m_oMethods->AddMethod(VSL("push"),            Push,          1u);
+	m_oMethods->AddMethod(VSL("push_front"),      PushFront,     1u);
+	m_oMethods->AddMethod(VSL("pop"),             Pop,           0u);
+	m_oMethods->AddMethod(VSL("pop_front"),       PopFront,      0u);
+	m_oMethods->AddMethod(VSL("map"),             Map,           1u);
+	m_oMethods->AddMethod(VSL("find"),            Find,          1u);
+	m_oMethods->AddMethod(VSL("find_last"),       FindLast,      1u);
+	m_oMethods->AddMethod(VSL("find_index"),      FindIndex,     1u);
+	m_oMethods->AddMethod(VSL("find_last_index"), FindLastIndex, 1u);
+	m_oMethods->AddMethod(VSL("filter"),          Filter,        1u);
+	m_oMethods->AddMethod(VSL("contains"),        Contains,      1u);
+	m_oMethods->AddMethod(VSL("reversed"),        Reversed,      0u);
+	m_oMethods->AddMethod(VSL("join"),            Join,          1u);
+	m_oMethods->AddMethod(VSL("all"),             All,           1u);
+	m_oMethods->AddMethod(VSL("any"),             Any,           1u);
+	m_oMethods->AddMethod(VSL("slice"),	         Slice,         2u);
+	m_oMethods->AddMethod(VSL("sort"),            Sort,          1u);
+	m_oMethods->AddMethod(VSL("resize"),          Resize,        1u);
+	m_oMethods->AddMethod(VSL("fill"),            Fill,          1u);
+	m_oMethods->AddMethod(VSL("for_each"),        ForEach,       1u);
 
 	return m_oMethods;
 }
@@ -69,7 +69,7 @@ FORWARD_DECLARE_PROPERTY(ArrayLength);
 std::unique_ptr<BuiltInProperty_t> CArrayValue::ConstructProperties(CProgramInformation* const info)
 {
 	auto m_oProperties = std::make_unique<BuiltInProperty_t>(info);
-	m_oProperties->AddProperty("length", ArrayLength);
+	m_oProperties->AddProperty(VSL("length"), ArrayLength);
 
 	return m_oProperties;
 }
@@ -103,7 +103,7 @@ DEFINE_METHOD(Pop, args)
 	auto& vars = __this->GetVariables();
 
 	if (vars.empty())
-		throw CRuntimeError(ctx->m_pRuntime, "attempted to pop an empty array");
+		throw CRuntimeError(ctx->m_pRuntime, VSL("attempted to pop an empty array"));
 
 	auto& back = vars.back();
 
@@ -120,7 +120,7 @@ DEFINE_METHOD(PopFront, args)
 	auto& vars = __this->GetVariables();
 
 	if (vars.empty())
-		throw CRuntimeError(ctx->m_pRuntime, "attempted to pop_front an empty array");
+		throw CRuntimeError(ctx->m_pRuntime, VSL("attempted to pop_front an empty array"));
 
 	auto& front = vars.front();
 
@@ -137,7 +137,7 @@ DEFINE_METHOD(Map, args)
 	auto& mapFunc = args.front();
 
 	if (!mapFunc->IsCallable())
-		throw CRuntimeError(ctx->m_pRuntime, std::format("array.map expected \"callable\", but got \"{}\"", mapFunc->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, std::format(VSL("array.map expected \"callable\", but got \"{}\""), mapFunc->TypeAsString()));
 
 	auto __this = GetThisArray(_this);
 	auto& vars = __this->GetVariables();
@@ -186,7 +186,7 @@ static inline IValue* FindTestValue(CRuntimeContext* const ctx, IValue* const ma
 	}
 
 	if (!thisIteration->IsBooleanConvertible())
-		throw CRuntimeError(ctx->m_pRuntime, std::format("array.find expected a boolean return value", mapFunc->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, std::format(VSL("array.find expected a boolean return value"), mapFunc->TypeAsString()));
 
 	if (thisIteration->ToBoolean()) {
 		result = var->GetValue();
@@ -201,7 +201,7 @@ static inline IValue* FindInternal(CArrayValue* _this, CRuntimeContext* const ct
 	auto& mapFunc = args.front();
 
 	if (!mapFunc->IsCallable())
-		throw CRuntimeError(ctx->m_pRuntime, std::format("array.find expected \"callable\", but got \"{}\"", mapFunc->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, std::format(VSL("array.find expected \"callable\", but got \"{}\""), mapFunc->TypeAsString()));
 
 	auto& vars = _this->GetVariables();
 
@@ -255,7 +255,7 @@ static inline IValue* FindTestValueIndex(CRuntimeContext* const ctx, IValue* con
 	}
 
 	if (!thisIteration->IsBooleanConvertible())
-		throw CRuntimeError(ctx->m_pRuntime, std::format("array.find expected a boolean return value", mapFunc->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, std::format(VSL("array.find expected a boolean return value"), mapFunc->TypeAsString()));
 
 	if (thisIteration->ToBoolean()) {
 		result = CIntValue::Construct(ctx->m_pRuntime, static_cast<VarjusInt>(i));
@@ -270,7 +270,7 @@ static inline IValue* FindIndexInternal(CArrayValue* _this, CRuntimeContext* con
 	auto& mapFunc = args.front();
 
 	if (!mapFunc->IsCallable())
-		throw CRuntimeError(ctx->m_pRuntime, std::format("array.findindex expected \"callable\", but got \"{}\"", mapFunc->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, std::format(VSL("array.findindex expected \"callable\", but got \"{}\""), mapFunc->TypeAsString()));
 
 	auto& vars = _this->GetVariables();
 
@@ -320,7 +320,7 @@ DEFINE_METHOD(Filter, args)
 	auto& mapFunc = args.front();
 
 	if (!mapFunc->IsCallable())
-		throw CRuntimeError(ctx->m_pRuntime, std::format("array.filter expected \"callable\", but got \"{}\"", mapFunc->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, std::format(VSL("array.filter expected \"callable\", but got \"{}\""), mapFunc->TypeAsString()));
 
 	auto __this = GetThisArray(_this);
 	auto& vars = __this->GetVariables();
@@ -341,7 +341,7 @@ DEFINE_METHOD(Filter, args)
 		}
 
 		if (!thisIteration->IsBooleanConvertible())
-			throw CRuntimeError(ctx->m_pRuntime, std::format("array.filter expected a boolean return value", mapFunc->TypeAsString()));
+			throw CRuntimeError(ctx->m_pRuntime, std::format(VSL("array.filter expected a boolean return value"), mapFunc->TypeAsString()));
 
 		if (thisIteration->ToBoolean())
 			results.push_back(var->GetValue()->Copy());
@@ -406,8 +406,8 @@ DEFINE_METHOD(Reversed, args) {
 }
 
 
-std::string JoinStrings(const VectorOf<std::string>& strings, const std::string& delimiter) {
-	std::ostringstream result;
+VarjusString JoinStrings(const VectorOf<VarjusString>& strings, const VarjusString& delimiter) {
+	STD_STRINGSTREAM result;
 	for (auto i = std::size_t(0); i < strings.size(); ++i) {
 		result << strings[i];
 		if (i != strings.size() - std::size_t(1)) {
@@ -421,16 +421,16 @@ DEFINE_METHOD(Join, args)
 {
 	auto& delimiterValue = args.front();
 	if (delimiterValue->Type() != t_string)
-		throw CRuntimeError(ctx->m_pRuntime, std::format("array.join expected a string parameter, but got \"{}\"", delimiterValue->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, std::format(VSL("array.join expected a string parameter, but got \"{}\""), delimiterValue->TypeAsString()));
 
-	VectorOf<std::string> stringValues;
+	VectorOf<VarjusString> stringValues;
 	auto __this = GetThisArray(_this);
 	auto& vars = __this->GetVariables();
 
 	for (auto& var : vars) {
 		auto& value = var->GetValue();
 		if (value->Type() != t_string)
-			throw CRuntimeError(ctx->m_pRuntime, std::format("array.join called on an array that contains \"{}\" instead of \"string\"", 
+			throw CRuntimeError(ctx->m_pRuntime, std::format(VSL("array.join called on an array that contains \"{}\" instead of \"string\""), 
 				delimiterValue->TypeAsString()));
 
 		stringValues.push_back(value->ToString());
@@ -445,7 +445,7 @@ DEFINE_METHOD(All, args)
 	auto& mapFunc = args.front();
 
 	if (!mapFunc->IsCallable())
-		throw CRuntimeError(ctx->m_pRuntime, std::format("array.all expected \"callable\", but got \"{}\"", mapFunc->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, std::format(VSL("array.all expected \"callable\", but got \"{}\""), mapFunc->TypeAsString()));
 
 	auto __this = GetThisArray(_this);
 	auto& vars = __this->GetVariables();
@@ -467,7 +467,7 @@ DEFINE_METHOD(All, args)
 		}
 
 		if (!thisIteration->IsBooleanConvertible())
-			throw CRuntimeError(ctx->m_pRuntime, std::format("array.filter expected a boolean return value", mapFunc->TypeAsString()));
+			throw CRuntimeError(ctx->m_pRuntime, std::format(VSL("array.filter expected a boolean return value"), mapFunc->TypeAsString()));
 
 		if (!thisIteration->ToBoolean())
 			all = false;
@@ -490,7 +490,7 @@ DEFINE_METHOD(Any, args)
 	auto& mapFunc = args.front();
 
 	if (!mapFunc->IsCallable())
-		throw CRuntimeError(ctx->m_pRuntime, std::format("array.all expected \"callable\", but got \"{}\"", mapFunc->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, std::format(VSL("array.all expected \"callable\", but got \"{}\""), mapFunc->TypeAsString()));
 
 	auto __this = GetThisArray(_this);
 	auto& vars = __this->GetVariables();
@@ -512,7 +512,7 @@ DEFINE_METHOD(Any, args)
 		}
 
 		if (!thisIteration->IsBooleanConvertible())
-			throw CRuntimeError(ctx->m_pRuntime, std::format("array.filter expected a boolean return value", mapFunc->TypeAsString()));
+			throw CRuntimeError(ctx->m_pRuntime, std::format(VSL("array.filter expected a boolean return value"), mapFunc->TypeAsString()));
 
 		if (thisIteration->ToBoolean())
 			any = true;
@@ -540,7 +540,7 @@ DEFINE_METHOD(Slice, args) {
 
 	const auto CheckSanity = [&ctx](const IValue* v) {
 		if (!v->IsIntegral())
-			throw CRuntimeError(ctx->m_pRuntime, std::format("array.slice expected an integral value, but got \"{}\"", v->TypeAsString()));
+			throw CRuntimeError(ctx->m_pRuntime, std::format(VSL("array.slice expected an integral value, but got \"{}\""), v->TypeAsString()));
 		};
 
 	CheckSanity(a);
@@ -552,13 +552,13 @@ DEFINE_METHOD(Slice, args) {
 	auto len = vars.size();
 
 	if (start >= end)
-		throw CRuntimeError(ctx->m_pRuntime, "array.slice expected start < end");
+		throw CRuntimeError(ctx->m_pRuntime, VSL("array.slice expected start < end"));
 
 	end -= 1;
 
 	const auto CheckRange = [&len, &ctx](const auto value) {
 		if (value < 0 || value >= static_cast<VarjusInt>(len))
-			throw CRuntimeError(ctx->m_pRuntime, "array.slice index out of range");
+			throw CRuntimeError(ctx->m_pRuntime, VSL("array.slice index out of range"));
 	};
 
 	CheckRange(start);
@@ -591,20 +591,20 @@ void IterativeQuickSort(CRuntimeContext* const ctx, IValues& vars, IValue* const
 		if (low >= high) 
 			continue;
 
-		auto& pivot = vars[high];
+		auto& pivot = vars[VarjusUInt(high)];
 		auto i = low - VarjusInt(1);
 
 		for (auto j = low; j < high; j++) {
 
-			if (doSort(ctx, vars[j], pivot, callback))
-				std::swap(vars[++i], vars[j]);
+			if (doSort(ctx, vars[VarjusUInt(j)], pivot, callback))
+				std::swap(vars[VarjusUInt(++i)], vars[VarjusUInt(j)]);
 
 			if (ctx->m_pRuntime->ExceptionThrown())
 				return;
 
 		}
 
-		std::swap(vars[i + VarjusInt(1)], vars[high]);
+		std::swap(vars[VarjusUInt(i + VarjusInt(1))], vars[VarjusUInt(high)]);
 		auto pivotIndex = i + VarjusInt(1);
 
 		stk.push({ low, pivotIndex - VarjusInt(1) });
@@ -623,7 +623,7 @@ void IterativeQuickSort(CRuntimeContext* const ctx, IValues& vars, IValue* const
 	}
 
 	if (returnValue->Type() != t_boolean)
-		throw CRuntimeError(ctx->m_pRuntime, std::format("array.sort expected a boolean return value", returnValue->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, std::format(VSL("array.sort expected a boolean return value"), returnValue->TypeAsString()));
 
 	const auto rtVal = returnValue->ToBoolean();
 	returnValue->Release(); // nothing meaningful, release it
@@ -637,7 +637,7 @@ DEFINE_METHOD(Sort, args)
 	auto& mapFunc = args.front();
 
 	if (!mapFunc->IsCallable())
-		throw CRuntimeError(ctx->m_pRuntime, std::format("array.sort expected \"callable\", but got \"{}\"", mapFunc->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, std::format(VSL("array.sort expected \"callable\", but got \"{}\""), mapFunc->TypeAsString()));
 
 	auto __this = GetThisArray(_this);
 	auto& vars = __this->GetVariables();
@@ -664,7 +664,7 @@ DEFINE_METHOD(Resize, args)
 	auto& value = args.front();
 
 	if (!value->IsIntegral())
-		throw CRuntimeError(ctx->m_pRuntime, std::format("array.resize expected \"integer\", but got \"{}\"", value->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, std::format(VSL("array.resize expected \"integer\", but got \"{}\""), value->TypeAsString()));
 
 
 	auto __this = GetThisArray(_this);
@@ -673,7 +673,7 @@ DEFINE_METHOD(Resize, args)
 	auto intVal = value->ToInt();
 
 	if(intVal < 0)
-		throw CRuntimeError(ctx->m_pRuntime, std::format("array.resize out of range < 0 ({})", value->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, std::format(VSL("array.resize out of range < 0 ({})"), value->TypeAsString()));
 
 	const auto uintval = static_cast<std::size_t>(intVal);
 	const auto oldSize = vars.size();
@@ -719,7 +719,7 @@ DEFINE_METHOD(ForEach, args)
 	auto& mapFunc = args.front();
 
 	if (!mapFunc->IsCallable())
-		throw CRuntimeError(ctx->m_pRuntime, std::format("array.for_each expected \"callable\", but got \"{}\"", mapFunc->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, std::format(VSL("array.for_each expected \"callable\", but got \"{}\""), mapFunc->TypeAsString()));
 
 	auto __this = GetThisArray(_this);
 	auto& vars = __this->GetVariables();

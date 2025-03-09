@@ -22,7 +22,7 @@ AbstractSyntaxTree::~AbstractSyntaxTree() = default;
 
 
 
-//TODO -> add a parameter called "can discard meaningless expression"
+//TODO -> add a parameter called VSL("can discard meaningless expression")
 ASTNode AbstractSyntaxTree::CreateAST(CMemory* const owner, Operands& operands, Operators& operators)
 {
 	assert(!operands.empty());
@@ -96,7 +96,7 @@ void AbstractSyntaxTree::CreateRecursively(ASTNode& _this, CMemory* const owner,
 	if ((*itr1)->GetPriority() == op_conditional) {
 		return CreateTernary(_this, owner, lhsOperands, lhsOperators, rhsOperands, rhsOperators);
 	} else if ((*itr1)->GetPriority() == op_conditional2) {
-		owner->GetModule()->PushError("\":\" can't be used in this context.. did you intend to use \"?:\"", (*itr1)->GetToken()->m_oSourcePosition);
+		owner->GetModule()->PushError(VSL("\":\" can't be used in this context.. did you intend to use \"?:\""), (*itr1)->GetToken()->m_oSourcePosition);
 		return;
 	}
 
@@ -144,7 +144,7 @@ void AbstractSyntaxTree::CreateTernary(ASTNode& self, CMemory* const owner, Oper
 	auto it = std::ranges::find(rhs_operators, op_conditional2, [](const CLinterOperator* o) { return o->GetPriority(); });
 
 	if (it == rhs_operators.end()) {
-		owner->GetModule()->PushError("expected a \":\" after \"?\" condition (misleading code position lol)", condition->GetCodePosition());
+		owner->GetModule()->PushError(VSL("expected a \":\" after \"?\" condition (misleading code position lol)"), condition->GetCodePosition());
 		return;
 	}
 
@@ -198,7 +198,7 @@ bool AbstractSyntaxTree::IsAssignment() const noexcept
 void AbstractSyntaxTree::CheckConstness(CMemory* const owner) const
 {
 	if (left->IsVariable() && left->GetVariable()->m_bIsConst) {
-		owner->GetModule()->PushError("lhs is declared const", left->m_oApproximatePosition);
+		owner->GetModule()->PushError(VSL("lhs is declared const"), left->m_oApproximatePosition);
 		return;
 	}
 }
@@ -246,7 +246,7 @@ FunctionASTNode::FunctionASTNode(const CodePosition& pos, CLinterFunction* const
 	: AbstractSyntaxTree(pos),
 	CCrossModuleReference(*func){}
 
-ConstantASTNode::ConstantASTNode(const CodePosition& pos, const std::string& data, EValueType datatype)
+ConstantASTNode::ConstantASTNode(const CodePosition& pos, const VarjusString& data, EValueType datatype)
 	: AbstractSyntaxTree(pos), m_pConstant(data), m_eDataType(datatype) {
 }
 ConstantASTNode::~ConstantASTNode() = default;

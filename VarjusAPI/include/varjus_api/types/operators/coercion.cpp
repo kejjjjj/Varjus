@@ -27,7 +27,7 @@ CCoercionOperands CoerceInternal(CProgramRuntime* const runtime, IValue* weaker,
 	assert(weaker->Type() != stronger->Type());
 
 	if (!weaker->IsCoerceable() || !stronger->IsCoerceable())
-		throw CRuntimeError(runtime, std::format("cannot coerce from \"{}\" to \"{}\"", weaker->TypeAsString(), stronger->TypeAsString()));
+		throw CRuntimeError(runtime, std::format(VSL("cannot coerce from \"{}\" to \"{}\""), weaker->TypeAsString(), stronger->TypeAsString()));
 
 	auto [lhs, rhs] = lhsIsWeak ? std::tie(weaker, stronger) : std::tie(stronger, weaker);
 

@@ -19,7 +19,7 @@ CElseStatementLinter::CElseStatementLinter(LinterIterator& pos, LinterIterator& 
 	if (const auto oldScope = m_pScope.lock()) {
 		m_pPreviousBlock = dynamic_cast<CRuntimeConditionalStatement*>(oldScope->GetLatestInstruction());
 	} else {
-		m_pOwner->GetModule()->PushError("const auto oldScope = m_pScope.lock()", GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError(VSL("const auto oldScope = m_pScope.lock()"), GetIteratorSafe()->m_oSourcePosition);
 	}
 
 	assert(m_iterPos != m_iterEnd);
@@ -29,7 +29,7 @@ CElseStatementLinter::~CElseStatementLinter() = default;
 Success CElseStatementLinter::Parse()
 {
 	if (!m_pOwner->IsHoisting() && !IsInConditionalContext()) {
-		m_pOwner->GetModule()->PushError("an else block must be after an if block",
+		m_pOwner->GetModule()->PushError(VSL("an else block must be after an if block"),
 			GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
@@ -38,7 +38,7 @@ Success CElseStatementLinter::Parse()
 		return failure;
 
 	if (IsEndOfBuffer()) {
-		m_pOwner->GetModule()->PushError("expected a \"{\" or an expression", GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError(VSL("expected a \"{\" or an expression"), GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 

@@ -63,52 +63,52 @@ FORWARD_DECLARE_PROPERTY(Math_RAD2DEG);
 void CMathValue::Construct(ObjectDeclaration_t& receiver)
 {
 
-	SINGLE_ARG_METHOD("sqrt", Sqrt);
-	SINGLE_ARG_METHOD("abs", Abs);
-	SINGLE_ARG_METHOD("acos", Acos);
-	SINGLE_ARG_METHOD("atan", Atan);
-	SINGLE_ARG_METHOD("ceil", Ceil);
-	SINGLE_ARG_METHOD("floor", Floor);
-	SINGLE_ARG_METHOD("round", Round);
-	SINGLE_ARG_METHOD("exp", Exp);
-	SINGLE_ARG_METHOD("log", Log);
-	SINGLE_ARG_METHOD("log10", Log10);
-	SINGLE_ARG_METHOD("sin", Sin);
-	SINGLE_ARG_METHOD("cos", Cos);
-	SINGLE_ARG_METHOD("tan", Tan);
-	SINGLE_ARG_METHOD("asin", Asin);
-	SINGLE_ARG_METHOD("sinh", Sinh);
-	SINGLE_ARG_METHOD("cosh", Cosh);
-	SINGLE_ARG_METHOD("tanh", Tanh);
-	SINGLE_ARG_METHOD("atanh", Atanh);
-	SINGLE_ARG_METHOD("acosh", Acosh);
-	SINGLE_ARG_METHOD("asinh", Asinh);
-	SINGLE_ARG_METHOD("trunc", Trunc);
-	SINGLE_ARG_METHOD("sign", Sign);
+	SINGLE_ARG_METHOD(VSL("sqrt"), Sqrt);
+	SINGLE_ARG_METHOD(VSL("abs"), Abs);
+	SINGLE_ARG_METHOD(VSL("acos"), Acos);
+	SINGLE_ARG_METHOD(VSL("atan"), Atan);
+	SINGLE_ARG_METHOD(VSL("ceil"), Ceil);
+	SINGLE_ARG_METHOD(VSL("floor"), Floor);
+	SINGLE_ARG_METHOD(VSL("round"), Round);
+	SINGLE_ARG_METHOD(VSL("exp"), Exp);
+	SINGLE_ARG_METHOD(VSL("log"), Log);
+	SINGLE_ARG_METHOD(VSL("log10"), Log10);
+	SINGLE_ARG_METHOD(VSL("sin"), Sin);
+	SINGLE_ARG_METHOD(VSL("cos"), Cos);
+	SINGLE_ARG_METHOD(VSL("tan"), Tan);
+	SINGLE_ARG_METHOD(VSL("asin"), Asin);
+	SINGLE_ARG_METHOD(VSL("sinh"), Sinh);
+	SINGLE_ARG_METHOD(VSL("cosh"), Cosh);
+	SINGLE_ARG_METHOD(VSL("tanh"), Tanh);
+	SINGLE_ARG_METHOD(VSL("atanh"), Atanh);
+	SINGLE_ARG_METHOD(VSL("acosh"), Acosh);
+	SINGLE_ARG_METHOD(VSL("asinh"), Asinh);
+	SINGLE_ARG_METHOD(VSL("trunc"), Trunc);
+	SINGLE_ARG_METHOD(VSL("sign"), Sign);
 
-	TWO_ARG_METHOD("pow", Pow);
-	TWO_ARG_METHOD("atan2", Atan2);
-	TWO_ARG_METHOD("fmod", Fmod);
-	TWO_ARG_METHOD("hypot", Hypot);
-	TWO_ARG_METHOD("max", Max);
-	TWO_ARG_METHOD("min", Min);
-	TWO_ARG_METHOD("random", Random);
+	TWO_ARG_METHOD(VSL("pow"), Pow);
+	TWO_ARG_METHOD(VSL("atan2"), Atan2);
+	TWO_ARG_METHOD(VSL("fmod"), Fmod);
+	TWO_ARG_METHOD(VSL("hypot"), Hypot);
+	TWO_ARG_METHOD(VSL("max"), Max);
+	TWO_ARG_METHOD(VSL("min"), Min);
+	TWO_ARG_METHOD(VSL("random"), Random);
 
-	receiver.AddProperty("PI", Math_PI);
-	receiver.AddProperty("TAU", Math_TAU);
-	receiver.AddProperty("E", Math_E);
-	receiver.AddProperty("SQRT2", Math_SQRT2);
-	receiver.AddProperty("SQRT3", Math_SQRT3);
-	receiver.AddProperty("SQRT5", Math_SQRT5);
-	receiver.AddProperty("GOLDEN", Math_GOLDEN);
-	receiver.AddProperty("LN2", Math_LN2);
-	receiver.AddProperty("LN10", Math_LN10);
-	receiver.AddProperty("LOG2E", Math_LOG2E);
-	receiver.AddProperty("LOG10E", Math_LOG10E);
-	receiver.AddProperty("INV_PI", Math_INV_PI);
-	receiver.AddProperty("INV_SQRT2", Math_INV_SQRT2);
-	receiver.AddProperty("DEG2RAD", Math_DEG2RAD);
-	receiver.AddProperty("RAD2DEG", Math_RAD2DEG);
+	receiver.AddProperty(VSL("PI"), Math_PI);
+	receiver.AddProperty(VSL("TAU"), Math_TAU);
+	receiver.AddProperty(VSL("E"), Math_E);
+	receiver.AddProperty(VSL("SQRT2"), Math_SQRT2);
+	receiver.AddProperty(VSL("SQRT3"), Math_SQRT3);
+	receiver.AddProperty(VSL("SQRT5"), Math_SQRT5);
+	receiver.AddProperty(VSL("GOLDEN"), Math_GOLDEN);
+	receiver.AddProperty(VSL("LN2"), Math_LN2);
+	receiver.AddProperty(VSL("LN10"), Math_LN10);
+	receiver.AddProperty(VSL("LOG2E"), Math_LOG2E);
+	receiver.AddProperty(VSL("LOG10E"), Math_LOG10E);
+	receiver.AddProperty(VSL("INV_PI"), Math_INV_PI);
+	receiver.AddProperty(VSL("INV_SQRT2"), Math_INV_SQRT2);
+	receiver.AddProperty(VSL("DEG2RAD"), Math_DEG2RAD);
+	receiver.AddProperty(VSL("RAD2DEG"), Math_RAD2DEG);
 }
 
 
@@ -135,14 +135,14 @@ DEFINE_PROPERTY(Math_RAD2DEG) { return ConstructDouble(57.29577951308232); }
 DEFINE_METHOD(name, args){\
 	const auto& v = args.front(); \
 	if (!v->IsArithmetic()) \
-		throw CRuntimeError(ctx->m_pRuntime, std::format("math.{} expected an arithmetic value, but got \"{}\"", #name, v->TypeAsString())); \
+		throw CRuntimeError(ctx->m_pRuntime, std::format(VSL("math.{} expected an arithmetic value, but got \"{}\""), VSL(#name), v->TypeAsString())); \
 	return CDoubleValue::Construct(ctx->m_pRuntime, func(v->ToDouble())); }\
 
 #define DEFINE_SINGLE_ARG_GENERIC_MATH_FUNC_TYPE(name, func, type, T) \
 DEFINE_METHOD(name, args){\
 	const auto& v = args.front(); \
 	if (!v->IsArithmetic()) \
-		throw CRuntimeError(ctx->m_pRuntime, std::format("math.{} expected an arithmetic value, but got \"{}\"", #name, v->TypeAsString())); \
+		throw CRuntimeError(ctx->m_pRuntime, std::format(VSL("math.{} expected an arithmetic value, but got \"{}\""), VSL(#name), v->TypeAsString())); \
 	return type::Construct(ctx->m_pRuntime, static_cast<T>(func(v->ToDouble()))); }\
 
 #define DEFINE_TWO_ARG_GENERIC_MATH_FUNC(name, func) \
@@ -150,9 +150,9 @@ DEFINE_METHOD(name, args){\
 	const auto& lhs = args[0]; \
 	const auto& rhs = args[1]; \
 	if (!lhs->IsArithmetic()) \
-		throw CRuntimeError(ctx->m_pRuntime, std::format("math.{} expected an arithmetic value, but got \"{}\"", #name, lhs->TypeAsString())); \
+		throw CRuntimeError(ctx->m_pRuntime, std::format(VSL("math.{} expected an arithmetic value, but got \"{}\""), VSL(#name), lhs->TypeAsString())); \
 	if (!rhs->IsArithmetic()) \
-		throw CRuntimeError(ctx->m_pRuntime, std::format("math.{} expected an arithmetic value, but got \"{}\"", #name, rhs->TypeAsString())); \
+		throw CRuntimeError(ctx->m_pRuntime, std::format(VSL("math.{} expected an arithmetic value, but got \"{}\""), VSL(#name), rhs->TypeAsString())); \
 	return CDoubleValue::Construct(ctx->m_pRuntime, func(lhs->ToDouble(), rhs->ToDouble())); }\
 
 DEFINE_SINGLE_ARG_GENERIC_MATH_FUNC(Sqrt, std::sqrt);
@@ -187,9 +187,9 @@ DEFINE_METHOD(Max, args){
 	const auto& lhs = args[0]; 
 	const auto& rhs = args[1];
 	if (!lhs->IsArithmetic()) 
-		throw CRuntimeError(ctx->m_pRuntime, std::format("math.{} expected an arithmetic value, but got \"{}\"", "max", lhs->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, std::format(VSL("math.{} expected an arithmetic value, but got \"{}\""), VSL("max"), lhs->TypeAsString()));
 	if (!rhs->IsArithmetic()) 
-		throw CRuntimeError(ctx->m_pRuntime, std::format("math.{} expected an arithmetic value, but got \"{}\"", "max", rhs->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, std::format(VSL("math.{} expected an arithmetic value, but got \"{}\""), VSL("max"), rhs->TypeAsString()));
 	return lhs->ToDouble() < rhs->ToDouble() ? rhs->Copy() : lhs->Copy();
 }
 DEFINE_METHOD(Min, args) {
@@ -197,9 +197,9 @@ DEFINE_METHOD(Min, args) {
 	const auto& lhs = args[0];
 	const auto& rhs = args[1];
 	if (!lhs->IsArithmetic())
-		throw CRuntimeError(ctx->m_pRuntime, std::format("math.{} expected an arithmetic value, but got \"{}\"", "min", lhs->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, std::format(VSL("math.{} expected an arithmetic value, but got \"{}\""), VSL("min"), lhs->TypeAsString()));
 	if (!rhs->IsArithmetic())
-		throw CRuntimeError(ctx->m_pRuntime, std::format("math.{} expected an arithmetic value, but got \"{}\"", "min", rhs->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, std::format(VSL("math.{} expected an arithmetic value, but got \"{}\""), VSL("min"), rhs->TypeAsString()));
 	return rhs->ToDouble() > lhs->ToDouble() ? lhs->Copy() : rhs->Copy();
 }
 
@@ -216,15 +216,15 @@ DEFINE_METHOD(Random, args) {
 	const auto& lhs = args[0];
 	const auto& rhs = args[1];
 	if (!lhs->IsArithmetic())
-		throw CRuntimeError(ctx->m_pRuntime, std::format("math.{} expected an arithmetic value, but got \"{}\"", "random", lhs->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, std::format(VSL("math.{} expected an arithmetic value, but got \"{}\""), VSL("random"), lhs->TypeAsString()));
 	if (!rhs->IsArithmetic())
-		throw CRuntimeError(ctx->m_pRuntime, std::format("math.{} expected an arithmetic value, but got \"{}\"", "random", rhs->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, std::format(VSL("math.{} expected an arithmetic value, but got \"{}\""), VSL("random"), rhs->TypeAsString()));
 	
 	const auto a = lhs->ToDouble();
 	const auto b = rhs->ToDouble();
 
 	if(b <= a)
-		throw CRuntimeError(ctx->m_pRuntime, std::format("math.{} min >= max", "random"));
+		throw CRuntimeError(ctx->m_pRuntime, std::format(VSL("math.{} min >= max"), VSL("random")));
 
 	return CDoubleValue::Construct(ctx->m_pRuntime, GetRandomDouble(a, b));
 }

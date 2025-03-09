@@ -1,4 +1,4 @@
-fn mergeSort(arr) {
+﻿fn mergeSort(arr) {
     if (arr.length < 2) 
         return arr;
 

@@ -1,0 +1,17 @@
+fn arrToString(arr)
+{
+	const newArr = [];
+	for(const iter : arr)
+		newArr.push(tostring iter);
+
+	return newArr;
+
+}
+
+fn main()
+{
+	const variable = -5;
+	const dVariable = -5.5;
+
+	return arrToString([ -5, -variable, -5.5, -dVariable ]);
+}

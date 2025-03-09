@@ -16,10 +16,10 @@ DEFINE_OPERATOR(OP_ASSIGNMENT)
 	auto variable = _lhs->GetOwner();
 
 	if (_lhs->IsImmutable())
-		throw CRuntimeError(runtime, "cannot assign to an immutable value");
+		throw CRuntimeError(runtime, VSL("cannot assign to an immutable value"));
 
 	if (!variable)
-		throw CRuntimeError(runtime, "cannot assign to a temporary value");
+		throw CRuntimeError(runtime, VSL("cannot assign to a temporary value"));
 
 	//assert(lhs != rhs);
 	if (_lhs == _rhs)
@@ -87,7 +87,7 @@ DEFINE_OPERATOR(OP_ADDITION)
 	case t_callable:
 	case t_array:
 	case t_object:
-		throw CRuntimeError(runtime, std::format("incompatible operands \"{}\" and \"{}\"", lhs->TypeAsString(), rhs->TypeAsString()));
+		throw CRuntimeError(runtime, std::format(VSL("incompatible operands \"{}\" and \"{}\""), lhs->TypeAsString(), rhs->TypeAsString()));
 	}
 
 	//was this allocated just now?
@@ -119,7 +119,7 @@ DEFINE_OPERATOR(OP_SUBTRACTION)
 	case t_callable:
 	case t_array:
 	case t_object:
-		throw CRuntimeError(runtime, std::format("incompatible operands \"{}\" and \"{}\"", lhs->TypeAsString(), rhs->TypeAsString()));
+		throw CRuntimeError(runtime, std::format(VSL("incompatible operands \"{}\" and \"{}\""), lhs->TypeAsString(), rhs->TypeAsString()));
 	}
 
 	//was this allocated just now?
@@ -151,7 +151,7 @@ DEFINE_OPERATOR(OP_MULTIPLICATION)
 	case t_callable:
 	case t_array:
 	case t_object:
-		throw CRuntimeError(runtime, std::format("incompatible operands \"{}\" and \"{}\"", lhs->TypeAsString(), rhs->TypeAsString()));
+		throw CRuntimeError(runtime, std::format(VSL("incompatible operands \"{}\" and \"{}\""), lhs->TypeAsString(), rhs->TypeAsString()));
 	}
 
 	//was this allocated just now?
@@ -169,7 +169,7 @@ DEFINE_OPERATOR(OP_DIVISION)
 	case t_int:
 
 		if(rhs->ToInt() == VarjusInt(0))
-			throw CRuntimeError(runtime, "division by 0");
+			throw CRuntimeError(runtime, VSL("division by 0"));
 
 		result = CIntValue::Construct(runtime, lhs->ToInt() / rhs->ToInt());
 		break;
@@ -177,14 +177,14 @@ DEFINE_OPERATOR(OP_DIVISION)
 	case t_uint:
 
 		if (rhs->ToUInt() == VarjusUInt(0))
-			throw CRuntimeError(runtime, "division by 0");
+			throw CRuntimeError(runtime, VSL("division by 0"));
 
 		result = CUIntValue::Construct(runtime, lhs->ToUInt() / rhs->ToUInt());
 		break;
 	case t_double:
 
 		if (rhs->ToDouble() == 0.0)
-			throw CRuntimeError(runtime, "division by 0");
+			throw CRuntimeError(runtime, VSL("division by 0"));
 
 		result = CDoubleValue::Construct(runtime, lhs->ToDouble() / rhs->ToDouble());
 		break;
@@ -195,7 +195,7 @@ DEFINE_OPERATOR(OP_DIVISION)
 	case t_callable:
 	case t_array:
 	case t_object:
-		throw CRuntimeError(runtime, std::format("incompatible operands \"{}\" and \"{}\"", lhs->TypeAsString(), rhs->TypeAsString()));
+		throw CRuntimeError(runtime, std::format(VSL("incompatible operands \"{}\" and \"{}\""), lhs->TypeAsString(), rhs->TypeAsString()));
 	}
 
 	//was this allocated just now?
@@ -213,21 +213,21 @@ DEFINE_OPERATOR(OP_MODULO)
 	case t_int:
 
 		if (rhs->ToInt() == 0ll)
-			throw CRuntimeError(runtime, "division by 0");
+			throw CRuntimeError(runtime, VSL("division by 0"));
 
 		result = CIntValue::Construct(runtime, lhs->ToInt() % rhs->ToInt());
 		break;
 	case t_uint:
 
 		if (rhs->ToUInt() == VarjusUInt(0))
-			throw CRuntimeError(runtime, "division by 0");
+			throw CRuntimeError(runtime, VSL("division by 0"));
 
 		result = CUIntValue::Construct(runtime, lhs->ToUInt() % rhs->ToUInt());
 		break;
 	case t_double:
 
 		if (rhs->ToDouble() == 0.0)
-			throw CRuntimeError(runtime, "division by 0");
+			throw CRuntimeError(runtime, VSL("division by 0"));
 
 		result = CDoubleValue::Construct(runtime, std::fmod(lhs->ToDouble(), rhs->ToDouble()));
 		break;
@@ -238,7 +238,7 @@ DEFINE_OPERATOR(OP_MODULO)
 	case t_callable:
 	case t_array:
 	case t_object:
-		throw CRuntimeError(runtime, std::format("incompatible operands \"{}\" and \"{}\"", lhs->TypeAsString(), rhs->TypeAsString()));
+		throw CRuntimeError(runtime, std::format(VSL("incompatible operands \"{}\" and \"{}\""), lhs->TypeAsString(), rhs->TypeAsString()));
 	}
 
 	//was this allocated just now?
@@ -270,7 +270,7 @@ DEFINE_OPERATOR(OP_LESS_THAN)
 	case t_callable:
 	case t_array:
 	case t_object:
-		throw CRuntimeError(runtime, std::format("incompatible operands \"{}\" and \"{}\"", lhs->TypeAsString(), rhs->TypeAsString()));
+		throw CRuntimeError(runtime, std::format(VSL("incompatible operands \"{}\" and \"{}\""), lhs->TypeAsString(), rhs->TypeAsString()));
 	}
 
 	//was this allocated just now?
@@ -302,7 +302,7 @@ DEFINE_OPERATOR(OP_LESS_EQUAL)
 	case t_callable:
 	case t_array:
 	case t_object:
-		throw CRuntimeError(runtime, std::format("incompatible operands \"{}\" and \"{}\"", lhs->TypeAsString(), rhs->TypeAsString()));
+		throw CRuntimeError(runtime, std::format(VSL("incompatible operands \"{}\" and \"{}\""), lhs->TypeAsString(), rhs->TypeAsString()));
 	}
 
 	//was this allocated just now?
@@ -334,7 +334,7 @@ DEFINE_OPERATOR(OP_GREATER_THAN)
 	case t_callable:
 	case t_array:
 	case t_object:
-		throw CRuntimeError(runtime, std::format("incompatible operands \"{}\" and \"{}\"", lhs->TypeAsString(), rhs->TypeAsString()));
+		throw CRuntimeError(runtime, std::format(VSL("incompatible operands \"{}\" and \"{}\""), lhs->TypeAsString(), rhs->TypeAsString()));
 	}
 
 	//was this allocated just now?
@@ -366,7 +366,7 @@ DEFINE_OPERATOR(OP_GREATER_EQUAL)
 	case t_callable:
 	case t_array:
 	case t_object:
-		throw CRuntimeError(runtime, std::format("incompatible operands \"{}\" and \"{}\"", lhs->TypeAsString(), rhs->TypeAsString()));
+		throw CRuntimeError(runtime, std::format(VSL("incompatible operands \"{}\" and \"{}\""), lhs->TypeAsString(), rhs->TypeAsString()));
 	}
 
 	//was this allocated just now?
@@ -469,20 +469,20 @@ DEFINE_OPERATOR(OP_STRICT_UNEQUALITY)
 DEFINE_OPERATOR(OP_LOGICAL_AND)
 {
 	if(!_lhs->IsBooleanConvertible())
-		throw CRuntimeError(runtime, std::format("\"{}\" is not convertible to a boolean", _lhs->TypeAsString()));
+		throw CRuntimeError(runtime, std::format(VSL("\"{}\" is not convertible to a boolean"), _lhs->TypeAsString()));
 
 	if (!_rhs->IsBooleanConvertible())
-		throw CRuntimeError(runtime, std::format("\"{}\" is not convertible to a boolean", _rhs->TypeAsString()));
+		throw CRuntimeError(runtime, std::format(VSL("\"{}\" is not convertible to a boolean"), _rhs->TypeAsString()));
 
 	return CBooleanValue::Construct(runtime, _lhs->ToBoolean() && _rhs->ToBoolean());
 }
 DEFINE_OPERATOR(OP_LOGICAL_OR)
 {
 	if (!_lhs->IsBooleanConvertible())
-		throw CRuntimeError(runtime, std::format("\"{}\" is not convertible to a boolean", _lhs->TypeAsString()));
+		throw CRuntimeError(runtime, std::format(VSL("\"{}\" is not convertible to a boolean"), _lhs->TypeAsString()));
 
 	if (!_rhs->IsBooleanConvertible())
-		throw CRuntimeError(runtime, std::format("\"{}\" is not convertible to a boolean", _rhs->TypeAsString()));
+		throw CRuntimeError(runtime, std::format(VSL("\"{}\" is not convertible to a boolean"), _rhs->TypeAsString()));
 
 	return CBooleanValue::Construct(runtime, _lhs->ToBoolean() || _rhs->ToBoolean());
 }
@@ -505,7 +505,7 @@ DEFINE_OPERATOR(OP_LEFT_SHIFT)
 	case t_callable:
 	case t_array:
 	case t_object:
-		throw CRuntimeError(runtime, std::format("you can only shift int operands, had \"{}\" and \"{}\"", 
+		throw CRuntimeError(runtime, std::format(VSL("you can only shift int operands, had \"{}\" and \"{}\""), 
 			lhs->TypeAsString(), rhs->TypeAsString()));
 	}
 
@@ -534,7 +534,7 @@ DEFINE_OPERATOR(OP_RIGHT_SHIFT)
 	case t_callable:
 	case t_array:
 	case t_object:
-		throw CRuntimeError(runtime, std::format("you can only shift int operands, had \"{}\" and \"{}\"",
+		throw CRuntimeError(runtime, std::format(VSL("you can only shift int operands, had \"{}\" and \"{}\""),
 			lhs->TypeAsString(), rhs->TypeAsString()));
 	}
 
@@ -563,7 +563,7 @@ DEFINE_OPERATOR(OP_BITWISE_OR)
 	case t_callable:
 	case t_array:
 	case t_object:
-		throw CRuntimeError(runtime, std::format("you can only use bitwise operations with int operands, had \"{}\" and \"{}\"",
+		throw CRuntimeError(runtime, std::format(VSL("you can only use bitwise operations with int operands, had \"{}\" and \"{}\""),
 			lhs->TypeAsString(), rhs->TypeAsString()));
 	}
 
@@ -592,7 +592,7 @@ DEFINE_OPERATOR(OP_BITWISE_XOR)
 	case t_callable:
 	case t_array:
 	case t_object:
-		throw CRuntimeError(runtime, std::format("you can only use bitwise operations with int operands, had \"{}\" and \"{}\"",
+		throw CRuntimeError(runtime, std::format(VSL("you can only use bitwise operations with int operands, had \"{}\" and \"{}\""),
 			lhs->TypeAsString(), rhs->TypeAsString()));
 	}
 
@@ -621,7 +621,7 @@ DEFINE_OPERATOR(OP_BITWISE_AND)
 	case t_callable:
 	case t_array:
 	case t_object:
-		throw CRuntimeError(runtime, std::format("you can only use bitwise operations with int operands, had \"{}\" and \"{}\"",
+		throw CRuntimeError(runtime, std::format(VSL("you can only use bitwise operations with int operands, had \"{}\" and \"{}\""),
 			lhs->TypeAsString(), rhs->TypeAsString()));
 	}
 
@@ -635,13 +635,13 @@ DEFINE_OPERATOR(OP_BITWISE_AND)
 inline static void OP_ASSIGNMENT_CHECK(IValue* lhs, IValue* rhs)
 {
 	if (lhs->IsImmutable())
-		throw CRuntimeError(lhs->GetAllocator(), "cannot assign to an immutable value");
+		throw CRuntimeError(lhs->GetAllocator(), VSL("cannot assign to an immutable value"));
 
 	if (!lhs->GetOwner())
-		throw CRuntimeError(lhs->GetAllocator(), "cannot assign to a temporary value");
+		throw CRuntimeError(lhs->GetAllocator(), VSL("cannot assign to a temporary value"));
 
 	if (lhs->Type() != rhs->Type())
-		throw CRuntimeError(lhs->GetAllocator(), std::format("can't assign \"{}\" to \"{}\"", rhs->TypeAsString(), lhs->TypeAsString()));
+		throw CRuntimeError(lhs->GetAllocator(), std::format(VSL("can't assign \"{}\" to \"{}\""), rhs->TypeAsString(), lhs->TypeAsString()));
 }
 
 DEFINE_OPERATOR(OP_ASSIGNMENT_ADDITION)
@@ -667,7 +667,7 @@ DEFINE_OPERATOR(OP_ASSIGNMENT_ADDITION)
 	case t_callable:
 	case t_array:
 	case t_object:
-		throw CRuntimeError(runtime, std::format("incompatible operands \"{}\" and \"{}\"", _lhs->TypeAsString(), _rhs->TypeAsString()));
+		throw CRuntimeError(runtime, std::format(VSL("incompatible operands \"{}\" and \"{}\""), _lhs->TypeAsString(), _rhs->TypeAsString()));
 	}
 
 	return _lhs;
@@ -693,7 +693,7 @@ DEFINE_OPERATOR(OP_ASSIGNMENT_SUBTRACTION)
 	case t_callable:
 	case t_array:
 	case t_object:
-		throw CRuntimeError(runtime, std::format("incompatible operands \"{}\" and \"{}\"", _lhs->TypeAsString(), _rhs->TypeAsString()));
+		throw CRuntimeError(runtime, std::format(VSL("incompatible operands \"{}\" and \"{}\""), _lhs->TypeAsString(), _rhs->TypeAsString()));
 	}
 
 	return _lhs;
@@ -719,7 +719,7 @@ DEFINE_OPERATOR(OP_ASSIGNMENT_MULTIPLICATION)
 	case t_callable:
 	case t_array:
 	case t_object:
-		throw CRuntimeError(runtime, std::format("incompatible operands \"{}\" and \"{}\"", _lhs->TypeAsString(), _rhs->TypeAsString()));
+		throw CRuntimeError(runtime, std::format(VSL("incompatible operands \"{}\" and \"{}\""), _lhs->TypeAsString(), _rhs->TypeAsString()));
 	}
 
 	return _lhs;
@@ -733,7 +733,7 @@ DEFINE_OPERATOR(OP_ASSIGNMENT_DIVISION)
 	case t_int:
 
 		if (_rhs->ToInt() == VarjusInt(0))
-			throw CRuntimeError(runtime, "division by 0");
+			throw CRuntimeError(runtime, VSL("division by 0"));
 
 		_lhs->AsInt() /= _rhs->AsInt();
 
@@ -741,7 +741,7 @@ DEFINE_OPERATOR(OP_ASSIGNMENT_DIVISION)
 	case t_uint:
 
 		if (_rhs->ToUInt() == VarjusUInt(0))
-			throw CRuntimeError(runtime, "division by 0");
+			throw CRuntimeError(runtime, VSL("division by 0"));
 
 		_lhs->AsUInt() /= _rhs->AsUInt();
 
@@ -749,7 +749,7 @@ DEFINE_OPERATOR(OP_ASSIGNMENT_DIVISION)
 	case t_double:
 
 		if (_rhs->ToDouble() == 0.0)
-			throw CRuntimeError(runtime, "division by 0");
+			throw CRuntimeError(runtime, VSL("division by 0"));
 
 		_lhs->AsDouble() /= _rhs->AsDouble();
 		break;
@@ -759,7 +759,7 @@ DEFINE_OPERATOR(OP_ASSIGNMENT_DIVISION)
 	case t_callable:
 	case t_array:
 	case t_object:
-		throw CRuntimeError(runtime, std::format("incompatible operands \"{}\" and \"{}\"", _lhs->TypeAsString(), _rhs->TypeAsString()));
+		throw CRuntimeError(runtime, std::format(VSL("incompatible operands \"{}\" and \"{}\""), _lhs->TypeAsString(), _rhs->TypeAsString()));
 	}
 
 	return _lhs;
@@ -773,7 +773,7 @@ DEFINE_OPERATOR(OP_ASSIGNMENT_MODULO)
 	case t_int:
 
 		if (_rhs->ToInt() == VarjusInt(0))
-			throw CRuntimeError(runtime, "division by 0");
+			throw CRuntimeError(runtime, VSL("division by 0"));
 
 		_lhs->AsInt() %= _rhs->AsInt();
 
@@ -781,7 +781,7 @@ DEFINE_OPERATOR(OP_ASSIGNMENT_MODULO)
 	case t_uint:
 
 		if (_rhs->ToUInt() == VarjusUInt(0))
-			throw CRuntimeError(runtime, "division by 0");
+			throw CRuntimeError(runtime, VSL("division by 0"));
 
 		_lhs->AsUInt() %= _rhs->AsUInt();
 
@@ -789,7 +789,7 @@ DEFINE_OPERATOR(OP_ASSIGNMENT_MODULO)
 	case t_double:
 
 		if (_rhs->ToDouble() == 0.0)
-			throw CRuntimeError(runtime, "division by 0");
+			throw CRuntimeError(runtime, VSL("division by 0"));
 
 		_lhs->AsDouble() = std::fmod(_lhs->AsDouble(), _rhs->AsDouble());
 		break;
@@ -799,7 +799,7 @@ DEFINE_OPERATOR(OP_ASSIGNMENT_MODULO)
 	case t_callable:
 	case t_array:
 	case t_object:
-		throw CRuntimeError(runtime, std::format("incompatible operands \"{}\" and \"{}\"", _lhs->TypeAsString(), _rhs->TypeAsString()));
+		throw CRuntimeError(runtime, std::format(VSL("incompatible operands \"{}\" and \"{}\""), _lhs->TypeAsString(), _rhs->TypeAsString()));
 	}
 
 	return _lhs;
@@ -823,7 +823,7 @@ DEFINE_OPERATOR(OP_ASSIGNMENT_LEFT_SHIFT)
 	case t_callable:
 	case t_array:
 	case t_object:
-		throw CRuntimeError(runtime, std::format("you can only shift int operands, had \"{}\" and \"{}\"",
+		throw CRuntimeError(runtime, std::format(VSL("you can only shift int operands, had \"{}\" and \"{}\""),
 			_lhs->TypeAsString(), _rhs->TypeAsString()));
 	}
 
@@ -848,7 +848,7 @@ DEFINE_OPERATOR(OP_ASSIGNMENT_RIGHT_SHIFT)
 	case t_callable:
 	case t_array:
 	case t_object:
-		throw CRuntimeError(runtime, std::format("you can only shift int operands, had \"{}\" and \"{}\"",
+		throw CRuntimeError(runtime, std::format(VSL("you can only shift int operands, had \"{}\" and \"{}\""),
 			_lhs->TypeAsString(), _rhs->TypeAsString()));
 	}
 
@@ -874,7 +874,7 @@ DEFINE_OPERATOR(OP_ASSIGNMENT_BITWISE_OR)
 	case t_callable:
 	case t_array:
 	case t_object:
-		throw CRuntimeError(runtime, std::format("you can only use bitwise operations with int operands, had \"{}\" and \"{}\"",
+		throw CRuntimeError(runtime, std::format(VSL("you can only use bitwise operations with int operands, had \"{}\" and \"{}\""),
 			_lhs->TypeAsString(), _rhs->TypeAsString()));
 	}
 
@@ -900,7 +900,7 @@ DEFINE_OPERATOR(OP_ASSIGNMENT_BITWISE_XOR)
 	case t_callable:
 	case t_array:
 	case t_object:
-		throw CRuntimeError(runtime, std::format("you can only use bitwise operations with int operands, had \"{}\" and \"{}\"",
+		throw CRuntimeError(runtime, std::format(VSL("you can only use bitwise operations with int operands, had \"{}\" and \"{}\""),
 			_lhs->TypeAsString(), _rhs->TypeAsString()));
 	}
 
@@ -926,7 +926,7 @@ DEFINE_OPERATOR(OP_ASSIGNMENT_BITWISE_AND)
 	case t_callable:
 	case t_array:
 	case t_object:
-		throw CRuntimeError(runtime, std::format("you can only use bitwise operations with int operands, had \"{}\" and \"{}\"",
+		throw CRuntimeError(runtime, std::format(VSL("you can only use bitwise operations with int operands, had \"{}\" and \"{}\""),
 			_lhs->TypeAsString(), _rhs->TypeAsString()));
 	}
 

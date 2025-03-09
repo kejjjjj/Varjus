@@ -26,7 +26,7 @@ std::unique_ptr<CKeyValue> CLinterOperand::ParseKeyValue(std::optional<PairMatch
 	};
 
 	if (IsEndOfBuffer() || !isValidKey(*m_iterPos)) {
-		m_pOwner->GetModule()->PushError("expected an identifier", GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError(VSL("expected an identifier"), GetIteratorSafe()->m_oSourcePosition);
 		return nullptr;
 	}
 
@@ -35,7 +35,7 @@ std::unique_ptr<CKeyValue> CLinterOperand::ParseKeyValue(std::optional<PairMatch
 	std::advance(m_iterPos, 1); // skip identifier
 
 	if (IsEndOfBuffer() || !(*m_iterPos)->IsOperator(p_colon)) {
-		m_pOwner->GetModule()->PushError("expected \":\"", GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError(VSL("expected \":\""), GetIteratorSafe()->m_oSourcePosition);
 		return nullptr;
 	}
 

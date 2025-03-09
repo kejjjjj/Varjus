@@ -1,4 +1,4 @@
-fn main()
+﻿fn main()
 {
 	return () => 2;
 }

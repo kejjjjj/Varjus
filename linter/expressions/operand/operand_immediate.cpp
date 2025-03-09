@@ -98,35 +98,81 @@ std::size_t CImmediateOperand::GetImmediateSize() const noexcept
 	}
 }
 
-std::string CImmediateOperand::ToData() const noexcept
+#ifdef UNICODE
+#include <locale>
+inline std::string ToNarrow(const std::wstring& wide_str) {
+	std::locale loc;
+
+	const auto str = wide_str.data();
+
+	auto len = wide_str.length();
+
+	std::string narrow_str;
+	narrow_str.resize(len);
+
+	std::use_facet<std::ctype<wchar_t>>(loc).narrow(str, str + len, '?', &narrow_str[0]);
+
+	return narrow_str;
+}
+
+inline std::wstring ToWide(const std::string& string) {
+
+	std::locale loc;
+
+	const auto str = string.data();
+
+	auto len = strlen(str);
+
+	std::wstring wide_str;
+	wide_str.resize(len);
+
+	std::use_facet<std::ctype<wchar_t>>(loc).widen(str, str + len, wide_str.data());
+
+	return wide_str;
+}
+
+#endif
+
+VarjusString CImmediateOperand::ToData() const noexcept
 {
-	std::string result;
-	auto& string = m_pToken->Source();
+	if (GetImmediateType() == t_string)
+		return m_pToken->Source();
+
+
+	VarjusString result;
+
+#ifdef UNICODE
+	std::string string = ToNarrow(m_pToken->Source());
+#else
+	VarjusString string = m_pToken->Source();
+#endif
+
 
 	switch (GetImmediateType()) {
 	case t_undefined:
-		return "";
+		return VSL("");
 	case t_boolean:
-		return std::string(1, m_pToken->Type() == TokenType::tt_true ? '\x01' : '\x00');
+		return VarjusString(1, m_pToken->Type() == TokenType::tt_true ? VarjusChar('\x01') : VarjusChar('\x00'));
 	case t_int:
-		result = std::string(sizeof(VarjusInt), 0);
+		result = VarjusString(sizeof(VarjusInt), 0);
 		std::from_chars(string.c_str(), string.c_str() + string.size(), reinterpret_cast<VarjusInt&>(*result.data()));
 		break;
 	case t_uint:
-		result = std::string(sizeof(VarjusUInt), 0);
+		result = VarjusString(sizeof(VarjusUInt), 0);
 		std::from_chars(string.c_str(), string.c_str() + string.size(), reinterpret_cast<VarjusUInt&>(*result.data()));
 		break;
 	case t_double:
-		result = std::string(sizeof(VarjusDouble), 0);
+		result = VarjusString(sizeof(VarjusDouble), 0);
 		std::from_chars(string.c_str(), string.c_str() + string.size(), reinterpret_cast<VarjusDouble&>(*result.data()));
 		break;
 	case t_string:
-		return string;
+		break;
 	default:
 		assert(false);
 	}
 
 	return result;
+
 }
 
 #pragma pack(pop)

@@ -61,6 +61,6 @@ private:
 
 	WeakScope m_pScope;
 	CMemory* const m_pOwner;
-	VectorOf<std::string> m_oParameters;
+	VectorOf<VarjusString> m_oParameters;
 	std::unique_ptr<CLambdaOperand> m_pOperand;
 };

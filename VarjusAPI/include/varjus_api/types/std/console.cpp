@@ -9,17 +9,17 @@ FORWARD_DECLARE_METHOD(LogConsole);
 
 void CConsoleValue::Construct(ObjectDeclaration_t& receiver)
 {
-	receiver.AddMethod("log", LogConsole, UNCHECKED_PARAMETER_COUNT);
+	receiver.AddMethod(VSL("log"), LogConsole, UNCHECKED_PARAMETER_COUNT);
 }
 
 DEFINE_METHOD(LogConsole, args)
 {
-	std::string p;
+	VarjusString p;
 
 	for (auto& v : args)
 		p += v->ValueAsString();
 
-	std::cout << p << '\n';
+	STD_COUT << p << '\n';
 
 	return IValue::Construct(ctx->m_pRuntime);
 }

@@ -26,7 +26,7 @@ Success CThrowStatementLinter::Parse()
 
 	// throw;
 	if (!IsEndOfBuffer() && (*m_iterPos)->IsOperator(p_semicolon)) {
-		m_pOwner->GetModule()->PushError("expected an expression", GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError(VSL("expected an expression"), GetIteratorSafe()->m_oSourcePosition);
 		return success;
 	}
 

@@ -14,7 +14,7 @@ bool CLinterVariable::IsGlobal() const noexcept {
 
 #ifdef OPTIMIZATIONS
 
-CConstEvalLinterVariable::CConstEvalLinterVariable(const CMemory* owner, const std::string& name, const CCrossModuleReference& ref)
+CConstEvalLinterVariable::CConstEvalLinterVariable(const CMemory* owner, const VarjusString& name, const CCrossModuleReference& ref)
 	: CLinterVariable(owner, name, ref){}
 
 CConstEvalLinterVariable::~CConstEvalLinterVariable() = default;

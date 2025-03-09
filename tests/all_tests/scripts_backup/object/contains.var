@@ -1,0 +1,18 @@
+
+fn main()
+{
+	const key2 = "key2";
+	const value2 = "value2";
+	const obj =  { 
+		"key0": "value0", 
+		key1: "value1", 
+		key2: value2
+	};
+
+	return [ 
+		obj.contains("key0"),   //true 
+		obj.contains("value0"), //false (because the method looks at keys)
+		obj.contains(key2)      //true
+	];
+
+}

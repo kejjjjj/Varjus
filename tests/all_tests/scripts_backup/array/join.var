@@ -1,0 +1,5 @@
+
+fn main()
+{
+	return ["hello", "world", "hello1", "world1"].join(", ");
+}

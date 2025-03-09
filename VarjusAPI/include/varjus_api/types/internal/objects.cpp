@@ -61,7 +61,7 @@ IValue* CBuiltInObject::GetAggregate(CRuntimeContext* const ctx, std::size_t mem
 
 CBuiltInObjectPairs::~CBuiltInObjectPairs() = default;
 
-void CBuiltInObjects::AddNewStaticObject(const std::string& name, const OptionalCtor<void>& constructorFunc)
+void CBuiltInObjects::AddNewStaticObject(const VarjusString& name, const OptionalCtor<void>& constructorFunc)
 {
 	m_arrData.push_back({ name, { constructorFunc } });
 }

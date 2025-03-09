@@ -70,7 +70,7 @@ IValue* CRuntimeExpression::Evaluate(CRuntimeContext* const ctx, const AbstractS
 	auto& func = m_oOperatorTable[static_cast<std::size_t>(node->GetOperator()->m_ePunctuation)];
 
 	if (!func)
-		throw CRuntimeError(ctx->m_pRuntime, "this operator isn't supported yet");
+		throw CRuntimeError(ctx->m_pRuntime, VSL("this operator isn't supported yet"));
 
 	IValue* result = func(ctx->m_pRuntime, lhs, rhs);
 
@@ -195,7 +195,7 @@ IValue* CRuntimeExpression::EvaluateTernary(CRuntimeContext* const ctx, const Te
 	auto operand = Evaluate(ctx, node->m_pOperand.get());
 
 	if (!operand->IsBooleanConvertible())
-		throw CRuntimeError(ctx->m_pRuntime, "the operand is not convertible to a boolean");
+		throw CRuntimeError(ctx->m_pRuntime, VSL("the operand is not convertible to a boolean"));
 
 	const auto boolValue = operand->ToBoolean();
 
@@ -211,7 +211,7 @@ IValue* CRuntimeExpression::EvaluateTernary(CRuntimeContext* const ctx, const Te
 }
 IValue* CRuntimeExpression::EvaluateFmtString(CRuntimeContext* const ctx, const FmtStringASTNode* node)
 {
-	std::string fullString;
+	VarjusString fullString;
 	for (const auto& [t, v] : node->m_oNodes) {
 
 		if (t == FmtStringAST::TEXT) {

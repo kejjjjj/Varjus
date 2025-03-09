@@ -38,8 +38,8 @@ public:
 
 	[[nodiscard]] static CScope* DeleteScope(CScope* scope);
 
-	[[nodiscard]] Success DeclareVariable(const std::string& var);
-	[[nodiscard]] bool VariableExists(const std::string& var) const;
+	[[nodiscard]] Success DeclareVariable(const VarjusString& var);
+	[[nodiscard]] bool VariableExists(const VarjusString& var) const;
 
 	constexpr void MakeLoopScope(bool s = true) noexcept { m_bIsWithinLoop = s; }
 	[[nodiscard]] bool IsLoopScope() const noexcept;
@@ -57,6 +57,6 @@ private:
 
 	CMemory* const m_pOwner;
 	CScope* m_pLowerScope{};
-	std::unordered_set<std::string> m_oLocalVariables;
+	std::unordered_set<VarjusString> m_oLocalVariables;
 	bool m_bIsWithinLoop{ false };
 };

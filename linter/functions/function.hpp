@@ -9,7 +9,7 @@ struct CFunctionBlock;
 
 struct CParameterData
 {
-	std::string m_sName;
+	VarjusString m_sName;
 	CodePosition m_oPosition;
 };
 
@@ -49,8 +49,8 @@ private:
 	WeakScope m_pScope;
 	CMemory* const m_pOwner;
 
-	std::string m_oFunctionName;
-	VectorOf<std::string> m_oParameters;
+	VarjusString m_oFunctionName;
+	VectorOf<VarjusString> m_oParameters;
 
 	std::unique_ptr<CStack> m_pThisStack;
 	std::shared_ptr<CScope> m_pThisScope;
@@ -61,7 +61,7 @@ WARNING_DISABLE(4623) // default constructor implicitly deleted
 WARNING_DISABLE(5027) // move assignment operator implicitly deleted
 struct CFunctionBlock final
 {
-	std::string m_sName; // function name
+	VarjusString m_sName; // function name
 	std::size_t m_uNumParameters; // function paramters
 	CStack* const m_pStack; // the stack
 	VectorOf<RuntimeBlock> m_oInstructions; // sorted list of all function instructions

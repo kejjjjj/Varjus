@@ -6,7 +6,7 @@
 
 struct CStringContent final
 {
-	std::string m_sString;
+	VarjusString m_sString;
 };
 
 class CInternalStringValue final
@@ -17,7 +17,7 @@ public:
 
 	void Release();
 
-	void Set(const std::string& value);
+	void Set(const VarjusString& value);
 	[[nodiscard]] constexpr auto& Get() noexcept { return m_oValue; }
 	[[nodiscard]] constexpr auto& Get() const noexcept { return m_oValue; }
 
@@ -35,7 +35,7 @@ class CStringValue final : public CValue<CInternalStringValue>
 public:
 	CStringValue() = default;
 
-	[[nodiscard]] static CStringValue* Construct(CProgramRuntime* const runtime, const std::string& v);
+	[[nodiscard]] static CStringValue* Construct(CProgramRuntime* const runtime, const VarjusString& v);
 	[[nodiscard]] static std::unique_ptr<struct BuiltInMethod_t> ConstructMethods(class CProgramInformation* const info);
 	[[nodiscard]] static std::unique_ptr<struct BuiltInProperty_t> ConstructProperties(class CProgramInformation* const info);
 
@@ -53,7 +53,7 @@ public:
 	[[nodiscard]] bool ToBoolean() const override { return !Internal()->GetString().empty(); }
 	[[nodiscard]] VarjusInt ToInt() const override { return static_cast<VarjusInt>(ToBoolean()); }
 	[[nodiscard]] VarjusDouble ToDouble() const override { return static_cast<VarjusDouble>(ToBoolean()); }
-	[[nodiscard]] const std::string& ToString() const override { return Internal()->GetString(); }
+	[[nodiscard]] const VarjusString& ToString() const override { return Internal()->GetString(); }
 
 	[[nodiscard]] CStringValue* ToCString() override { return this; }
 
@@ -65,7 +65,7 @@ public:
 	[[nodiscard]] IValues ToIterable() const override;
 
 private:
-	[[nodiscard]] std::string TypeAsString() const override { return "string"s; }
-	[[nodiscard]] std::string ValueAsString() const override { return Internal()->GetString(); }
+	[[nodiscard]] VarjusString TypeAsString() const override { return VSL("string"); }
+	[[nodiscard]] VarjusString ValueAsString() const override { return Internal()->GetString(); }
 
 };

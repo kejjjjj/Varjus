@@ -42,7 +42,7 @@ Success CRepeatStatementLinter::Parse()
 	m_pCondition = ParseExpression();
 
 	if (IsEndOfBuffer() || (*m_iterPos)->IsOperator(p_semicolon) == false) {
-		m_pOwner->GetModule()->PushError("expected a \";\"", GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError(VSL("expected a \";\""), GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 

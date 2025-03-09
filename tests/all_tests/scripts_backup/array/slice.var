@@ -1,0 +1,7 @@
+
+fn main()
+{
+	const text = ["aa", "bb", "cc", "dd", "ee"];
+	return text.slice(3, 5);
+
+}

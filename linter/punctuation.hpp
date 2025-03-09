@@ -3,6 +3,9 @@
 #include <string_view>
 #include <array>
 
+#include "varjus_api/internal/globalDefinitions.hpp"
+
+
 enum OperatorPriority : char
 {
 	op_failure,
@@ -91,74 +94,74 @@ enum Punctuation : char
 
 struct CPunctuation final
 {
-	std::string_view m_sIdentifier;
+	STD_STRING_VIEW m_sIdentifier;
 	Punctuation m_ePunctuation{};
 	OperatorPriority m_ePriority{};
 };
 
 constexpr std::array<CPunctuation, 46u> punctuations
 {
-	CPunctuation{"===", p_strict_equality, op_relational},
-	CPunctuation{"!==", p_strict_unequality, op_relational},
+	CPunctuation{VSL("==="), p_strict_equality, op_relational},
+	CPunctuation{VSL("!=="), p_strict_unequality, op_relational},
 
-	CPunctuation{"<<=", p_assignment_left_shift, op_assignment},
-	CPunctuation{">>=", p_assignment_right_shift, op_assignment},
+	CPunctuation{VSL("<<="), p_assignment_left_shift, op_assignment},
+	CPunctuation{VSL(">>="), p_assignment_right_shift, op_assignment},
 
-	CPunctuation{"+=", p_assignment_addition, op_assignment},
-	CPunctuation{"-=", p_assignment_subtraction, op_assignment},
-	CPunctuation{"*=", p_assignment_multiplication, op_assignment},
-	CPunctuation{"/=", p_assignment_division, op_assignment},
-	CPunctuation{"%=", p_assignment_modulo, op_assignment},
-	CPunctuation{"|=", p_assignment_bitwise_or, op_assignment},
-	CPunctuation{"^=", p_assignment_bitwise_xor, op_assignment},
-	CPunctuation{"&=", p_assignment_bitwise_and, op_assignment},
+	CPunctuation{VSL("+="), p_assignment_addition, op_assignment},
+	CPunctuation{VSL("-="), p_assignment_subtraction, op_assignment},
+	CPunctuation{VSL("*="), p_assignment_multiplication, op_assignment},
+	CPunctuation{VSL("/="), p_assignment_division, op_assignment},
+	CPunctuation{VSL("%="), p_assignment_modulo, op_assignment},
+	CPunctuation{VSL("|="), p_assignment_bitwise_or, op_assignment},
+	CPunctuation{VSL("^="), p_assignment_bitwise_xor, op_assignment},
+	CPunctuation{VSL("&="), p_assignment_bitwise_and, op_assignment},
 
-	CPunctuation{"==", p_equality, op_relational},
-	CPunctuation{"!=", p_unequality, op_relational},
+	CPunctuation{VSL("=="), p_equality, op_relational},
+	CPunctuation{VSL("!="), p_unequality, op_relational},
 
-	CPunctuation{"<=", p_less_equal, op_equality},
-	CPunctuation{">=", p_greater_equal, op_equality},
+	CPunctuation{VSL("<="), p_less_equal, op_equality},
+	CPunctuation{VSL(">="), p_greater_equal, op_equality},
 
-	CPunctuation{"&&", p_logical_and, op_logical_and},
-	CPunctuation{"||", p_logical_or, op_logical_or},
+	CPunctuation{VSL("&&"), p_logical_and, op_logical_and},
+	CPunctuation{VSL("||"), p_logical_or, op_logical_or},
 
-	CPunctuation{"<<", p_left_shift, op_shift},
-	CPunctuation{">>", p_right_shift, op_shift},
+	CPunctuation{VSL("<<"), p_left_shift, op_shift},
+	CPunctuation{VSL(">>"), p_right_shift, op_shift},
 
-	CPunctuation{"++", p_increment, op_unary},
-	CPunctuation{"--", p_decrement, op_unary},
-	CPunctuation{"~", p_tilde, op_unary},
+	CPunctuation{VSL("++"), p_increment, op_unary},
+	CPunctuation{VSL("--"), p_decrement, op_unary},
+	CPunctuation{VSL("~"), p_tilde, op_unary},
 
-	CPunctuation{"+", p_add, op_additive},
-	CPunctuation{"-", p_sub, op_additive},
+	CPunctuation{VSL("+"), p_add, op_additive},
+	CPunctuation{VSL("-"), p_sub, op_additive},
 
-	CPunctuation{"<", p_less_than, op_equality},
-	CPunctuation{">", p_greater_than, op_equality},
+	CPunctuation{VSL("<"), p_less_than, op_equality},
+	CPunctuation{VSL(">"), p_greater_than, op_equality},
 
-	CPunctuation{"%", p_modulo, op_multiplicative},
-	CPunctuation{"*", p_multiplication, op_multiplicative},
-	CPunctuation{"/", p_division, op_multiplicative},
+	CPunctuation{VSL("%"), p_modulo, op_multiplicative},
+	CPunctuation{VSL("*"), p_multiplication, op_multiplicative},
+	CPunctuation{VSL("/"), p_division, op_multiplicative},
 
-	CPunctuation{"=", p_assign, op_assignment},
+	CPunctuation{VSL("="), p_assign, op_assignment},
 
-	CPunctuation{"|", p_bitwise_or, op_bitwise_or},
-	CPunctuation{"^", p_bitwise_xor, op_bitwise_xor},
-	CPunctuation{"&", p_bitwise_and, op_bitwise_and},
+	CPunctuation{VSL("|"), p_bitwise_or, op_bitwise_or},
+	CPunctuation{VSL("^"), p_bitwise_xor, op_bitwise_xor},
+	CPunctuation{VSL("&"), p_bitwise_and, op_bitwise_and},
 
-	CPunctuation{"(", p_par_open, op_postfix},
-	CPunctuation{")", p_par_close, op_failure},
+	CPunctuation{VSL("("), p_par_open, op_postfix},
+	CPunctuation{VSL(")"), p_par_close, op_failure},
 
-	CPunctuation{"[", p_bracket_open, op_postfix},
-	CPunctuation{"]", p_bracket_close, op_failure},
+	CPunctuation{VSL("["), p_bracket_open, op_postfix},
+	CPunctuation{VSL("]"), p_bracket_close, op_failure},
 
-	CPunctuation{"{", p_curlybracket_open, op_failure},
-	CPunctuation{"}", p_curlybracket_close, op_failure},
+	CPunctuation{VSL("{"), p_curlybracket_open, op_failure},
+	CPunctuation{VSL("}"), p_curlybracket_close, op_failure},
 
-	CPunctuation{",", p_comma},
-	CPunctuation{".", p_period, op_postfix},
-	CPunctuation{";", p_semicolon },
-	CPunctuation{":", p_colon, op_conditional2},
-	CPunctuation{"?", p_question_mark, op_conditional},
-	CPunctuation{"!", p_exclamation, op_unary}
+	CPunctuation{VSL(","), p_comma},
+	CPunctuation{VSL("."), p_period, op_postfix},
+	CPunctuation{VSL(";"), p_semicolon },
+	CPunctuation{VSL(":"), p_colon, op_conditional2},
+	CPunctuation{VSL("?"), p_question_mark, op_conditional},
+	CPunctuation{VSL("!"), p_exclamation, op_unary}
 
 };

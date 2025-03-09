@@ -27,6 +27,6 @@ public:
 	[[nodiscard]] CDoubleValue* ToCDouble() override { return this; }
 
 private:
-	[[nodiscard]] std::string TypeAsString() const override { return "double"s; }
-	[[nodiscard]] std::string ValueAsString() const override { return std::to_string(Get()); }
+	[[nodiscard]] VarjusString TypeAsString() const override { return VSL("double"); }
+	[[nodiscard]] VarjusString ValueAsString() const override { return STD_TO_STRING(Get()); }
 };

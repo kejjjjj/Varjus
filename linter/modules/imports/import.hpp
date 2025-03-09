@@ -24,12 +24,12 @@ private:
 	[[nodiscard]] Success ParseFile();
 	[[nodiscard]] CModule* GetFileModule() const;
 
-	[[nodiscard]] Success DeclareVariable(const std::string& symbolName, CExportedSymbol* const s, std::size_t moduleIndex);
-	[[nodiscard]] Success DeclareFunction(const std::string& symbolName, CExportedSymbol* const s, std::size_t moduleIndex);
+	[[nodiscard]] Success DeclareVariable(const VarjusString& symbolName, CExportedSymbol* const s, std::size_t moduleIndex);
+	[[nodiscard]] Success DeclareFunction(const VarjusString& symbolName, CExportedSymbol* const s, std::size_t moduleIndex);
 
 	WeakScope m_pScope;
 	CMemory* const m_pOwner;
 
-	VectorOf<std::string> m_oNames;
-	std::string m_oTargetFile;
+	VectorOf<VarjusString> m_oNames;
+	VarjusString m_oTargetFile;
 };

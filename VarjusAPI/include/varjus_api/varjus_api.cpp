@@ -36,20 +36,20 @@ Varjus::State::~State() {
 Success Varjus::State::UseStdLibrary()
 {
     if (!m_pLinter || !m_pLinter->m_oBuiltInObjects) {
-        m_sErrorMessage = "Varjus::State::UseStdLibrary(): no linter context... did you forget to create a new state?";
+        m_sErrorMessage = VSL("Varjus::State::UseStdLibrary(): no linter context... did you forget to create a new state?");
         return failure;
     }
 
-    m_pLinter->m_oBuiltInObjects->AddNewStaticObject("console", CConsoleValue::Construct);
-    m_pLinter->m_oBuiltInObjects->AddNewStaticObject("math", CMathValue::Construct);
+    m_pLinter->m_oBuiltInObjects->AddNewStaticObject(VSL("console"), CConsoleValue::Construct);
+    m_pLinter->m_oBuiltInObjects->AddNewStaticObject(VSL("math"), CMathValue::Construct);
 
     return success;
 }
 
-Success Varjus::State::LoadScriptFromFile(const std::string& fullFilePath)
+Success Varjus::State::LoadScriptFromFile(const VarjusString& fullFilePath)
 {
     if (!m_pLinter || !m_pLinter->m_oBuiltInObjects) {
-        m_sErrorMessage = "Varjus::State::LoadScriptFromFile(): no linter context... did you forget to create a new state?";
+        m_sErrorMessage = VSL("Varjus::State::LoadScriptFromFile(): no linter context... did you forget to create a new state?");
         return failure;
     }
 
@@ -62,23 +62,23 @@ Success Varjus::State::LoadScriptFromFile(const std::string& fullFilePath)
         CBufferLinter linter(m_pLinter.get(), begin, end, fullFilePath);
 
         if (!linter.Parse()) {
-            m_pLinter->PushError("couldn't parse the input file");
+            m_pLinter->PushError(VSL("couldn't parse the input file"));
             return failure;
         }
         return m_bScriptLoaded = success;
     }
     catch (CLinterError& ex) {
         m_sErrorMessage = ex.what();
-    } catch (std::exception& ex) {
-        m_sErrorMessage = "Unexpected exception: " + std::string(ex.what());
+    } catch (...) {
+        m_sErrorMessage = VSL("Unexpected exception occurred");
     }
 
     return failure;
 }
-Success Varjus::State::LoadScript(const std::string& script)
+Success Varjus::State::LoadScript(const VarjusString& script)
 {
     if (!m_pLinter || !m_pLinter->m_oBuiltInObjects) {
-        m_sErrorMessage = "Varjus::State::LoadScript(): no linter context... did you forget to create a new state?";
+        m_sErrorMessage = VSL("Varjus::State::LoadScript(): no linter context... did you forget to create a new state?");
         return failure;
     }
 
@@ -86,7 +86,7 @@ Success Varjus::State::LoadScript(const std::string& script)
         CBufferTokenizer buffer(m_pLinter.get(), script);
 
         if (!buffer.Tokenize()) {
-            m_sErrorMessage = "Varjus::State::LoadScript(): tokenization failure.. syntax error?";
+            m_sErrorMessage = VSL("Varjus::State::LoadScript(): tokenization failure.. syntax error?");
             return failure;
         }
 
@@ -97,7 +97,7 @@ Success Varjus::State::LoadScript(const std::string& script)
         CBufferLinter linter(m_pLinter.get(), begin, end);
 
         if (!linter.Parse()) {
-            m_pLinter->PushError("couldn't parse the input script");
+            m_pLinter->PushError(VSL("couldn't parse the input script"));
             return failure;
         }
 
@@ -106,8 +106,8 @@ Success Varjus::State::LoadScript(const std::string& script)
     catch (CLinterError& ex) {
         m_sErrorMessage = ex.what();
     }
-    catch (std::exception& ex) {
-        m_sErrorMessage = "Unexpected exception: " + std::string(ex.what());
+    catch (...) {
+        m_sErrorMessage = VSL("Unexpected exception occurred");
     }
 
     return failure;
@@ -116,12 +116,12 @@ IValue* Varjus::State::ExecuteScript()
 {
 
     if (!m_pLinter || !m_pLinter->m_oBuiltInObjects) {
-        m_sErrorMessage = "Varjus::State::ExecuteScript(): no linter context... did you forget to create a new state?";
+        m_sErrorMessage = VSL("Varjus::State::ExecuteScript(): no linter context... did you forget to create a new state?");
         return nullptr;
     }
 
     if (m_bScriptLoaded == failure) {
-        m_pLinter->PushError("Varjus::State::ExecuteScript(): the script wasn't loaded successfully - check return values!!!");
+        m_pLinter->PushError(VSL("Varjus::State::ExecuteScript(): the script wasn't loaded successfully - check return values!!!"));
         return nullptr;
     }
 
@@ -129,12 +129,12 @@ IValue* Varjus::State::ExecuteScript()
         if (auto modules = m_pLinter->GetModules()) {
             m_pRuntime = std::make_unique<CProgramRuntime>(std::move(m_pLinter), modules->ToRuntimeModules());
         } else {
-            m_sErrorMessage = "Varjus::State::ExecuteScript(): no modules... internal bug?";
+            m_sErrorMessage = VSL("Varjus::State::ExecuteScript(): no modules... internal bug?");
             return nullptr;
         }
         
         if (!m_pRuntime) {
-            m_sErrorMessage = "Varjus::State::ExecuteScript(): call to std::make_unique failed... internal bug?";
+            m_sErrorMessage = VSL("Varjus::State::ExecuteScript(): call to std::make_unique failed... internal bug?");
             return nullptr;
         }
 
@@ -142,21 +142,21 @@ IValue* Varjus::State::ExecuteScript()
 
     } catch (CRuntimeError& ex) {
         m_sErrorMessage = ex.what();
-    } catch (std::exception& ex) {
-        m_sErrorMessage = "Unexpected exception: " + std::string(ex.what());
+    } catch (...) {
+        m_sErrorMessage = VSL("Unexpected exception occurred");
     }
 
     return nullptr;
 
 }
-std::optional<std::string> Varjus::State::GetErrorMessage() {
-    return m_sErrorMessage.size() ? std::make_optional<std::string>(m_sErrorMessage) : std::nullopt;
+std::optional<VarjusString> Varjus::State::GetErrorMessage() {
+    return m_sErrorMessage.size() ? std::make_optional<VarjusString>(m_sErrorMessage) : std::nullopt;
 }
 
-Success Varjus::State::AddNewStaticObject(const std::string& name, const OptionalCtor<void>& constructor)
+Success Varjus::State::AddNewStaticObject(const VarjusString& name, const OptionalCtor<void>& constructor)
 {
     if (!m_pLinter || !m_pLinter->m_oBuiltInObjects) {
-        m_sErrorMessage = "Varjus::State::AddNewStaticObject(): no linter context... did you forget to create a new state?";
+        m_sErrorMessage = VSL("Varjus::State::AddNewStaticObject(): no linter context... did you forget to create a new state?");
         return failure;
     }
 
@@ -164,10 +164,10 @@ Success Varjus::State::AddNewStaticObject(const std::string& name, const Optiona
     return success;
 }
 
-Success Varjus::State::AddNewCallback(const std::string& name, const Function_t& callback, std::size_t numArgs)
+Success Varjus::State::AddNewCallback(const VarjusString& name, const Function_t& callback, std::size_t numArgs)
 {
     if (!m_pLinter || !m_pLinter->m_oBuiltInFunctions) {
-        m_sErrorMessage = "Varjus::State::AddNewCallback(): no linter context... did you forget to create a new state?";
+        m_sErrorMessage = VSL("Varjus::State::AddNewCallback(): no linter context... did you forget to create a new state?");
         return failure;
     }
 

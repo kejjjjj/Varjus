@@ -20,7 +20,7 @@ IValue* Name([[maybe_unused]] CRuntimeContext* const ctx, [[maybe_unused]] IValu
 
 #include <unordered_map>
 #include <memory>
-#include <string>
+
 #include <vector>
 #include <limits>
 
@@ -55,7 +55,7 @@ struct BuiltInMethod_t : std::unordered_map<std::size_t, std::unique_ptr<class C
     BuiltInMethod_t& operator=(BuiltInMethod_t&&) = default;
 
     constexpr void SetContext(CProgramInformation* const info) { m_pInfo = info; }
-    void AddMethod(const std::string& name, Method_t method, std::size_t numArgs);
+    void AddMethod(const VarjusString& name, Method_t method, std::size_t numArgs);
 
 private:
     CProgramInformation* m_pInfo;
@@ -67,7 +67,7 @@ struct BuiltInProperty_t : std::unordered_map<std::size_t, Property_t>
     BuiltInProperty_t(CProgramInformation* const ptr) : m_pInfo(ptr) {}
 
 	constexpr void SetContext(CProgramInformation* const info) { m_pInfo = info; }
-	void AddProperty(const std::string& name, Property_t property);
+	void AddProperty(const VarjusString& name, Property_t property);
 private:
 	CProgramInformation* m_pInfo{};
 };
@@ -80,10 +80,10 @@ struct ObjectDeclaration_t
     ObjectDeclaration_t(CProgramInformation* const ptr) 
         : m_oMethods(ptr), m_oProperties(ptr) {}
     
-    void AddMethod(const std::string& name, Method_t method, std::size_t numArgs) {
+    void AddMethod(const VarjusString& name, Method_t method, std::size_t numArgs) {
         m_oMethods.AddMethod(name, method, numArgs);
     }
-    void AddProperty(const std::string& name, Property_t property){
+    void AddProperty(const VarjusString& name, Property_t property){
         m_oProperties.AddProperty(name, property);
     }
 

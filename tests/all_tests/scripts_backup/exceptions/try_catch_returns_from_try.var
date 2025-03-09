@@ -1,0 +1,9 @@
+
+fn main()
+{
+	try{
+		return "try";
+	}catch(ex){
+		return "catch";
+	}
+}

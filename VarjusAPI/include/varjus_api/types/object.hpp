@@ -4,7 +4,7 @@
 #include "internal/aggregate.hpp"
 
 #include <memory>
-#include <string>
+
 #include <vector>
 
 template<typename T>
@@ -72,6 +72,6 @@ public:
 	}
 
 protected:
-	[[nodiscard]] std::string TypeAsString() const override { return "object"s; }
-	[[nodiscard]] std::string ValueAsString() const override;
+	[[nodiscard]] VarjusString TypeAsString() const override { return VSL("object"); }
+	[[nodiscard]] VarjusString ValueAsString() const override;
 };

@@ -1,0 +1,7 @@
+
+import func from "other.var";
+
+fn main()
+{
+	return func;
+}

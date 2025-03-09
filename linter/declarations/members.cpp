@@ -1,9 +1,9 @@
 #include "members.hpp"
 
-std::size_t CStringIntegerHashMap::operator[](const std::string& key){
+std::size_t CStringIntegerHashMap::operator[](const VarjusString& key){
 	return Insert(key);
 }
-[[maybe_unused]] std::size_t CStringIntegerHashMap::Insert(const std::string& key)
+[[maybe_unused]] std::size_t CStringIntegerHashMap::Insert(const VarjusString& key)
 {
 	const auto index = m_oStringToId.find(key);
 
@@ -14,7 +14,7 @@ std::size_t CStringIntegerHashMap::operator[](const std::string& key){
 
 	return m_oStringToId[key];
 }
-void CStringIntegerHashMap::Erase(const std::string& key)
+void CStringIntegerHashMap::Erase(const VarjusString& key)
 {
 	if (!Contains(key))
 		return;
@@ -25,13 +25,13 @@ void CStringIntegerHashMap::Erase(const std::string& key)
 	m_oIdToString.erase(id);
 
 }
-bool CStringIntegerHashMap::Contains(const std::string& key) const{
+bool CStringIntegerHashMap::Contains(const VarjusString& key) const{
 	return m_oStringToId.contains(key);
 }
-const std::string& CStringIntegerHashMap::At(const GlobalMemberIndex key) const{
+const VarjusString& CStringIntegerHashMap::At(const GlobalMemberIndex key) const{
 	return m_oIdToString.at(key);
 }
-GlobalMemberIndex CStringIntegerHashMap::At(const std::string& key) const{
+GlobalMemberIndex CStringIntegerHashMap::At(const VarjusString& key) const{
 	return m_oStringToId.at(key);
 }
 std::size_t CStringIntegerHashMap::GetCurrentIndex() const

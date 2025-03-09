@@ -1,0 +1,10 @@
+fn main()
+{
+	return [
+		tostring(true),
+		tostring([1,2]),
+		tostring { a: "hello", b: "world" },
+		tostring 2.4
+	];
+
+}

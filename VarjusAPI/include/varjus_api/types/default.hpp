@@ -3,7 +3,7 @@
 #include "varjus_api/internal/globalDefinitions.hpp"
 #include <cstdint>
 #include <memory>
-#include <string>
+
 #include <variant>
 #include <vector>
 #include <cassert>
@@ -29,7 +29,7 @@ template<typename T>
 using VectorOf = std::vector<T>;
 using IValues = VectorOf<IValue*>;
 
-inline std::string emptyString;
+inline VarjusString emptyString;
 
 class IValueDestructor {
 public:
@@ -67,10 +67,10 @@ public:
 	virtual void Release() override;
 	[[nodiscard]] virtual IValue* Copy() override;
 
-	[[nodiscard]] std::string ToPrintableString() const;
+	[[nodiscard]] VarjusString ToPrintableString() const;
 
-	[[nodiscard]] virtual std::string TypeAsString() const { return "undefined"s; }
-	[[nodiscard]] virtual std::string ValueAsString() const { return "undefined"s; }
+	[[nodiscard]] virtual VarjusString TypeAsString() const { return VSL("undefined"); }
+	[[nodiscard]] virtual VarjusString ValueAsString() const { return VSL("undefined"); }
 	
 
 	constexpr void MakeImmutable() noexcept { m_bIsConst = true; }
@@ -95,13 +95,13 @@ public:
 	[[nodiscard]] VarjusInt& AsInt();
 	[[nodiscard]] VarjusUInt& AsUInt();
 	[[nodiscard]] VarjusDouble &AsDouble();
-	[[nodiscard]] std::string& AsString();
+	[[nodiscard]] VarjusString& AsString();
 
 	[[nodiscard]] virtual bool ToBoolean() const { return false; }
 	[[nodiscard]] virtual VarjusInt ToInt() const { return VarjusInt(0); }
 	[[nodiscard]] virtual VarjusUInt ToUInt() const { return VarjusUInt(0); }
 	[[nodiscard]] virtual VarjusDouble ToDouble() const { return VarjusDouble(0.0); }
-	[[nodiscard]] virtual const std::string& ToString() const { return emptyString; }
+	[[nodiscard]] virtual const VarjusString& ToString() const { return emptyString; }
 
 	[[nodiscard]] virtual std::size_t AddressOf() const noexcept { return reinterpret_cast<std::size_t>(this); }
 
@@ -129,7 +129,7 @@ protected:
 
 template <typename Value>
 class CValue : public IValue {
-	static_assert(std::is_default_constructible_v<Value>, "T must be default constructible");
+	static_assert(std::is_default_constructible_v<Value>, VSL("T must be default constructible"));
 public:
 	// no reason to have other constructors as these objects are created before their actually needed use!
 	CValue() = default;

@@ -1,4 +1,4 @@
-import pushFrontArray from "other.var";
+﻿import pushFrontArray from "other.var";
 
 fn main()
 {

@@ -28,7 +28,7 @@ std::unique_ptr<IOperand> CLinterOperand::ParseFormatString()
 	auto tokens = parseString->GetTokens();
 	auto& tokenTypes = parseString->GetTokenTypes();
 
-	std::string str;
+	VarjusString str;
 	auto end = tokens.end();
 
 	for (auto it = tokens.begin(); it != end;) {

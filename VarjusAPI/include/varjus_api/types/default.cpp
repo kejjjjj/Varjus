@@ -33,13 +33,13 @@ VarjusUInt& IValue::AsUInt() {
 VarjusDouble& IValue::AsDouble() {
 	return ToCDouble()->Get();
 }
-std::string& IValue::AsString(){
+VarjusString& IValue::AsString(){
 	return ToCString()->Internal()->GetString();
 }
 
-std::string IValue::ToPrintableString() const
+VarjusString IValue::ToPrintableString() const
 {
-	return std::format("{}: {}", ValueAsString(), TypeAsString());
+	return std::format(VSL("{}: {}"), ValueAsString(), TypeAsString());
 }
 
 IValue* IValue::Index([[maybe_unused]]IValue* index)

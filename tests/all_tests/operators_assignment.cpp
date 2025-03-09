@@ -2,12 +2,12 @@
 #include "tests/utils.hpp"
 
 
-#define PATH_PREFIX std::string("operators") + DIRECTORY_SEPARATOR + "assignment"
-#define JP(x) (std::string(PATH_PREFIX) + DIRECTORY_SEPARATOR + x)
+#define PATH_PREFIX VarjusString(VSL("operators")) + DIRECTORY_SEPARATOR + VSL("assignment")
+#define JP(x) (VarjusString(PATH_PREFIX) + DIRECTORY_SEPARATOR + x)
 
-TEST_CASE("assignment operators") {
+TEST_CASE(("assignment operators")) {
 
-	auto retVal = TEST_ExecuteFile(JP("script.var"));
+	auto retVal = TEST_ExecuteFile(JP(VSL("script.var")));
 
 	AssertArray(retVal, AssertArrayValue<ASSERT_INT>(t_int, {
 		10 + 10,

@@ -1,0 +1,12 @@
+
+fn makeClosure()
+{
+	let v = 50;
+	return fn() { return v; };
+}
+
+fn main()
+{
+	let c = makeClosure();
+	return c();
+}

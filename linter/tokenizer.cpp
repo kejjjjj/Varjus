@@ -12,15 +12,20 @@
 #include <iostream>
 #include <unordered_map>
 
-constexpr bool IsDigit(char c) noexcept
+constexpr bool IsDigit(VarjusChar c) noexcept
 {
 	return c >= '0' && c <= '9';
 }
-constexpr bool IsAlpha(char c) {
+constexpr bool IsAlpha(VarjusChar c) {
+
+#ifdef UNICODE
+	return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || c > 127;
+#else
 	return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z');
+#endif
 }
 
-CBufferTokenizer::CBufferTokenizer(CProgramInformation* const program, const std::string_view& buffer) 
+CBufferTokenizer::CBufferTokenizer(CProgramInformation* const program, const STD_STRING_VIEW& buffer) 
 	: m_sSource(buffer), m_eSuccess(success), m_pProgram(program) {
 
 	assert(buffer.data() && buffer.size());
@@ -42,7 +47,7 @@ Success CBufferTokenizer::Tokenize()
 		m_oTokens.emplace_back(std::forward<std::unique_ptr<CToken>&&>(token));
 
 	//for (const auto& t : m_oTokens)
-	//	std::cout << t->m_sSource << '\n';
+	//	STD_COUT << t->m_sSource << '\n';
 
 	return m_oTokens.size() > 0u ? success : failure;
 }
@@ -71,10 +76,10 @@ std::unique_ptr<CToken> CBufferTokenizer::ReadToken()
 		if (!ReadWhiteSpace())
 			return nullptr;
 
-		if (IsToken("//")) {
+		if (IsToken(VSL("//"))) {
 			if (!ReadSingleLineComment())
 				return nullptr;
-		} else if (IsToken("/*")) {
+		} else if (IsToken(VSL("/*"))) {
 			if (!ReadMultiLineComment())
 				return nullptr;
 		} else {
@@ -91,7 +96,7 @@ std::unique_ptr<CToken> CBufferTokenizer::ReadToken()
 		if (!ReadNumber(token)) {
 			return nullptr;
 		}
-	} else if (IsAlpha(*m_oScriptPos) || *m_oScriptPos == '_') {
+	} else if (*m_oScriptPos > 127 || IsAlpha(*m_oScriptPos) || *m_oScriptPos == '_') {
 		if (!ReadName(token)) {
 			return nullptr;
 		}
@@ -105,7 +110,7 @@ std::unique_ptr<CToken> CBufferTokenizer::ReadToken()
 			return fmtString;
 		}
 
-		m_pProgram->PushError("a token without a definition", m_oParserPosition);
+		m_pProgram->PushError(VSL("a token without a definition"), m_oParserPosition);
 		return nullptr;
 	}
 	else {
@@ -113,20 +118,20 @@ std::unique_ptr<CToken> CBufferTokenizer::ReadToken()
 		if (auto punc = ReadPunctuation()) 
 			return punc;
 
-		m_pProgram->PushError("a token without a definition", m_oParserPosition);
+		m_pProgram->PushError(VSL("a token without a definition"), m_oParserPosition);
 		return nullptr;
 	}
 
 	return std::make_unique<CToken>(token);
 }
 
-bool CBufferTokenizer::IsToken(const std::string& t) noexcept
+bool CBufferTokenizer::IsToken(const VarjusString& t) noexcept
 {
 	if ((std::size_t)std::distance(m_oScriptPos, m_oScriptEnd) < t.length())
 		return failure;
 
 	const auto end = m_oScriptPos + (std::ptrdiff_t)t.length();
-	const auto punctuation = std::string_view(m_oScriptPos, end);
+	const auto punctuation = STD_STRING_VIEW(m_oScriptPos, end);
 
 	return punctuation == t;
 }
@@ -195,7 +200,7 @@ Success CBufferTokenizer::ReadMultiLineComment()
 	if (EndOfBuffer())
 		return failure;
 
-	while (!IsToken("*/")) {
+	while (!IsToken(VSL("*/"))) {
 
 		if (*m_oScriptPos == '\n') {
 			line++;
@@ -211,7 +216,7 @@ Success CBufferTokenizer::ReadMultiLineComment()
 		m_oScriptPos++;
 
 		if (EndOfBuffer()) {
-			m_pProgram->PushError("expected to find */ before EOF");
+			m_pProgram->PushError(VSL("expected to find */ before EOF"));
 			return failure;
 		}
 	}
@@ -317,12 +322,12 @@ Success CBufferTokenizer::ReadHex(CToken& token)
 	if (EndOfBuffer())
 		return failure;
 
-	std::string hexStr;
+	VarjusString hexStr;
 
 	while (true) {
 
 		if (EndOfBuffer()) {
-			m_pProgram->PushError("unexpected end of file");
+			m_pProgram->PushError(VSL("unexpected end of file"));
 			return failure;
 		}
 
@@ -343,15 +348,15 @@ Success CBufferTokenizer::ReadHex(CToken& token)
 
 	try {
 		auto intValue = std::stoll(hexStr, nullptr, 16);
-		token.m_sSource = std::to_string(intValue);
+		token.m_sSource = STD_TO_STRING(intValue);
 	}
 	catch ([[maybe_unused]]std::out_of_range& ex) {
 		try {
 			auto uintValue = std::stoull(hexStr, nullptr, 16);
-			token.m_sSource = std::to_string(uintValue);
+			token.m_sSource = STD_TO_STRING(uintValue);
 		}
 		catch ([[maybe_unused]] std::out_of_range& ex) {
-			m_pProgram->PushError("constant value is out of range", m_oParserPosition);
+			m_pProgram->PushError(VSL("constant value is out of range"), m_oParserPosition);
 			return failure;
 		}
 	}
@@ -359,7 +364,7 @@ Success CBufferTokenizer::ReadHex(CToken& token)
 
 	return success;
 }
-Success CBufferTokenizer::ReadString(CToken& token, std::int8_t quote)
+Success CBufferTokenizer::ReadString(CToken& token, VarjusChar quote)
 {
 	auto& [line, column] = m_oParserPosition;
 
@@ -374,14 +379,14 @@ Success CBufferTokenizer::ReadString(CToken& token, std::int8_t quote)
 			break;
 
 		if (*m_oScriptPos == '\n') {
-			m_pProgram->PushError("newline within a string", m_oParserPosition);
+			m_pProgram->PushError(VSL("newline within a string"), m_oParserPosition);
 			return failure;
 
 		} else {
 			column += (*m_oScriptPos == '\t' ? 4 : 1);
 		}
 
-		if(*m_oScriptPos == '\\')
+		if(*m_oScriptPos == VSL('\\'))
 			token.m_sSource.push_back(ReadEscapeCharacter());
 		else
 			token.m_sSource.push_back(*m_oScriptPos);
@@ -407,7 +412,7 @@ Success CBufferTokenizer::ReadString(CToken& token, std::int8_t quote)
 Success CBufferTokenizer::ParseFmtRawText(CFmtStringToken& token)
 {
 	auto& [line, column] = m_oParserPosition;
-	std::string rawText;
+	VarjusString rawText;
 
 	while (!BeginningOfFmtString() && *m_oScriptPos != '`') {
 		if (*m_oScriptPos == '\\') {
@@ -446,14 +451,14 @@ Success CBufferTokenizer::ParseFmtExpression(CFmtStringToken& token)
 	column += 2;
 
 	if (EndOfBuffer()) {
-		m_pProgram->PushError("expected a \"}\"", m_oParserPosition);
+		m_pProgram->PushError(VSL("expected a \"}\""), m_oParserPosition);
 		return failure;
 	}
 
 	while (*m_oScriptPos != FMT_EXPRESSION_END_CHAR) {
 		auto newToken = ReadToken();
 		if (!newToken || EndOfBuffer()) {
-			m_pProgram->PushError("unexpected end of buffer", m_oParserPosition);
+			m_pProgram->PushError(VSL("unexpected end of buffer"), m_oParserPosition);
 			return failure;
 		}
 
@@ -496,7 +501,7 @@ std::unique_ptr<CToken> CBufferTokenizer::ReadFormatString()
 
 	return token;
 }
-std::int8_t CBufferTokenizer::ReadEscapeCharacter()
+VarjusChar CBufferTokenizer::ReadEscapeCharacter()
 {
 	auto& [line, column] = m_oParserPosition;
 
@@ -504,11 +509,11 @@ std::int8_t CBufferTokenizer::ReadEscapeCharacter()
 	column++;
 
 	if (EndOfBuffer()) {
-		m_pProgram->PushError("unexpected end of file", m_oParserPosition);
+		m_pProgram->PushError(VSL("unexpected end of file"), m_oParserPosition);
 		return 0;
 	}
 
-	std::int8_t c = *m_oScriptPos;
+	auto c = *m_oScriptPos;
 
 	switch (c) {
 	case '\\': c = '\\'; break;
@@ -524,36 +529,36 @@ std::int8_t CBufferTokenizer::ReadEscapeCharacter()
 	case '\?': c = '\?'; break;
 	case '`': c = '`'; break;
 	default: 
-		m_pProgram->PushError("unexpected escape character", m_oParserPosition);
+		m_pProgram->PushError(VSL("unexpected escape character"), m_oParserPosition);
 		return 0;
 	}
 
 	return c;
 
 }
-const std::unordered_map<std::string_view, TokenType> reservedKeywords = {
-	{"undefined", TokenType::tt_undefined},
-	{"false", TokenType::tt_false},
-	{"true", TokenType::tt_true},
-	{"let", TokenType::tt_let},
-	{"const", TokenType::tt_const},
-	{"fn", TokenType::tt_fn},
-	{"if", TokenType::tt_if},
-	{"else", TokenType::tt_else},
-	{"for", TokenType::tt_for},
-	{"while", TokenType::tt_while},
-	{"repeat", TokenType::tt_repeat},
-	{"return", TokenType::tt_return},
-	{"break", TokenType::tt_break},
-	{"continue", TokenType::tt_continue},
-	{"try", TokenType::tt_try},
-	{"catch", TokenType::tt_catch},
-	{"throw", TokenType::tt_throw},
-	{"typeof", TokenType::tt_typeof},
-	{"tostring", TokenType::tt_tostring},
-	{"import", TokenType::tt_import},
-	{"from", TokenType::tt_from},
-	{"export", TokenType::tt_export}
+const std::unordered_map<STD_STRING_VIEW, TokenType> reservedKeywords = {
+	{VSL("undefined"), TokenType::tt_undefined},
+	{VSL("false"), TokenType::tt_false},
+	{VSL("true"), TokenType::tt_true},
+	{VSL("let"), TokenType::tt_let},
+	{VSL("const"), TokenType::tt_const},
+	{VSL("fn"), TokenType::tt_fn},
+	{VSL("if"), TokenType::tt_if},
+	{VSL("else"), TokenType::tt_else},
+	{VSL("for"), TokenType::tt_for},
+	{VSL("while"), TokenType::tt_while},
+	{VSL("repeat"), TokenType::tt_repeat},
+	{VSL("return"), TokenType::tt_return},
+	{VSL("break"), TokenType::tt_break},
+	{VSL("continue"), TokenType::tt_continue},
+	{VSL("try"), TokenType::tt_try},
+	{VSL("catch"), TokenType::tt_catch},
+	{VSL("throw"), TokenType::tt_throw},
+	{VSL("typeof"), TokenType::tt_typeof},
+	{VSL("tostring"), TokenType::tt_tostring},
+	{VSL("import"), TokenType::tt_import},
+	{VSL("from"), TokenType::tt_from},
+	{VSL("export"), TokenType::tt_export}
 };
 
 Success CBufferTokenizer::ReadName(CToken& token) noexcept
@@ -566,7 +571,7 @@ Success CBufferTokenizer::ReadName(CToken& token) noexcept
 	if (EndOfBuffer())
 		return success;
 
-	while (std::isalnum(*m_oScriptPos) || *m_oScriptPos == '_') {
+	while (*m_oScriptPos > 127 || std::isalnum(*m_oScriptPos) || *m_oScriptPos == '_') {
 
 		token.m_sSource.push_back(*m_oScriptPos++);
 
@@ -592,7 +597,7 @@ std::unique_ptr<CToken> CBufferTokenizer::ReadPunctuation() noexcept
 		if ((size_t)std::distance(m_oScriptPos, m_oScriptEnd) >= i.m_sIdentifier.length()) {
 			const auto end = m_oScriptPos + static_cast<ptrdiff_t>(i.m_sIdentifier.length());
 
-			const auto punctuation = std::string_view(m_oScriptPos, end);
+			const auto punctuation = STD_STRING_VIEW(m_oScriptPos, end);
 
 			if (punctuation.empty())
 				return nullptr;
@@ -623,11 +628,11 @@ std::unique_ptr<CToken> CBufferTokenizer::ReadPunctuation() noexcept
 /***********************************************************************
  > 
 ***********************************************************************/
-std::vector<std::unique_ptr<CToken>> CBufferTokenizer::ParseFileFromFilePath(CProgramInformation* const program, const std::string& filePath)
+std::vector<std::unique_ptr<CToken>> CBufferTokenizer::ParseFileFromFilePath(CProgramInformation* const program, const VarjusString& filePath)
 {
 
 	if (!std::filesystem::exists(filePath)) {
-		program->PushError(std::format("the input file \"{}\" doesn't exist", filePath));
+		program->PushError(std::format(VSL("the input file \"{}\" doesn't exist"), filePath));
 		return {};
 	}
 
@@ -636,17 +641,19 @@ std::vector<std::unique_ptr<CToken>> CBufferTokenizer::ParseFileFromFilePath(CPr
 
 
 	if (!fileBuf) {
-		program->PushError("couldn't read the file buffer");
+		program->PushError(VSL("couldn't read the file buffer"));
 		return {};
 	}
 
-	if (reader.ContainsUnicode()) {
-		program->PushError("unicode symbols aren't supported");
+#ifndef UNICODE
+	if (reader.GetEncoding() != IOItem::UTF8) {
+		program->PushError(VSL("the utf8 build of Varjus does not support this file encoding"));
 		return {};
 	}
+#endif
 
 	if (fileBuf->size() >= fileBuf->max_size() - std::size_t(1ull)) {
-		program->PushError("buffer size is too big");
+		program->PushError(VSL("buffer size is too big"));
 		return {};
 	}
 
@@ -655,7 +662,7 @@ std::vector<std::unique_ptr<CToken>> CBufferTokenizer::ParseFileFromFilePath(CPr
 	auto tokenizer = CBufferTokenizer(program, *fileBuf);
 
 	if (!tokenizer.Tokenize()) {
-		program->PushError("the input file didn't have any parsable tokens");
+		program->PushError(VSL("the input file didn't have any parsable tokens"));
 		return {};
 	}
 

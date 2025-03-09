@@ -5,7 +5,7 @@
 #include "varjus_api/internal/globalDefinitions.hpp"
 
 
-#include <string>
+
 #include <cstdint>
 #include <vector>
 #include "linter/expressions/definitions.hpp"
@@ -16,7 +16,7 @@ using namespace std::string_literals;
  > Represents values which can be evaluated during linting
 ***********************************************************************/
 
-inline std::string opt_emptyString;
+inline VarjusString opt_emptyString;
 
 class CConstEvalVariable;
 class ConstantASTNode;
@@ -33,8 +33,8 @@ public:
 
 	[[nodiscard]] constexpr virtual EValueType Type() const noexcept { return t_undefined; }
 
-	[[nodiscard]] virtual std::string TypeAsString() const { return "undefined"s; }
-	[[nodiscard]] virtual std::string ValueAsString() const { return "undefined"s; }
+	[[nodiscard]] virtual VarjusString TypeAsString() const { return VSL("undefined"); }
+	[[nodiscard]] virtual VarjusString ValueAsString() const { return VSL("undefined"); }
 
 	constexpr void SetPosition(const CodePosition& pos) noexcept { m_oApproximatePosition = pos; }
 	virtual void Release();
@@ -52,12 +52,12 @@ public:
 	[[nodiscard]] bool& AsBoolean();
 	[[nodiscard]] VarjusInt& AsInt();
 	[[nodiscard]] VarjusDouble& AsDouble();
-	[[nodiscard]] std::string& AsString();
+	[[nodiscard]] VarjusString& AsString();
 
 	[[nodiscard]] virtual bool ToBoolean() const { return false; }
 	[[nodiscard]] virtual VarjusInt ToInt() const { return 0; }
 	[[nodiscard]] virtual VarjusDouble ToDouble() const { return 0.0; }
-	[[nodiscard]] virtual const std::string& ToString() const { return opt_emptyString; }
+	[[nodiscard]] virtual const VarjusString& ToString() const { return opt_emptyString; }
 
 	[[nodiscard]] virtual CConstEvalBooleanValue* ToCBoolean() { return nullptr; }
 	[[nodiscard]] virtual CConstEvalIntValue* ToCInt() { return nullptr; }

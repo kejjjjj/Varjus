@@ -17,7 +17,7 @@ static bool EvaluateCondition(CRuntimeContext* const ctx, std::unique_ptr<CRunti
 	auto condition = m_pCondition->Evaluate(ctx);
 
 	if (!condition->IsBooleanConvertible())
-		throw CRuntimeError(ctx->m_pRuntime, "the operand is not convertible to a boolean");
+		throw CRuntimeError(ctx->m_pRuntime, VSL("the operand is not convertible to a boolean"));
 
 	const auto boolValue = condition->ToBoolean();
 

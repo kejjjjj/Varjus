@@ -1,0 +1,29 @@
+
+fn closureA()
+{
+	let v = 0;
+	
+	return fn(newValue) { 
+		v = newValue;
+		return v; 
+	};
+}
+
+fn closureB(closure)
+{
+	let v = 0;
+
+	return fn(newValue) {
+		v = newValue;
+
+		return closure(v);
+	};
+}
+
+fn main()
+{
+	let a = closureA();
+	let b = closureB(a);
+
+	return b(50);
+}

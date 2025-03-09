@@ -1,0 +1,10 @@
+fn reverseString(str)
+{
+	return str.split('').reversed().join('');
+}
+
+
+fn main()
+{
+	return reverseString("hello");
+}

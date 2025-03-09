@@ -1,0 +1,18 @@
+
+fn main()
+{
+	const arr = [].resize(10).fill(10);
+
+	arr[0] += 10;
+	arr[1] -= 5;
+	arr[2] *= 2;
+	arr[3] /= 2;
+	arr[4] %= 2;
+	arr[5] <<= 2;
+	arr[6] >>= 2;
+	arr[7] |= 2;
+	arr[8] ^= 2;
+	arr[9] &= 2;
+
+	return arr;
+}

@@ -10,27 +10,27 @@
 #include "tests.hpp"
 #include "utils.hpp"
 
-#include <string>
+
 #include <vector>
 
 #ifdef __linux__
-#define DIRECTORY_SEPARATOR "/"
+#define DIRECTORY_SEPARATOR VSL("/")
 #else
-#define DIRECTORY_SEPARATOR "\\"
+#define DIRECTORY_SEPARATOR VSL("\\")
 #endif
 
 using ASSERT_BOOL = bool;
 using ASSERT_INT = VarjusInt;
 using ASSERT_UINT = VarjusUInt;
 using ASSERT_DOUBLE = VarjusDouble;
-using ASSERT_STRING = std::string;
+using ASSERT_STRING = VarjusString;
 using ASSERT_UNDEFINED = void;
 
 template<typename T>
 struct AssertObjectValue
 {
 	EValueType m_type;
-	std::vector<std::pair<std::string, T>> m_targetValues;
+	std::vector<std::pair<VarjusString, T>> m_targetValues;
 };
 
 template<typename T>
@@ -54,7 +54,7 @@ constexpr auto GetTemplatedValue(IValue* t)
 	else if constexpr (std::is_same_v<ASSERT_STRING, T>)
 		return t->ToString();
 	else
-		static_assert(false, "bad type");
+		static_assert(false, VSL("bad type"));
 }
 
 template<typename T>

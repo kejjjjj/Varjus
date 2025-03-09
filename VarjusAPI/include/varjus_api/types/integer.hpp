@@ -27,6 +27,6 @@ public:
 	[[nodiscard]] CIntValue* ToCInt() override { return this; }
 
 private:
-	[[nodiscard]] std::string TypeAsString() const override { return "int"s; }
-	[[nodiscard]] std::string ValueAsString() const override { return std::to_string(Get()); }
+	[[nodiscard]] VarjusString TypeAsString() const override { return VSL("int"); }
+	[[nodiscard]] VarjusString ValueAsString() const override { return STD_TO_STRING(Get()); }
 };

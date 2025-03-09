@@ -42,19 +42,19 @@ Success CTryCatchStatementLinter::ParseCatchStatement()
 	CreateThisScope(); //recreate the scope
 	
 	if (IsEndOfBuffer() || !(*m_iterPos)->IsOperator(p_par_open)) {
-		m_pOwner->GetModule()->PushError("expected a \"(\"", GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError(VSL("expected a \"(\""), GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 
 	std::advance(m_iterPos, 1);
 
 	if (IsEndOfBuffer() || (*m_iterPos)->Type() != tt_name) {
-		m_pOwner->GetModule()->PushError("expected an identifier", GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError(VSL("expected an identifier"), GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 
 	if (!m_pThisScope->DeclareVariable((*m_iterPos)->Source())) {
-		m_pOwner->GetModule()->PushError("variable " + (*m_iterPos)->Source() + " already declared",
+		m_pOwner->GetModule()->PushError(VSL("variable ") + (*m_iterPos)->Source() + VSL(" already declared"),
 			(*m_iterPos)->m_oSourcePosition);
 		return failure;
 	}
@@ -66,7 +66,7 @@ Success CTryCatchStatementLinter::ParseCatchStatement()
 
 	std::advance(m_iterPos, 1);
 	if (IsEndOfBuffer() || !(*m_iterPos)->IsOperator(p_par_close)) {
-		m_pOwner->GetModule()->PushError("expected a \")\"", GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError(VSL("expected a \")\""), GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 	std::advance(m_iterPos, 1); //skip )

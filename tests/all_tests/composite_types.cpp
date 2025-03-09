@@ -4,30 +4,30 @@
 #include "varjus_api/internal/structure.hpp"
 #include "varjus_api/internal/runtime.hpp"
 
-#define PATH_PREFIX "composite_types"
-#define JP(x) (std::string(PATH_PREFIX) + DIRECTORY_SEPARATOR + x)
+#define PATH_PREFIX VSL("composite_types")
+#define JP(x) (VarjusString(PATH_PREFIX) + DIRECTORY_SEPARATOR + x)
 
-TEST_CASE("returns an array [ 0, 1, 2 ]") {
+TEST_CASE(("returns an array [ 0, 1, 2 ]")) {
 
-	auto retVal = TEST_ExecuteFile(JP("array.var"));
+	auto retVal = TEST_ExecuteFile(JP(VSL("array.var")));
 
 	AssertArray(retVal, AssertArrayValue<ASSERT_INT>{ t_int, { 0, 1, 2 } });
 
 	REQUIRE(retVal->HasOwner() == false);
 	TEST_END(retVal);
 }
-TEST_CASE("Returns an object { a: 1, b: 2, c: 3 }") {
+TEST_CASE(("Returns an object { a: 1, b: 2, c: 3 }")) {
 
-	auto retVal = TEST_ExecuteFile(JP("object.var"));
-	AssertObject(retVal, AssertObjectValue<ASSERT_INT>(t_int, { {"a", 1}, {"b", 2}, {"c", 3} }));
+	auto retVal = TEST_ExecuteFile(JP(VSL("object.var")));
+	AssertObject(retVal, AssertObjectValue<ASSERT_INT>(t_int, { {VSL("a"), 1}, {VSL("b"), 2}, {VSL("c"), 3} }));
 
 	REQUIRE(retVal->HasOwner() == false);
 	TEST_END(retVal);
 
 }
-TEST_CASE("Returns a callable") {
+TEST_CASE(("Returns a callable")) {
 
-	auto retVal = TEST_ExecuteFile(JP("callable.var"));
+	auto retVal = TEST_ExecuteFile(JP(VSL("callable.var")));
 
 	REQUIRE(retVal != nullptr);
 	REQUIRE(retVal->Type() == t_callable);
@@ -45,15 +45,15 @@ TEST_CASE("Returns a callable") {
 	auto func = dynamic_cast<CRuntimeFunction*>(internal->GetCallable());
 
 	REQUIRE(func != nullptr);
-	REQUIRE(func->GetName() == "main");
+	REQUIRE(func->GetName() == VSL("main"));
 	REQUIRE(func->GetModuleIndex() == 0);
 
 	REQUIRE(retVal->HasOwner() == false);
 	TEST_END(retVal);
 }
 
-TEST_CASE("Returns a lambda") {
-	auto retVal = TEST_ExecuteFile(JP("lambda.var"));
+TEST_CASE(("Returns a lambda")) {
+	auto retVal = TEST_ExecuteFile(JP(VSL("lambda.var")));
 
 	REQUIRE(retVal != nullptr);
 	REQUIRE(retVal->Type() == t_callable);
@@ -70,50 +70,16 @@ TEST_CASE("Returns a lambda") {
 	auto func = dynamic_cast<CRuntimeFunction*>(internal->GetCallable());
 
 	REQUIRE(func != nullptr);
-	REQUIRE(func->GetName() == "lambda");
+	REQUIRE(func->GetName() == VSL("lambda"));
 	REQUIRE(func->GetModuleIndex() == 0);
 
 	REQUIRE(retVal->HasOwner() == false);
 	TEST_END(retVal);
 }
 
-TEST_CASE("Temporary array [50,1,2] gets indexed at 0") {
+TEST_CASE(("Temporary array [50,1,2] gets indexed at 0")) {
 
-	auto retVal = TEST_ExecuteFile(JP("subscript.var"));
-
-	REQUIRE(retVal != nullptr);
-	REQUIRE(retVal->Type() == t_int);
-	REQUIRE(retVal->ToInt() == 50);
-
-	REQUIRE(retVal->HasOwner() == false);
-	TEST_END(retVal);
-}
-
-TEST_CASE("Temporary object {a: 50, b: 1, c: 2} gets accessed at a") {
-
-	auto retVal = TEST_ExecuteFile(JP("member_access.var"));
-
-	REQUIRE(retVal != nullptr);
-	REQUIRE(retVal->Type() == t_int);
-	REQUIRE(retVal->ToInt() == 50);
-
-	REQUIRE(retVal->HasOwner() == false);
-	TEST_END(retVal);
-}
-TEST_CASE("Temporary callable return50 gets called") {
-
-	auto retVal = TEST_ExecuteFile(JP("function_call.var"));
-
-	REQUIRE(retVal != nullptr);
-	REQUIRE(retVal->Type() == t_int);
-	REQUIRE(retVal->ToInt() == 50);
-
-	REQUIRE(retVal->HasOwner() == false);
-	TEST_END(retVal);
-}
-TEST_CASE("Temporary lambda fn() { return 50; } gets called") {
-
-	auto retVal = TEST_ExecuteFile(JP("lambda_call.var"));
+	auto retVal = TEST_ExecuteFile(JP(VSL("subscript.var")));
 
 	REQUIRE(retVal != nullptr);
 	REQUIRE(retVal->Type() == t_int);
@@ -123,9 +89,43 @@ TEST_CASE("Temporary lambda fn() { return 50; } gets called") {
 	TEST_END(retVal);
 }
 
-TEST_CASE("Returns array length of [1,2,3]") {
+TEST_CASE(("Temporary object {a: 50, b: 1, c: 2} gets accessed at a")) {
 
-	auto retVal = TEST_ExecuteFile(JP("array_length.var"));
+	auto retVal = TEST_ExecuteFile(JP(VSL("member_access.var")));
+
+	REQUIRE(retVal != nullptr);
+	REQUIRE(retVal->Type() == t_int);
+	REQUIRE(retVal->ToInt() == 50);
+
+	REQUIRE(retVal->HasOwner() == false);
+	TEST_END(retVal);
+}
+TEST_CASE(("Temporary callable return50 gets called")) {
+
+	auto retVal = TEST_ExecuteFile(JP(VSL("function_call.var")));
+
+	REQUIRE(retVal != nullptr);
+	REQUIRE(retVal->Type() == t_int);
+	REQUIRE(retVal->ToInt() == 50);
+
+	REQUIRE(retVal->HasOwner() == false);
+	TEST_END(retVal);
+}
+TEST_CASE(("Temporary lambda fn() { return 50; } gets called")) {
+
+	auto retVal = TEST_ExecuteFile(JP(VSL("lambda_call.var")));
+
+	REQUIRE(retVal != nullptr);
+	REQUIRE(retVal->Type() == t_int);
+	REQUIRE(retVal->ToInt() == 50);
+
+	REQUIRE(retVal->HasOwner() == false);
+	TEST_END(retVal);
+}
+
+TEST_CASE(("Returns array length of [1,2,3]")) {
+
+	auto retVal = TEST_ExecuteFile(JP(VSL("array_length.var")));
 
 	REQUIRE(retVal != nullptr);
 	REQUIRE(retVal->Type() == t_uint);
@@ -135,9 +135,9 @@ TEST_CASE("Returns array length of [1,2,3]") {
 	TEST_END(retVal);
 }
 
-TEST_CASE("Temporary arrow function () => 2") {
+TEST_CASE(("Temporary arrow function () => 2")) {
 
-	auto retVal = TEST_ExecuteFile(JP("arrow_function.var"));
+	auto retVal = TEST_ExecuteFile(JP(VSL("arrow_function.var")));
 
 	REQUIRE(retVal != nullptr);
 	REQUIRE(retVal->Type() == t_callable);
@@ -146,9 +146,9 @@ TEST_CASE("Temporary arrow function () => 2") {
 	TEST_END(retVal);
 }
 
-TEST_CASE("Temporary arrow function call () => 2") {
+TEST_CASE(("Temporary arrow function call () => 2")) {
 
-	auto retVal = TEST_ExecuteFile(JP("arrow_function_call.var"));
+	auto retVal = TEST_ExecuteFile(JP(VSL("arrow_function_call.var")));
 
 	REQUIRE(retVal != nullptr);
 	REQUIRE(retVal->Type() == t_int);
@@ -158,9 +158,9 @@ TEST_CASE("Temporary arrow function call () => 2") {
 	TEST_END(retVal);
 }
 
-TEST_CASE("Temporary arrow function call with args ((a, b) => a + b)(2, 4)") {
+TEST_CASE(("Temporary arrow function call with args ((a, b) => a + b)(2, 4)")) {
 
-	auto retVal = TEST_ExecuteFile(JP("arrow_function_call_with_args.var"));
+	auto retVal = TEST_ExecuteFile(JP(VSL("arrow_function_call_with_args.var")));
 
 	REQUIRE(retVal != nullptr);
 	REQUIRE(retVal->Type() == t_int);
