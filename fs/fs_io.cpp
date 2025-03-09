@@ -1,12 +1,14 @@
 #include "fs_io.hpp"
 #include "fs_globals.hpp"
 
+
 #include "varjus_api/internal/globalDefinitions.hpp"
 #include "linter/error.hpp"
 
 #include <algorithm>
 #include <sstream>
-#include <iostream>
+#include <filesystem>
+
 /***********************************************************************
  >                             IOWriter
 ***********************************************************************/
@@ -16,7 +18,8 @@ bool IOWriter::IO_Write(const VarjusString& content) const
     if (m_bErrorOccurred)
         return false;
 
-    STD_OFSTREAM file(m_sFileName, std::ios::out | std::ios_base::openmode(m_bBinary ? std::ios::binary : std::ios_base::openmode(0)));
+    std::filesystem::path path(m_sFileName);
+    STD_OFSTREAM file(path, std::ios::out | std::ios_base::openmode(m_bBinary ? std::ios::binary : std::ios_base::openmode(0)));
     if (!file.is_open()) {
         return false;
     }
@@ -30,7 +33,8 @@ bool IOWriter::IO_Append(const VarjusString& content) const
     if (m_bErrorOccurred)
         return false;
 
-    STD_OFSTREAM file(m_sFileName, std::ios::app | (m_bBinary ? std::ios::binary : std::ios_base::openmode(0)));
+    std::filesystem::path path(m_sFileName);
+    STD_OFSTREAM file(path, std::ios::app | (m_bBinary ? std::ios::binary : std::ios_base::openmode(0)));
     if (!file.is_open()) {
         return false;
     }
@@ -97,7 +101,9 @@ std::optional<VarjusString> IOReader::IO_Read(/*size_t num_bytes*/) const {
     if (m_bErrorOccurred)
         return {};
 
-    STD_IFSTREAM file(m_sFileName, std::ios::in | (m_bBinary ? std::ios::binary : std::ios_base::openmode(0)));
+    std::filesystem::path path(m_sFileName);
+
+    STD_IFSTREAM file(path, std::ios::in | (m_bBinary ? std::ios::binary : std::ios_base::openmode(0)));
     if (!file.is_open()) {
         return {};
     }
@@ -120,7 +126,8 @@ std::optional<VarjusString> IOReader::IO_Read(/*size_t num_bytes*/) const {
 VarjusString IOReader::IO_ReadStream(STD_IFSTREAM& stream) const {
 
 
-#if UNICODE
+#ifdef UNICODE
+
     unsigned char bom[4] = { 0 };
     stream.read((wchar_t*)bom, 2);
 
@@ -135,8 +142,7 @@ VarjusString IOReader::IO_ReadStream(STD_IFSTREAM& stream) const {
     else if (bom[0] == 0xFE && bom[2] == 0xFF) m_eEncodingType = UTF16_BE;
 
     if (m_eEncodingType == UNKNOWN) {
-        STD_CERR << "the input file must include the byte order mark!\n";
-        throw std::runtime_error("the input file must include the byte order mark!");
+        throw CLinterError(m_sFileName, L"the input file must include the byte order mark!\n", nullptr);
     }
 
 #else

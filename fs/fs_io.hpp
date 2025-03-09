@@ -54,7 +54,7 @@ private:
 
 #ifdef __linux__
 #define DIRECTORY_SEPARATOR VSL("/")
-#define DIRECTORY_SEPARATOR_CHAR '/'
+#define DIRECTORY_SEPARATOR_CHAR VarjusChar('/')
 #else
 #define DIRECTORY_SEPARATOR VSL("\\")
 #define DIRECTORY_SEPARATOR_CHAR VarjusChar('\\')

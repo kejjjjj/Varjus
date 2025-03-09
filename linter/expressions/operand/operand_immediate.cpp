@@ -121,7 +121,7 @@ inline std::wstring ToWide(const std::string& string) {
 
 	const auto str = string.data();
 
-	auto len = strlen(str);
+	auto len = string.length();
 
 	std::wstring wide_str;
 	wide_str.resize(len);

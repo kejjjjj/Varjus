@@ -69,7 +69,12 @@ Success Varjus::State::LoadScriptFromFile(const VarjusString& fullFilePath)
     }
     catch (CLinterError& ex) {
         m_sErrorMessage = ex.what();
-    } catch (...) {
+    } 
+    catch (std::exception& ex) {
+        std::cerr << ex.what() << '\n';
+        m_sErrorMessage = VSL("Unexpected exception occurred");
+    } 
+    catch (...) {
         m_sErrorMessage = VSL("Unexpected exception occurred");
     }
 
@@ -106,6 +111,10 @@ Success Varjus::State::LoadScript(const VarjusString& script)
     catch (CLinterError& ex) {
         m_sErrorMessage = ex.what();
     }
+    catch (std::exception& ex) {
+        std::cerr << ex.what() << '\n';
+        m_sErrorMessage = VSL("Unexpected exception occurred");
+    } 
     catch (...) {
         m_sErrorMessage = VSL("Unexpected exception occurred");
     }
@@ -142,7 +151,12 @@ IValue* Varjus::State::ExecuteScript()
 
     } catch (CRuntimeError& ex) {
         m_sErrorMessage = ex.what();
-    } catch (...) {
+    }
+    catch (std::exception& ex) {
+        std::cerr << ex.what() << '\n';
+        m_sErrorMessage = VSL("Unexpected exception occurred");
+    } 
+    catch (...) {
         m_sErrorMessage = VSL("Unexpected exception occurred");
     }
 
