@@ -96,11 +96,21 @@ std::unique_ptr<CToken> CBufferTokenizer::ReadToken()
 		if (!ReadNumber(token)) {
 			return nullptr;
 		}
-	} else if (*m_oScriptPos > 127 || IsAlpha(*m_oScriptPos) || *m_oScriptPos == '_') {
+	} 
+	#ifndef UNICODE
+	else if (IsAlpha(*m_oScriptPos) || *m_oScriptPos == '_') {
 		if (!ReadName(token)) {
 			return nullptr;
 		}
-	} else if (*m_oScriptPos == '\"' || *m_oScriptPos == '\'') {
+	}
+	#else
+	else if (*m_oScriptPos > 128 || IsAlpha(*m_oScriptPos) || *m_oScriptPos == '_') {
+		if (!ReadName(token)) {
+			return nullptr;
+		}
+	} 
+	#endif
+	else if (*m_oScriptPos == '\"' || *m_oScriptPos == '\'') {
 		if (!ReadString(token, *m_oScriptPos)) {
 			return nullptr;
 		}
@@ -571,6 +581,16 @@ Success CBufferTokenizer::ReadName(CToken& token) noexcept
 	if (EndOfBuffer())
 		return success;
 
+	#ifndef UNICODE
+	while (std::isalnum(*m_oScriptPos) || *m_oScriptPos == '_') {
+
+		token.m_sSource.push_back(*m_oScriptPos++);
+
+		if (EndOfBuffer())
+			break;
+
+	}
+	#else
 	while (*m_oScriptPos > 127 || std::isalnum(*m_oScriptPos) || *m_oScriptPos == '_') {
 
 		token.m_sSource.push_back(*m_oScriptPos++);
@@ -579,6 +599,7 @@ Success CBufferTokenizer::ReadName(CToken& token) noexcept
 			break;
 
 	}
+	#endif
 
 	if (reservedKeywords.contains(token.m_sSource)) {
 		token.m_eTokenType = reservedKeywords.at(token.m_sSource);

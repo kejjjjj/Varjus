@@ -150,8 +150,6 @@ VarjusString IOReader::IO_ReadStream(STD_IFSTREAM& stream) const {
         stream.seekg(0, std::ios::beg);
     }
 
-    constexpr auto thing = sizeof(char16_t);
-
 #endif
 
     STD_STRINGSTREAM ss;
