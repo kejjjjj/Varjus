@@ -117,7 +117,7 @@ VarjusString IOReader::IO_ReadStream(STD_IFSTREAM& stream) const {
         stream.clear();
         stream.seekg(0, std::ios::beg);
     }
-
+    
 #else
     unsigned char bom[3] = { 0 };
     stream.read(reinterpret_cast<char*>(bom), 2);
@@ -134,6 +134,9 @@ VarjusString IOReader::IO_ReadStream(STD_IFSTREAM& stream) const {
         stream.clear();
         stream.seekg(0, std::ios::beg);
     }
+
+    constexpr auto thing = sizeof(char16_t);
+
 #endif
 
     STD_STRINGSTREAM ss;
