@@ -71,4 +71,5 @@ elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
 
 else()
     message(FATAL_ERROR "Invalid CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}. Please specify either 'Debug' or 'Release' with 'cmake -DCMAKE_BUILD_TYPE=Type'.")
+    return()
 endif()
