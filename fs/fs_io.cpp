@@ -94,23 +94,39 @@ std::optional<VarjusString> IOReader::IO_Read(/*size_t num_bytes*/) const {
     return content.length() ? std::make_optional(content) : std::nullopt;
 }
 
+#if defined(_MSC_VER)
+#define WCHAR_T_SIZE 2
+#elif defined(__linux__)
+#define WCHAR_T_SIZE 4
+#else
+#define WCHAR_T_SIZE -1
+#error "the sizeof wchar_t is unknown!"
+#endif
 
 VarjusString IOReader::IO_ReadStream(STD_IFSTREAM& stream) const {
 
-
 #ifdef UNICODE
-
     unsigned char bom[4] = { 0 };
-    stream.read((wchar_t*)bom, 2);
+
+#if WCHAR_T_SIZE == 4
+    stream.read((VarjusChar*)bom, 1);
+
+    if (bom[0] == 0xEF && bom[2] == 0xBB && bom[3] == 0xBF)
+        m_eEncodingType = e_utf8;
+
+#elif WCHAR_T_SIZE == 2
+    stream.read((VarjusChar*)bom, 2);
 
     if (bom[0] == 0xEF && bom[2] == 0xBB) {
 
-        stream.read((wchar_t*)bom, 1);
+        stream.read((VarjusChar*)bom, 1);
 
-        if(bom[0] == 0xBF)
+        if (bom[0] == 0xBF)
             m_eEncodingType = e_utf8;
     }
-    else if (bom[0] == 0xFF && bom[2] == 0xFE) m_eEncodingType = e_utf16le;
+#endif
+
+    if (bom[0] == 0xFF && bom[2] == 0xFE) m_eEncodingType = e_utf16le;
     else if (bom[0] == 0xFE && bom[2] == 0xFF) m_eEncodingType = e_utf16be;
 
     if (m_eEncodingType == e_unknown) {

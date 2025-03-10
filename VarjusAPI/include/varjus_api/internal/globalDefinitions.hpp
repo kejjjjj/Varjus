@@ -52,8 +52,8 @@ using VarjusDouble = double;
 #define STD_OFSTREAM std::wofstream
 #define STD_STRING_VIEW std::wstring_view
 using VarjusString = std::wstring;  // Use std::wstring if UNICODE is defined
-using VarjusChar = wchar_t;
-using VarjusUChar = wchar_t;
+using VarjusChar = wchar_t;  //DANGER !!!
+using VarjusUChar = wchar_t; //DANGER !!!
 
 #else
 #define VSL(str) str     // No prefix for regular strings
