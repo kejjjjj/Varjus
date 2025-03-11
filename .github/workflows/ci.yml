@@ -9,8 +9,12 @@ on:
       - master
 
 jobs:
-  linux_debug_utf8:
+  linux_tests:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        build_type: [Debug, Release]
+        unicode: [ON, OFF]
 
     steps:
       - name: Checkout code
@@ -18,12 +22,13 @@ jobs:
 
       - name: Install dependencies
         run: sudo apt-get update && sudo apt-get install -y cmake g++
-      
+
       - name: Configure CMake
-        run: cmake -S tests/all_tests -B tests/all_tests/build -DCMAKE_BUILD_TYPE=Debug -DUSE_UNICODE=OFF 
+        run: cmake -S tests/all_tests -B tests/all_tests/build -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DUSE_UNICODE=${{ matrix.unicode }}
 
       - name: Build project
         run: cmake --build tests/all_tests/build
 
       - name: Run tests
         run: cd tests/all_tests && ./Varjus
+
