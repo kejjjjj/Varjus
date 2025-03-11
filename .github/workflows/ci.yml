@@ -25,17 +25,5 @@ jobs:
       - name: Build project
         run: cmake --build tests/all_tests/build
 
-      - name: Check directory 1
-        run: ls .
-      
-      - name: Check directory 2
-        run: ls tests/
-
-      - name: Check directory 3
-        run: ls tests/all_tests
-
-      - name: Check directory 4
-        run: ls tests/all_tests/build
-
       - name: Run tests
-        run: ./tests/all_tests/Varjus
+        run: cd tests/all_tests && ./Varjus
