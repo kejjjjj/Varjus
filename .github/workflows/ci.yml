@@ -52,9 +52,8 @@ jobs:
 
       - name: Build project
         run: cmake --build tests/all_tests/build --config ${{ matrix.build_type }}
-
+          
       - name: Run tests
         run: |
-          cd tests/all_tests/build
-          .\${{ matrix.build_type }}\Varjus.exe
-        if: always()
+          cd tests/all_tests
+          .\Varjus.exe
