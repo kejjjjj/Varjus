@@ -27,7 +27,7 @@ TEST_CASE(("uinteger additive operations")) {
 		1 + 2,
 		5 + 2,
 		1001 + 50,
-		0xFFFFFFFFFFFFFFFF,
+		static_cast<VarjusUInt>(-1),
 	}));
 
 	REQUIRE(retVal->HasOwner() == false);
@@ -56,7 +56,7 @@ TEST_CASE(("string additive operations")) {
 	AssertArray(retVal, AssertArrayValue<ASSERT_STRING>(t_string, {
 		VSL("hello world"),
 		VSL("\"h\"\"e\""),
-		VSL("hello\n		world"),
+		VSL("hello\r\n\t\tworld"),
 		VSL("\'hello, world\'"),
 		VSL("\"hello, world\"")
 		}));

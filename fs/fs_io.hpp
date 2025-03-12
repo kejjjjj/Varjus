@@ -6,6 +6,11 @@
 
 #include "varjus_api/internal/globalDefinitions.hpp"
 
+struct LocaleConverter
+{
+    static std::string ToNarrow(const std::wstring& wide_str);
+    static std::wstring ToWide(const std::string& string);
+};
 
 struct IOItem
 {

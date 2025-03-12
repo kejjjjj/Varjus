@@ -677,7 +677,7 @@ std::vector<std::unique_ptr<CToken>> CBufferTokenizer::ParseFileFromFilePath(CPr
 		return {};
 	}
 
-	const auto reader = IOReader(filePath, false);
+	const auto reader = IOReader(filePath, true);
 	auto fileBuf = reader.IO_Read();
 
 	if (!fileBuf) {
@@ -698,6 +698,10 @@ std::vector<std::unique_ptr<CToken>> CBufferTokenizer::ParseFileFromFilePath(CPr
 	}
 #ifdef UNICODE
 	switch (encoding) {
+	case e_auto:
+		assert(false);
+		break;
+	case e_unknown:
 	case e_utf8:
 		break;
 	case e_utf16le:

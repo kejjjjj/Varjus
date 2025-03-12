@@ -48,7 +48,7 @@ using VarjusDouble = double;
 #define STD_COUT std::wcout
 #define STD_CERR std::wcerr
 #define STD_STRINGSTREAM std::wstringstream
-#define STD_IFSTREAM std::wifstream
+#define STD_IFSTREAM std::ifstream
 #define STD_OFSTREAM std::wofstream
 #define STD_STRING_VIEW std::wstring_view
 using VarjusString = std::wstring;  // Use std::wstring if UNICODE is defined

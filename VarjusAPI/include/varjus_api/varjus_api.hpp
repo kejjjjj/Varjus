@@ -76,11 +76,12 @@ namespace Varjus
         VARJUS_API __ND Success UseStdLibrary();
 
         //This function expects a full file path, not a relative one
-        VARJUS_API __ND Success LoadScriptFromFile(const VarjusString& fullFilePath, EncodingType fileEncoding = e_utf8);
+        //When using e_auto (unicode builds), make sure that the file has the BOM
+        VARJUS_API __ND Success LoadScriptFromFile(const VarjusString& fullFilePath, EncodingType locale = e_utf8);
 
         //This function expects a script
         //It should be noted that modules cannot be used as there is no working directory
-        VARJUS_API __ND Success LoadScript(VarjusString script, EncodingType encoding=e_utf8);
+        VARJUS_API __ND Success LoadScript(VarjusString script, EncodingType locale = e_utf8);
 
         //Call me after you have loaded a script with LoadScriptFromFile or LoadScript
         //Don't do any memory management to the return value as it's managed by the API

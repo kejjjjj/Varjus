@@ -89,6 +89,10 @@ Success Varjus::State::LoadScript(VarjusString script, EncodingType encoding)
 
     try {
         switch (encoding) {
+        case e_auto:
+        case e_unknown:
+            m_sErrorMessage = VSL("Varjus::State::LoadScript(): don't use e_auto or e_unknown as the encoding type");
+            return failure;
         case e_utf8:
             break;
 #ifdef UNICODE
@@ -98,6 +102,9 @@ Success Varjus::State::LoadScript(VarjusString script, EncodingType encoding)
         case e_utf16be:
             script = CBufferTokenizer::FixLittleEndianness(script.substr(1) + VSL('\0'));
             break;
+#else
+        case e_utf16le:
+        case e_utf16be:
 #endif
         default:
             m_sErrorMessage = VSL("Varjus::State::LoadScript(): unsupported encoding");

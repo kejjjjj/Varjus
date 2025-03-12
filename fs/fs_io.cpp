@@ -9,6 +9,38 @@
 #include <sstream>
 #include <filesystem>
 
+#include <locale>
+std::string LocaleConverter::ToNarrow(const std::wstring& wide_str) {
+    std::locale loc;
+
+    const auto str = wide_str.data();
+
+    auto len = wide_str.length();
+
+    std::string narrow_str;
+    narrow_str.resize(len);
+
+    std::use_facet<std::ctype<wchar_t>>(loc).narrow(str, str + len, '?', &narrow_str[0]);
+
+    return narrow_str;
+}
+
+std::wstring LocaleConverter::ToWide(const std::string& string) {
+
+    std::locale loc;
+
+    const auto str = string.data();
+
+    auto len = string.length();
+
+    std::wstring wide_str;
+    wide_str.resize(len);
+
+    std::use_facet<std::ctype<wchar_t>>(loc).widen(str, str + len, wide_str.data());
+
+    return wide_str;
+}
+
 /***********************************************************************
  >                             IOWriter
 ***********************************************************************/
@@ -87,74 +119,36 @@ std::optional<VarjusString> IOReader::IO_Read(/*size_t num_bytes*/) const {
     if (!file.is_open()) {
         return {};
     }
-
+     
     auto content = IO_ReadStream(file);
 
     file.close();
     return content.length() ? std::make_optional(content) : std::nullopt;
 }
 
-#if defined(_MSC_VER)
-#define WCHAR_T_SIZE 2
-#else
-#define WCHAR_T_SIZE __SIZEOF_WCHAR_T__
-#endif
-
 VarjusString IOReader::IO_ReadStream(STD_IFSTREAM& stream) const {
 
-#ifdef UNICODE
-    unsigned char bom[4] = { 0 };
+    std::istreambuf_iterator<char> begin(stream), end;
+    std::string contents(begin, end);
 
-#if WCHAR_T_SIZE == 4
-    stream.read((VarjusChar*)bom, 1);
-
-    if (bom[0] == 0xEF && bom[2] == 0xBB && bom[3] == 0xBF)
+    if ((std::uint8_t)contents[0] == 0xEF && (std::uint8_t)contents[1] == 0xBB && (std::uint8_t)contents[2] == 0xBF) {
         m_eEncodingType = e_utf8;
-
-#elif WCHAR_T_SIZE == 2
-    stream.read((VarjusChar*)bom, 2);
-
-    if (bom[0] == 0xEF && bom[2] == 0xBB) {
-
-        stream.read((VarjusChar*)bom, 1);
-
-        if (bom[0] == 0xBF)
-            m_eEncodingType = e_utf8;
+        contents = contents.substr(3);
     }
+    else if ((std::uint8_t)contents[0] == 0xFF && (std::uint8_t)contents[1] == 0xFE) {
+        m_eEncodingType = e_utf16le;
+        contents = contents.substr(4);
+    }
+    else if ((std::uint8_t)contents[0] == 0xFE && (std::uint8_t)contents[1] == 0xFF) {
+        m_eEncodingType = e_utf16be;
+        contents = contents.substr(4);
+    }
+
+#ifdef UNICODE
+    return LocaleConverter::ToWide(contents);
 #else
-#error "the sizeof wchar_t is unknown!"
+    return contents;
 #endif
-
-    if (bom[0] == 0xFF && bom[2] == 0xFE) m_eEncodingType = e_utf16le;
-    else if (bom[0] == 0xFE && bom[2] == 0xFF) m_eEncodingType = e_utf16be;
-
-    if (m_eEncodingType == e_unknown) {
-        stream.clear();
-        stream.seekg(0, std::ios::beg);
-    }
-    
-#else
-    unsigned char bom[3] = { 0 };
-    stream.read(reinterpret_cast<char*>(bom), 2);
-    if (bom[0] == 0xEF && bom[1] == 0xBB) {
-
-        stream.read(reinterpret_cast<char*>(bom), 1);
-        if(bom[0] == 0xBF)
-            m_eEncodingType = e_utf8;
-    }
-    else if (bom[0] == 0xFF && bom[1] == 0xFE) m_eEncodingType = e_utf16le;
-    else if (bom[0] == 0xFE && bom[1] == 0xFF) m_eEncodingType = e_utf16be;
-
-    if (m_eEncodingType == e_unknown) {
-        stream.clear();
-        stream.seekg(0, std::ios::beg);
-    }
-
-#endif
-
-    STD_STRINGSTREAM ss;
-    ss << stream.rdbuf();
-    return ss.str();
 }
 
 VarjusIOWriter::VarjusIOWriter(const VarjusString& relative_path, bool binary)

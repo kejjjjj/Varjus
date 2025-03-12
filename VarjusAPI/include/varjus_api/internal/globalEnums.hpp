@@ -26,7 +26,6 @@ enum EncodingType : signed char
 	e_unknown, 
 
 	//automatically determine the encoding (requires that the input stream has a byte order mark)
-	// !!! don't use me !!!
 	e_auto, 
 
 	e_utf8, 

@@ -99,38 +99,7 @@ std::size_t CImmediateOperand::GetImmediateSize() const noexcept
 }
 
 #ifdef UNICODE
-#include <locale>
-inline std::string ToNarrow(const std::wstring& wide_str) {
-	std::locale loc;
-
-	const auto str = wide_str.data();
-
-	auto len = wide_str.length();
-
-	std::string narrow_str;
-	narrow_str.resize(len);
-
-	std::use_facet<std::ctype<wchar_t>>(loc).narrow(str, str + len, '?', &narrow_str[0]);
-
-	return narrow_str;
-}
-
-inline std::wstring ToWide(const std::string& string) {
-
-	std::locale loc;
-
-	const auto str = string.data();
-
-	auto len = string.length();
-
-	std::wstring wide_str;
-	wide_str.resize(len);
-
-	std::use_facet<std::ctype<wchar_t>>(loc).widen(str, str + len, wide_str.data());
-
-	return wide_str;
-}
-
+#include "fs/fs_io.hpp"
 #endif
 
 VarjusString CImmediateOperand::ToData() const noexcept
@@ -142,7 +111,7 @@ VarjusString CImmediateOperand::ToData() const noexcept
 	VarjusString result;
 
 #ifdef UNICODE
-	std::string string = ToNarrow(m_pToken->Source());
+	std::string string = LocaleConverter::ToNarrow(m_pToken->Source());
 #else
 	VarjusString string = m_pToken->Source();
 #endif
@@ -166,7 +135,6 @@ VarjusString CImmediateOperand::ToData() const noexcept
 		std::from_chars(string.c_str(), string.c_str() + string.size(), reinterpret_cast<VarjusDouble&>(*result.data()));
 		break;
 	case t_string:
-		break;
 	default:
 		assert(false);
 	}

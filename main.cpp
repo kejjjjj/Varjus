@@ -3,7 +3,13 @@
 
 #define __MU [[maybe_unused]]
 
-#if UNICODE && !_MSC_VER
+#ifdef UNICODE
+#define _UC 1
+#else
+#define _UC 0
+#endif
+
+#if _UC && !_MSC_VER
 #include <cwchar>
 
 std::vector<std::wstring> ConvertArgvToWide(int argc, char** argv)
@@ -26,7 +32,7 @@ std::vector<std::wstring> ConvertArgvToWide(int argc, char** argv)
 
 #endif
 
-#if UNICODE && _MSC_VER
+#if _UC && _MSC_VER
 int wmain(int argc, wchar_t** argv)
 #else
 int main(int argc, char** argv)
@@ -51,7 +57,7 @@ int main(int argc, char** argv)
         return 0;
     }
 
-    #if UNICODE && !_MSC_VER
+    #if _UC && !_MSC_VER
     auto argvs = ConvertArgvToWide(argc, argv);
 
     if(argvs.size() < 2){

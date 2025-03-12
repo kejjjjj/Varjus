@@ -1,0 +1,6 @@
+﻿export let variable = 50;
+
+export fn func(newValue)
+{
+	variable = newValue;
+}
