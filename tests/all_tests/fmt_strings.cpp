@@ -95,8 +95,11 @@ TEST_CASE(("`o\nA${a}\nB${b}\nC${c}\no`")) {
 	REQUIRE(retVal);
 	REQUIRE(retVal->Type() == t_string);
 
+#ifdef _MSC_VER
 	REQUIRE(retVal->AsString() == VSL("o\r\n        A0\r\n        B1\r\n        C2\r\n    o"));
-
+#else
+	REQUIRE(retVal->AsString() == VSL("o\n        A0\n        B1\n        C2\n    o"));
+#endif
 	REQUIRE(retVal->HasOwner() == false);
 	TEST_END(retVal);
 }

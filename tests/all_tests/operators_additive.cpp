@@ -56,7 +56,11 @@ TEST_CASE(("string additive operations")) {
 	AssertArray(retVal, AssertArrayValue<ASSERT_STRING>(t_string, {
 		VSL("hello world"),
 		VSL("\"h\"\"e\""),
+		#ifdef _MSC_VER
 		VSL("hello\r\n\t\tworld"),
+		#else
+		VSL("hello\n\t\tworld"),
+		#endif
 		VSL("\'hello, world\'"),
 		VSL("\"hello, world\"")
 		}));
