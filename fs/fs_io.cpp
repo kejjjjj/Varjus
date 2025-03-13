@@ -137,11 +137,11 @@ VarjusString IOReader::IO_ReadStream(STD_IFSTREAM& stream) const {
     }
     else if ((std::uint8_t)contents[0] == 0xFF && (std::uint8_t)contents[1] == 0xFE) {
         m_eEncodingType = e_utf16le;
-        contents = contents.substr(4);
+        contents = contents.substr(2);
     }
     else if ((std::uint8_t)contents[0] == 0xFE && (std::uint8_t)contents[1] == 0xFF) {
         m_eEncodingType = e_utf16be;
-        contents = contents.substr(4);
+        contents = contents.substr(2);
     }
 
 #ifdef UNICODE

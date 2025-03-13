@@ -25,13 +25,13 @@ if (Test-Path "$buildDir") {
 }
 
 # Select build type
-$choice = Read-Host "Enter 1 for Unicode or 2 for UTF8"
+$choice = Read-Host "Enter 1 for Unicode or 2 for UTF8 (recommended)"
 switch ($choice) {
     1 { $_unicode = "ON" }
     2 { $_unicode = "OFF" }
     default {
-        Write-Host "Invalid input. Defaulting to Unicode."
-        $type = "ON"
+        Write-Host "Invalid input. Defaulting to UTF8."
+        $_unicode = "OFF"
     }
 }
 

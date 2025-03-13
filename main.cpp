@@ -74,7 +74,7 @@ int main(int argc, char** argv)
     }
 
     #else
-    if (!state.LoadScriptFromFile(argv[1])) {
+    if (!state.LoadScriptFromFile(argv[1], e_auto)) {
         STD_CERR << GetError(state.GetErrorMessage()) << '\n';
         return 0;
     }
