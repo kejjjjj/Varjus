@@ -48,6 +48,7 @@ Success Varjus::State::UseStdLibrary()
 
 Success Varjus::State::LoadScriptFromFile(const VarjusString& fullFilePath, EncodingType fileEncoding)
 {
+
     if (!m_pLinter || !m_pLinter->m_oBuiltInObjects) {
         m_sErrorMessage = VSL("Varjus::State::LoadScriptFromFile(): no linter context... did you forget to create a new state?");
         return failure;

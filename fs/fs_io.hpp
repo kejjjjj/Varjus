@@ -6,11 +6,6 @@
 
 #include "varjus_api/internal/globalDefinitions.hpp"
 
-struct LocaleConverter
-{
-    static std::string ToNarrow(const std::wstring& wide_str);
-    static std::wstring ToWide(const std::string& string);
-};
 
 struct IOItem
 {
@@ -26,23 +21,6 @@ protected:
     bool m_bErrorOccurred = false;
     VarjusString m_sFileName;
     mutable EncodingType m_eEncodingType{};
-};
-
-struct IOWriter : public IOItem
-{
-    IOWriter(const VarjusString& filename, bool in_binary_mode) : IOItem(filename, in_binary_mode)
-    {
-        m_bErrorOccurred = !CreateMissingDirectoriesFromPath(filename);
-    }
-
-    [[nodiscard]] virtual bool IO_Write(const VarjusString& content) const;
-    [[nodiscard]] virtual bool IO_Append(const VarjusString& content) const;
-
-private:
-    [[nodiscard]] bool CreateMissingDirectoriesFromPath(VarjusString path) const;
-    void IO_WriteStream(STD_OFSTREAM& stream, const VarjusString& content) const {
-        stream.write(content.data(), std::streamsize(content.size()));
-    }
 };
 
 struct IOReader : public IOItem
@@ -68,10 +46,6 @@ private:
 //these don't belong here but whatever
 #define VARJUS_DIRECTORY() (fs::exe_path())
 
-struct VarjusIOWriter : public IOWriter
-{
-    VarjusIOWriter(const VarjusString& relative_path, bool binary = false);
-};
 struct VarjusIOReader : public IOReader
 {
     VarjusIOReader(const VarjusString& relative_path, bool binary = false);

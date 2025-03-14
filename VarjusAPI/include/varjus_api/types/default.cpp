@@ -39,7 +39,7 @@ VarjusString& IValue::AsString(){
 
 VarjusString IValue::ToPrintableString() const
 {
-	return std::format(VSL("{}: {}"), ValueAsString(), TypeAsString());
+	return fmt::format(VSL("{}: {}"), ValueAsString(), TypeAsString());
 }
 
 IValue* IValue::Index([[maybe_unused]]IValue* index)

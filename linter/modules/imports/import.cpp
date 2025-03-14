@@ -96,14 +96,14 @@ Success CImportLinter::ParseFilePath()
 	const auto fullPath = wd + DIRECTORY_SEPARATOR_CHAR + relativePath;
 
 	if (!fs::file_exists(fullPath)) {
-		m_pOwner->GetModule()->PushError(std::format(VSL("\"{}\" does not exist"), fullPath), GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError(fmt::format(VSL("\"{}\" does not exist"), fullPath), GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 
 	m_oTargetFile = fullPath;
 
 	if (m_oTargetFile == m_pOwner->GetModule()->GetFilePath()) {
-		m_pOwner->GetModule()->PushError(std::format(VSL("attempted to import a symbol that is exported in the same file"), fullPath),
+		m_pOwner->GetModule()->PushError(fmt::format(VSL("attempted to import a symbol that is exported in the same file"), fullPath),
 			GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
@@ -151,7 +151,7 @@ Success CImportLinter::ParseFile()
 		const auto exportedSymbol = thisModule->GetExport(name);
 
 		if (!exportedSymbol) {
-			thisModule->PushError(std::format(VSL("\"{}\" is not an exported symbol"), name), GetIteratorSafe()->m_oSourcePosition);
+			thisModule->PushError(fmt::format(VSL("\"{}\" is not an exported symbol"), name), GetIteratorSafe()->m_oSourcePosition);
 			return failure;
 		}
 		if (exportedSymbol->Type() == es_variable) {
@@ -211,7 +211,7 @@ Success CImportLinter::DeclareVariable(const VarjusString& symbolName,
 	}
 
 	if (!scope->DeclareVariable(symbolName)) {
-		m_pOwner->GetModule()->PushError(std::format(VSL("variable \"{}\" already declared"), symbolName), (*m_iterPos)->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError(fmt::format(VSL("variable \"{}\" already declared"), symbolName), (*m_iterPos)->m_oSourcePosition);
 		return failure;
 	}
 
@@ -228,7 +228,7 @@ Success CImportLinter::DeclareFunction(const VarjusString& symbolName,
 {
 
 	if (m_pOwner->m_FunctionManager->ContainsFunction(symbolName)) {
-		m_pOwner->GetModule()->PushError(std::format(VSL("function \"{}\" already declared"), symbolName), (*m_iterPos)->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError(fmt::format(VSL("function \"{}\" already declared"), symbolName), (*m_iterPos)->m_oSourcePosition);
 		return failure;
 	}
 

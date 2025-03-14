@@ -78,7 +78,7 @@ std::unique_ptr<IPostfixBase> CPostfixLinter::ParseMemberAccess()
 	std::advance(m_iterPos, 1); // skip .
 
 	if (IsEndOfBuffer() || (*m_iterPos)->Type() != tt_name) {
-		m_pOwner->GetModule()->PushError(std::format(VSL("expected a member name instead of \"{}\""), GetIteratorSafe()->Source()),
+		m_pOwner->GetModule()->PushError(fmt::format(VSL("expected a member name instead of \"{}\""), GetIteratorSafe()->Source()),
 			GetIteratorSafe()->m_oSourcePosition);
 		return nullptr;
 	}

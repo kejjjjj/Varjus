@@ -58,13 +58,13 @@ IValue* EvaluateNegation(CProgramRuntime* const runtime, IValue* operand)
 		return CDoubleValue::Construct(runtime, -operand->AsDouble());
 	}
 
-	throw CRuntimeError(runtime, std::format(VSL("cannot negate a value of type \"{}\""), operand->TypeAsString()));
+	throw CRuntimeError(runtime, fmt::format(VSL("cannot negate a value of type \"{}\""), operand->TypeAsString()));
 }
 IValue* EvaluateIncrement(IValue* operand)
 {
 
 	if (operand->Type() != t_int && operand->Type() != t_uint)
-		throw CRuntimeError(operand->GetAllocator(), std::format(VSL("the increment operand must have an (u)int type, but is \"{}\""), operand->TypeAsString()));
+		throw CRuntimeError(operand->GetAllocator(), fmt::format(VSL("the increment operand must have an (u)int type, but is \"{}\""), operand->TypeAsString()));
 	
 	if (!operand->HasOwner())
 		throw CRuntimeError(operand->GetAllocator(), VSL("cannot increment a temporary value"));
@@ -83,7 +83,7 @@ IValue* EvaluateDecrement(IValue* operand)
 {
 
 	if (operand->Type() != t_int && operand->Type() != t_uint)
-		throw CRuntimeError(operand->GetAllocator(), std::format(VSL("the decrement operand must have an (u)int type, but is \"{}\""), operand->TypeAsString()));
+		throw CRuntimeError(operand->GetAllocator(), fmt::format(VSL("the decrement operand must have an (u)int type, but is \"{}\""), operand->TypeAsString()));
 	
 	if (!operand->HasOwner())
 		throw CRuntimeError(operand->GetAllocator(), VSL("cannot decrement a temporary value"));
@@ -101,7 +101,7 @@ IValue* EvaluateDecrement(IValue* operand)
 IValue* EvaluateLogicalNot(CProgramRuntime* const runtime, IValue* operand)
 {
 	if (!operand->IsBooleanConvertible())
-		throw CRuntimeError(runtime, std::format(VSL("a value of type \"{}\" is not convertible to a boolean"), operand->TypeAsString()));
+		throw CRuntimeError(runtime, fmt::format(VSL("a value of type \"{}\" is not convertible to a boolean"), operand->TypeAsString()));
 
 	return CBooleanValue::Construct(runtime, !operand->ToBoolean());
 }
@@ -109,7 +109,7 @@ IValue* EvaluateBitwiseNot(CProgramRuntime* const runtime, IValue* operand)
 {
 
 	if (operand->Type() != t_int && operand->Type() != t_uint)
-		throw CRuntimeError(runtime, std::format(VSL("the bitwise-not operand must have an (u)int type, but is \"{}\""), operand->TypeAsString()));
+		throw CRuntimeError(runtime, fmt::format(VSL("the bitwise-not operand must have an (u)int type, but is \"{}\""), operand->TypeAsString()));
 
 	if (operand->Type() == t_int)
 		return CIntValue::Construct(runtime, ~operand->AsInt());

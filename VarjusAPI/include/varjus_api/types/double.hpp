@@ -28,5 +28,5 @@ public:
 
 private:
 	[[nodiscard]] VarjusString TypeAsString() const override { return VSL("double"); }
-	[[nodiscard]] VarjusString ValueAsString() const override { return STD_TO_STRING(Get()); }
+	[[nodiscard]] VarjusString ValueAsString() const override { return fmt::to_string(Get()); }
 };

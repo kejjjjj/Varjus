@@ -30,7 +30,7 @@ void CStatementLinter::CreateThisScope()
 Success CStatementLinter::ParseIdentifier(TokenType tt)
 {
 	if (IsEndOfBuffer() || (*m_iterPos)->Type() != tt) {
-		m_pOwner->GetModule()->PushError(std::format(VSL("expected \"{}\""), tokenTypeStrings[tt]),
+		m_pOwner->GetModule()->PushError(fmt::format(VSL("expected \"{}\""), tokenTypeStrings[tt]),
 			GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}

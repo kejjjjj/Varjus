@@ -7,10 +7,10 @@ CRuntimeError::CRuntimeError(CProgramRuntime* const runtime, const VarjusString&
     assert(runtime);
 
     if (!runtime->GetExecutionPosition()) {
-        m_oErrorMessage += std::format(VSL(" | near main function"));
+        m_oErrorMessage += fmt::format(VSL(" | near main function"));
         return;
     }
 
     auto& [l, c] = *runtime->GetExecutionPosition();
-    m_oErrorMessage += std::format(VSL(" | near [{}, {}]"), l, c);
+    m_oErrorMessage += fmt::format(VSL(" | near [{}, {}]"), l, c);
 }

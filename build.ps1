@@ -35,10 +35,6 @@ switch ($choice) {
     }
 }
 
-if ($_unicode -eq "ON" -and $targetPath -eq "tests/all_tests"){
-    Write-Host "Make sure all test script files have been encoded with utf8/16 LE/BE with bom :)"
-}
-
 # Select build type
 $choice = Read-Host "Enter 1 for Release or 2 for Debug mode"
 switch ($choice) {

@@ -111,7 +111,7 @@ VarjusString CImmediateOperand::ToData() const noexcept
 	VarjusString result;
 
 #ifdef UNICODE
-	std::string string = LocaleConverter::ToNarrow(m_pToken->Source());
+	std::string string = LocaleConverter::u16string_to_utf8(m_pToken->Source());
 #else
 	VarjusString string = m_pToken->Source();
 #endif

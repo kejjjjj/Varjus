@@ -24,20 +24,20 @@ IValue* TEST_ExecuteFile(const VarjusString& srcFile)
             return nullptr;
 
         const auto reader = VarjusIOReader(DIRECTORY_SEPARATOR + VarjusString(VSL("scripts")) + DIRECTORY_SEPARATOR + srcFile);
-        STD_COUT << reader.GetFilePath() << '\n';
+        fmt::print(STD_COUT, VSL("{}\n"), reader.GetFilePath());
 
         const auto GetError = [](const std::optional<VarjusString>& errorMsg) {
             return errorMsg ? *errorMsg : VSL("unknown error!");
         };
     
         if (!state->LoadScriptFromFile(reader.GetFilePath())) {
-            STD_COUT << VSL("syntax error: ") << GetError(state->GetErrorMessage()) << '\n';
+            fmt::print(STD_COUT, VSL("syntax error: {}\n"), GetError(state->GetErrorMessage()));
             return nullptr;
         }
         return state->ExecuteScript();
     }
     catch (std::exception& ex) {
-        STD_COUT << VSL("\n\nERROR:\n") << ex.what() << VSL("\n\n");
+        fmt::print(STD_COUT, VSL("\n\nERROR:\n{}\n\n"), ex.what());
         return nullptr;
     }
     catch (...) {

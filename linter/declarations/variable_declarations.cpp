@@ -39,7 +39,7 @@ Success CVariableDeclarationLinter::ParseIdentifier()
 
 
 	if (IsEndOfBuffer() || !IsIdentifier(*m_iterPos)) {
-		m_pOwner->GetModule()->PushError(std::format(VSL("expected variable name, but found \"{}\""), GetIteratorSafe()->Source()),
+		m_pOwner->GetModule()->PushError(fmt::format(VSL("expected variable name, but found \"{}\""), GetIteratorSafe()->Source()),
 			GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
@@ -51,7 +51,7 @@ Success CVariableDeclarationLinter::ParseIdentifier()
 		const auto containsFunc = m_pOwner->GetGlobalMemory()->m_FunctionManager->ContainsFunction(varName);
 
 		if (containsFunc || !scope->DeclareVariable((*m_iterPos)->Source())) {
-			m_pOwner->GetModule()->PushError(std::format(VSL("\"{}\" already declared"), (*m_iterPos)->Source()), (*m_iterPos)->m_oSourcePosition);
+			m_pOwner->GetModule()->PushError(fmt::format(VSL("\"{}\" already declared"), (*m_iterPos)->Source()), (*m_iterPos)->m_oSourcePosition);
 			return failure;
 		}
 #ifdef OPTIMIZATIONS
