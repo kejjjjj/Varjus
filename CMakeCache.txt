@@ -202,7 +202,7 @@ CMAKE_STRIP:FILEPATH=/usr/bin/strip
 CMAKE_VERBOSE_MAKEFILE:BOOL=FALSE
 
 //No help, variable specified on the command line.
-USE_UNICODE:UNINITIALIZED=OFF
+USE_UNICODE:UNINITIALIZED=ON
 
 //Value Computed by CMake
 Varjus_BINARY_DIR:STATIC=/workspaces/Varjus

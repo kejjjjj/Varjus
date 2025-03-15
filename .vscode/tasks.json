@@ -1,0 +1,30 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "configure",
+        "type": "shell",
+        "command": "cmake",
+        "args": [
+          "-DCMAKE_BUILD_TYPE=Debug",
+          "-DUSE_UNICODE=ON",
+          "${workspaceFolder}"
+        ],
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        },
+        "problemMatcher": ["$gcc"],
+        "detail": "Configure CMake project"
+      },
+      {
+        "label": "build",
+        "type": "shell",
+        "command": "cmake --build ${workspaceFolder}/build --config Debug",
+        "dependsOn": "configure", 
+        "problemMatcher": ["$gcc"],
+        "detail": "Build CMake project"
+      }
+    ]
+  }
+  

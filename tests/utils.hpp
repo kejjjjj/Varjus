@@ -40,6 +40,9 @@ struct AssertArrayValue
 	std::vector<T> m_targetValues;
 };
 
+template<typename T>
+struct always_false : std::false_type {};
+
 template<typename T> 
 constexpr auto GetTemplatedValue(IValue* t)
 {
@@ -54,7 +57,7 @@ constexpr auto GetTemplatedValue(IValue* t)
 	else if constexpr (std::is_same_v<ASSERT_STRING, T>)
 		return t->ToString();
 	else
-		static_assert(false, VSL("bad type"));
+		static_assert(always_false<T>::value, VSL("bad type"));
 }
 
 template<typename T>

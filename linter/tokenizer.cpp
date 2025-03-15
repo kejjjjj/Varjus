@@ -694,7 +694,7 @@ std::vector<std::unique_ptr<CToken>> CBufferTokenizer::ParseFileFromFilePath(CPr
 		program->PushError(VSL("couldn't read the file buffer"));
 		return {};
 	}
-
+	
 	if (encoding == e_auto) {
 		encoding = reader.GetEncoding();
 

@@ -13,8 +13,8 @@ VarjusAPI/build/
 VarjusAPI/VarjusAPI/
 build/
 CMakeFiles/
-.vscode/
 *vcx*
+Varjus
 
 # User-specific files
 *.rsuser

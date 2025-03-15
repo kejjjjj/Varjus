@@ -61,6 +61,9 @@ Success CIdentifierLinter::ParseIdentifier()
 	return success;
 }
 
+template<typename T>
+struct always_false : std::false_type {};
+
 template CLinterVariable* CIdentifierLinter::GetVariableByIdentifier<CLinterVariable>(const VarjusString& str) const noexcept;
 
 template<typename T>
@@ -68,7 +71,7 @@ template<typename T>
 	if constexpr (std::is_same_v<T, CLinterVariable>)
 		return memory->m_VariableManager.get();
 	else
-		assert(typeid(T) == typeid(CLinterVariable));
+		static_assert(always_false<T>::value, "if constexpr (std::is_same_v<T, CLinterVariable>)");
 }
 
 template<typename T>
