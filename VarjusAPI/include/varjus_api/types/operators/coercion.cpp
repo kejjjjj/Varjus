@@ -6,7 +6,7 @@
 #include "runtime/exceptions/exception.hpp"
 
 #include <cassert>
-#include <format>
+
 
 std::tuple<IValue*, IValue*, IValue*> Coerce(CProgramRuntime* const runtime, IValue* lhs, IValue* rhs)
 {
@@ -27,7 +27,7 @@ CCoercionOperands CoerceInternal(CProgramRuntime* const runtime, IValue* weaker,
 	assert(weaker->Type() != stronger->Type());
 
 	if (!weaker->IsCoerceable() || !stronger->IsCoerceable())
-		throw CRuntimeError(runtime, std::format(VSL("cannot coerce from \"{}\" to \"{}\""), weaker->TypeAsString(), stronger->TypeAsString()));
+		throw CRuntimeError(runtime, fmt::format(VSL("cannot coerce from \"{}\" to \"{}\""), weaker->TypeAsString(), stronger->TypeAsString()));
 
 	auto [lhs, rhs] = lhsIsWeak ? std::tie(weaker, stronger) : std::tie(stronger, weaker);
 

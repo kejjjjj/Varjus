@@ -11,7 +11,7 @@
 #include "varjus_api/internal/globalDefinitions.hpp"
 
 #include <cassert>
-#include <format>
+
 
 CLoopControlStatement::CLoopControlStatement(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack)
 	: CStatementLinter(pos, end, scope, stack) {
@@ -39,7 +39,7 @@ Success CLoopControlStatement::Parse()
 	if (const auto scope = m_pScope.lock()) {
 		if (!scope->IsLoopScope()) {
 			m_pOwner->GetModule()->PushError(
-				std::format(VSL("the \"{}\" statement can only be used in a loop context"), quick_lookup[(std::size_t)m_eType]),
+				fmt::format(VSL("the \"{}\" statement can only be used in a loop context"), quick_lookup[(std::size_t)m_eType]),
 				GetIteratorSafe()->m_oSourcePosition);
 			return failure;
 		}

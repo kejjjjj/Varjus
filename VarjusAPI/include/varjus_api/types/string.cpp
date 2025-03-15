@@ -40,12 +40,12 @@ const CInternalStringValue* CStringValue::Internal() const {
 IValue* CStringValue::Index(IValue* vIndex)
 {
 	if (!vIndex->IsIntegral())
-		throw CRuntimeError(m_pAllocator, std::format(VSL("array accessor must be integral, but is \"{}\""), vIndex->TypeAsString()));
+		throw CRuntimeError(m_pAllocator, fmt::format(VSL("array accessor must be integral, but is \"{}\""), vIndex->TypeAsString()));
 
 	auto index = vIndex->ToUInt();
 
 	if (index >= Internal()->Length())
-		throw CRuntimeError(m_pAllocator, std::format(VSL("string index {} out of bounds (len: {})"), index, Internal()->Length()));
+		throw CRuntimeError(m_pAllocator, fmt::format(VSL("string index {} out of bounds (len: {})"), index, Internal()->Length()));
 
 	auto newStr = VarjusString(size_t(1), Internal()->GetString()[index]);
 	auto v = Construct(m_pAllocator, newStr);
@@ -70,7 +70,7 @@ IValue* CStringValue::GetAggregate(CRuntimeContext* const ctx, std::size_t membe
 	}
 
 	if (auto info = m_pAllocator->GetInformation()) {
-		throw CRuntimeError(m_pAllocator, std::format(VSL("this aggregate doesn't have the attribute \"{}\""), info->m_oAllMembers.At(memberIdx)));
+		throw CRuntimeError(m_pAllocator, fmt::format(VSL("this aggregate doesn't have the attribute \"{}\""), info->m_oAllMembers.At(memberIdx)));
 	}
 
 	assert(false);

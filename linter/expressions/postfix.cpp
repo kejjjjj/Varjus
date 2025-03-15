@@ -14,7 +14,7 @@
 #include <cassert>
 #include <ranges>
 #include <algorithm>
-#include <format>
+
 
 CPostfixLinter::CPostfixLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack) 
 	: CVectorLinter(pos, end), m_pScope(scope), m_pOwner(stack)
@@ -78,7 +78,7 @@ std::unique_ptr<IPostfixBase> CPostfixLinter::ParseMemberAccess()
 	std::advance(m_iterPos, 1); // skip .
 
 	if (IsEndOfBuffer() || (*m_iterPos)->Type() != tt_name) {
-		m_pOwner->GetModule()->PushError(std::format(VSL("expected a member name instead of \"{}\""), GetIteratorSafe()->Source()),
+		m_pOwner->GetModule()->PushError(fmt::format(VSL("expected a member name instead of \"{}\""), GetIteratorSafe()->Source()),
 			GetIteratorSafe()->m_oSourcePosition);
 		return nullptr;
 	}

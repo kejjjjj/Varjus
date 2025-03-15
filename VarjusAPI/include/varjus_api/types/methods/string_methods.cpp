@@ -85,7 +85,7 @@ DEFINE_METHOD(Substring, args)
 
 	const auto CheckSanity = [&ctx](const IValue* v) {
 		if (!v->IsIntegral())
-			throw CRuntimeError(ctx->m_pRuntime, std::format(VSL("string.substring expected an integral value, but got \"{}\""), v->TypeAsString()));
+			throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("string.substring expected an integral value, but got \"{}\""), v->TypeAsString()));
 	};
 
 	CheckSanity(a);
@@ -136,7 +136,7 @@ DEFINE_METHOD(Split, args) {
 	auto& delimiter = args.front();
 
 	if(delimiter->Type() != t_string)
-		throw CRuntimeError(ctx->m_pRuntime, std::format(VSL("string.split expected a \"string\", but got \"{}\""), delimiter->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("string.split expected a \"string\", but got \"{}\""), delimiter->TypeAsString()));
 
 	auto tokens = SplitString(v, delimiter->AsString());
 	IValues tokensAsValues;
@@ -164,7 +164,7 @@ DEFINE_METHOD(Replace, args) {
 
 	const auto CheckSanity = [&ctx](const IValue* v) {
 		if (v->Type() != t_string)
-			throw CRuntimeError(ctx->m_pRuntime, std::format(VSL("string.substring expected a \"string\", but got \"{}\""), v->TypeAsString()));
+			throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("string.substring expected a \"string\", but got \"{}\""), v->TypeAsString()));
 	};
 
 	auto& a = args[0];
@@ -183,7 +183,7 @@ DEFINE_METHOD(Reproduce, args) {
 
 	auto& countValue = args[0];
 	if (!countValue->IsIntegral())
-		throw CRuntimeError(ctx->m_pRuntime, std::format(VSL("string.reproduce expected an integral value, but got \"{}\""), countValue->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("string.reproduce expected an integral value, but got \"{}\""), countValue->TypeAsString()));
 
 	auto count = countValue->ToInt();
 	if (count < 0)
@@ -202,7 +202,7 @@ DEFINE_METHOD(GetCodeAt, args) {
 
 	auto& idx = args[0];
 	if (!idx->IsIntegral())
-		throw CRuntimeError(ctx->m_pRuntime, std::format(VSL("string.get_code_at expected an integral value, but got \"{}\""), idx->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("string.get_code_at expected an integral value, but got \"{}\""), idx->TypeAsString()));
 
 	const auto index = idx->ToInt();
 

@@ -10,7 +10,7 @@ namespace _fs = std::filesystem;
 VarjusString fs::exe_file_name()
 {
 #ifdef UNICODE
-	return std::filesystem::current_path().wstring();
+	return LocaleConverter::wstring_to_u16string(std::filesystem::current_path().wstring());
 #else
 	return std::filesystem::current_path().string();
 #endif
@@ -18,7 +18,7 @@ VarjusString fs::exe_file_name()
 VarjusString fs::exe_path()
 {
 #ifdef UNICODE
-	return std::filesystem::current_path().wstring();
+	return LocaleConverter::wstring_to_u16string(std::filesystem::current_path().wstring());
 #else
 	return std::filesystem::current_path().string();
 #endif

@@ -4,8 +4,6 @@
 
 #include <unordered_map>
 #include <vector>
-#include <format>
-
 
 class CRuntimeFunctionBase;
 class CFunction;
@@ -78,6 +76,6 @@ public:
 private:
 	[[nodiscard]] VarjusString TypeAsString() const override { return VSL("callable"); }
 	[[nodiscard]] VarjusString ValueAsString() const override { 
-		return std::format(VSL("{:x}"), (std::size_t)GetShared()->GetCallable()); }
+		return fmt::format(VSL("{:x}"), (std::size_t)GetShared()->GetCallable()); }
 
 };

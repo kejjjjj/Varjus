@@ -1,7 +1,7 @@
 #include "types.hpp"
 #include "varjus_api/internal/runtime.hpp"
 
-#include <format>
+
 
 
 IValue* IValue::Construct(CProgramRuntime* const runtime) {
@@ -39,7 +39,7 @@ VarjusString& IValue::AsString(){
 
 VarjusString IValue::ToPrintableString() const
 {
-	return std::format(VSL("{}: {}"), ValueAsString(), TypeAsString());
+	return fmt::format(VSL("{}: {}"), ValueAsString(), TypeAsString());
 }
 
 IValue* IValue::Index([[maybe_unused]]IValue* index)

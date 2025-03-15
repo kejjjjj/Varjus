@@ -13,6 +13,7 @@
 #include "varjus_api/internal/structure.hpp"
 
 #include <cassert>
+#include <ranges>
 
 std::unique_ptr<IOperand> CLinterOperand::ParseLambda()
 {

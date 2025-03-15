@@ -1,0 +1,19 @@
+{
+  "name": "C++ Dev Container",
+  "image": "mcr.microsoft.com/devcontainers/cpp:latest",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-vscode.cpptools",
+        "ms-vscode.cmake-tools"
+      ],
+      "settings": {
+        "cmake.configureOnOpen": true, 
+        "cmake.buildDirectory": "${workspaceFolder}/build", 
+        "C_Cpp.intelliSenseEngine": "default",
+        "C_Cpp.default.compilerPath": "/usr/bin/g++"
+      }
+    }
+  },
+  "postCreateCommand": "cmake --version && g++ --version"
+}

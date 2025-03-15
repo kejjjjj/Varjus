@@ -14,11 +14,6 @@
 #include "varjus_api/internal/globalEnums.hpp"
 #include "varjus_api/internal/structure.hpp"
 
-#ifdef OPTIMIZATIONS
-#include "linter/optimizations/optimizations.hpp"
-#endif
-
-#include <format>
 #include <algorithm>
 
 CFunctionLinter::CFunctionLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack)
@@ -38,17 +33,6 @@ CFunctionLinter::CFunctionLinter(LinterIterator& pos, LinterIterator& end, const
 }
 CFunctionLinter::~CFunctionLinter()
 {
-#ifdef OPTIMIZATIONS
-
-	if (m_pThisStack && m_pThisStack->m_ConstEvalVariableManager) {
-		for (auto& [name, value] : m_pThisStack->m_ConstEvalVariableManager->GetVariableIterator()) {
-			assert(value);
-			if (value->m_pConstEval)
-				value->m_pConstEval->Release();
-		}
-	}
-#endif
-
 	if (m_pThisStack && m_pThisStack->m_VariableManager) {
 		auto context = m_pOwner->GetContext();
 
@@ -109,7 +93,7 @@ Success CFunctionLinter::ParseFunctionDeclaration()
 	const auto containsVar = m_pOwner->m_VariableManager->ContainsVariable(m_oFunctionName);
 
 	if ((containsFunc && m_pOwner->IsHoisting()) || containsVar) {
-		m_pOwner->GetModule()->PushError(std::format(VSL("\"{}\" is already defined"), m_oFunctionName), GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError(fmt::format(VSL("\"{}\" is already defined"), m_oFunctionName), GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 

@@ -55,7 +55,7 @@ IValue* CAggregate::ElementLookup(GlobalMemberIndex index) const
 {
 	assert(m_pAllMembers);
 	if (!m_oIndexLookup.contains(index)) {
-		throw CRuntimeError(m_pAllocator, std::format(VSL("this aggregate doesn't have the attribute \"{}\""),
+		throw CRuntimeError(m_pAllocator, fmt::format(VSL("this aggregate doesn't have the attribute \"{}\""),
 			m_pAllMembers->At(index)
 		));
 	}

@@ -15,51 +15,6 @@ ALWAYS CHECK RETURN VALUES!!!!
 #include <optional>
 
 
-
-/***********************************************************************
- > EXAMPLE COPY PASTE CODE
-************************************************************************
-
-#include <iostream>
-#include "varjus_api/varjus_api.hpp"
-
-int main(int argc, char** argv)
-{
-
-    if (argc != 2) {
-        STD_COUT << VSL("usage: <file path>\n");
-        return 1;
-    }
-
-    Varjus::State state;
-
-    const auto GetError = [](const std::optional<VarjusString>& errorMsg) {
-        return errorMsg ? *errorMsg : VSL("unknown error!");
-    };
-
-    if (!state.UseStdLibrary()) {
-        STD_CERR << VSL("state error: ") << GetError(state.GetErrorMessage()) << '\n';
-        return 1;
-    }
-
-    if (!state.LoadScriptFromFile(argv[1])) {
-        STD_CERR << VSL("syntax error: ") << GetError(state.GetErrorMessage()) << '\n';
-        return 1;
-    }
-
-
-    if (const auto returnValue = state.ExecuteScript()) {
-        STD_COUT << VSL("the program returned: ") << returnValue->ToPrintableString() << std::endl;
-    }
-    else {
-        STD_CERR << VSL("runtime error: ") << GetError(state.GetErrorMessage()) << '\n';
-        return 1;
-    }
-
-    return 0;
-}
-***********************************************************************/
-
 class CProgramInformation;
 class CProgramRuntime;
 

@@ -9,42 +9,17 @@
 #define _UC 0
 #endif
 
-#if _UC && !_MSC_VER
-#include <cwchar>
-
-std::vector<std::wstring> ConvertArgvToWide(int argc, char** argv)
-{
-    std::vector<std::wstring> wide_argv(static_cast<std::size_t>(argc));
-
-    for(auto i = 0; i < argc; i++){
-        const auto len = std::mbstowcs(nullptr, argv[i], 0);
-        if(len == static_cast<std::size_t>(-1)){
-            STD_COUT << VSL("couldn't convert argv to unicode\n");
-            return {};
-        }
-        std::wstring wstr(len, VSL('\0'));
-        std::mbstowcs(wstr.data(), argv[i], len);
-        wide_argv[i] = std::move(wstr);
-    }
-
-    return wide_argv;
-}
-
-#endif
-
-#if _UC && _MSC_VER
+#ifdef _MSC_VER
+#if _UC
 int wmain(int argc, wchar_t** argv)
 #else
 int main(int argc, char** argv)
 #endif
 {
-
     if (argc != 2) {
-        STD_CERR << VSL("usage: <file path>\n");
+        fmt::print(STD_CERR, VSL("usage: <file path>\n"));
         return 0;
     }
-
-
 
     Varjus::State state;
 
@@ -53,40 +28,101 @@ int main(int argc, char** argv)
     };
 
     if (!state.UseStdLibrary()) {
-        STD_CERR << VSL("state error: ") << GetError(state.GetErrorMessage()) << '\n';
+        fmt::print(STD_CERR, VSL("state error: {}\n"), GetError(state.GetErrorMessage()));
         return 0;
     }
 
-    #if _UC && !_MSC_VER
-    auto argvs = ConvertArgvToWide(argc, argv);
-
-    if(argvs.size() < 2){
-        STD_CERR << VSL("couldn't convert argv to unicode\n");
+#if _UC
+    if (!state.LoadScriptFromFile(reinterpret_cast<char16_t*>(argv[1]), e_auto)) {
+        fmt::print(STD_CERR, VSL("{}\n"), GetError(state.GetErrorMessage()));
         return 0;
     }
-
-    for(const auto& w : argvs)
-        STD_COUT << "file: " << w << '\n';
-
-    if (!state.LoadScriptFromFile(argvs[1])) {
-        STD_CERR << GetError(state.GetErrorMessage()) << '\n';
-        return 0;
-    }
-
-    #else
+#else
     if (!state.LoadScriptFromFile(argv[1], e_auto)) {
-        STD_CERR << GetError(state.GetErrorMessage()) << '\n';
+        fmt::print(STD_CERR, VSL("{}\n"), GetError(state.GetErrorMessage()));
         return 0;
     }
-    #endif
+#endif
 
     if (const auto returnValue = state.ExecuteScript()) {
-        STD_COUT << VSL("the program returned: ") << returnValue->ToPrintableString() << std::endl;
+        fmt::print(STD_COUT, VSL("the program returned: {}\n"), returnValue->ToPrintableString());
     }
     else {
-        STD_CERR << VSL("runtime error: ") << GetError(state.GetErrorMessage()) << '\n';
+        fmt::print(STD_CERR, VSL("runtime error: {}\n"), GetError(state.GetErrorMessage()));
         return 0;
     }
 
     return 0;
 }
+
+#else
+
+#if _UC
+#include <cwchar>
+
+std::vector<VarjusString> ConvertArgvToWide(int argc, char** argv)
+{
+    std::vector<VarjusString> wide_argv(static_cast<std::size_t>(argc));
+
+    //ignore first argv
+    for (auto i = 0; i < argc; i++) {
+        wide_argv[i] = LocaleConverter::utf8_to_u16string(argv[i]);
+    }
+
+    return wide_argv;
+}
+
+#endif
+
+int main(int argc, char** argv)
+{
+    if (argc != 2) {
+        fmt::print(STD_CERR, VSL("usage: <file path>\n"));
+        return 0;
+    }
+
+    Varjus::State state;
+
+    const auto GetError = [](const std::optional<VarjusString>& errorMsg) {
+        return errorMsg ? *errorMsg : VSL("unknown error!");
+    };
+
+    if (!state.UseStdLibrary()) {
+        fmt::print(STD_CERR, VSL("state error: {}\n"), GetError(state.GetErrorMessage()));
+        return 0;
+    }
+
+#if _UC
+    auto argvs = ConvertArgvToWide(argc, argv);
+
+    for(const auto& s : argvs)
+        fmt::print(STD_COUT, VSL("{}\n"), s);
+
+    if (argvs.size() < 2) {
+        fmt::print(STD_CERR, VSL("couldn't convert argv to unicode\n"));
+        return 0;
+    }
+    if (!state.LoadScriptFromFile(argvs[1], e_auto)) {
+        fmt::print(STD_CERR, VSL("{}\n"), GetError(state.GetErrorMessage()));
+        return 0;
+    }
+
+#else
+    if (!state.LoadScriptFromFile(argv[1], e_auto)) {
+        fmt::print(STD_CERR, VSL("{}\n"), GetError(state.GetErrorMessage()));
+        return 0;
+    }
+#endif
+
+    if (const auto returnValue = state.ExecuteScript()) {
+        fmt::print(STD_COUT, VSL("the program returned: {}\n"), returnValue->ToPrintableString());
+    }
+    else {
+        fmt::print(STD_CERR, VSL("runtime error: {}\n"), GetError(state.GetErrorMessage()));
+        return 0;
+    }
+
+    return 0;
+}
+
+#endif

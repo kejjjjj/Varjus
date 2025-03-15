@@ -12,29 +12,6 @@ bool CLinterVariable::IsGlobal() const noexcept {
 	return m_pOwner == m_pOwner->GetGlobalMemory();
 }
 
-#ifdef OPTIMIZATIONS
-
-CConstEvalLinterVariable::CConstEvalLinterVariable(const CMemory* owner, const VarjusString& name, const CCrossModuleReference& ref)
-	: CLinterVariable(owner, name, ref){}
-
-CConstEvalLinterVariable::~CConstEvalLinterVariable() = default;
-
-#include "linter/optimizations/optimizations.hpp"
-void CConstEvalLinterVariable::MakeConstEval()
-{
-	assert(!IsConstEval());
-
-	m_pConstEval = COptimizationValues::AcquireNewVariable();
-	m_pConstEval->SetValue(COptimizationValues::AcquireNewValue<IConstEvalValue>());
-
-}
-void CConstEvalLinterVariable::ReleaseConstEval()
-{
-	assert(IsConstEval());
-	m_pConstEval->Release();
-}
-#endif
-
 CMemory::CMemory(CProgramInformation* const program, CMemory* globalMemory, CModule* const file)
 	: m_pModule(file), m_pGlobal(globalMemory), m_pProgram(program) {
 	assert(m_pModule);
@@ -43,9 +20,6 @@ CMemory::CMemory(CProgramInformation* const program, CMemory* globalMemory, CMod
 		m_pGlobal = this;
 
 	m_VariableManager = std::make_unique<CVariableManager<CLinterVariable>>(this);
-#ifdef OPTIMIZATIONS
-	m_ConstEvalVariableManager = std::make_unique<CVariableManager<CConstEvalLinterVariable>>(this);
-#endif
 	m_FunctionManager = std::make_unique<CFunctionManager>(this);
 }
 CMemory::~CMemory() = default;

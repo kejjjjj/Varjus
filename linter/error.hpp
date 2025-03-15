@@ -5,6 +5,7 @@
 #include <sstream>
 #include <codecvt>
 #include <locale>
+#include <tuple>
 
 #include "varjus_api/internal/globalDefinitions.hpp"
 
@@ -33,10 +34,8 @@ public:
 private:
     VarjusString GetStringFormatted(const VarjusString& filePath, const VarjusString& err) const noexcept {
         
-        STD_STRINGSTREAM ss;
-        ss << err << VSL("\nAt: ") << std::get<0>(m_oSourcePosition) << ':' << std::get<1>(m_oSourcePosition)
-            << VSL(" in \"") << filePath << VSL("\"");
-        return ss.str();
+        return fmt::format(VSL("{}\nAt: {}:{} in \"{}\""), err, std::get<0>(m_oSourcePosition), 
+            std::get<1>(m_oSourcePosition), filePath);
     }
 
     VarjusString m_oErrorMessageFormatted;

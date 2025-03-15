@@ -115,12 +115,10 @@ std::optional<VarjusString> CProjectModules::CheckCircularDependencies(const Var
 
 	if (!DFS(src)) {
 
-		STD_STRINGSTREAM ss;
-		ss << VSL("circular dependency detected involving the following files:\n");
+		VarjusString ss = VSL("circular dependency detected involving the following files:\n");
 		for (const auto& [source, target] : conflictDetails)
-			ss << VSL(" - ") << source << VSL(" <-> ") << target << '\n';
-
-		return std::make_optional(ss.str());
+			ss += fmt::format(VSL(" - {} <-> {}\n"), source, target);
+		return std::make_optional(ss);
 	}
 
 	return std::nullopt;
@@ -128,21 +126,21 @@ std::optional<VarjusString> CProjectModules::CheckCircularDependencies(const Var
 
 VarjusString CProjectModules::DependencyGraphToString() noexcept
 {
-	STD_STRINGSTREAM ss;
+	VarjusString ss;
 
 	for (const auto& [sourceFile, dependencies] : m_oDependencyGraph) {
-		ss << sourceFile << VSL(" imports:\n");
+		ss += fmt::format(VSL("{} imports:\n"), sourceFile);
 
 		if (dependencies.empty()) {
-			ss << VSL(" - None\n"); 
+			ss += VSL(" - None\n"); 
 		}
 		else {
 			for (const auto& dependency : dependencies) {
-				ss << VSL(" - ") << dependency << '\n';
+				ss += fmt::format(VSL(" - {}\n"), dependency);
 			}
 		}
 	}
 
-	return ss.str();
+	return ss;
 }
 

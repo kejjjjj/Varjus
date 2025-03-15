@@ -1,7 +1,7 @@
 #include "error.hpp"
 #include "linter/modules/module.hpp"
 
-#include <format>
+
 
 CLinterError::CLinterError(const VarjusString& filePath, const VarjusString& error, const CodePosition* pos)
     : m_oErrorMessageFormatted(error) {
@@ -11,7 +11,7 @@ CLinterError::CLinterError(const VarjusString& filePath, const VarjusString& err
     }
 
     auto& [l, c] = *pos;
-    m_oErrorMessageFormatted += std::format(VSL(" | near [{}, {}] in \"{}\""), l, c, filePath);
+    m_oErrorMessageFormatted += fmt::format(VSL(" | near [{}, {}] in \"{}\""), l, c, filePath);
 }
 
 void CLinterErrors::PushError(const CLinterError& error) {

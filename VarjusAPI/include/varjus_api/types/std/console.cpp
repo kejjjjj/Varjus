@@ -19,7 +19,6 @@ DEFINE_METHOD(LogConsole, args)
 	for (auto& v : args)
 		p += v->ValueAsString();
 
-	STD_COUT << p << '\n';
-
+	fmt::print(STD_COUT, VSL("{}"), p);
 	return IValue::Construct(ctx->m_pRuntime);
 }

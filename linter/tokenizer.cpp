@@ -8,7 +8,7 @@
 
 #include <cassert>
 #include <filesystem>
-#include <format>
+
 #include <iostream>
 #include <unordered_map>
 
@@ -357,13 +357,24 @@ Success CBufferTokenizer::ReadHex(CToken& token)
 
 
 	try {
+#ifdef UNICODE
+		auto utf8Hex = LocaleConverter::u16string_to_utf8(hexStr);
+		auto intValue = std::stoll(utf8Hex, nullptr, 16);
+#else
 		auto intValue = std::stoll(hexStr, nullptr, 16);
-		token.m_sSource = STD_TO_STRING(intValue);
+#endif
+		token.m_sSource = fmt::to_string(intValue);
 	}
 	catch ([[maybe_unused]]std::out_of_range& ex) {
 		try {
+
+#ifdef UNICODE
+			auto utf8Hex = LocaleConverter::u16string_to_utf8(hexStr);
+			auto uintValue = std::stoull(utf8Hex, nullptr, 16);
+#else
 			auto uintValue = std::stoull(hexStr, nullptr, 16);
-			token.m_sSource = STD_TO_STRING(uintValue);
+#endif
+			token.m_sSource = fmt::to_string(uintValue);
 		}
 		catch ([[maybe_unused]] std::out_of_range& ex) {
 			m_pProgram->PushError(VSL("constant value is out of range"), m_oParserPosition);
@@ -645,12 +656,12 @@ std::unique_ptr<CToken> CBufferTokenizer::ReadPunctuation() noexcept
 }
 
 #ifdef UNICODE
-std::wstring CBufferTokenizer::FixLittleEndianness(const std::wstring& src)
+VarjusString CBufferTokenizer::FixLittleEndianness(const VarjusString& src)
 {
 	if (src.length() % 2 != 0)
 		throw std::runtime_error("corrupted eof byte in file");
 
-	std::wstring fixed;
+	VarjusString fixed;
 
 	for (auto it = src.begin(); it != src.end(); it += 2) {
 
@@ -671,9 +682,8 @@ std::wstring CBufferTokenizer::FixLittleEndianness(const std::wstring& src)
 ***********************************************************************/
 std::vector<std::unique_ptr<CToken>> CBufferTokenizer::ParseFileFromFilePath(CProgramInformation* const program, const VarjusString& filePath, EncodingType encoding)
 {
-
 	if (!std::filesystem::exists(filePath)) {
-		program->PushError(std::format(VSL("the input file \"{}\" doesn't exist"), filePath));
+		program->PushError(fmt::format(VSL("the input file \"{}\" doesn't exist"), filePath));
 		return {};
 	}
 
@@ -684,13 +694,10 @@ std::vector<std::unique_ptr<CToken>> CBufferTokenizer::ParseFileFromFilePath(CPr
 		program->PushError(VSL("couldn't read the file buffer"));
 		return {};
 	}
-
+	
 	if (encoding == e_auto) {
-#ifdef UNICODE
 		encoding = reader.GetEncoding();
-#else
-		encoding = e_utf8;
-#endif
+
 		if (encoding == e_unknown) {
 			throw CLinterError(filePath, VSL("the input file must include the byte order mark!\n"), nullptr);
 		}
@@ -701,22 +708,18 @@ std::vector<std::unique_ptr<CToken>> CBufferTokenizer::ParseFileFromFilePath(CPr
 	case e_auto:
 		assert(false);
 		break;
-	case e_unknown:
 	case e_utf8:
-		break;
 	case e_utf16le:
-		*fileBuf = FixLittleEndianness(*fileBuf);
-		break;
 	case e_utf16be:
-		*fileBuf = FixLittleEndianness(fileBuf->substr(1) + L'\0');
 		break;
+	case e_unknown:
 	default:
-		program->PushError(std::format(VSL("encoding type not specified for \"{}\""), filePath));
+		program->PushError(fmt::format(VSL("encoding type not specified for \"{}\""), filePath));
 		return {};
 	}
 #else
 	if (encoding != e_utf8) {
-		program->PushError(std::format(VSL("the utf8 build of Varjus does not support this encoding for the file\n\"{}\""), filePath));
+		program->PushError(fmt::format(VSL("the utf8 build of Varjus does not support this encoding for the file\n\"{}\""), filePath));
 		return {};
 	}
 #endif

@@ -1,7 +1,6 @@
 #include "manager_variable.hpp"
 #include "linter/functions/stack.hpp"
 #include "linter/context.hpp"
-#include "linter/optimizations/values/types/opt_value.hpp"
 
 #include <cassert>
 
@@ -64,6 +63,3 @@ std::size_t CVariableManager<T1, T2>::GetVariableCount() const noexcept {
 }
 
 template class CVariableManager<CLinterVariable>;
-#ifdef OPTIMIZATIONS
-template class CVariableManager<CConstEvalLinterVariable>;
-#endif

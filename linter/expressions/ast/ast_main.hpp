@@ -102,20 +102,6 @@ private:
 	[[nodiscard]] bool IsSelfReferencingCapture(const AbstractSyntaxTree* lhs, const AbstractSyntaxTree* rhs);
 
 	CodePosition m_oApproximatePosition;
-
-#ifdef OPTIMIZATIONS
-public:
-	std::weak_ptr<AbstractSyntaxTree> parent{};
-
-	[[nodiscard]] virtual IConstEvalValue* GetConstEval([[maybe_unused]]CMemory* const owner) noexcept { return nullptr; }
-	[[nodiscard]] static bool IsConstEval(CMemory* const owner, const AbstractSyntaxTree* operand);
-
-	static void OptimizeBranches(CMemory* const owner, ASTNode& node);
-	static void OptimizeNodes(CMemory* const owner, ASTNode& node);
-
-	static void OptimizeLeaf(CMemory* const owner, ASTNode& node);
-
-#endif
 };
 
 struct CLinterVariable;
@@ -133,10 +119,6 @@ public:
 
 	[[nodiscard]] constexpr const VariableASTNode* GetVariable() const noexcept override { return this; }
 	[[nodiscard]] constexpr VariableASTNode* GetVariable() noexcept override { return this; }
-
-#ifdef OPTIMIZATIONS
-	[[nodiscard]] IConstEvalValue* GetConstEval(CMemory* const owner) noexcept override;
-#endif
 
 	bool m_bGlobalVariable{ false };
 	bool m_bSelfCapturing{ false };
@@ -167,10 +149,6 @@ public:
 	[[nodiscard]] constexpr bool IsLeaf() const noexcept override { return true; }
 	[[nodiscard]] constexpr bool IsConstant() const noexcept override { return true; }
 	[[nodiscard]] constexpr const ConstantASTNode* GetConstant() const noexcept override { return this; }
-
-#ifdef OPTIMIZATIONS
-	[[nodiscard]] IConstEvalValue* GetConstEval(CMemory* const owner) noexcept override;
-#endif
 
 	// contains the raw data for the constant
 	VarjusString m_pConstant;
