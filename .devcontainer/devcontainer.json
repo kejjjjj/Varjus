@@ -1,0 +1,9 @@
+{
+    "image": "mcr.microsoft.com/devcontainers/cpp:latest",
+    "features": {
+      "ghcr.io/devcontainers/features/gcc": {},
+      "ghcr.io/devcontainers/features/clangd": {}
+    },
+    "postCreateCommand": "g++ --version && clang++ --version"
+}
+  
