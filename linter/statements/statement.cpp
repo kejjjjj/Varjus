@@ -9,7 +9,7 @@
 #include "linter/modules/module.hpp"
 
 #include <cassert>
-#include <format>
+
 
 
 CStatementLinter::CStatementLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack)

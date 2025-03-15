@@ -10,7 +10,7 @@
 #include "linter/expressions/ast.hpp"
 
 #include <cassert>
-#include <format>
+
 
 static IValue* EvaluateIncrement(CProgramRuntime* const runtime, IValue* operand);
 static IValue* EvaluateDecrement(CProgramRuntime* const runtime, IValue* operand);

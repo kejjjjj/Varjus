@@ -16,9 +16,6 @@ struct CLinterVariable : public CMemoryIdentifier
 	[[nodiscard]] virtual constexpr EMemoryIdentifierType Type() const noexcept override { return mi_variable; }
 	[[nodiscard]] bool IsGlobal() const noexcept;
 
-#ifdef OPTIMIZATIONS
-	[[nodiscard]] constexpr virtual bool IsConstEval() const noexcept { return false; }
-#endif
 
 	const CMemory* m_pOwner{};
 	bool m_bCaptured{ false }; //captured by a closure (only lambdas for now)
@@ -27,22 +24,6 @@ struct CLinterVariable : public CMemoryIdentifier
 	bool m_bInitialized{ false };
 
 };
-
-#ifdef OPTIMIZATIONS
-struct CConstEvalLinterVariable final : public CLinterVariable
-{
-	NONCOPYABLE(CConstEvalLinterVariable);
-
-	CConstEvalLinterVariable(const CMemory* owner, const VarjusString& name, const CCrossModuleReference& ref);
-	~CConstEvalLinterVariable();
-
-	[[nodiscard]] constexpr bool IsConstEval() const noexcept override { return !!m_pConstEval; }
-	void MakeConstEval();
-	void ReleaseConstEval();
-
-	CConstEvalVariable* m_pConstEval{ nullptr }; //can be evaluated during linting
-};
-#endif
 
 template <typename T1, typename T2 = void>
 class CVariableManager

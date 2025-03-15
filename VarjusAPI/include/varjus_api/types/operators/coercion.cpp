@@ -6,7 +6,7 @@
 #include "runtime/exceptions/exception.hpp"
 
 #include <cassert>
-#include <format>
+
 
 std::tuple<IValue*, IValue*, IValue*> Coerce(CProgramRuntime* const runtime, IValue* lhs, IValue* rhs)
 {

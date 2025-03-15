@@ -4,10 +4,6 @@
 #include "linter/token.hpp"
 #include "linter/expressions/ast.hpp"
 
-#ifdef OPTIMIZATIONS
-#include "linter/optimizations/optimizations.hpp"
-#endif
-
 #include <charconv>
 #include <cassert>
 
@@ -22,32 +18,6 @@ std::unique_ptr<IOperand> CLinterOperand::ParseImmediate(){
 ASTNode CImmediateOperand::ToAST(){
 	return std::make_shared<ConstantASTNode>(m_oCodePosition, ToData(), GetImmediateType());
 }
-
-#ifdef OPTIMIZATIONS
-
-IConstEvalValue* ConstantASTNode::GetConstEval([[maybe_unused]]CMemory* const owner) noexcept
-{
-	switch (m_eDataType) {
-	case t_undefined:
-		return COptimizationValues::AcquireNewValue<IConstEvalValue>();
-	case t_int:
-		return COptimizationValues::AcquireNewValue<CConstEvalIntValue>(*reinterpret_cast<VarjusInt*>((char*)m_pConstant.data()));
-	case t_boolean:
-		return COptimizationValues::AcquireNewValue<CConstEvalBooleanValue>(m_pConstant[0] == '\x01');
-	case t_double:
-		return COptimizationValues::AcquireNewValue<CConstEvalDoubleValue>(*reinterpret_cast<VarjusDouble*>((char*)m_pConstant.data()));
-	case t_string:
-		return COptimizationValues::AcquireNewValue<CConstEvalStringValue>(m_pConstant);
-	case t_callable:
-	case t_array:
-	case t_object:
-	default:
-		assert(false);
-		return nullptr;
-	}
-}
-
-#endif
 
 #pragma pack(push)
 WARNING_DISABLE(4061)

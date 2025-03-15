@@ -5,6 +5,7 @@
 #include <sstream>
 #include <codecvt>
 #include <locale>
+#include <tuple>
 
 #include "varjus_api/internal/globalDefinitions.hpp"
 

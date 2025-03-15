@@ -4,8 +4,6 @@
 
 #include <unordered_map>
 #include <vector>
-#include <format>
-
 
 class CRuntimeFunctionBase;
 class CFunction;

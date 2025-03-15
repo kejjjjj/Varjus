@@ -37,11 +37,7 @@ private:
 
 	WeakScope m_pScope;
 	CMemory* const m_pOwner = 0;
-#ifdef OPTIMIZATIONS
-	CConstEvalLinterVariable* m_sDeclaredVariable{ nullptr };
-#else
 	CLinterVariable* m_sDeclaredVariable{ nullptr };
-#endif
 	ASTNode m_pInitializerAST;
 	bool m_bIsConst{};
 };

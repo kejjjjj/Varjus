@@ -11,7 +11,7 @@
 #include "varjus_api/internal/globalDefinitions.hpp"
 
 #include <cassert>
-#include <format>
+
 
 CLoopControlStatement::CLoopControlStatement(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack)
 	: CStatementLinter(pos, end, scope, stack) {

@@ -14,7 +14,7 @@
 #include <cassert>
 #include <ranges>
 #include <algorithm>
-#include <format>
+
 
 CPostfixLinter::CPostfixLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack) 
 	: CVectorLinter(pos, end), m_pScope(scope), m_pOwner(stack)

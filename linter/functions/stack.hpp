@@ -62,9 +62,6 @@ public:
 	[[nodiscard]] auto& GetHoister() const noexcept { return m_pGlobal->m_pHoister; }
 
 	VarManager<CLinterVariable> m_VariableManager;
-#ifdef OPTIMIZATIONS
-	VarManager<CConstEvalLinterVariable> m_ConstEvalVariableManager;
-#endif
 	std::unique_ptr<CFunctionManager> m_FunctionManager;
 
 protected:

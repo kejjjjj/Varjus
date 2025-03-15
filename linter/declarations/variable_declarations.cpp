@@ -9,11 +9,6 @@
 #include "linter/modules/module.hpp"
 
 #include <cassert>
-#include <format>
-
-#ifdef OPTIMIZATIONS
-#include "linter/optimizations/optimizations.hpp"
-#endif
 
 CVariableDeclarationLinter::CVariableDeclarationLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack) :
 	CLinterSingle(pos, end), m_pScope(scope), m_pOwner(stack)
@@ -54,14 +49,9 @@ Success CVariableDeclarationLinter::ParseIdentifier()
 			m_pOwner->GetModule()->PushError(fmt::format(VSL("\"{}\" already declared"), (*m_iterPos)->Source()), (*m_iterPos)->m_oSourcePosition);
 			return failure;
 		}
-#ifdef OPTIMIZATIONS
-		//blah blah too lazy don't want to implement
-		//only optimize local variables
-		//if(m_pOwner->IsStack())
-		//	m_sDeclaredVariable = m_pOwner->m_ConstEvalVariableManager->DeclareVariable(varName);
-#else
+
 		m_sDeclaredVariable = m_pOwner->m_VariableManager->DeclareVariable(varName);
-#endif
+
 	}
 	else {
 		m_pOwner->GetModule()->PushError(VSL("!(const auto scope = currentScope.lock())"), (*m_iterPos)->m_oSourcePosition);
@@ -79,12 +69,6 @@ Success CVariableDeclarationLinter::ParseInitializer()
 		m_pOwner->GetModule()->PushError(VSL("expected \";\""), GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
-
-#ifdef OPTIMIZATIONS
-	//start off with a simple consteval undefined
-	m_sDeclaredVariable->m_pConstEval = COptimizationValues::AcquireNewVariable();
-	m_sDeclaredVariable->m_pConstEval->SetValue(COptimizationValues::AcquireNewValue<IConstEvalValue>());
-#endif
 
 	//let var;
 	if ((*m_iterPos)->IsOperator(p_semicolon)) {

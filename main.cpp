@@ -64,6 +64,7 @@ std::vector<VarjusString> ConvertArgvToWide(int argc, char** argv)
 {
     std::vector<VarjusString> wide_argv(static_cast<std::size_t>(argc));
 
+    //ignore first argv
     for (auto i = 0; i < argc; i++) {
         wide_argv.push_back(LocaleConverter::utf8_to_u16string(argv[i]));
     }
@@ -93,6 +94,9 @@ int main(int argc, char** argv)
 
 #if _UC
     auto argvs = ConvertArgvToWide(argc, argv);
+
+    for(const auto& s : argvs)
+        fmt::print(STD_COUT, VSL("{}\n"), s);
 
     if (argvs.size() < 2) {
         fmt::print(STD_CERR, VSL("couldn't convert argv to unicode\n"));

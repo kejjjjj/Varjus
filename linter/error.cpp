@@ -1,7 +1,7 @@
 #include "error.hpp"
 #include "linter/modules/module.hpp"
 
-#include <format>
+
 
 CLinterError::CLinterError(const VarjusString& filePath, const VarjusString& error, const CodePosition* pos)
     : m_oErrorMessageFormatted(error) {

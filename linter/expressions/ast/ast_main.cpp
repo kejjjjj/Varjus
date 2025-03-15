@@ -16,7 +16,7 @@
 #include "linter/token.hpp"
 
 #include <cassert>
-#include <iostream>
+#include <ranges>
 
 AbstractSyntaxTree::~AbstractSyntaxTree() = default;
 
@@ -35,20 +35,6 @@ ASTNode AbstractSyntaxTree::CreateAST(CMemory* const owner, Operands& operands, 
 	}
 	
 	root->CreateRecursively(root, owner, operands, operators);
-#ifdef OPTIMIZATIONS
-	if (root->IsLeaf())
-		OptimizeLeaf(owner, root);
-	else
-		OptimizeBranches(owner, root);
-
-	/*
-	if(canDiscard){
-		//todo -> remove meaningless expressions
-		//but do this AFTER everything works to avoid BUGS!!!!!
-	}
-	*/
-#endif
-
 	return root;
 }
 
@@ -110,9 +96,6 @@ void AbstractSyntaxTree::CreateRecursively(ASTNode& _this, CMemory* const owner,
 			const OperatorIterator l = FindLowestPriorityOperator(lhsOperators);
 
 			_this->left = std::make_shared<OperatorASTNode>((*l)->GetToken()->m_oSourcePosition, (*l)->GetPunctuation());
-#ifdef OPTIMIZATIONS
-			_this->left->parent = shared_from_this();
-#endif
 			CreateRecursively(_this->left, owner, lhsOperands, lhsOperators);
 
 		}
@@ -122,9 +105,6 @@ void AbstractSyntaxTree::CreateRecursively(ASTNode& _this, CMemory* const owner,
 
 
 			_this->right = std::make_shared<OperatorASTNode>((*l)->GetToken()->m_oSourcePosition, (*l)->GetPunctuation());
-#ifdef OPTIMIZATIONS
-			_this->right->parent = shared_from_this();
-#endif
 			CreateRecursively(_this->right, owner, rhsOperands, rhsOperators);
 			
 		}

@@ -14,6 +14,7 @@
 #include <iostream>
 
 
+
 CIdentifierLinter::CIdentifierLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack)
 	: CLinterSingle(pos, end), m_pScope(scope), m_pOwner(stack)
 {
@@ -44,15 +45,8 @@ Success CIdentifierLinter::ParseIdentifier()
 
 	auto& str = m_pToken->Source();
 	if (scope->VariableExists(str)) {
-
-#ifdef OPTIMIZATIONS
-		m_pIdentifier = GetVariableByIdentifier<CConstEvalLinterVariable>(str);
-
-		if(!m_pIdentifier) //not in the consteval list, find it from non consteval
-			m_pIdentifier = GetVariableByIdentifier<CLinterVariable>(str);
-#else
 		m_pIdentifier = GetVariableByIdentifier<CLinterVariable>(str);
-#endif
+
 	}
 	else if(ContainsFunction(str))
 		m_pIdentifier = GetFunctionByIdentifier(str);
@@ -68,20 +62,13 @@ Success CIdentifierLinter::ParseIdentifier()
 }
 
 template CLinterVariable* CIdentifierLinter::GetVariableByIdentifier<CLinterVariable>(const VarjusString& str) const noexcept;
-#ifdef OPTIMIZATIONS
-template CLinterVariable* CIdentifierLinter::GetVariableByIdentifier<CConstEvalLinterVariable>(const VarjusString& str) const noexcept;
-#endif
 
 template<typename T>
 [[nodiscard]] constexpr CVariableManager<T>* GetVariableManager(CMemory* memory) noexcept {
 	if constexpr (std::is_same_v<T, CLinterVariable>)
 		return memory->m_VariableManager.get();
 	else
-#ifndef OPTIMIZATIONS
-		static_assert(false, VSL("if constexpr (std::is_same_v<T, CLinterVariable>"));
-#else
-		return memory->m_ConstEvalVariableManager.get();
-#endif
+		assert(typeid(T) == typeid(CLinterVariable));
 }
 
 template<typename T>
