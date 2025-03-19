@@ -1,0 +1,14 @@
+fn main()
+{
+	return hoistedFunc();
+}
+
+fn hoistedFunc()
+{
+	return hoistedFunc2() + 49;
+}
+
+fn hoistedFunc2()
+{
+	return 50;
+}

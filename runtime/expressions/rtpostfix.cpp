@@ -30,7 +30,9 @@ IValue* CRuntimeExpression::EvaluatePostfix(CRuntimeContext* const ctx, const Po
 		}
 
 	} else if (node->IsFunctionCall()) {
+		assert(operand && operand->GetAllocator());
 		returnVal = EvaluateFunctionCall(ctx, operand, node->GetFunctionCall());
+		assert(operand && operand->GetAllocator());
 	} else if (node->IsMemberAccess()) {
 		returnVal = EvaluateMemberAccess(ctx, operand, node->GetMemberAccess());
 
@@ -44,8 +46,9 @@ IValue* CRuntimeExpression::EvaluatePostfix(CRuntimeContext* const ctx, const Po
 		returnVal = EvaluateDecrement(ctx->m_pRuntime, operand);
 	}
 
-	if (!operand->HasOwner()) 
+	if (!operand->HasOwner()) {
 		operand->Release();
+	}
 	
 	assert(returnVal);
 	return returnVal;

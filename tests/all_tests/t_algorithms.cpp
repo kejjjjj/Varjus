@@ -186,3 +186,14 @@ TEST_CASE(("StressTest")) {
 	REQUIRE(retVal->HasOwner() == false);
 	TEST_END(retVal);
 }
+TEST_CASE(("FractalGenerator(10)")) {
+
+	auto retVal = TEST_ExecuteFile(JP(VSL("fractalgenerator.var")));
+
+	REQUIRE(retVal != nullptr);
+	REQUIRE(retVal->Type() == t_int);
+	REQUIRE(retVal->ToInt() == 41148);
+
+	REQUIRE(retVal->HasOwner() == false);
+	TEST_END(retVal);
+}

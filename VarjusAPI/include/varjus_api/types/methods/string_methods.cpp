@@ -22,21 +22,23 @@ FORWARD_DECLARE_METHOD(Substring);
 FORWARD_DECLARE_METHOD(Split);
 
 FORWARD_DECLARE_METHOD(Replace);
-FORWARD_DECLARE_METHOD(Reproduce);
+FORWARD_DECLARE_METHOD(Clone);
 
 FORWARD_DECLARE_METHOD(GetCodeAt);
+FORWARD_DECLARE_METHOD(StringContains);
 
 std::unique_ptr<BuiltInMethod_t> CStringValue::ConstructMethods(CProgramInformation* const info)
 {
 	auto m_oMethods = std::make_unique<BuiltInMethod_t>(info);
 
-	m_oMethods->AddMethod(VSL("toupper"),     ToUpper,   0u);
-	m_oMethods->AddMethod(VSL("tolower"),     ToLower,   0u);
-	m_oMethods->AddMethod(VSL("substring"),   Substring, 2u);
-	m_oMethods->AddMethod(VSL("split"),       Split,     1u);
-	m_oMethods->AddMethod(VSL("replace"),     Replace,   2u);
-	m_oMethods->AddMethod(VSL("reproduce"),   Reproduce, 1u);
-	m_oMethods->AddMethod(VSL("get_code_at"), GetCodeAt, 1u);
+	m_oMethods->AddMethod(VSL("toupper"),     ToUpper,        0u);
+	m_oMethods->AddMethod(VSL("tolower"),     ToLower,        0u);
+	m_oMethods->AddMethod(VSL("substring"),   Substring,      2u);
+	m_oMethods->AddMethod(VSL("split"),       Split,          1u);
+	m_oMethods->AddMethod(VSL("replace"),     Replace,        2u);
+	m_oMethods->AddMethod(VSL("clone"),       Clone,          1u);
+	m_oMethods->AddMethod(VSL("get_code_at"), GetCodeAt,      1u);
+	m_oMethods->AddMethod(VSL("contains"),    StringContains, 1u);
 
 	return m_oMethods;
 
@@ -91,16 +93,8 @@ DEFINE_METHOD(Substring, args)
 	CheckSanity(a);
 	CheckSanity(b);
 
-	auto start = a->ToInt();
-	auto end = b->ToInt();
-
-	const auto CheckRange = [&v, &ctx](const auto value) {
-		if(value < 0 || value >= static_cast<VarjusInt>(v.length()))
-			throw CRuntimeError(ctx->m_pRuntime, VSL("string.substring index out of range"));
-	};
-
-	CheckRange(start);
-	CheckRange(end);
+	auto start = a->ToUInt();
+	auto end = b->ToUInt() - VarjusUInt(1);
 
 	if(start >= end)
 		throw CRuntimeError(ctx->m_pRuntime, VSL("string.substring expected start < end"));
@@ -176,18 +170,18 @@ DEFINE_METHOD(Replace, args) {
 	return CStringValue::Construct(ctx->m_pRuntime, ReplaceAll(v, a->AsString(), b->AsString()));
 }
 
-DEFINE_METHOD(Reproduce, args) {
+DEFINE_METHOD(Clone, args) {
 
 	auto __this = GetThisString(_this);
 	const auto& v = __this->ToString();
 
 	auto& countValue = args[0];
 	if (!countValue->IsIntegral())
-		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("string.reproduce expected an integral value, but got \"{}\""), countValue->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("string.clone expected an integral value, but got \"{}\""), countValue->TypeAsString()));
 
 	auto count = countValue->ToInt();
 	if (count < 0)
-		throw CRuntimeError(ctx->m_pRuntime, VSL("string.reproduce expected count to be >= 0"));
+		throw CRuntimeError(ctx->m_pRuntime, VSL("string.clone expected count to be >= 0"));
 
 	VarjusString result;
 	for ([[maybe_unused]] const auto i : std::views::iota(0ll, count))
@@ -212,4 +206,18 @@ DEFINE_METHOD(GetCodeAt, args) {
 	const auto asUnsigned = static_cast<std::size_t>(index);
 
 	return CIntValue::Construct(ctx->m_pRuntime, static_cast<VarjusInt>(v[asUnsigned]));
+}
+
+
+DEFINE_METHOD(StringContains, args) {
+
+	auto __this = GetThisString(_this);
+	const auto& v = __this->ToString();
+
+	auto& delimiter = args.front();
+
+	if (delimiter->Type() != t_string)
+		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("string.contains expected a \"string\", but got \"{}\""), delimiter->TypeAsString()));
+
+	return CBooleanValue::Construct(ctx->m_pRuntime, v.find(delimiter->ToString()) != VarjusString::npos);
 }

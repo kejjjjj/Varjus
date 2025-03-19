@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <ranges>
 #include <stack>
+#include <numeric>
 
 [[nodiscard]] CArrayValue* GetThisArray(IValue* _this) {
 	return _this->ToArray();
@@ -34,6 +35,7 @@ FORWARD_DECLARE_METHOD(Sort);
 FORWARD_DECLARE_METHOD(Resize);
 FORWARD_DECLARE_METHOD(Fill);
 FORWARD_DECLARE_METHOD(ForEach);
+FORWARD_DECLARE_METHOD(Accumulate);
 
 
 std::unique_ptr<BuiltInMethod_t> CArrayValue::ConstructMethods(CProgramInformation* const info)
@@ -55,11 +57,12 @@ std::unique_ptr<BuiltInMethod_t> CArrayValue::ConstructMethods(CProgramInformati
 	m_oMethods->AddMethod(VSL("join"),            Join,          1u);
 	m_oMethods->AddMethod(VSL("all"),             All,           1u);
 	m_oMethods->AddMethod(VSL("any"),             Any,           1u);
-	m_oMethods->AddMethod(VSL("slice"),	         Slice,         2u);
+	m_oMethods->AddMethod(VSL("slice"),	          Slice,         2u);
 	m_oMethods->AddMethod(VSL("sort"),            Sort,          1u);
 	m_oMethods->AddMethod(VSL("resize"),          Resize,        1u);
 	m_oMethods->AddMethod(VSL("fill"),            Fill,          1u);
 	m_oMethods->AddMethod(VSL("for_each"),        ForEach,       1u);
+	m_oMethods->AddMethod(VSL("accumulate"),      Accumulate,    2u);
 
 	return m_oMethods;
 }
@@ -144,7 +147,6 @@ DEFINE_METHOD(Map, args)
 
 	IValues results(vars.size());
 	IValues call_args(1);
-	IValue* exceptionValue{ nullptr };
 
 	//result array
 	for (auto i = std::size_t(0); const auto& var : vars) {
@@ -153,7 +155,6 @@ DEFINE_METHOD(Map, args)
 
 		//because of course someone will throw an exception :x
 		if (ctx->m_pRuntime->ExceptionThrown()) {
-			exceptionValue = results[i - 1];
 			results.resize(i - 1);
 			break;
 		}
@@ -163,11 +164,11 @@ DEFINE_METHOD(Map, args)
 	if (ctx->m_pRuntime->ExceptionThrown()) {
 
 		for (auto& r : results) {
-			if(r != exceptionValue)
+			if(r != ctx->m_pRuntime->GetExceptionValue())
 				r->Release();
 		}
 
-		return exceptionValue;
+		return ctx->m_pRuntime->GetExceptionValue();
 	}
 
 	
@@ -327,7 +328,6 @@ DEFINE_METHOD(Filter, args)
 
 	IValues results;
 	IValues call_args(1);
-	IValue* exception{ nullptr };
 
 	//result array
 	for (const auto & var : vars) {
@@ -336,7 +336,6 @@ DEFINE_METHOD(Filter, args)
 		IValue* thisIteration = mapFunc->Call(ctx, call_args);
 
 		if (ctx->m_pRuntime->ExceptionThrown()) {
-			exception = thisIteration;
 			break;
 		}
 
@@ -355,11 +354,11 @@ DEFINE_METHOD(Filter, args)
 	if (ctx->m_pRuntime->ExceptionThrown()) {
 
 		for (auto& r : results) {
-			if (r != exception)
+			if (r != ctx->m_pRuntime->GetExceptionValue())
 				r->Release();
 		}
 
-		return exception;
+		return ctx->m_pRuntime->GetExceptionValue();
 	}
 
 	return CArrayValue::Construct(ctx->m_pRuntime, std::move(results));
@@ -451,7 +450,6 @@ DEFINE_METHOD(All, args)
 	auto& vars = __this->GetVariables();
 
 	IValues call_args(1);
-	IValue* exception{ nullptr };
 
 	bool all = true;
 
@@ -462,7 +460,6 @@ DEFINE_METHOD(All, args)
 		IValue* thisIteration = mapFunc->Call(ctx, call_args);
 
 		if (ctx->m_pRuntime->ExceptionThrown()) {
-			exception = thisIteration;
 			break;
 		}
 
@@ -479,7 +476,7 @@ DEFINE_METHOD(All, args)
 	}
 
 	if (ctx->m_pRuntime->ExceptionThrown()) {
-		return exception;
+		return ctx->m_pRuntime->GetExceptionValue();
 	}
 
 	return CBooleanValue::Construct(ctx->m_pRuntime, all);
@@ -496,7 +493,6 @@ DEFINE_METHOD(Any, args)
 	auto& vars = __this->GetVariables();
 
 	IValues call_args(1);
-	IValue* exception{ nullptr };
 
 	bool any = false;
 
@@ -507,7 +503,6 @@ DEFINE_METHOD(Any, args)
 		IValue* thisIteration = mapFunc->Call(ctx, call_args);
 
 		if (ctx->m_pRuntime->ExceptionThrown()) {
-			exception = thisIteration;
 			break;
 		}
 
@@ -524,7 +519,7 @@ DEFINE_METHOD(Any, args)
 	}
 
 	if (ctx->m_pRuntime->ExceptionThrown()) {
-		return exception;
+		return ctx->m_pRuntime->GetExceptionValue();
 	}
 
 	return CBooleanValue::Construct(ctx->m_pRuntime, any);
@@ -725,7 +720,6 @@ DEFINE_METHOD(ForEach, args)
 	auto& vars = __this->GetVariables();
 
 	IValues call_args(1);
-	IValue* exception{ nullptr };
 
 	//result array
 	for (const auto& var : vars) {
@@ -734,7 +728,6 @@ DEFINE_METHOD(ForEach, args)
 		IValue* thisIteration = mapFunc->Call(ctx, call_args);
 
 		if (ctx->m_pRuntime->ExceptionThrown()) {
-			exception = thisIteration;
 			break;
 		}
 
@@ -745,8 +738,49 @@ DEFINE_METHOD(ForEach, args)
 	}
 
 	if (ctx->m_pRuntime->ExceptionThrown()) {
-		return exception;
+		return ctx->m_pRuntime->GetExceptionValue();
 	}
 
 	return IValue::Construct(ctx->m_pRuntime);
+}
+
+DEFINE_METHOD(Accumulate, args)
+{
+	auto& mapFunc = args.front();
+
+	if (!mapFunc->IsCallable())
+		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("array.accumulate 1. expected \"callable\", but got \"{}\""), mapFunc->TypeAsString()));
+
+
+	auto __this = GetThisArray(_this);
+	auto& vars = __this->GetVariables();
+
+	if(vars.empty())
+		return IValue::Construct(ctx->m_pRuntime);
+
+	IValues call_args(2);
+	IValue* accumulator = args[1]->Copy();
+
+	//result array
+	for (const auto& var : vars) {
+		call_args[0] = accumulator;
+		call_args[1] = var->GetValue()->Copy();
+
+		IValue* thisIteration = mapFunc->Call(ctx, call_args);
+
+		if (ctx->m_pRuntime->ExceptionThrown()) {
+			break;
+		}
+
+		accumulator = thisIteration->Copy();
+		thisIteration->Release();
+
+	}
+
+
+	if (ctx->m_pRuntime->ExceptionThrown()) {
+		return ctx->m_pRuntime->GetExceptionValue();
+	}
+
+	return accumulator;
 }

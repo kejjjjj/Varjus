@@ -75,7 +75,8 @@ IValue* CRuntimeExpression::Evaluate(CRuntimeContext* const ctx, const AbstractS
 	IValue* result = func(ctx->m_pRuntime, lhs, rhs);
 
 	if (!lhs->HasOwner()) lhs->Release();
-	if (!rhs->HasOwner()) rhs->Release();
+	if (!rhs->HasOwner()) 
+		rhs->Release();
 
 	assert(result != nullptr);
 
@@ -101,9 +102,9 @@ inline IValue* EvaluateVariable(CRuntimeContext* const ctx, const VariableASTNod
 
 	assert(variable->GetValue() && variable->GetValue()->HasOwner());
 
-	if (var->m_bSelfCapturing)
+	if (var->m_bSelfCapturing) {
 		variable->m_bSelfCapturing = true;
-
+	}
 	auto& v = variable->GetValue();
 	//if (var->m_bIsConst) // this was already validated during linting
 	//	v->MakeImmutable();

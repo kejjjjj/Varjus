@@ -16,3 +16,15 @@ TEST_CASE(("Main function calls a function declared beneath it")) {
 	REQUIRE(retVal->HasOwner() == false);
 	TEST_END(retVal);
 }
+
+TEST_CASE(("Main function calls two functions declared beneath it")) {
+
+	auto retVal = TEST_ExecuteFile(JP(VSL("two_hoisted_functions.var")));
+
+	REQUIRE(retVal != nullptr);
+	REQUIRE(retVal->Type() == t_int);
+	REQUIRE(retVal->ToInt() == 99);
+
+	REQUIRE(retVal->HasOwner() == false);
+	TEST_END(retVal);
+}

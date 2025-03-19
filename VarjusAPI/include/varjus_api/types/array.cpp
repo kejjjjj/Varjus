@@ -10,7 +10,6 @@
 
 #include <sstream>
 
-
 CArrayValue* CArrayValue::Construct(CProgramRuntime* const runtime, IValues&& values)
 {
 	auto ptr = runtime->AcquireNewValue<CArrayValue>();
@@ -81,6 +80,10 @@ IValue* CArrayValue::GetAggregate(CRuntimeContext* const ctx, std::size_t member
 	assert(properties);
 	if (properties->contains(memberIdx)) {
 		return properties->at(memberIdx)(ctx, this);
+	}
+
+	if (auto info = m_pAllocator->GetInformation()) {
+		throw CRuntimeError(m_pAllocator, fmt::format(VSL("this aggregate doesn't have the attribute \"{}\""), info->m_oAllMembers.At(memberIdx)));
 	}
 
 	assert(false);

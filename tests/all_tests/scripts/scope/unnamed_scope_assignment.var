@@ -1,0 +1,10 @@
+fn main()
+{
+	let thing;
+
+	{
+		thing = "scope!3";
+	}
+
+	return thing;
+}

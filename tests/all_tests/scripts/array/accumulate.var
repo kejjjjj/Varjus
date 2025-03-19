@@ -1,0 +1,4 @@
+fn main()
+{
+	return [1,2,3,4,5].accumulate(((a, b) => a + b), 0);
+}

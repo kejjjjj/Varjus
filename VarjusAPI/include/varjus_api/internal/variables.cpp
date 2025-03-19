@@ -37,9 +37,12 @@ void CVariable::SetValue(IValue* v)
 bool CVariable::Release()
 {
 	assert(m_uRefCount > 0);
-	if (m_uRefCount-- != 1) {
+	if (m_uRefCount != 1) {
+		m_uRefCount--;
 		return false;
 	}
+
+	m_uRefCount = 0;
 
 	auto& v = GetValue();
 	assert(v && v->HasOwner());

@@ -1,0 +1,8 @@
+fn main()
+{
+	{
+		{
+			return "scope!2";
+		}
+	}
+}

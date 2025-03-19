@@ -22,7 +22,7 @@ IValue* CCallableValue::Copy()
 	ptr->MakeShared();
 	auto& var = (ptr->GetShared() = GetShared());
 
-	for (auto& [k, va] : var->GetCaptures())
+	for (auto& [k, va] : var->m_oCaptures)
 		va->RefCount()++; //increase ref count so that these don't get destroyed
 
 	return ptr;
@@ -35,13 +35,17 @@ void CCallableValue::Release()
 			binding->Release();
 			Internal()->Bind(nullptr);
 		}
+
 	}
 
-	Get().Release(); //always decrement ref count
+	Get().Release(this); //always decrement ref count
+	
 
 	ReleaseInternal();
 	m_pAllocator->FreeValue<CCallableValue>(this);
 	ReleaseShared();
+	
+
 }
 IValue* CCallableValue::Call(CRuntimeContext* const ctx, const IValues& args)
 {
@@ -86,29 +90,32 @@ void CInternalCallableValue::SetCaptures(CRuntimeContext* const ctx, const Vecto
 			variable = ctx->m_pFunction->GetVariableByRef(var);
 		}
 
-		m_oCaptures[var] = variable->m_bSelfCapturing ? variable : variable->Copy();
+		//has to be a copy
+		//for example an anonymous lambda captures this and it never gets copied, ref count doesn't increase
+		//original variable gets deleted (ref count is 0)
+		//the capture gets deleted (ref count is already 0 -> BUG)
+		m_oCaptures[var] = variable->Copy();
 		
 	}
 }
-//void CInternalCallableValue::SetCallable(CRuntimeFunctionBase* c) noexcept
-//{
-//	m_pCallable = c;
-//}
-void CInternalCallableValue::Release()
+void CInternalCallableValue::Release(CCallableValue* const _this)
 {
+	const auto thisIsProblematic = _this->HasOwner() && _this->GetOwner()->m_bSelfCapturing && _this->GetOwner()->RefCount() == 0;
 
-	for (auto it = m_oCaptures.begin(); it != m_oCaptures.end(); ) {
+	for (auto it = m_oCaptures.begin(); it != m_oCaptures.end();) {
 
 		auto& [ref, variable] = *it;
-
-		if ((variable->m_bSelfCapturing && variable->RefCount() == 0) || variable->Release()) {
-
-			if (m_oCaptures.empty()) // why is this needed???
-				break;
-
-			it = m_oCaptures.erase(it);
-		} else {
-			++it; 
+		
+		if (thisIsProblematic && variable->GetValue() == _this) {
+			it++;
+			continue;
 		}
+
+		assert(variable->RefCount());
+		if (!variable->GetValue() || variable->Release()) {
+			it = m_oCaptures.erase(it);
+			continue;
+		}
+		it++;
 	}
 }

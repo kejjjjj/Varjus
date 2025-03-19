@@ -64,14 +64,21 @@ IValue* CRuntimeFunction::Execute(CRuntimeContext* const ctx, [[maybe_unused]] I
 	}
 
 	for (auto& [index, variable] : func.m_oStack) {
-
 		//did this function capture this?
 		//don't free captured values or they get destroyed and the next calls to this function fail
-		if(!captures.contains(index))
+		
+		if (!captures.contains(index)) {
 			variable->Release();
+
+			if (variable->m_bSelfCapturing)
+				variable->Release();
+
+		}
+
+
 	}
 
-	assert(copy);
+	assert(copy && copy->GetAllocator());
 	return copy;
 }
 

@@ -44,3 +44,33 @@ IValue* TEST_ExecuteFile(const VarjusString& srcFile)
         return nullptr;
     }
 }
+
+IValue* TEST_ExecuteScript(const VarjusString& script)
+{
+    try {
+        //silly
+        static std::unique_ptr<Varjus::State> state;
+        state = std::make_unique<Varjus::State>();
+
+        if (!state->UseStdLibrary())
+            return nullptr;
+        fmt::print(STD_COUT, VSL("{}\n"), script);
+
+        const auto GetError = [](const std::optional<VarjusString>& errorMsg) {
+            return errorMsg ? *errorMsg : VSL("unknown error!");
+            };
+
+        if (!state->LoadScript(script)) {
+            fmt::print(STD_COUT, VSL("syntax error: {}\n"), GetError(state->GetErrorMessage()));
+            return nullptr;
+        }
+        return state->ExecuteScript();
+    }
+    catch (std::exception& ex) {
+        fmt::print(STD_COUT, VSL("\n\nERROR:\n{}\n\n"), ex.what());
+        return nullptr;
+    }
+    catch (...) {
+        return nullptr;
+    }
+}

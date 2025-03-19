@@ -208,3 +208,14 @@ TEST_CASE(("Array[4,2,6,3,1,5].for_each()")) {
 	REQUIRE(retVal->HasOwner() == false);
 	TEST_END(retVal);
 }
+TEST_CASE(("Array[1,2,3,4,5].accumulate(a + b, 0)")) {
+
+	auto retVal = TEST_ExecuteFile(JP(VSL("accumulate.var")));
+
+	REQUIRE(retVal != nullptr);
+	REQUIRE(retVal->Type() == t_int);
+	REQUIRE(retVal->ToInt() == 15);
+
+	REQUIRE(retVal->HasOwner() == false);
+	TEST_END(retVal);
+}

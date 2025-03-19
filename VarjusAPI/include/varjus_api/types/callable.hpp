@@ -32,7 +32,7 @@ public:
 	[[nodiscard]] auto GetCallable() noexcept { return m_pCallable; }
 	[[nodiscard]] auto GetCallable() const noexcept { return m_pCallable; }
 
-	void Release();
+	void Release(CCallableValue* const _this);
 
 	constexpr void SetModuleIndex(std::size_t mIndex) noexcept { m_uModule = mIndex; m_bRequiresModuleChange = true; }
 #ifndef RUNNING_TESTS

@@ -1,0 +1,4 @@
+fn main()
+{
+	return "This is some example text... and this is some more".replace("is", "was"); 
+}

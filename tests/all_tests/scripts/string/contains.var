@@ -1,0 +1,6 @@
+fn main()
+{
+	const src = "hello, world!";
+
+	return [src.contains("hello,"), src.contains("!"), src.contains("test")];
+}

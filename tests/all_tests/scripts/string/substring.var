@@ -1,0 +1,10 @@
+fn main()
+{
+	const str = "hello";
+
+	return [
+		str.substring(1, 3), // "el"
+		str.substring(2, str.length) // "llo"
+	];
+	
+}

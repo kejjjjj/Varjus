@@ -1,0 +1,4 @@
+fn main()
+{
+	return "HELLO".get_code_at(0); // 72
+}
