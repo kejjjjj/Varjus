@@ -19,7 +19,7 @@ FORWARD_DECLARE_METHOD(Push);
 FORWARD_DECLARE_METHOD(PushFront);
 FORWARD_DECLARE_METHOD(Pop);
 FORWARD_DECLARE_METHOD(PopFront);
-FORWARD_DECLARE_METHOD(Map);
+FORWARD_DECLARE_METHOD(Transform);
 FORWARD_DECLARE_METHOD(Find);
 FORWARD_DECLARE_METHOD(FindLast);
 FORWARD_DECLARE_METHOD(FindIndex);
@@ -46,7 +46,7 @@ std::unique_ptr<BuiltInMethod_t> CArrayValue::ConstructMethods(CProgramInformati
 	m_oMethods->AddMethod(VSL("push_front"),      PushFront,     1u);
 	m_oMethods->AddMethod(VSL("pop"),             Pop,           0u);
 	m_oMethods->AddMethod(VSL("pop_front"),       PopFront,      0u);
-	m_oMethods->AddMethod(VSL("map"),             Map,           1u);
+	m_oMethods->AddMethod(VSL("transform"),       Transform,     1u);
 	m_oMethods->AddMethod(VSL("find"),            Find,          1u);
 	m_oMethods->AddMethod(VSL("find_last"),       FindLast,      1u);
 	m_oMethods->AddMethod(VSL("find_index"),      FindIndex,     1u);
@@ -134,13 +134,13 @@ DEFINE_METHOD(PopFront, args)
 	return copy;
 }
 
-DEFINE_METHOD(Map, args)
+DEFINE_METHOD(Transform, args)
 {
 	assert(args.size() == 1);
 	auto& mapFunc = args.front();
 
 	if (!mapFunc->IsCallable())
-		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("array.map expected \"callable\", but got \"{}\""), mapFunc->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("array.transform expected \"callable\", but got \"{}\""), mapFunc->TypeAsString()));
 
 	auto __this = GetThisArray(_this);
 	auto& vars = __this->GetVariables();

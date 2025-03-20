@@ -198,14 +198,12 @@ DEFINE_METHOD(GetCodeAt, args) {
 	if (!idx->IsIntegral())
 		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("string.get_code_at expected an integral value, but got \"{}\""), idx->TypeAsString()));
 
-	const auto index = idx->ToInt();
+	const auto index = idx->ToUInt();
 
-	if (index < 0 || index >= static_cast<VarjusInt>(v.length()))
+	if (index >= v.length())
 		throw CRuntimeError(ctx->m_pRuntime, VSL("string.get_code_at index out of range"));
 
-	const auto asUnsigned = static_cast<std::size_t>(index);
-
-	return CIntValue::Construct(ctx->m_pRuntime, static_cast<VarjusInt>(v[asUnsigned]));
+	return CUIntValue::Construct(ctx->m_pRuntime, static_cast<VarjusUInt>(v[index]));
 }
 
 

@@ -80,9 +80,9 @@ TEST_CASE("HELLO.get_code_at(0)") {
 	auto retVal = TEST_ExecuteFile(JP(VSL("get_code_at.var")));
 
 	REQUIRE(retVal);
-	REQUIRE(retVal->Type() == t_int);
+	REQUIRE(retVal->Type() == t_uint);
 
-	REQUIRE(retVal->AsInt() == 72);
+	REQUIRE(retVal->AsUInt() == 72u);
 
 	REQUIRE(retVal->HasOwner() == false);
 	TEST_END(retVal);

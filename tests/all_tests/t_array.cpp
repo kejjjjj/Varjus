@@ -42,9 +42,9 @@ TEST_CASE(("Array[1..10].filter()")) {
 	REQUIRE(retVal->HasOwner() == false);
 	TEST_END(retVal);
 }
-TEST_CASE(("Array[1..5].map()")) {
+TEST_CASE(("Array[1..5].transform()")) {
 
-	auto retVal = TEST_ExecuteFile(JP(VSL("map.var")));
+	auto retVal = TEST_ExecuteFile(JP(VSL("transform.var")));
 
 	//false == undefined in this case
 	AssertArray(retVal, AssertArrayValue<ASSERT_INT>(t_int, { 2,4,6,8,10 }));
