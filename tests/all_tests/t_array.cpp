@@ -82,9 +82,9 @@ TEST_CASE(("Array[1..5].all()")) {
 	REQUIRE(retVal->HasOwner() == false);
 	TEST_END(retVal);
 }
-TEST_CASE(("Array[1..5].reversed()")) {
+TEST_CASE(("Array[1..5].reverse()")) {
 
-	auto retVal = TEST_ExecuteFile(JP(VSL("reversed.var")));
+	auto retVal = TEST_ExecuteFile(JP(VSL("reverse.var")));
 
 	AssertArray(retVal, AssertArrayValue<ASSERT_INT>(t_int, { 5,4,3,2,1 }));
 
@@ -147,7 +147,7 @@ TEST_CASE(("Array[1..6].find_index()")) {
 
 	auto retVal = TEST_ExecuteFile(JP(VSL("find_index.var")));
 
-	AssertArray(retVal, AssertArrayValue<ASSERT_INT>(t_int, { 4, -1 }));
+	AssertArray(retVal, AssertArrayValue<ASSERT_STRING>(t_string, { VSL("4"), VSL("undefined") }));
 
 	REQUIRE(retVal->HasOwner() == false);
 	TEST_END(retVal);
@@ -156,7 +156,7 @@ TEST_CASE(("Array[].find_last_index()")) {
 
 	auto retVal = TEST_ExecuteFile(JP(VSL("find_last_index.var")));
 
-	AssertArray(retVal, AssertArrayValue<ASSERT_INT>(t_int, { 7, -1 }));
+	AssertArray(retVal, AssertArrayValue<ASSERT_STRING>(t_string, { VSL("7"), VSL("undefined") }));
 
 	REQUIRE(retVal->HasOwner() == false);
 	TEST_END(retVal);

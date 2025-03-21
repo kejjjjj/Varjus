@@ -1,6 +1,6 @@
 fn reverseString(str)
 {
-	return str.split('').reversed().join('');
+	return str.split('').reverse().join('');
 }
 
 

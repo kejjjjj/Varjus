@@ -26,7 +26,7 @@ FORWARD_DECLARE_METHOD(FindIndex);
 FORWARD_DECLARE_METHOD(FindLastIndex);
 FORWARD_DECLARE_METHOD(Filter);
 FORWARD_DECLARE_METHOD(Contains);
-FORWARD_DECLARE_METHOD(Reversed);
+FORWARD_DECLARE_METHOD(Reverse);
 FORWARD_DECLARE_METHOD(Join);
 FORWARD_DECLARE_METHOD(All);
 FORWARD_DECLARE_METHOD(Any);
@@ -53,7 +53,7 @@ std::unique_ptr<BuiltInMethod_t> CArrayValue::ConstructMethods(CProgramInformati
 	m_oMethods->AddMethod(VSL("find_last_index"), FindLastIndex, 1u);
 	m_oMethods->AddMethod(VSL("filter"),          Filter,        1u);
 	m_oMethods->AddMethod(VSL("contains"),        Contains,      1u);
-	m_oMethods->AddMethod(VSL("reversed"),        Reversed,      0u);
+	m_oMethods->AddMethod(VSL("reverse"),         Reverse,       0u);
 	m_oMethods->AddMethod(VSL("join"),            Join,          1u);
 	m_oMethods->AddMethod(VSL("all"),             All,           1u);
 	m_oMethods->AddMethod(VSL("any"),             Any,           1u);
@@ -259,7 +259,7 @@ static inline IValue* FindTestValueIndex(CRuntimeContext* const ctx, IValue* con
 		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("array.find expected a boolean return value"), mapFunc->TypeAsString()));
 
 	if (thisIteration->ToBoolean()) {
-		result = CIntValue::Construct(ctx->m_pRuntime, static_cast<VarjusInt>(i));
+		result = CUIntValue::Construct(ctx->m_pRuntime, i);
 	}
 
 	thisIteration->Release(); // nothing meaningful, release it
@@ -302,7 +302,7 @@ static inline IValue* FindIndexInternal(CArrayValue* _this, CRuntimeContext* con
 	}
 
 	if (!result)
-		return CIntValue::Construct(ctx->m_pRuntime, -1); //didn't find, return -1
+		return IValue::Construct(ctx->m_pRuntime); //didn't find, return undefined
 
 	return result;
 }
@@ -390,7 +390,7 @@ DEFINE_METHOD(Contains, args)
 
 	return result;
 }
-DEFINE_METHOD(Reversed, args) {
+DEFINE_METHOD(Reverse, args) {
 	
 	auto __this = GetThisArray(_this);
 	auto& vars = __this->GetVariables();
@@ -541,8 +541,8 @@ DEFINE_METHOD(Slice, args) {
 	CheckSanity(a);
 	CheckSanity(b);
 
-	auto start = a->ToInt();
-	auto end = b->ToInt();
+	auto start = a->ToUInt();
+	auto end = b->ToUInt();
 
 	auto len = vars.size();
 
@@ -551,20 +551,19 @@ DEFINE_METHOD(Slice, args) {
 
 	end -= 1;
 
-	const auto CheckRange = [&len, &ctx](const auto value) {
-		if (value < 0 || value >= static_cast<VarjusInt>(len))
+	const auto CheckRange = [&len, &ctx](VarjusUInt value) {
+		if (value >= len)
 			throw CRuntimeError(ctx->m_pRuntime, VSL("array.slice index out of range"));
 	};
 
 	CheckRange(start);
 	CheckRange(end);
 
-
 	IValues valuesAsCopy;
 
 	end += 1;
 	for (auto i : std::views::iota(start, end))
-		valuesAsCopy.push_back(vars[static_cast<std::size_t>(i)]->GetValue()->Copy()); //THE CAST IS SAFE!!!
+		valuesAsCopy.push_back(vars[i]->GetValue()->Copy()); //THE CAST IS SAFE!!!
 
 	return CArrayValue::Construct(ctx->m_pRuntime, std::move(valuesAsCopy));
 }
@@ -640,17 +639,14 @@ DEFINE_METHOD(Sort, args)
 	IValues valuesAsCopy(vars.size());
 
 	for (auto i = size_t(0); auto & var : vars)
-		valuesAsCopy[i++] = var->GetValue();
+		valuesAsCopy[i++] = var->GetValue()->Copy();
 
 	IterativeQuickSort(ctx, valuesAsCopy, mapFunc);
 
 	if (ctx->m_pRuntime->ExceptionThrown())
 		return ctx->m_pRuntime->GetExceptionValue();
 
-	for (auto i = std::size_t(0); auto & v : vars)
-		std::swap(v->GetValue(), valuesAsCopy[i++]);
-
-	return __this->Copy();
+	return CArrayValue::Construct(ctx->m_pRuntime, std::move(valuesAsCopy));
 }
 
 DEFINE_METHOD(Resize, args)
@@ -665,12 +661,8 @@ DEFINE_METHOD(Resize, args)
 	auto __this = GetThisArray(_this);
 	auto& vars = __this->GetVariables();
 
-	auto intVal = value->ToInt();
+	auto uintval = value->ToUInt();
 
-	if(intVal < 0)
-		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("array.resize out of range < 0 ({})"), value->TypeAsString()));
-
-	const auto uintval = static_cast<std::size_t>(intVal);
 	const auto oldSize = vars.size();
 	if (uintval > oldSize) {
 		//allocate new 

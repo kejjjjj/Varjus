@@ -24,7 +24,7 @@ int main(int argc, char** argv)
     Varjus::State state;
 
     const auto GetError = [](const std::optional<VarjusString>& errorMsg) {
-        return errorMsg ? *errorMsg : VSL("unknown error!");
+        return errorMsg.value_or(VSL("unknown error!"));
     };
 
     if (!state.UseStdLibrary()) {

@@ -133,7 +133,17 @@ TEST_CASE(("Returns array length of [1,2,3] in variable context")) {
 	REQUIRE(retVal->HasOwner() == false);
 	TEST_END(retVal);
 }
+TEST_CASE(("Returns object length of {a: 0, b: 1, c: 2} in variable context")) {
 
+	auto retVal = TEST_ExecuteFile(JP(VSL("object_length.var")));
+
+	REQUIRE(retVal != nullptr);
+	REQUIRE(retVal->Type() == t_uint);
+	REQUIRE(retVal->ToUInt() == 3);
+
+	REQUIRE(retVal->HasOwner() == false);
+	TEST_END(retVal);
+}
 TEST_CASE(("Arrow function () => 2 in variable context")) {
 
 	auto retVal = TEST_ExecuteFile(JP(VSL("arrow_function.var")));

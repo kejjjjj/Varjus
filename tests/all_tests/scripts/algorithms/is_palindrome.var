@@ -1,5 +1,5 @@
 fn isPalindrome(str) {
-    return str === str.split('').reversed().join('');
+    return str === str.split('').reverse().join('');
 }
 
 fn main()
