@@ -25,17 +25,6 @@ if (Test-Path "$buildDir") {
 }
 
 # Select build type
-$choice = Read-Host "Enter 1 for Unicode or 2 for UTF8 (recommended)"
-switch ($choice) {
-    1 { $_unicode = "ON" }
-    2 { $_unicode = "OFF" }
-    default {
-        Write-Host "Invalid input. Defaulting to UTF8."
-        $_unicode = "OFF"
-    }
-}
-
-# Select build type
 $choice = Read-Host "Enter 1 for Release or 2 for Debug mode"
 switch ($choice) {
     1 { $type = "Release" }
@@ -52,6 +41,18 @@ switch ($choice) {
 $windows = $env:OS -eq "Windows_NT" -or $env:PROCESSOR_ARCHITECTURE -match "AMD64|x86"
 
 if ($windows) {
+
+    # Select build type
+    $choice = Read-Host "Enter 1 for Unicode or 2 for Multibyte"
+    switch ($choice) {
+        1 { $_unicode = "ON" }
+        2 { $_unicode = "OFF" }
+        default {
+            Write-Host "Invalid input. Defaulting to Multibyte."
+            $_unicode = "OFF"
+        }
+    }
+
     $archChoice = Read-Host "Enter 1 for x64 or 2 for x86"
     switch ($archChoice) {
         1 { $arch = "x64" }

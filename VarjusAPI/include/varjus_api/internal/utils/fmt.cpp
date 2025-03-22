@@ -13,9 +13,28 @@
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #endif
 
-std::u16string LocaleConverter::utf8_to_u16string(const std::string& string) {
+#ifdef _WIN32
+#include <Windows.h>
+#endif
+
+
+std::u16string LocaleConverter::utf8_to_u16string(const std::string& utf8_str) {
+    std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> converter;
+    return converter.from_bytes(utf8_str);
+}
+
+std::u16string LocaleConverter::ansi_to_u16string(const std::string& string) {
+#ifdef _WIN32
+    // Windows: Convert from ANSI (system code page) to UTF-16
+    int len = MultiByteToWideChar(CP_ACP, 0, string.c_str(), -1, nullptr, 0);
+    std::u16string result(static_cast<char16_t>(len - 1), 0);
+    MultiByteToWideChar(CP_ACP, 0, string.c_str(), -1, reinterpret_cast<wchar_t*>(&result[0]), len);
+    return result;
+#else
+    // Linux/macOS: Assume ANSI is UTF-8 and convert
     std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> converter;
     return converter.from_bytes(string);
+#endif
 }
 std::u16string LocaleConverter::utf16le_to_u16string(const std::string& utf16le_data) {
     if (utf16le_data.size() % 2 != 0) {
@@ -42,9 +61,18 @@ std::u16string LocaleConverter::utf16be_to_u16string(const std::string& utf16be_
 
     return u16str;
 }
-std::string LocaleConverter::u16string_to_utf8(const std::u16string& u16str) {
+std::string LocaleConverter::u16string_to_ansi(const std::u16string& u16str) {
+#ifdef _WIN32
+    // Windows: Convert from UTF-16 to ANSI (system code page)
+    int len = WideCharToMultiByte(CP_ACP, 0, reinterpret_cast<const wchar_t*>(u16str.c_str()), -1, nullptr, 0, nullptr, nullptr);
+    std::string result(static_cast<char16_t>(len - 1), 0);
+    WideCharToMultiByte(CP_ACP, 0, reinterpret_cast<const wchar_t*>(u16str.c_str()), -1, &result[0], len, nullptr, nullptr);
+    return result;
+#else
+    // Linux/macOS: Assume ANSI is UTF-8 and convert
     std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> converter;
     return converter.to_bytes(u16str);
+#endif
 }
 std::wstring LocaleConverter::u16string_to_wstring(const std::u16string& u16str) {
     return std::wstring(u16str.begin(), u16str.end());

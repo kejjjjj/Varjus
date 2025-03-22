@@ -27,20 +27,19 @@ struct IOReader : public IOItem
 {
     IOReader(const VarjusString& filename, bool in_binary_mode) : IOItem(filename, in_binary_mode) {}
 
-    [[nodiscard]] virtual std::optional<VarjusString> IO_Read(/*size_t num_bytes = std::numeric_limits<size_t>::max()*/) const;
+    [[nodiscard]] virtual std::optional<VarjusString> IO_Read(EncodingType type = e_unknown) const;
 
 private:
-    [[nodiscard]] VarjusString IO_ReadStream(STD_IFSTREAM& stream) const;
+    [[nodiscard]] VarjusString IO_ReadStream(std::ifstream& stream, EncodingType type=e_unknown) const;
 
 };
 
-#ifdef __linux__
-#define DIRECTORY_SEPARATOR VSL("/")
-#define DIRECTORY_SEPARATOR_CHAR VarjusChar('/')
-#else
+#ifdef _WIN32
 #define DIRECTORY_SEPARATOR VSL("\\")
 #define DIRECTORY_SEPARATOR_CHAR VarjusChar('\\')
-
+#else
+#define DIRECTORY_SEPARATOR VSL("/")
+#define DIRECTORY_SEPARATOR_CHAR VarjusChar('/')
 #endif
 
 //these don't belong here but whatever

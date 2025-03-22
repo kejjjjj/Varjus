@@ -47,7 +47,7 @@ Success CBufferTokenizer::Tokenize()
 		m_oTokens.emplace_back(std::forward<std::unique_ptr<CToken>&&>(token));
 
 	//for (const auto& t : m_oTokens)
-	//	STD_COUT << t->m_sSource << '\n';
+	//	std::cout << t->m_sSource << '\n';
 
 	return m_oTokens.size() > 0u ? success : failure;
 }
@@ -358,8 +358,8 @@ Success CBufferTokenizer::ReadHex(CToken& token)
 
 	try {
 #ifdef UNICODE
-		auto utf8Hex = LocaleConverter::u16string_to_utf8(hexStr);
-		auto intValue = std::stoll(utf8Hex, nullptr, 16);
+		auto ansiHex = LocaleConverter::u16string_to_ansi(hexStr);
+		auto intValue = std::stoll(ansiHex, nullptr, 16);
 #else
 		auto intValue = std::stoll(hexStr, nullptr, 16);
 #endif
@@ -369,8 +369,8 @@ Success CBufferTokenizer::ReadHex(CToken& token)
 		try {
 
 #ifdef UNICODE
-			auto utf8Hex = LocaleConverter::u16string_to_utf8(hexStr);
-			auto uintValue = std::stoull(utf8Hex, nullptr, 16);
+			auto ansiHex = LocaleConverter::u16string_to_ansi(hexStr);
+			auto uintValue = std::stoull(ansiHex, nullptr, 16);
 #else
 			auto uintValue = std::stoull(hexStr, nullptr, 16);
 #endif
@@ -655,28 +655,6 @@ std::unique_ptr<CToken> CBufferTokenizer::ReadPunctuation() noexcept
 	return nullptr;
 }
 
-#ifdef UNICODE
-VarjusString CBufferTokenizer::FixLittleEndianness(const VarjusString& src)
-{
-	if (src.length() % 2 != 0)
-		throw std::runtime_error("corrupted eof byte in file");
-
-	VarjusString fixed;
-
-	for (auto it = src.begin(); it != src.end(); it += 2) {
-
-		if (*std::next(it) == '\0') {
-			fixed.push_back(*it);
-			continue;
-		}
-		auto combined = static_cast<VarjusChar>((*it << 8) | static_cast<VarjusChar>(*std::next(it)));
-		fixed.push_back(combined);
-	}
-
-	return fixed;
-}
-#endif
-
 /***********************************************************************
  > 
 ***********************************************************************/
@@ -688,13 +666,18 @@ std::vector<std::unique_ptr<CToken>> CBufferTokenizer::ParseFileFromFilePath(CPr
 	}
 
 	const auto reader = IOReader(filePath, true);
-	auto fileBuf = reader.IO_Read();
+	auto fileBuf = reader.IO_Read(encoding);
 
 	if (!fileBuf) {
 		program->PushError(VSL("couldn't read the file buffer"));
 		return {};
 	}
-	
+#ifndef _WIN32
+	if (encoding == e_ansi) {
+		encoding = e_utf8;
+	}
+#endif
+
 	if (encoding == e_auto) {
 		encoding = reader.GetEncoding();
 
@@ -705,21 +688,20 @@ std::vector<std::unique_ptr<CToken>> CBufferTokenizer::ParseFileFromFilePath(CPr
 	}
 #ifdef UNICODE
 	switch (encoding) {
-	case e_auto:
-		assert(false);
-		break;
+	case e_ansi:
 	case e_utf8:
 	case e_utf16le:
 	case e_utf16be:
 		break;
 	case e_unknown:
+	case e_auto:
 	default:
 		program->PushError(fmt::format(VSL("encoding type not specified for \"{}\""), filePath));
 		return {};
 	}
 #else
-	if (encoding != e_utf8) {
-		program->PushError(fmt::format(VSL("the utf8 build of Varjus does not support this encoding for the file\n\"{}\""), filePath));
+	if (encoding != e_ansi && encoding != e_utf8) {
+		program->PushError(fmt::format(VSL("the ansi build of Varjus does not support this encoding for the file\n\"{}\""), filePath));
 		return {};
 	}
 #endif
@@ -734,7 +716,7 @@ std::vector<std::unique_ptr<CToken>> CBufferTokenizer::ParseFileFromFilePath(CPr
 	auto tokenizer = CBufferTokenizer(program, *fileBuf);
 
 	if (!tokenizer.Tokenize()) {
-		program->PushError(VSL("the input file didn't have any parseable tokens"));
+		program->PushError(VSL("the input file didn't have any parseable tokens. Wrong encoding?"));
 		return {};
 	}
 

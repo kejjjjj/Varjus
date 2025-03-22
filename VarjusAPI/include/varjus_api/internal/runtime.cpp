@@ -33,7 +33,7 @@ concept PrintableValue = VariableT<T> || IValueChild<T>;
 template<PrintableValue T>
 void PrintLeaks(CProgramRuntime* _this, const VarjusString& name) {
 	if(const auto count = _this->GetPool<T>().GetInUseCount())
-		fmt::print(STD_CERR, VSL("LEAK -> {}: {}\n"), name, count);
+		fmt::print(std::cerr, VSL("LEAK -> {}: {}\n"), name, count);
 }
 
 template<PrintableValue T>

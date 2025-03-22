@@ -22,14 +22,12 @@ enum EValueType : unsigned char
 
 enum EncodingType : signed char 
 { 
-	// !!! don't use me !!!
-	e_unknown, 
+	e_unknown,       // Encoding is unknown  
+	e_auto,          // Try to auto-detect encoding (BOM-based)  
 
-	//automatically determine the encoding (requires that the input stream has a byte order mark)
-	e_auto, 
-
-	e_utf8, 
-	e_utf16le, 
-	e_utf16be 
+	e_ansi,          // Windows: system code page | Linux/macOS: assume UTF-8  
+	e_utf8,          // UTF-8 without BOM  
+	e_utf16le,       // UTF-16 Little Endian  
+	e_utf16be,       // UTF-16 Big Endian  
 
 };

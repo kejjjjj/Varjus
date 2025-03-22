@@ -32,7 +32,7 @@ if(USE_UNICODE STREQUAL "ON")
     message(STATUS "Building with Unicode")
 else()
     remove_definitions(UNICODE _UNICODE)
-    message(STATUS "Building with UTF8")
+    message(STATUS "Building with ASCII")
 endif()
 
 

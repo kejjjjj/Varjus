@@ -81,7 +81,7 @@ Success Varjus::State::LoadScriptFromFile(const VarjusString& fullFilePath, Enco
 
     return failure;
 }
-Success Varjus::State::LoadScript(VarjusString script, EncodingType encoding)
+Success Varjus::State::LoadScript(const VarjusString& script)
 {
     if (!m_pLinter || !m_pLinter->m_oBuiltInObjects) {
         m_sErrorMessage = VSL("Varjus::State::LoadScript(): no linter context... did you forget to create a new state?");
@@ -89,28 +89,6 @@ Success Varjus::State::LoadScript(VarjusString script, EncodingType encoding)
     }
 
     try {
-        switch (encoding) {
-        case e_auto:
-        case e_unknown:
-            m_sErrorMessage = VSL("Varjus::State::LoadScript(): don't use e_auto or e_unknown as the encoding type");
-            return failure;
-        case e_utf8:
-            break;
-#ifdef UNICODE
-        case e_utf16le:
-            script = CBufferTokenizer::FixLittleEndianness(script);
-            break;
-        case e_utf16be:
-            script = CBufferTokenizer::FixLittleEndianness(script.substr(1) + VSL('\0'));
-            break;
-#else
-        case e_utf16le:
-        case e_utf16be:
-#endif
-        default:
-            m_sErrorMessage = VSL("Varjus::State::LoadScript(): unsupported encoding");
-            return failure;
-        }
         CBufferTokenizer buffer(m_pLinter.get(), script);
 
         if (!buffer.Tokenize()) {
@@ -186,7 +164,7 @@ IValue* Varjus::State::ExecuteScript()
     return nullptr;
 
 }
-std::optional<VarjusString> Varjus::State::GetErrorMessage() {
+std::optional<VarjusString> Varjus::State::GetErrorMessage() const noexcept {
     return m_sErrorMessage.size() ? std::make_optional<VarjusString>(m_sErrorMessage) : std::nullopt;
 }
 

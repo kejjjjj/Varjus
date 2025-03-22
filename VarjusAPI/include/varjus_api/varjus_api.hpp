@@ -32,24 +32,23 @@ namespace Varjus
 
         //This function expects a full file path, not a relative one
         //When using e_auto (unicode builds), make sure that the file has the BOM
-        VARJUS_API __ND Success LoadScriptFromFile(const VarjusString& fullFilePath, EncodingType locale = e_utf8);
+        VARJUS_API __ND Success LoadScriptFromFile(const VarjusString& fullFilePath, EncodingType characterSet);
 
         //This function expects a script
         //It should be noted that modules cannot be used as there is no working directory
-        VARJUS_API __ND Success LoadScript(VarjusString script, EncodingType locale = e_utf8);
+        VARJUS_API __ND Success LoadScript(const VarjusString& script);
 
         //Call me after you have loaded a script with LoadScriptFromFile or LoadScript
         //Don't do any memory management to the return value as it's managed by the API
         VARJUS_API __ND IValue* ExecuteScript();
 
         //When a function doesn't return a success
-        VARJUS_API __ND std::optional<VarjusString> GetErrorMessage();
+        VARJUS_API __ND std::optional<VarjusString> GetErrorMessage() const noexcept;
 
         //Declare a new global variable with its custom methods and properties (callbacks)
-        VARJUS_API __ND Success AddNewStaticObject(const VarjusString& name,
-            const OptionalCtor<void>& constructor = std::nullopt);
+        VARJUS_API __ND Success AddNewStaticObject(const VarjusString& name, const OptionalCtor<void>& constructor);
 
-        //When this function is referenced in code, it calls the callback
+        //Declare a C++ function that can be called from the script
         VARJUS_API __ND Success AddNewCallback(const VarjusString& name, const Function_t& callback, std::size_t numArgs);
 
     private: // All of this is managed by the class, so there should never be a need to publicly access these :)
