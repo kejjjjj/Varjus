@@ -1,8 +1,5 @@
-
 fn main()
 {
-    let ää = [1];
-    
-    return ää[0] = 2;
-
+    const ää = "hello";
+    return ää;
 }

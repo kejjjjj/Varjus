@@ -98,16 +98,16 @@ int main(int argc, char** argv)
         fmt::print(std::cout, VSL("{}\n"), s);
 
     if (argvs.size() < 2) {
-        fmt::print(std::cerr, VSL("couldn't convert argv to unicode\n"));
+        fmt::print(std::cerr, VSL("couldn't convert argvs to char16_t strings\n"));
         return 0;
     }
-    if (!state.LoadScriptFromFile(argvs[1], e_auto)) {
+    if (!state.LoadScriptFromFile(argvs[1], e_utf8)) {
         fmt::print(std::cerr, VSL("{}\n"), GetError(state.GetErrorMessage()));
         return 0;
     }
 
 #else
-    if (!state.LoadScriptFromFile(argv[1], e_auto)) {
+    if (!state.LoadScriptFromFile(argv[1], e_utf8)) {
         fmt::print(std::cerr, VSL("{}\n"), GetError(state.GetErrorMessage()));
         return 0;
     }

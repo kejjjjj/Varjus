@@ -35,23 +35,21 @@ switch ($choice) {
     }
 }
 
-
+# Select build type
+$choice = Read-Host "Enter 1 for char16_t or 2 for char (recommended when you don't need weird characters)"
+switch ($choice) {
+    1 { $_unicode = "ON" }
+    2 { $_unicode = "OFF" }
+    default {
+        Write-Host "Invalid input. Defaulting to char."
+        $_unicode = "OFF"
+    }
+}
 
 # Detect Windows
 $windows = $env:OS -eq "Windows_NT" -or $env:PROCESSOR_ARCHITECTURE -match "AMD64|x86"
 
 if ($windows) {
-
-    # Select build type
-    $choice = Read-Host "Enter 1 for Unicode or 2 for Multibyte"
-    switch ($choice) {
-        1 { $_unicode = "ON" }
-        2 { $_unicode = "OFF" }
-        default {
-            Write-Host "Invalid input. Defaulting to Multibyte."
-            $_unicode = "OFF"
-        }
-    }
 
     $archChoice = Read-Host "Enter 1 for x64 or 2 for x86"
     switch ($archChoice) {
@@ -69,4 +67,4 @@ if ($windows) {
     cmake --build "$buildDir"
 }
 
-Write-Host "Build completed for '$targetPath' in $type mode."
+Write-Host "Process completed for '$targetPath' in $type mode."

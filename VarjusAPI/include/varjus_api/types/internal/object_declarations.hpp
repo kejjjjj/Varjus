@@ -38,6 +38,10 @@ using Property_t = IValue*(*)(struct CRuntimeContext* const, IValue*);
 
 #define VARJUS_DEFINE_STATIC_OBJECT(Name, receiver)\
 void Name(ObjectDeclaration_t& receiver)
+#define VARJUS_DEFINE_PROPERTY(Name, ctx, _this)\
+IValue* Name(struct CRuntimeContext* const ctx, [[maybe_unused]] IValue* _this)
+#define VARJUS_DEFINE_METHOD(Name, ctx, _this, args)\
+IValue* Name(struct CRuntimeContext* const ctx, [[maybe_unused]] IValue* _this, [[maybe_unused]] const IValues& args)
 
 #include "varjus_api/internal/structure.hpp"
 
