@@ -49,6 +49,9 @@ void CCallableValue::Release()
 }
 IValue* CCallableValue::Call(CRuntimeContext* const ctx, const IValues& args)
 {
+	if (ctx->m_pRuntime->ExceptionThrown())
+		return ctx->m_pRuntime->GetExceptionValue();
+
 	auto internal = Internal();
 	auto callable = internal->GetCallable();
 

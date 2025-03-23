@@ -29,10 +29,8 @@ add_executable(Varjus ${PROJECT_SOURCES})
 
 if(USE_UNICODE STREQUAL "ON")
     add_compile_definitions(UNICODE=1 _UNICODE=1 UNICODE)
-    message(STATUS "Building with Unicode")
 else()
     remove_definitions(UNICODE _UNICODE)
-    message(STATUS "Building with ansi")
 endif()
 
 # Add the root directory as an include directory

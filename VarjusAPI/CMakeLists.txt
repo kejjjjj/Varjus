@@ -30,10 +30,8 @@ add_library(VarjusAPI STATIC ${API_SOURCES})
 
 if(USE_UNICODE STREQUAL "ON")
     add_compile_definitions(UNICODE=1 _UNICODE=1 UNICODE)
-    message(STATUS "Building with Unicode")
 else()
     remove_definitions(UNICODE _UNICODE)
-    message(STATUS "Building with ASCII")
 endif()
 
 # Set include directories

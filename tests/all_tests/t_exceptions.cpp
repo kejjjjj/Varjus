@@ -115,3 +115,25 @@ TEST_CASE(("function throws and catches it"))
 	REQUIRE(retVal->HasOwner() == false);
 	TEST_END(retVal);
 }
+TEST_CASE(("Assigning an exception"))
+{
+	auto retVal = TEST_ExecuteFile(JP(VSL("assign_an_exception.var")));
+
+	REQUIRE(retVal != nullptr);
+	REQUIRE(retVal->Type() == t_string);
+	REQUIRE(retVal->ToString() == VSL("exception!"));
+
+	REQUIRE(retVal->HasOwner() == false);
+	TEST_END(retVal);
+}
+TEST_CASE(("Assigning an exception2"))
+{
+	auto retVal = TEST_ExecuteFile(JP(VSL("assign_an_exception2.var")));
+
+	REQUIRE(retVal != nullptr);
+	REQUIRE(retVal->Type() == t_string);
+	REQUIRE(retVal->ToString() == VSL("exception!2"));
+
+	REQUIRE(retVal->HasOwner() == false);
+	TEST_END(retVal);
+}

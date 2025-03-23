@@ -62,7 +62,9 @@ Success CTryCatchStatementLinter::ParseCatchStatement()
 	assert(!m_pThisScope->IsGlobalScope());
 	auto var = m_pOwner->m_VariableManager->DeclareVariable((*m_iterPos)->Source());
 	assert(var);
-	m_uCatchVariable = *var;
+	m_uCatchVariable.m_bBelongsToDifferentModule = var->m_bBelongsToDifferentModule;
+	m_uCatchVariable.m_uIndex = var->m_uIndex;
+	m_uCatchVariable.m_uModuleIndex = var->m_uModuleIndex;
 
 	std::advance(m_iterPos, 1);
 	if (IsEndOfBuffer() || !(*m_iterPos)->IsOperator(p_par_close)) {

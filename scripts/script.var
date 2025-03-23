@@ -1,5 +1,21 @@
+fn decodePath(path)
+{
+    if(typeof path !== "string")
+        throw `decodePath(): path was "${typeof path}" instead of "string"`;
+
+    return path.split("/");
+}
+
 fn main()
 {
-    const ää = "hello";
-    return ää;
+
+    try{
+        console.log(decodePath("C:/yea/yea2/yea3"));
+        console.log("LOG: " + decodePath([1,2,3]));
+        console.log(decodePath("C:/yea/yea2/yea3"));
+    }catch(ex){
+        console.log("ERROR: ", ex);
+    }
+    
+    return 0;
 }

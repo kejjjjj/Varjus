@@ -28,18 +28,18 @@ int main(int argc, char** argv)
 
     if (!state.UseStdLibrary()) {
         fmt::print(std::cerr, VSL("state error: {}\n"), GetError(state.GetErrorMessage()));
-        return 0;
+        return 1;
     }
 
 #if _UC
     if (!state.LoadScriptFromFile(reinterpret_cast<char16_t*>(argv[1]), e_utf8)) {
         fmt::print(std::cerr, VSL("{}\n"), GetError(state.GetErrorMessage()));
-        return 0;
+        return 1;
     }
 #else
     if (!state.LoadScriptFromFile(argv[1], e_utf8)) {
         fmt::print(std::cerr, VSL("{}\n"), GetError(state.GetErrorMessage()));
-        return 0;
+        return 1;
     }
 #endif
 
@@ -48,7 +48,7 @@ int main(int argc, char** argv)
     }
     else {
         fmt::print(std::cerr, VSL("runtime error: {}\n"), GetError(state.GetErrorMessage()));
-        return 0;
+        return 1;
     }
 
     return 0;
@@ -77,7 +77,7 @@ int main(int argc, char** argv)
 {
     if (argc != 2) {
         fmt::print(std::cerr, VSL("usage: <file path>\n"));
-        return 0;
+        return 1;
     }
 
     Varjus::State state;
@@ -88,28 +88,25 @@ int main(int argc, char** argv)
 
     if (!state.UseStdLibrary()) {
         fmt::print(std::cerr, VSL("state error: {}\n"), GetError(state.GetErrorMessage()));
-        return 0;
+        return 1;
     }
 
 #if _UC
     auto argvs = ConvertArgvToWide(argc, argv);
 
-    for(const auto& s : argvs)
-        fmt::print(std::cout, VSL("{}\n"), s);
-
     if (argvs.size() < 2) {
         fmt::print(std::cerr, VSL("couldn't convert argvs to char16_t strings\n"));
-        return 0;
+        return 1;
     }
     if (!state.LoadScriptFromFile(argvs[1], e_utf8)) {
         fmt::print(std::cerr, VSL("{}\n"), GetError(state.GetErrorMessage()));
-        return 0;
+        return 1;
     }
 
 #else
     if (!state.LoadScriptFromFile(argv[1], e_utf8)) {
         fmt::print(std::cerr, VSL("{}\n"), GetError(state.GetErrorMessage()));
-        return 0;
+        return 1;
     }
 #endif
 
@@ -118,7 +115,7 @@ int main(int argc, char** argv)
     }
     else {
         fmt::print(std::cerr, VSL("runtime error: {}\n"), GetError(state.GetErrorMessage()));
-        return 0;
+        return 1;
     }
 
     return 0;

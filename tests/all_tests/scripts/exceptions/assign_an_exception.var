@@ -1,0 +1,20 @@
+fn decodePath(path)
+{
+    if(typeof path !== "string")
+        throw `exception!`;
+
+    return path.split("/");
+}
+
+fn main()
+{
+    let s = "aa";
+    try{
+        s = decodePath([1,2,3]);
+        s = "weird";
+    }catch(ex){
+        s = ex;
+    }
+    
+    return s;
+}

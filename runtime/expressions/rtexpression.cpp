@@ -41,6 +41,7 @@ IValue* CRuntimeExpression::Evaluate(CRuntimeContext* const ctx, const AbstractS
 	if (ctx->m_pRuntime->ExceptionThrown())
 		return ctx->m_pRuntime->GetExceptionValue();
 
+	assert(ctx->m_pRuntime->GetExceptionValue() == nullptr);
 	assert(node != nullptr);
 	ctx->m_pRuntime->SetExecutionPosition(&node->GetCodePosition());
 
@@ -65,6 +66,11 @@ IValue* CRuntimeExpression::Evaluate(CRuntimeContext* const ctx, const AbstractS
 	auto lhs = Evaluate(ctx, node->left.get());
 	auto rhs = Evaluate(ctx, node->right.get());
 
+	if (ctx->m_pRuntime->ExceptionThrown()) {
+		if (lhs != ctx->m_pRuntime->GetExceptionValue() && !lhs->HasOwner())
+			lhs->Release();
+		return ctx->m_pRuntime->GetExceptionValue();
+	}
 	assert(node->IsOperator());
 
 	auto& func = m_oOperatorTable[static_cast<std::size_t>(node->GetOperator()->m_ePunctuation)];
@@ -75,8 +81,7 @@ IValue* CRuntimeExpression::Evaluate(CRuntimeContext* const ctx, const AbstractS
 	IValue* result = func(ctx->m_pRuntime, lhs, rhs);
 
 	if (!lhs->HasOwner()) lhs->Release();
-	if (!rhs->HasOwner()) 
-		rhs->Release();
+	if (!rhs->HasOwner()) rhs->Release();
 
 	assert(result != nullptr);
 
