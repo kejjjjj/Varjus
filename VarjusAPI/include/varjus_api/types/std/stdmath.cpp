@@ -1,4 +1,4 @@
-#include "math.hpp"
+#include "stdmath.hpp"
 
 #include "varjus_api/types/types.hpp"
 #include "varjus_api/types/operators/default_operators.hpp"

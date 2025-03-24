@@ -1,0 +1,8 @@
+fn main()
+{
+	return [
+		number.stou("2", 10),
+		number.stou("-1", 10),
+		number.stou("0xff", 16)
+	];
+}

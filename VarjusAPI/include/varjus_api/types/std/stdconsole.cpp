@@ -1,4 +1,4 @@
-#include "console.hpp"
+#include "stdconsole.hpp"
 #include "varjus_api/types/object.hpp"
 
 #include "varjus_api/internal/structure.hpp"

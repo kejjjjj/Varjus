@@ -7,8 +7,13 @@
 #include "linter/tokenizer.hpp"
 #include "varjus_api/internal/runtime.hpp"
 #include "varjus_api/internal/structure.hpp"
-#include "types/std/console.hpp"
-#include "types/std/math.hpp"
+#include "types/std/stdconsole.hpp"
+#include "types/std/stdmath.hpp"
+#include "types/std/stdnumber.hpp"
+#include "types/std/stdregex.hpp"
+#include "types/std/stddate.hpp"
+#include "types/std/stdfs.hpp"
+
 #include "types/internal/object_declarations.hpp"
 #include "types/internal/callbacks.hpp"
 #include "runtime/exceptions/exception.hpp"
@@ -42,6 +47,10 @@ Success Varjus::State::UseStdLibrary()
 
     m_pLinter->m_oBuiltInObjects->AddNewStaticObject(VSL("console"), CConsoleValue::Construct);
     m_pLinter->m_oBuiltInObjects->AddNewStaticObject(VSL("math"), CMathValue::Construct);
+    m_pLinter->m_oBuiltInObjects->AddNewStaticObject(VSL("number"), CStdNumberValue::Construct);
+    m_pLinter->m_oBuiltInObjects->AddNewStaticObject(VSL("regex"), CStdRegex::Construct);
+    m_pLinter->m_oBuiltInObjects->AddNewStaticObject(VSL("date"), CStdDateValue::Construct);
+    m_pLinter->m_oBuiltInObjects->AddNewStaticObject(VSL("fs"), CStdFsValue::Construct);
 
     return success;
 }

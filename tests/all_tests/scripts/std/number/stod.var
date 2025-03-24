@@ -1,0 +1,8 @@
+fn main()
+{
+	return [
+		number.stod("2"),
+		number.stod("-2.22"),
+		number.stod("2.22")
+	];
+}

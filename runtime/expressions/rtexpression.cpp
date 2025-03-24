@@ -159,7 +159,7 @@ IValue* CRuntimeExpression::EvaluateLeaf(CRuntimeContext* const ctx, const Abstr
 	}
 
 	if (node->IsObject()) {
-		return CObjectValue::Construct(ctx->m_pRuntime, ctx->m_pModule->GetIndex(), EvaluateObject(ctx, node->GetObject()->m_oAttributes));
+		return CObjectValue::_ConstructInternal(ctx->m_pRuntime, EvaluateObject(ctx, node->GetObject()->m_oAttributes));
 	}
 
 	if (node->IsConstant()) {

@@ -1,0 +1,8 @@
+fn main()
+{
+	return [
+		number.stoi("2", 10),
+		number.stoi("-2", 10),
+		number.stoi("0xff", 0x10)
+	];
+}

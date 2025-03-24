@@ -25,7 +25,7 @@ public:
 
 	void Release();
 
-	void Set(std::size_t moduleIndex, ObjectInitializer&& v);
+	void Set(ObjectInitializer&& v);
 	constexpr auto& Get() noexcept { return m_oValue; }
 	constexpr auto& Get() const noexcept { return m_oValue; }
 
@@ -39,13 +39,17 @@ protected:
 	CAggregate m_oValue;
 };
 
+using ObjectValues = VectorOf<std::pair<IValue*, IValue*>>;
+
 class CObjectValue : public CValue<CInternalObjectValue>
 {
 public:
 	CObjectValue() = default;
 	~CObjectValue();
 
-	[[nodiscard]] static CObjectValue* Construct(CProgramRuntime* const runtime, std::size_t moduleIndex, ObjectInitializer&& values);
+	[[nodiscard]] static CObjectValue* Construct(CProgramRuntime* const runtime, ObjectValues&& values);
+	[[nodiscard]] static CObjectValue* _ConstructInternal(CProgramRuntime* const runtime, ObjectInitializer&& values);
+
 	[[nodiscard]] static std::unique_ptr<struct BuiltInMethod_t> ConstructMethods(class CProgramInformation* const info);
 	[[nodiscard]] static std::unique_ptr<struct BuiltInProperty_t> ConstructProperties(class CProgramInformation* const info); 
 
@@ -64,6 +68,7 @@ public:
 
 	[[nodiscard]] IValue* Index(IValue* index) override;
 	[[nodiscard]] virtual IValue* GetAggregate(CRuntimeContext* const ctx, std::size_t memberIdx) override;
+	void AddAttribute(IValue* const key, IValue* value);
 
 	[[nodiscard]] CObjectValue* ToObject() override { return this; }
 

@@ -84,17 +84,6 @@ static auto GetAttribute(CObjectValue* obj, IValue* const key)
 	const auto& aggregate = obj->Internal()->GetAggregateValue();
 	return aggregate.Get(key->ValueAsString());
 }
-static void AddAttribute(CObjectValue* obj, IValue* const key, IValue* value)
-{
-	auto& aggregate = obj->Internal()->GetAggregateValue();
-
-	auto members = obj->Internal()->GetAllRuntimeMembers();
-	assert(members);
-
-	//insert the member if necessary
-	auto var = aggregate.AddAttribute((*members)[key->ValueAsString()]);
-	var->SetValue(value->Copy());
-}
 
 DEFINE_METHOD(Object_Set, args)
 {
@@ -109,7 +98,7 @@ DEFINE_METHOD(Object_Set, args)
 		auto var = objKey->GetOwner();
 		var->SetValue(value->Copy());
 	} else {
-		 AddAttribute(__this, key, value);
+		__this->AddAttribute(key, value);
 	}
 
 	return __this->Copy();

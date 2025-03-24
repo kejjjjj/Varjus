@@ -14,14 +14,43 @@
 
 CObjectValue::~CObjectValue() = default;
 
-CObjectValue* CObjectValue::Construct(CProgramRuntime* const runtime, std::size_t moduleIndex, ObjectInitializer&& values)
+void CObjectValue::AddAttribute(IValue* const key, IValue* value)
+{
+	auto& aggregate = Internal()->GetAggregateValue();
+
+	auto members = Internal()->GetAllRuntimeMembers();
+	assert(members);
+
+	//insert the member if necessary
+	auto var = aggregate.AddAttribute((*members)[key->ValueAsString()]);
+	var->SetValue(value->Copy());
+}
+CObjectValue* CObjectValue::Construct(CProgramRuntime* const runtime, ObjectValues&& values)
 {
 	auto ptr = runtime->AcquireNewValue<CObjectValue>();
 	ptr->MakeShared();
 	auto internal = ptr->Internal();
 	internal->GetAggregateValue().SetAllocator(runtime);
 	internal->GetAggregateValue().SetRuntimeInformation(&runtime->GetInformation()->m_oAllMembers);
-	internal->Set(moduleIndex, std::move(values));
+
+	for (auto&& [k, v] : values) {
+		ptr->AddAttribute(k, v);
+
+		k->Release();
+		v->Release();
+	}
+
+	return ptr;
+}
+
+CObjectValue* CObjectValue::_ConstructInternal(CProgramRuntime* const runtime, ObjectInitializer&& values)
+{
+	auto ptr = runtime->AcquireNewValue<CObjectValue>();
+	ptr->MakeShared();
+	auto internal = ptr->Internal();
+	internal->GetAggregateValue().SetAllocator(runtime);
+	internal->GetAggregateValue().SetRuntimeInformation(&runtime->GetInformation()->m_oAllMembers);
+	internal->Set(std::move(values));
 	return ptr;
 }
 
@@ -108,9 +137,8 @@ void CInternalObjectValue::Release()
 {
 	GetAggregateValue().Release();
 }
-void CInternalObjectValue::Set(std::size_t moduleIndex, ObjectInitializer&& v) {
+void CInternalObjectValue::Set(ObjectInitializer&& v) {
 
-	m_oValue.SetModuleIndex(moduleIndex);
 	for (auto& [key, value] : v) {
 		m_oValue.AddAttribute(key, value);
 	}

@@ -14,9 +14,8 @@
 #include <cassert>
 #include <stdexcept>
 
-void CAggregate::Setup(CProgramRuntime* const runtime, std::size_t moduleIndex, const std::vector<ElementIndex>& elements){
+void CAggregate::Setup(CProgramRuntime* const runtime, const std::vector<ElementIndex>& elements){
 	m_pAllocator = runtime;
-	SetModuleIndex(moduleIndex);
 	for (auto& l : elements) {
 		AddAttribute(l);
 	}

@@ -25,10 +25,8 @@ public:
 	virtual ~CAggregate() = default;
 
 
-	constexpr void SetModuleIndex(std::size_t i) noexcept { m_uModuleIndex = i; }
-
 	void Release();
-	void Setup(CProgramRuntime* const runtime, std::size_t moduleIndex, const std::vector<ElementIndex>& elements);
+	void Setup(CProgramRuntime* const runtime, const std::vector<ElementIndex>& elements);
 
 	[[maybe_unused]] virtual CVariable* AddAttribute(ElementIndex elem);
 	void AddAttribute(ElementIndex elem, IValue* value);
@@ -53,7 +51,6 @@ public:
 
 protected:
 	std::map<ElementIndex, CVariable*> m_oIndexLookup;
-	std::size_t m_uModuleIndex{};
 	CProgramRuntime* m_pAllocator{ nullptr };
 	CStringIntegerHashMap* m_pAllMembers{ nullptr }; // a pointer to a list of all declared members... to save computing power
 };

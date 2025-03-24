@@ -1,0 +1,8 @@
+fn main()
+{
+    const str = "this subject has a submarine as a subsequence";
+    return [
+        regex.search("\\b(sub)([^ ]*)", str),
+        regex.search("\\b(su b)([^ ]*)", str)
+    ];
+}
