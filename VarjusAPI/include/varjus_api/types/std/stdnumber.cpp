@@ -4,10 +4,10 @@
 
 #include "runtime/exceptions/exception.hpp"
 
-#include <iostream>
 #include <optional>
 #include <iomanip>
 #include <sstream>
+#include <cmath>
 
 FORWARD_DECLARE_METHOD(Stoi);
 FORWARD_DECLARE_METHOD(Stou);
