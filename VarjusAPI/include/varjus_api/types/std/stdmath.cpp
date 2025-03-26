@@ -94,21 +94,21 @@ void CMathValue::Construct(ObjectDeclaration_t& receiver)
 	TWO_ARG_METHOD(VSL("min"), Min);
 	TWO_ARG_METHOD(VSL("random"), Random);
 
-	receiver.AddProperty(VSL("PI"), Math_PI);
-	receiver.AddProperty(VSL("TAU"), Math_TAU);
-	receiver.AddProperty(VSL("E"), Math_E);
-	receiver.AddProperty(VSL("SQRT2"), Math_SQRT2);
-	receiver.AddProperty(VSL("SQRT3"), Math_SQRT3);
-	receiver.AddProperty(VSL("SQRT5"), Math_SQRT5);
-	receiver.AddProperty(VSL("GOLDEN"), Math_GOLDEN);
-	receiver.AddProperty(VSL("LN2"), Math_LN2);
-	receiver.AddProperty(VSL("LN10"), Math_LN10);
-	receiver.AddProperty(VSL("LOG2E"), Math_LOG2E);
-	receiver.AddProperty(VSL("LOG10E"), Math_LOG10E);
-	receiver.AddProperty(VSL("INV_PI"), Math_INV_PI);
-	receiver.AddProperty(VSL("INV_SQRT2"), Math_INV_SQRT2);
-	receiver.AddProperty(VSL("DEG2RAD"), Math_DEG2RAD);
-	receiver.AddProperty(VSL("RAD2DEG"), Math_RAD2DEG);
+	receiver.AddProperty(VSL("pi"), Math_PI);
+	receiver.AddProperty(VSL("tau"), Math_TAU);
+	receiver.AddProperty(VSL("e"), Math_E);
+	receiver.AddProperty(VSL("sqrt2"), Math_SQRT2);
+	receiver.AddProperty(VSL("sqrt3"), Math_SQRT3);
+	receiver.AddProperty(VSL("sqrt5"), Math_SQRT5);
+	receiver.AddProperty(VSL("golden"), Math_GOLDEN);
+	receiver.AddProperty(VSL("ln2"), Math_LN2);
+	receiver.AddProperty(VSL("ln10"), Math_LN10);
+	receiver.AddProperty(VSL("log2e"), Math_LOG2E);
+	receiver.AddProperty(VSL("log10e"), Math_LOG10E);
+	receiver.AddProperty(VSL("inv_pi"), Math_INV_PI);
+	receiver.AddProperty(VSL("inv_sqrt2"), Math_INV_SQRT2);
+	receiver.AddProperty(VSL("deg2rad"), Math_DEG2RAD);
+	receiver.AddProperty(VSL("rad2deg"), Math_RAD2DEG);
 }
 
 
@@ -176,7 +176,7 @@ DEFINE_SINGLE_ARG_GENERIC_MATH_FUNC(Atanh, std::atanh);
 DEFINE_SINGLE_ARG_GENERIC_MATH_FUNC(Acosh, std::acosh);
 DEFINE_SINGLE_ARG_GENERIC_MATH_FUNC(Asinh, std::asinh);
 DEFINE_SINGLE_ARG_GENERIC_MATH_FUNC_TYPE(Trunc, std::trunc, CIntValue, VarjusInt);
-DEFINE_SINGLE_ARG_GENERIC_MATH_FUNC_TYPE(Sign, std::signbit, CIntValue, VarjusInt);
+DEFINE_SINGLE_ARG_GENERIC_MATH_FUNC_TYPE(Sign, std::signbit, CBooleanValue, bool);
 
 DEFINE_TWO_ARG_GENERIC_MATH_FUNC(Pow, std::pow);
 DEFINE_TWO_ARG_GENERIC_MATH_FUNC(Atan2, std::atan2);

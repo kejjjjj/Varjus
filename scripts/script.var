@@ -1,6 +1,5 @@
+
 fn main()
 {
-    const str = "The rain in Spain stays mainly in the plain.";
-
-    return regex.replace("(ain)", str, "xxx");
+    return console.error("ass!");
 }
