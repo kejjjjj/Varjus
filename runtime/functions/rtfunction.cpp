@@ -7,7 +7,7 @@
 
 #include "linter/functions/function.hpp"
 
-#include "runtime/exceptions/exception.hpp"
+#include "varjus_api/internal/exceptions/exception.hpp"
 
 #include <algorithm>
 #include <ranges>

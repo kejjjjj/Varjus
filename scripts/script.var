@@ -1,5 +1,5 @@
 
 fn main()
 {
-    return console.error("ass!");
+    return math.random(0, 1);
 }

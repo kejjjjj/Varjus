@@ -3,7 +3,7 @@
 #include "varjus_api/types/types.hpp"
 #include "varjus_api/types/operators/default_operators.hpp"
 
-#include "runtime/exceptions/exception.hpp"
+#include "varjus_api/internal/exceptions/exception.hpp"
 #include "varjus_api/internal/structure.hpp"
 
 #include <random>

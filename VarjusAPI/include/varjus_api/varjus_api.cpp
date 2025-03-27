@@ -16,7 +16,7 @@
 
 #include "types/internal/object_declarations.hpp"
 #include "types/internal/callbacks.hpp"
-#include "runtime/exceptions/exception.hpp"
+#include "varjus_api/internal/exceptions/exception.hpp"
 #include "runtime/modules/rtmodule.hpp"
 
 Varjus::State::State() 
@@ -38,19 +38,28 @@ Varjus::State::~State() {
 
 }
 
-Success Varjus::State::UseStdLibrary()
+Success Varjus::State::UseStdLibrary(const std::span<VarjusString>& ignore)
 {
     if (!m_pLinter || !m_pLinter->m_oBuiltInObjects) {
         m_sErrorMessage = VSL("Varjus::State::UseStdLibrary(): no linter context... did you forget to create a new state?");
         return failure;
     }
 
-    m_pLinter->m_oBuiltInObjects->AddNewStaticObject(VSL("console"), CConsoleValue::Construct);
-    m_pLinter->m_oBuiltInObjects->AddNewStaticObject(VSL("math"), CMathValue::Construct);
-    m_pLinter->m_oBuiltInObjects->AddNewStaticObject(VSL("number"), CStdNumberValue::Construct);
-    m_pLinter->m_oBuiltInObjects->AddNewStaticObject(VSL("regex"), CStdRegex::Construct);
-    m_pLinter->m_oBuiltInObjects->AddNewStaticObject(VSL("date"), CStdDateValue::Construct);
-    m_pLinter->m_oBuiltInObjects->AddNewStaticObject(VSL("fs"), CStdFsValue::Construct);
+    std::unordered_map<VarjusString, void(*)(ObjectDeclaration_t&)> kv = {
+        { VSL("console"), CConsoleValue::Construct   },
+        { VSL("math"),    CMathValue::Construct      },
+        { VSL("number"),  CStdNumberValue::Construct },
+        { VSL("regex"),   CStdRegex::Construct       },
+        { VSL("date"),    CStdDateValue::Construct   },
+        { VSL("fs"),      CStdFsValue::Construct     }
+    };
+
+    for (const auto& [k, v] : kv) {
+        if (std::ranges::find(ignore, k) != ignore.end())
+            continue;
+
+        m_pLinter->m_oBuiltInObjects->AddNewStaticObject(k, v);
+    }
 
     return success;
 }

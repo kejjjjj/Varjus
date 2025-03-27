@@ -3,7 +3,7 @@
 
 #include "runtime/functions/rtfunction.hpp"
 #include "varjus_api/internal/structure.hpp"
-#include "runtime/exceptions/exception.hpp"
+#include "varjus_api/internal/exceptions/exception.hpp"
 #include "varjus_api/internal/runtime.hpp"
 #include "varjus_api/internal/variables.hpp"
 

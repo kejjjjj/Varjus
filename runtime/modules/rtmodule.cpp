@@ -6,9 +6,9 @@
 #include "varjus_api/internal/variables.hpp"
 #include "varjus_api/internal/structure.hpp"
 #include "varjus_api/types/internal/objects.hpp"
+#include "varjus_api/internal/exceptions/exception.hpp"
 
 #include <ranges>
-#include <runtime/exceptions/exception.hpp>
 
 CRuntimeModule::CRuntimeModule(CModule& ctx) :
 	m_oGlobalScopeInstructions(std::move(ctx.m_oGlobalScopeInstructions)),

@@ -3,7 +3,7 @@
 #include "linter/context.hpp"
 
 #include "varjus_api/internal/variables.hpp"
-#include "runtime/exceptions/exception.hpp"
+#include "varjus_api/internal/exceptions/exception.hpp"
 #include "varjus_api/internal/structure.hpp"
 
 

@@ -191,7 +191,7 @@ private:
 
 	RuntimeModules m_oModules;
 	const CodePosition* m_pCodePosition{};
-	bool m_bExceptionThrown{};
 	IValue* m_pExceptionValue{};
+	bool m_bExceptionThrown{};
 };
 

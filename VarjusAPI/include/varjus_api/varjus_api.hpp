@@ -13,6 +13,7 @@ ALWAYS CHECK RETURN VALUES!!!!
 #include "types/types.hpp"
 
 #include <optional>
+#include <span>
 
 
 class CProgramInformation;
@@ -28,11 +29,12 @@ namespace Varjus
         ~State();
 
         //Call me before loading a script if you need access to standard objects such as math and console
-        VARJUS_API __ND Success UseStdLibrary();
+        //- ignore: a container of standard object names which will be ignored (e.g. "fs")
+        VARJUS_API __ND Success UseStdLibrary(const std::span<VarjusString>& ignore = {});
 
         //This function expects a full file path, not a relative one
         //When using e_auto (unicode builds), make sure that the file has the BOM
-        VARJUS_API __ND Success LoadScriptFromFile(const VarjusString& fullFilePath, EncodingType characterSet);
+        VARJUS_API __ND Success LoadScriptFromFile(const VarjusString& fullFilePath, EncodingType characterSet=e_utf8);
 
         //This function expects a script
         //It should be noted that modules cannot be used as there is no working directory

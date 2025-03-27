@@ -1,8 +1,7 @@
 #pragma once
 
 #include "varjus_api/internal/globalDefinitions.hpp"
-#include <codecvt>
-#include <locale>
+#include <string>
 
 class CProgramRuntime;
 
@@ -21,5 +20,4 @@ public:
 
 private:
     VarjusString m_oErrorMessage;
-    mutable std::string m_oErrorMessageMultibyte; // For storing converted UTF-16 to UTF-8 string if needed
 };
