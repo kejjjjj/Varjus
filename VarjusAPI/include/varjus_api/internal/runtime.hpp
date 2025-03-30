@@ -1,15 +1,15 @@
 #pragma once
 
 
-#include <iostream>
-#include <chrono>
+#include <typeindex>
+#include <atomic>
 
 #include "varjus_api/internal/globalDefinitions.hpp"
 #include "varjus_api/types/types.hpp"
 #include "varjus_api/types/internal/objects.hpp"
 #include "variables.hpp"
 #include "pools/object_pool_owning.hpp"
-#include <typeindex>
+
 
 class CRuntimeFunction;
 class CRuntimeFunctionBase;
@@ -21,7 +21,6 @@ class CProgramInformation;
 using RuntimeFunction = std::unique_ptr<CRuntimeFunctionBase>;
 using CodePosition = std::tuple<size_t, size_t>;
 using RuntimeBlock = std::unique_ptr<IRuntimeStructure>;
-using steady_clock = std::chrono::time_point<std::chrono::steady_clock>;
 
 template<typename T>
 concept IValueChild = std::is_base_of_v<IValue, T> || std::is_same_v<CVariable, T>;
@@ -57,7 +56,7 @@ public:
 	CProgramRuntime(std::unique_ptr<CProgramInformation>&& information, RuntimeModules&& modules);
 	~CProgramRuntime();
 
-	[[nodiscard]] IValue* Execute();
+	[[nodiscard]] IValue* Execute(IValues& args);
 	void Cleanup();
 
 	void SetExecutionPosition(const CodePosition* pos) noexcept;
@@ -71,6 +70,9 @@ public:
 	[[nodiscard]] CRuntimeModule* GetModuleByIndex(std::size_t index);
 	[[nodiscard]] bool HasLeaks();
 	void PrintAllLeaks();
+
+	inline void Abort() noexcept { m_bAbort.store(true); }
+	[[nodiscard]] inline bool WaitingToAbort() const noexcept { return m_bAbort.load(); }
 
 private:
 	//very important that I am initialied before m_oValuePools
@@ -184,7 +186,7 @@ public:
 
 private:
 
-	[[nodiscard]] IValue* BeginExecution(CRuntimeFunction* entryFunc);
+	[[nodiscard]] IValue* BeginExecution(CRuntimeFunction* entryFunc, IValues& args);
 	[[nodiscard]] static CRuntimeFunction* FindMainFunction(const RuntimeModules& modules);
 
 	void FreeAllPools();
@@ -193,5 +195,6 @@ private:
 	const CodePosition* m_pCodePosition{};
 	IValue* m_pExceptionValue{};
 	bool m_bExceptionThrown{};
+	std::atomic_bool m_bAbort{};
 };
 

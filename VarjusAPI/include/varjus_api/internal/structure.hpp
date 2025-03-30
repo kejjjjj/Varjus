@@ -33,6 +33,7 @@ enum EExecutionControl : char
 	lc_null,
 	lc_break,
 	lc_continue,
+	lc_abort,
 };
 class CRuntimeFunctionBase;
 class CFunction;

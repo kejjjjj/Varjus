@@ -1,5 +1,5 @@
-
-fn main()
+fn main(args)
 {
-    return math.random(0, 1);
+    for(let i = 0; i < args.length; i++)
+        console.log(args[i]);
 }

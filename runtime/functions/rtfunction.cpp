@@ -48,6 +48,11 @@ IValue* CRuntimeFunction::Execute(CRuntimeContext* const ctx, [[maybe_unused]] I
 	for (const auto& insn : m_oInstructions) {
 		if (returnVal = insn->Execute(&thisContext), returnVal) {
 
+			if (IRuntimeStructure::ToControlStatement(returnVal) == lc_abort) {
+				returnVal = nullptr;
+				break;
+			}
+
 			if (isMainFunction && thisContext.m_pRuntime->ExceptionThrown())
 				throw CRuntimeError(thisContext.m_pRuntime, fmt::format(VSL("an uncaught exception: {}"), returnVal->ToPrintableString()));
 

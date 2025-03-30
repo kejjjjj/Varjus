@@ -9,6 +9,18 @@
 #define _UC 0
 #endif
 
+void AddArgs(CProgramRuntime* const ctx, IValues& receiver)
+{
+    receiver.push_back(CIntValue::Construct(ctx, 420));
+    receiver.push_back(CStringValue::Construct(ctx, VSL("Hello!")));
+
+    receiver.push_back(CArrayValue::Construct(ctx, { 
+        CIntValue::Construct(ctx, 1),
+        CStringValue::Construct(ctx, VSL("aaaaaaaaaa!")) 
+    }));
+
+}
+
 #ifdef _WIN32
 #if _UC
 int wmain(int argc, wchar_t** argv)
@@ -24,7 +36,7 @@ int main(int argc, char** argv)
 
     const auto GetError = [](const std::optional<VarjusString>& errorMsg) {
         return errorMsg.value_or(VSL("unknown error!"));
-    };
+        };
 
     if (!state.UseStdLibrary()) {
         fmt::print(std::cerr, VSL("state error: {}\n"), GetError(state.GetErrorMessage()));
@@ -42,8 +54,7 @@ int main(int argc, char** argv)
         return 1;
     }
 #endif
-
-    if (const auto returnValue = state.ExecuteScript()) {
+    if (const auto returnValue = state.ExecuteScript(AddArgs)) {
         fmt::print(std::cout, VSL("the program returned: {}\n"), returnValue->ToPrintableString());
     }
     else {
@@ -84,7 +95,7 @@ int main(int argc, char** argv)
 
     const auto GetError = [](const std::optional<VarjusString>& errorMsg) {
         return errorMsg ? *errorMsg : VSL("unknown error!");
-    };
+        };
 
     if (!state.UseStdLibrary()) {
         fmt::print(std::cerr, VSL("state error: {}\n"), GetError(state.GetErrorMessage()));

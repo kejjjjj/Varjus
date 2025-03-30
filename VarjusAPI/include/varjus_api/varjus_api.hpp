@@ -29,7 +29,7 @@ namespace Varjus
         ~State();
 
         //Call me before loading a script if you need access to standard objects such as math and console
-        //- ignore: a container of standard object names which will be ignored (e.g. "fs")
+        // ignore: a container of standard object names which will be ignored (e.g. "fs")
         VARJUS_API __ND Success UseStdLibrary(const std::span<VarjusString>& ignore = {});
 
         //This function expects a full file path, not a relative one
@@ -40,9 +40,23 @@ namespace Varjus
         //It should be noted that modules cannot be used as there is no working directory
         VARJUS_API __ND Success LoadScript(const VarjusString& script);
 
+        //Synchronous
         //Call me after you have loaded a script with LoadScriptFromFile or LoadScript
         //Don't do any memory management to the return value as it's managed by the API
-        VARJUS_API __ND IValue* ExecuteScript();
+        // addArgs: a callback to a function where the user can add their own launch arguments
+        VARJUS_API __ND IValue* ExecuteScript(void(*addArgs)(CProgramRuntime* const ctx, IValues& receiver) = 0);
+
+        //Get the return value from the main function
+        //Use this in an asynchronous context
+        VARJUS_API __ND IValue* GetReturnValue() const noexcept;
+
+        //Asynchronous
+        //Stop execution, makes ExecuteScript try to exit as soon as possible
+        //Use the "HasFinished" method to wait until the execution ends if necessary
+        VARJUS_API __ND Success Abort();
+
+        //The script is no longer executing
+        VARJUS_API __ND Success HasFinished();
 
         //When a function doesn't return a success
         VARJUS_API __ND std::optional<VarjusString> GetErrorMessage() const noexcept;
@@ -60,6 +74,7 @@ namespace Varjus
         std::unique_ptr<CProgramInformation> m_pLinter;
         std::unique_ptr<CProgramRuntime> m_pRuntime;
         IValue* m_pReturnValue{ nullptr };
+        IValues m_oArgs;
     };
 
 }

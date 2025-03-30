@@ -1,5 +1,6 @@
 #include "linter/expressions/ast.hpp"
-#include "structure.hpp"
+#include "varjus_api/internal/structure.hpp"
+#include "varjus_api/internal/runtime.hpp"
 
 #include <algorithm>
 #include <cassert>
@@ -22,6 +23,9 @@ CRuntimeConditionalStatement::~CRuntimeConditionalStatement() = default;
 
 IValue* IRuntimeStructureSequence::ExecuteBlock(CRuntimeContext* const ctx)
 {
+	if (ctx->m_pRuntime->WaitingToAbort())
+		return reinterpret_cast<IValue*>(lc_abort); //yes!
+
 	for (auto& insn : m_oInstructions)
 		if (auto v = insn->Execute(ctx))
 			return v;
@@ -34,7 +38,7 @@ EExecutionControl IRuntimeStructure::ToControlStatement(const IValue* rv) {
 
 	const auto v = reinterpret_cast<std::size_t>(rv);
 
-	if (v > static_cast<std::size_t>(lc_continue))
+	if (v > static_cast<std::size_t>(lc_abort))
 		return lc_null;
 
 	return static_cast<EExecutionControl>(v);

@@ -49,7 +49,7 @@ void ClearPool(CProgramRuntime* _this) {
 	_this->GetPool<T>().ResetPool();
 }
 
-IValue* CProgramRuntime::Execute()
+IValue* CProgramRuntime::Execute(IValues& args)
 {
 	m_pExceptionValue = nullptr;
 	CRuntimeFunction* mainFunction = FindMainFunction(m_oModules);
@@ -63,7 +63,7 @@ IValue* CProgramRuntime::Execute()
 		mod->EvaluateGlobalExpressions(this);
 	}
 
-	IValue* returnValue = BeginExecution(mainFunction);
+	IValue* returnValue = BeginExecution(mainFunction, args);
 
 	for (auto& mod : m_oModules)
 		mod->FreeGlobalVariables();
@@ -73,7 +73,7 @@ IValue* CProgramRuntime::Execute()
 }
 
 
-IValue* CProgramRuntime::BeginExecution(CRuntimeFunction* entryFunc)
+IValue* CProgramRuntime::BeginExecution(CRuntimeFunction* entryFunc, IValues& args)
 {
 	assert(entryFunc);
 
@@ -83,7 +83,6 @@ IValue* CProgramRuntime::BeginExecution(CRuntimeFunction* entryFunc)
 		.m_pFunction = nullptr,
 	};
 
-	std::vector<IValue*> args;
 	if (auto returnValue = entryFunc->Execute(&ctx, nullptr, args, {})) {
 		return returnValue;
 	}

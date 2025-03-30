@@ -140,7 +140,7 @@ Success Varjus::State::LoadScript(const VarjusString& script)
 
     return failure;
 }
-IValue* Varjus::State::ExecuteScript()
+IValue* Varjus::State::ExecuteScript(void(*callback)(CProgramRuntime* const ctx, IValues& receiver))
 {
 
     if (!m_pLinter || !m_pLinter->m_oBuiltInObjects) {
@@ -166,7 +166,15 @@ IValue* Varjus::State::ExecuteScript()
             return nullptr;
         }
 
-        return m_pReturnValue = m_pRuntime->Execute();
+        if (callback)
+            callback(m_pRuntime.get(), m_oArgs);
+
+        IValues args;
+        if (m_oArgs.size()) {
+            args.push_back(CArrayValue::Construct(m_pRuntime.get(), std::move(m_oArgs)));
+        }
+
+        return m_pReturnValue = m_pRuntime->Execute(args);
 
     } catch (CRuntimeError& ex) {
         m_sErrorMessage = ex.what();
@@ -181,6 +189,31 @@ IValue* Varjus::State::ExecuteScript()
 
     return nullptr;
 
+}
+IValue* Varjus::State::GetReturnValue() const noexcept
+{
+    if (!m_pRuntime)
+        return nullptr;
+
+    return m_pReturnValue;
+}
+
+Success Varjus::State::Abort()
+{
+    if (!m_pRuntime) {
+        m_sErrorMessage = VSL("Varjus::State::Abort(): No existing runtime");
+        return failure;
+    }
+
+    m_pRuntime->Abort();
+    return success;
+}
+Success Varjus::State::HasFinished()
+{
+    if (!m_pRuntime || !m_pReturnValue)
+        return failure;
+
+    return success;
 }
 std::optional<VarjusString> Varjus::State::GetErrorMessage() const noexcept {
     return m_sErrorMessage.size() ? std::make_optional<VarjusString>(m_sErrorMessage) : std::nullopt;
