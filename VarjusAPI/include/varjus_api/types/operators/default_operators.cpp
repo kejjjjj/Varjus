@@ -932,3 +932,28 @@ DEFINE_OPERATOR(OP_ASSIGNMENT_BITWISE_AND)
 
 	return _lhs;
 }
+
+DEFINE_OPERATOR(OP_ASSIGNMENT_SWAP)
+{
+	auto lhsVariable = _lhs->GetOwner();
+	auto rhsVariable = _rhs->GetOwner();
+
+	if (_lhs->IsImmutable() || _rhs->IsImmutable())
+		throw CRuntimeError(runtime, VSL("cannot swap an immutable value"));
+
+	if (!lhsVariable || !rhsVariable)
+		throw CRuntimeError(runtime, VSL("cannot swap a temporary value"));
+
+	auto tmp = lhsVariable->GetValue()->Copy();
+	lhsVariable->RefCount()++;
+
+	lhsVariable->SetValue(rhsVariable->GetValue()->Copy());
+	rhsVariable->SetValue(tmp);
+
+	lhsVariable->Release();
+
+
+	_lhs->SetOwner(lhsVariable);
+	_rhs->SetOwner(rhsVariable);
+	return lhsVariable->GetValue();
+}

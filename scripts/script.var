@@ -1,5 +1,9 @@
+
+
 fn main(args)
 {
-    for(let i = 0; i < args.length; i++)
-        console.log(args[i]);
+    let a = 0;
+    let b = 1;
+    return a <=> b;
+
 }

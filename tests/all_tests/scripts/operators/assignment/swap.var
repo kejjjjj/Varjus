@@ -1,0 +1,17 @@
+
+
+fn main()
+{
+
+	let a = 1;
+	let b = 2;
+
+	let arr1 = [ 0 ];
+	let arr2 = [ 1 ];
+
+	a <=> b;
+	arr1 <=> arr2;
+
+	return [ a, b, arr1[0], arr2[0] ];	
+
+}

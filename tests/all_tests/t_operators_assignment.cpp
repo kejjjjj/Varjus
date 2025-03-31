@@ -25,3 +25,15 @@ TEST_CASE(("assignment operators")) {
 	REQUIRE(retVal->HasOwner() == false);
 	TEST_END(retVal);
 }
+
+TEST_CASE(("swap operators")) {
+
+	auto retVal = TEST_ExecuteFile(JP(VSL("swap.var")));
+
+	AssertArray(retVal, AssertArrayValue<ASSERT_INT>(t_int, {
+		2, 1, 1, 0
+	}));
+
+	REQUIRE(retVal->HasOwner() == false);
+	TEST_END(retVal);
+}

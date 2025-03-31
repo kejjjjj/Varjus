@@ -9,7 +9,7 @@
 enum OperatorPriority : char
 {
 	op_failure,
-	op_assignment,		//	= += -= *= /= %= >>= <<= &= ^= |=
+	op_assignment,		//	= += -= *= /= %= >>= <<= &= ^= |= <=>
 	op_conditional,		//	?
 	op_conditional2,    //  :  
 	op_logical_or,		//	||
@@ -71,6 +71,8 @@ enum Punctuation : char
 	p_assignment_bitwise_xor,
 	p_assignment_bitwise_and,
 
+	p_swap,
+
 	p_increment,
 	p_decrement,
 
@@ -99,13 +101,15 @@ struct CPunctuation final
 	OperatorPriority m_ePriority{};
 };
 
-constexpr std::array<CPunctuation, 46u> punctuations
+constexpr std::array<CPunctuation, 47u> punctuations
 {
 	CPunctuation{VSL("==="), p_strict_equality, op_relational},
 	CPunctuation{VSL("!=="), p_strict_unequality, op_relational},
 
 	CPunctuation{VSL("<<="), p_assignment_left_shift, op_assignment},
 	CPunctuation{VSL(">>="), p_assignment_right_shift, op_assignment},
+
+	CPunctuation{VSL("<=>"), p_swap, op_assignment},
 
 	CPunctuation{VSL("+="), p_assignment_addition, op_assignment},
 	CPunctuation{VSL("-="), p_assignment_subtraction, op_assignment},

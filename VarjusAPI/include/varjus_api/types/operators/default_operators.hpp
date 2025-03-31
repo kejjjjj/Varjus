@@ -53,8 +53,10 @@ FORWARD_DECLARE_OPERATOR(OP_ASSIGNMENT_BITWISE_OR)
 FORWARD_DECLARE_OPERATOR(OP_ASSIGNMENT_BITWISE_XOR)
 FORWARD_DECLARE_OPERATOR(OP_ASSIGNMENT_BITWISE_AND)
 
+FORWARD_DECLARE_OPERATOR(OP_ASSIGNMENT_SWAP)
 
-#define NUM_OPERATORS 32ull
+
+#define NUM_OPERATORS 33ull
 
 //VERY IMPORTANT THAT THESE HAVE THE SAME ORDER AS CPunctuation
 constexpr std::array<OperatorFunc, NUM_OPERATORS> m_oOperatorTable = { {
@@ -99,7 +101,9 @@ constexpr std::array<OperatorFunc, NUM_OPERATORS> m_oOperatorTable = { {
 
 	OP_ASSIGNMENT_BITWISE_OR,	// p_assignment_bitwise_or
 	OP_ASSIGNMENT_BITWISE_XOR,	// p_assignment_bitwise_xor
-	OP_ASSIGNMENT_BITWISE_AND	// p_assignment_bitwise_and
+	OP_ASSIGNMENT_BITWISE_AND,	// p_assignment_bitwise_and
+
+	OP_ASSIGNMENT_SWAP          // p_swap
 } };
 
 
