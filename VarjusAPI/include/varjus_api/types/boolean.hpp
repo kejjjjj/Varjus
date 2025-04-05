@@ -30,6 +30,7 @@ public:
 private:
 	[[nodiscard]] VarjusString TypeAsString() const override { return VSL("boolean"); }
 	[[nodiscard]] VarjusString ValueAsString() const override { return Get() ? VSL("true") : VSL("false"); }
+	[[nodiscard]] VarjusString ValueAsEscapedString() const override { return ValueAsString(); }
 
 public:
 };

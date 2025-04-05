@@ -48,7 +48,7 @@ TEST_CASE(("Unary tostring")) {
 	AssertArray(retVal, AssertArrayValue<ASSERT_STRING>(t_string, {
 		VSL("true"),
 		VSL("[ 1, 2 ]"),
-		VSL("{\n    a: hello,\n    b: world\n}"),
+		VSL("{\"a\":\"hello\",\"b\":\"world\"}"),
 		VSL("2.400000"),
 	}));
 

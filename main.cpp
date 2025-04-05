@@ -9,7 +9,7 @@
 #define _UC 0
 #endif
 
-void AddArgs(CProgramRuntime* const ctx, IValues& receiver)
+VARJUS_DEFINE_ARGS(AddArgs, ctx, receiver)
 {
     receiver.push_back(CIntValue::Construct(ctx, 420));
     receiver.push_back(CStringValue::Construct(ctx, VSL("Hello!")));
@@ -54,7 +54,7 @@ int main(int argc, char** argv)
         return 1;
     }
 #endif
-    if (const auto returnValue = state.ExecuteScript(AddArgs)) {
+    if (const auto returnValue = state.ExecuteScript()) {
         fmt::print(std::cout, VSL("the program returned: {}\n"), returnValue->ToPrintableString());
     }
     else {

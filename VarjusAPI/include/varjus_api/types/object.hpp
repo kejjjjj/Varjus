@@ -71,6 +71,7 @@ public:
 	void AddAttribute(IValue* const key, IValue* value);
 
 	[[nodiscard]] CObjectValue* ToObject() override { return this; }
+	[[nodiscard]] const CObjectValue* ToObject() const override { return this; }
 
 	[[nodiscard]] std::size_t AddressOf() const noexcept override {
 		return reinterpret_cast<std::size_t>(GetShared().get());
@@ -79,4 +80,6 @@ public:
 protected:
 	[[nodiscard]] VarjusString TypeAsString() const override { return VSL("object"); }
 	[[nodiscard]] VarjusString ValueAsString() const override;
+	[[nodiscard]] VarjusString ValueAsEscapedString() const override { return ValueAsString(); }
+
 };

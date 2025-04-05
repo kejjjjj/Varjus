@@ -13,6 +13,7 @@
 #include "types/std/stdregex.hpp"
 #include "types/std/stddate.hpp"
 #include "types/std/stdfs.hpp"
+#include "types/std/stdjson.hpp"
 
 #include "types/internal/object_declarations.hpp"
 #include "types/internal/callbacks.hpp"
@@ -51,7 +52,8 @@ Success Varjus::State::UseStdLibrary(const std::span<VarjusString>& ignore)
         { VSL("number"),  CStdNumberValue::Construct },
         { VSL("regex"),   CStdRegex::Construct       },
         { VSL("date"),    CStdDateValue::Construct   },
-        { VSL("fs"),      CStdFsValue::Construct     }
+        { VSL("fs"),      CStdFsValue::Construct     },
+        { VSL("json"),    CStdJsonValue::Construct   }
     };
 
     for (const auto& [k, v] : kv) {

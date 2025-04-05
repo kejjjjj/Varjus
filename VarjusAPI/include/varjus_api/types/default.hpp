@@ -71,7 +71,8 @@ public:
 
 	[[nodiscard]] virtual VarjusString TypeAsString() const { return VSL("undefined"); }
 	[[nodiscard]] virtual VarjusString ValueAsString() const { return VSL("undefined"); }
-	
+	[[nodiscard]] virtual VarjusString ValueAsEscapedString() const { return ValueAsString(); }
+
 
 	constexpr void MakeImmutable() noexcept { m_bIsConst = true; }
 
@@ -111,12 +112,20 @@ public:
 	[[nodiscard]] virtual CDoubleValue* ToCDouble() { return nullptr; }
 	[[nodiscard]] virtual CStringValue* ToCString() { return nullptr; }
 	[[nodiscard]] virtual CCallableValue* ToCallable() { return nullptr; }
-	[[nodiscard]] virtual CArrayValue* ToArray() { return nullptr; }
-	[[nodiscard]] virtual CObjectValue* ToObject() { return nullptr; }
 
-	[[nodiscard]] constexpr auto GetAllocator() { return m_pAllocator; }
+	[[nodiscard]] virtual CArrayValue* ToArray() { return nullptr; }
+	[[nodiscard]] virtual const CArrayValue* ToArray() const { return nullptr; }
+
+	[[nodiscard]] virtual CObjectValue* ToObject() { return nullptr; }
+	[[nodiscard]] virtual const CObjectValue* ToObject() const { return nullptr; }
+
+	[[nodiscard]] constexpr auto GetAllocator() noexcept { return m_pAllocator; }
+	[[nodiscard]] constexpr auto GetAllocator() const noexcept { return m_pAllocator; }
+
+	[[nodiscard]] VarjusString Dump(VarjusUInt indent = 0, VarjusChar indentChar = '\t') const;
 
 protected:
+
 	void ReleaseInternal();
 	inline constexpr void ConstructInternal(CProgramRuntime* const allocator) { m_pAllocator = allocator; }
 

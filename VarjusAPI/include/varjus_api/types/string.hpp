@@ -66,6 +66,6 @@ public:
 
 private:
 	[[nodiscard]] VarjusString TypeAsString() const override { return VSL("string"); }
-	[[nodiscard]] VarjusString ValueAsString() const override { return Internal()->GetString(); }
-
+	[[nodiscard]] VarjusString ValueAsString() const override { return VarjusChar('\"') + Internal()->GetString() + VarjusChar('\"'); }
+	[[nodiscard]] VarjusString ValueAsEscapedString() const override { return Internal()->GetString(); }
 };

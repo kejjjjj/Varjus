@@ -62,17 +62,11 @@ std::u16string LocaleConverter::utf16be_to_u16string(const std::string& utf16be_
     return u16str;
 }
 std::string LocaleConverter::u16string_to_ansi(const std::u16string& u16str) {
-#ifdef _WIN32
-    // Windows: Convert from UTF-16 to ANSI (system code page)
-    int len = WideCharToMultiByte(CP_ACP, 0, reinterpret_cast<const wchar_t*>(u16str.c_str()), -1, nullptr, 0, nullptr, nullptr);
-    std::string result(static_cast<char16_t>(len - 1), 0);
-    WideCharToMultiByte(CP_ACP, 0, reinterpret_cast<const wchar_t*>(u16str.c_str()), -1, &result[0], len, nullptr, nullptr);
-    return result;
-#else
+
     // Linux/macOS: Assume ANSI is UTF-8 and convert
     std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> converter;
     return converter.to_bytes(u16str);
-#endif
+
 }
 std::wstring LocaleConverter::u16string_to_wstring(const std::u16string& u16str) {
     return std::wstring(u16str.begin(), u16str.end());

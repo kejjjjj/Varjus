@@ -18,6 +18,7 @@ IValue* name(struct CRuntimeContext* const ctx, const IValues& args);
 #define VARJUS_DEFINE_CALLBACK(name, ctx, args)\
 IValue* name([[maybe_unused]] struct CRuntimeContext* const ctx, [[maybe_unused]] const IValues& args)
 
+
 using Function_t = IValue*(*)(struct CRuntimeContext* const, const IValues&);
 
 struct FunctionData_t

@@ -68,7 +68,6 @@ IValue* CProgramRuntime::Execute(IValues& args)
 	for (auto& mod : m_oModules)
 		mod->FreeGlobalVariables();
 
-
 	return returnValue;
 }
 
@@ -162,4 +161,13 @@ void CProgramRuntime::FreeAllPools()
 	ClearPool<CObjectValue>(this);
 	ClearPool<CVariable>(this);
 	ClearPool<CBuiltInObject>(this);
+}
+VarjusString CProgramRuntime::KeyToString(ElementIndex index) const noexcept {
+	return m_pInformation->m_oAllMembers.At(index);
+}
+bool CProgramRuntime::ContainsKey(const VarjusString& key) const noexcept {
+	return m_pInformation->m_oAllMembers.Contains(key);
+}
+std::size_t CProgramRuntime::StringToKey(const VarjusString& key) const noexcept{
+	return m_pInformation->m_oAllMembers.At(key);
 }

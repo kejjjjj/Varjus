@@ -82,7 +82,7 @@ DEFINE_METHOD(Object_Values, args)
 static auto GetAttribute(CObjectValue* obj, IValue* const key)
 {
 	const auto& aggregate = obj->Internal()->GetAggregateValue();
-	return aggregate.Get(key->ValueAsString());
+	return aggregate.Get(key->ValueAsEscapedString());
 }
 
 DEFINE_METHOD(Object_Set, args)
@@ -109,7 +109,7 @@ DEFINE_METHOD(Object_Remove, args)
 
 	const auto& key = args[0];
 	auto& aggregate = __this->Internal()->GetAggregateValue();
-	auto keyStr = key->ValueAsString();
+	auto keyStr = key->ValueAsEscapedString();
 
 	auto members = __this->Internal()->GetAllRuntimeMembers();
 	assert(members);
@@ -123,7 +123,7 @@ DEFINE_METHOD(Object_Remove, args)
 static auto Contains(CObjectValue* obj, IValue* const key)
 {
 	const auto& aggregate = obj->Internal()->GetAggregateValue();
-	return aggregate.Contains(key->ValueAsString());
+	return aggregate.Contains(key->ValueAsEscapedString());
 }
 DEFINE_METHOD(Object_Contains, args)
 {

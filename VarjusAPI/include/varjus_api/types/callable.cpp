@@ -67,7 +67,12 @@ IValue* CCallableValue::Call(CRuntimeContext* const ctx, const IValues& args)
 	assert(ret);
 	return ret;
 }
-
+VarjusString CCallableValue::ValueAsString() const {
+	return fmt::format(VSL("\"function->({})\""), GetShared()->GetCallable()->GetName());
+}
+VarjusString CCallableValue::ValueAsEscapedString() const {
+	return fmt::format(VSL("function->({})"), GetShared()->GetCallable()->GetName());
+}
 CInternalCallableValue* CCallableValue::Internal() {
 	return GetShared().get();
 }

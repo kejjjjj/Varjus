@@ -183,6 +183,9 @@ public:
 	}
 
 	[[nodiscard]] inline auto GetInformation() const noexcept { return m_pInformation.get(); }
+	[[nodiscard]] VarjusString KeyToString(ElementIndex index) const noexcept;
+	[[nodiscard]] std::size_t StringToKey(const VarjusString& key) const noexcept;
+	[[nodiscard]] bool ContainsKey(const VarjusString& key) const noexcept;
 
 private:
 

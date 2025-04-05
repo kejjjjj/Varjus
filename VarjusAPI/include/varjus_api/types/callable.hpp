@@ -75,7 +75,6 @@ public:
 
 private:
 	[[nodiscard]] VarjusString TypeAsString() const override { return VSL("callable"); }
-	[[nodiscard]] VarjusString ValueAsString() const override { 
-		return fmt::format(VSL("{}"), (std::size_t)GetShared()->GetCallable()); }
-
+	[[nodiscard]] VarjusString ValueAsString() const override; 
+	[[nodiscard]] VarjusString ValueAsEscapedString() const override;
 };

@@ -121,5 +121,5 @@ IValue* EvaluateTypeOf(CProgramRuntime* const runtime, IValue* operand){
 }
 
 IValue* EvaluateToString(CProgramRuntime* const runtime, IValue* operand) {
-	return CStringValue::Construct(runtime, operand->ValueAsString());
+	return CStringValue::Construct(runtime, operand->ValueAsEscapedString());
 }

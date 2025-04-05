@@ -29,4 +29,6 @@ public:
 private:
 	[[nodiscard]] VarjusString TypeAsString() const override { return VSL("int"); }
 	[[nodiscard]] VarjusString ValueAsString() const override { return fmt::to_string(Get()); }
+	[[nodiscard]] VarjusString ValueAsEscapedString() const override { return ValueAsString(); }
+
 };

@@ -18,6 +18,7 @@ IValue* Name([[maybe_unused]] CRuntimeContext* const ctx, [[maybe_unused]] IValu
 #define DEFINE_PROPERTY(Name)\
 IValue* Name([[maybe_unused]] CRuntimeContext* const ctx, [[maybe_unused]] IValue* _this)
 
+
 #include <unordered_map>
 #include <memory>
 
@@ -42,6 +43,10 @@ void Name(ObjectDeclaration_t& receiver)
 IValue* Name(struct CRuntimeContext* const ctx, [[maybe_unused]] IValue* _this)
 #define VARJUS_DEFINE_METHOD(Name, ctx, _this, args)\
 IValue* Name(struct CRuntimeContext* const ctx, [[maybe_unused]] IValue* _this, [[maybe_unused]] const IValues& args)
+
+#define VARJUS_DEFINE_ARGS(Name, ctx, args)\
+void Name(class CProgramRuntime* const ctx, IValues& receiver)
+
 
 #include "varjus_api/internal/structure.hpp"
 

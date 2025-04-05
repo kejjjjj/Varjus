@@ -61,7 +61,9 @@ public:
 	[[nodiscard]] constexpr bool IsIterable() const noexcept override { return true; }
 
 	[[nodiscard]] IValue* Copy() override;
-	[[nodiscard]] CArrayValue* ToArray() override;
+	[[nodiscard]] CArrayValue* ToArray() override { return this; }
+	[[nodiscard]] const CArrayValue* ToArray() const override { return this; }
+
 	[[nodiscard]] CInternalArrayValue* Internal();
 	[[nodiscard]] CInternalArrayValue* Internal() const;
 	
@@ -80,6 +82,7 @@ public:
 private:
 	[[nodiscard]] VarjusString TypeAsString() const override { return VSL("array"); }
 	[[nodiscard]] VarjusString ValueAsString() const override;
+	[[nodiscard]] VarjusString ValueAsEscapedString() const override { return ValueAsString(); }
 
 };
 

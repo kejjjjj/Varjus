@@ -40,9 +40,6 @@ IValue* CArrayValue::Copy(){
 	return ptr;
 }
 
-CArrayValue* CArrayValue::ToArray(){
-	return this;
-}
 CInternalArrayValue* CArrayValue::Internal() {
 	return GetShared().get();
 }

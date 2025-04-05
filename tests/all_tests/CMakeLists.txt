@@ -36,6 +36,7 @@ endif()
 # Add the root directory as an include directory
 target_include_directories(Varjus PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../../")
 target_include_directories(Varjus PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../../VarjusAPI/include/")
+target_include_directories(Varjus PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../../VarjusAPI/include/varjus_api/types/std/json")
 
 # define RUNNING_TESTS
 target_compile_definitions(Varjus PRIVATE RUNNING_TESTS)
