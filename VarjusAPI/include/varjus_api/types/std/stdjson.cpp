@@ -46,9 +46,9 @@ IValue* ParseJsonRecursively(CRuntimeContext* const ctx, json& js)
 	case value_t::boolean:
 		return CBooleanValue::Construct(ctx->m_pRuntime, js.get<json::boolean_t>());
 	case value_t::number_integer:
-		return CIntValue::Construct(ctx->m_pRuntime, js.get<json::number_integer_t>());
+		return CIntValue::Construct(ctx->m_pRuntime, static_cast<VarjusInt>(js.get<json::number_integer_t>()));
 	case value_t::number_unsigned:
-		return CUIntValue::Construct(ctx->m_pRuntime, js.get<json::number_unsigned_t>());
+		return CUIntValue::Construct(ctx->m_pRuntime, static_cast<VarjusUInt>(js.get<json::number_unsigned_t>()));
 	case value_t::number_float:
 		return CDoubleValue::Construct(ctx->m_pRuntime, js.get<json::number_float_t>());
 	case value_t::string:
