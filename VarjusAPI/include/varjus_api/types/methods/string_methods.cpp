@@ -26,6 +26,8 @@ FORWARD_DECLARE_METHOD(Clone);
 
 FORWARD_DECLARE_METHOD(GetCodeAt);
 FORWARD_DECLARE_METHOD(StringContains);
+FORWARD_DECLARE_METHOD(StringFind);
+FORWARD_DECLARE_METHOD(StringFindLast);
 
 std::unique_ptr<BuiltInMethod_t> CStringValue::ConstructMethods(CProgramInformation* const info)
 {
@@ -37,8 +39,10 @@ std::unique_ptr<BuiltInMethod_t> CStringValue::ConstructMethods(CProgramInformat
 	m_oMethods->AddMethod(VSL("split"),       Split,          1u);
 	m_oMethods->AddMethod(VSL("replace"),     Replace,        2u);
 	m_oMethods->AddMethod(VSL("clone"),       Clone,          1u);
-	m_oMethods->AddMethod(VSL("code_at"), GetCodeAt,      1u);
+	m_oMethods->AddMethod(VSL("code_at"),     GetCodeAt,      1u);
 	m_oMethods->AddMethod(VSL("contains"),    StringContains, 1u);
+	m_oMethods->AddMethod(VSL("find"),        StringFind,     1u);
+	m_oMethods->AddMethod(VSL("find_last"),   StringFindLast, 1u);
 
 	return m_oMethods;
 
@@ -218,4 +222,39 @@ DEFINE_METHOD(StringContains, args) {
 		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("string.contains expected a \"string\", but got \"{}\""), delimiter->TypeAsString()));
 
 	return CBooleanValue::Construct(ctx->m_pRuntime, v.find(delimiter->ToString()) != VarjusString::npos);
+}
+
+DEFINE_METHOD(StringFind, args) {
+
+	auto __this = GetThisString(_this);
+	const auto& v = __this->ToString();
+
+	auto& delimiter = args.front();
+
+	if (delimiter->Type() != t_string)
+		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("string.find expected a \"string\", but got \"{}\""), delimiter->TypeAsString()));
+
+	const auto pos = v.find(delimiter->ToString());
+
+	if (pos == VarjusString::npos)
+		return IValue::Construct(ctx->m_pRuntime);
+
+	return CUIntValue::Construct(ctx->m_pRuntime, static_cast<VarjusUInt>(pos));
+}
+DEFINE_METHOD(StringFindLast, args) {
+
+	auto __this = GetThisString(_this);
+	const auto& v = __this->ToString();
+
+	auto& delimiter = args.front();
+
+	if (delimiter->Type() != t_string)
+		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("string.find_last expected a \"string\", but got \"{}\""), delimiter->TypeAsString()));
+
+	const auto pos = v.rfind(delimiter->ToString());
+
+	if (pos == VarjusString::npos)
+		return IValue::Construct(ctx->m_pRuntime);
+
+	return CUIntValue::Construct(ctx->m_pRuntime, static_cast<VarjusUInt>(pos));
 }

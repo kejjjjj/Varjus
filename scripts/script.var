@@ -1,11 +1,9 @@
 
 fn main()
 {
-    const obj = {
-        "a": 1,
-        "b": [1, 2, 3]
-    };
-
-
-    return json.stringify(obj, true);
+    return [
+        "hello hello!".find_last("hello"),
+        "haello haello!".find_last("hello")
+    ];
+    
 }

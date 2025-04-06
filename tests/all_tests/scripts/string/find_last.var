@@ -1,0 +1,8 @@
+
+fn main()
+{
+    return [
+        tostring "hello hello!".find_last("hello"),
+        tostring "haello haello!".find_last("hello")
+    ];
+}

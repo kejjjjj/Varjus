@@ -98,3 +98,25 @@ TEST_CASE("hello_world.contains") {
 	REQUIRE(retVal->HasOwner() == false);
 	TEST_END(retVal);
 }
+TEST_CASE("string.find") {
+
+	auto retVal = TEST_ExecuteFile(JP(VSL("find.var")));
+
+	AssertArray(retVal, AssertArrayValue<ASSERT_STRING>(t_string, {
+		VSL("1"), VSL("undefined")
+	}));
+
+	REQUIRE(retVal->HasOwner() == false);
+	TEST_END(retVal);
+}
+TEST_CASE("string.find_last") {
+
+	auto retVal = TEST_ExecuteFile(JP(VSL("find_last.var")));
+
+	AssertArray(retVal, AssertArrayValue<ASSERT_STRING>(t_string, {
+		VSL("6"), VSL("undefined")
+		}));
+
+	REQUIRE(retVal->HasOwner() == false);
+	TEST_END(retVal);
+}

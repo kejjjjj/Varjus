@@ -37,7 +37,7 @@ endif()
 # Set include directories
 target_include_directories(VarjusAPI PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/..")
 target_include_directories(VarjusAPI PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include/")
-target_include_directories(Varjus PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include/varjus_api/types/std/json/")
+target_include_directories(VarjusAPI PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include/varjus_api/types/std/json/")
 
 if(CMAKE_BUILD_TYPE STREQUAL "Release")
     message(STATUS "Building in Release mode")

@@ -1,0 +1,8 @@
+
+fn main()
+{
+    return [
+        tostring "ahello hello!".find("hello"),
+        tostring "haello haello!".find("hello")
+    ];
+}
