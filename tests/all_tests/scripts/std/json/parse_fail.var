@@ -1,0 +1,25 @@
+
+fn main()
+{
+	const _json = `{
+	    "name": "Alice",
+	    "age": 30,
+	    "height": 5.7,
+	    "is_student": false,
+	    "nickname": undefined,
+	    "skills": ["C++", "Python", "JSON"],
+	    "address": {
+	        "street": "123 Main St" //syntax error here
+	        "city": "Wonderland",
+	        "zipcode": 12345
+	    }
+	}`;
+
+	try{
+		const obj = json.parse(_json);
+		return "success!";
+	}catch(ex){
+		return "fail!";
+	}
+
+}

@@ -1,0 +1,13 @@
+
+fn main()
+{
+	const _json = {
+	    "name": "Alice",
+	    "skills": ["C++", "Python", "JSON"],
+	    "address": {
+	        "street": "123 Main St"
+	    }
+	};
+
+	return json.stringify(_json, false); //no pretty print
+}

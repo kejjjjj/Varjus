@@ -75,9 +75,9 @@ TEST_CASE("hello.clone(3)") {
 	REQUIRE(retVal->HasOwner() == false);
 	TEST_END(retVal);
 }
-TEST_CASE("HELLO.get_code_at(0)") {
+TEST_CASE("HELLO.code_at(0)") {
 
-	auto retVal = TEST_ExecuteFile(JP(VSL("get_code_at.var")));
+	auto retVal = TEST_ExecuteFile(JP(VSL("code_at.var")));
 
 	REQUIRE(retVal);
 	REQUIRE(retVal->Type() == t_uint);

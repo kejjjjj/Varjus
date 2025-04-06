@@ -30,10 +30,10 @@ void CStdJsonValue::Construct(ObjectDeclaration_t& receiver)
 	receiver.AddMethod(VSL("stringify"), StringifyJson, 2);
 }
 
-static CArrayValue* ParseArray(CRuntimeContext* const ctx, json& arr);
-static CObjectValue* ParseObject(CRuntimeContext* const ctx, json& obj);
+static CArrayValue* ParseArray(CRuntimeContext* const ctx, const json& arr);
+static CObjectValue* ParseObject(CRuntimeContext* const ctx, const json& obj);
 
-IValue* ParseJsonRecursively(CRuntimeContext* const ctx, json& js)
+IValue* ParseJsonRecursively(CRuntimeContext* const ctx, const json& js)
 {
 	using value_t = json::value_t;
 	switch (js.type()) {
@@ -68,21 +68,21 @@ IValue* ParseJsonRecursively(CRuntimeContext* const ctx, json& js)
 
 }
 
-CArrayValue* ParseArray(CRuntimeContext* const ctx, json& arr)
+CArrayValue* ParseArray(CRuntimeContext* const ctx, const json& arr)
 {
 	IValues values;
 
-	for (auto& v : arr) {
+	for (const auto& v : arr) {
 		values.push_back(ParseJsonRecursively(ctx, v));
 	}
 
 	return CArrayValue::Construct(ctx->m_pRuntime, std::move(values));
 }
-CObjectValue* ParseObject(CRuntimeContext* const ctx, json& obj)
+CObjectValue* ParseObject(CRuntimeContext* const ctx, const json& obj)
 {
 	ObjectValues properties;
 
-	for (auto& [k, v] : obj.items()) {
+	for (const auto& [k, v] : obj.items()) {
 #ifdef UNICODE
 		auto key = CStringValue::Construct(ctx->m_pRuntime, LocaleConverter::utf8_to_u16string(k));
 #else
@@ -106,11 +106,14 @@ DEFINE_METHOD(ParseJson, args)
 	}
 
 	try {
-		auto data = json::parse(str->ToString());
+		const auto data = json::parse(str->ToString());
 		return ParseJsonRecursively(ctx, data);
 	}
 	catch (json::parse_error& err) {
-		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("json.parse error: \"{}\""), err.what()));
+		//let the user catch it
+		ctx->m_pRuntime->GetExceptionValue() = CStringValue::Construct(ctx->m_pRuntime, fmt::format(VSL("{}"), err.what()));
+		ctx->m_pRuntime->ThrowException();
+		return ctx->m_pRuntime->GetExceptionValue();
 	}
 
 }

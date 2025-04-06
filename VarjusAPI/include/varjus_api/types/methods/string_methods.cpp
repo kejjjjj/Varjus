@@ -37,7 +37,7 @@ std::unique_ptr<BuiltInMethod_t> CStringValue::ConstructMethods(CProgramInformat
 	m_oMethods->AddMethod(VSL("split"),       Split,          1u);
 	m_oMethods->AddMethod(VSL("replace"),     Replace,        2u);
 	m_oMethods->AddMethod(VSL("clone"),       Clone,          1u);
-	m_oMethods->AddMethod(VSL("get_code_at"), GetCodeAt,      1u);
+	m_oMethods->AddMethod(VSL("code_at"), GetCodeAt,      1u);
 	m_oMethods->AddMethod(VSL("contains"),    StringContains, 1u);
 
 	return m_oMethods;
@@ -196,12 +196,12 @@ DEFINE_METHOD(GetCodeAt, args) {
 
 	auto& idx = args[0];
 	if (!idx->IsIntegral())
-		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("string.get_code_at expected an integral value, but got \"{}\""), idx->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("string.code_at expected an integral value, but got \"{}\""), idx->TypeAsString()));
 
 	const auto index = idx->ToUInt();
 
 	if (index >= v.length())
-		throw CRuntimeError(ctx->m_pRuntime, VSL("string.get_code_at index out of range"));
+		throw CRuntimeError(ctx->m_pRuntime, VSL("string.code_at index out of range"));
 
 	return CUIntValue::Construct(ctx->m_pRuntime, static_cast<VarjusUInt>(v[index]));
 }

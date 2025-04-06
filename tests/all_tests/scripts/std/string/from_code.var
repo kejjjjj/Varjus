@@ -1,0 +1,15 @@
+
+fn main()
+{
+
+    const str = "hello!";
+
+    let result = "";
+    let i = 0;
+
+    for(const char : str){
+        result += string.from_code(str.code_at(i++));
+    }
+
+    return result;
+}

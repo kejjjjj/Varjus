@@ -1,0 +1,26 @@
+
+fn main()
+{
+	const _json = `{
+	    "name": "Alice",
+	    "age": 30,
+	    "height": 5.7,
+	    "is_student": false,
+	    "nickname": undefined,
+	    "skills": ["C++", "Python", "JSON"],
+	    "address": {
+	        "street": "123 Main St",
+	        "city": "Wonderland",
+	        "zipcode": 12345
+	    }
+	}`;
+
+	const obj = json.parse(_json);
+
+	return [
+		tostring obj.length, //7
+		tostring obj.address.length, //3
+		obj.skills[2], // "JSON"
+		obj.address.city //"Wonderland"
+	];
+}
