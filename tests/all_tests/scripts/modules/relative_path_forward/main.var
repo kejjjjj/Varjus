@@ -1,0 +1,6 @@
+import variable from "directory/test.var";
+
+fn main()
+{
+	return variable;
+}

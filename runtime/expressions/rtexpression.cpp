@@ -225,7 +225,7 @@ IValue* CRuntimeExpression::EvaluateFmtString(CRuntimeContext* const ctx, const 
 		}else if (t == FmtStringAST::PLACEHOLDER) {
 
 			auto operand = Evaluate(ctx, std::get<1>(v).get());
-			fullString += operand->ValueAsString();
+			fullString += operand->ValueAsEscapedString();
 
 			if (!operand->HasOwner())
 				operand->Release();

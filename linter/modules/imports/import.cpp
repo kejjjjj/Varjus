@@ -15,7 +15,7 @@
 #include "fs/fs_io.hpp"
 
 #include <cassert>
-
+#include <filesystem>
 
 CImportLinter::CImportLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack)
 	: CLinterSingle(pos, end), m_pScope(scope), m_pOwner(stack) {}
@@ -83,6 +83,33 @@ Success CImportLinter::ParseIdentifierRecursively()
 	return ParseIdentifierRecursively();
 }
 
+static VarjusString FixRelativePath(const VarjusString& wd, const VarjusString& relative)
+{
+	const auto nextDir = relative.find(VSL("/"));
+	const auto nextPrevious = relative.find(VSL("../"));
+
+	if (nextDir == VarjusString::npos && nextPrevious == VarjusString::npos)
+		return wd + DIRECTORY_SEPARATOR_CHAR + relative;
+
+	// / comes before ../
+	if (nextDir < nextPrevious) {
+		const auto substr = relative.substr(0, nextDir);
+		const auto remaining = relative.substr(nextDir + 1);
+		return FixRelativePath(wd + DIRECTORY_SEPARATOR_CHAR + substr, remaining);
+	}
+
+	// ../
+	const auto fullPath = std::filesystem::path(wd);
+	const auto newPath = fullPath.parent_path();
+	const auto remaining = relative.substr(nextPrevious + 3);
+
+#ifdef UNICODE
+	return FixRelativePath(newPath.u16string(), remaining);
+#else
+	return FixRelativePath(newPath.string(), remaining);
+#endif
+}
+
 Success CImportLinter::ParseFilePath()
 {
 	if (IsEndOfBuffer() || (*m_iterPos)->Type() != tt_string) {
@@ -93,7 +120,7 @@ Success CImportLinter::ParseFilePath()
 	const auto& relativePath = (*m_iterPos)->Source();
 	const auto& wd = fs::previous_directory( m_pOwner->GetContext()->m_sFilePath );
 
-	const auto fullPath = wd + DIRECTORY_SEPARATOR_CHAR + relativePath;
+	const auto fullPath = FixRelativePath(wd, relativePath);
 
 	if (!fs::file_exists(fullPath)) {
 		m_pOwner->GetModule()->PushError(fmt::format(VSL("\"{}\" does not exist"), fullPath), GetIteratorSafe()->m_oSourcePosition);

@@ -162,7 +162,7 @@ DEFINE_METHOD(SetPrecision, args)
 		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("number.setprecision expected an integral type, but got \"{}\""), v->TypeAsString()));
 	}
 
-	if (auto str = _SetPrecision(v->ToDouble(), precision->ToInt()))
+	if (const auto str = _SetPrecision(v->ToDouble(), precision->ToInt()))
 		return CStringValue::Construct(ctx->m_pRuntime, *str);
 
 	throw CRuntimeError(ctx->m_pRuntime, VSL("number.setprecision < 0 decimals"));

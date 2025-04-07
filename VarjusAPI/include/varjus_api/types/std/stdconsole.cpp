@@ -19,7 +19,7 @@ DEFINE_METHOD(LogConsole, args)
 	VarjusString p;
 
 	for (auto& v : args)
-		p += v->ValueAsString();
+		p += v->ValueAsEscapedString();
 
 	fmt::print(std::cout, VSL("{}\n"), p);
 	return IValue::Construct(ctx->m_pRuntime);
@@ -29,7 +29,7 @@ DEFINE_METHOD(LogConsoleError, args)
 	VarjusString p;
 
 	for (auto& v : args)
-		p += v->ValueAsString();
+		p += v->ValueAsEscapedString();
 
 	fmt::print(std::cerr, VSL("{}\n"), p);
 	return IValue::Construct(ctx->m_pRuntime);

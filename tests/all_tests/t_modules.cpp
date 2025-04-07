@@ -103,3 +103,28 @@ TEST_CASE(("Module throws and main catches it")) {
 	REQUIRE(retVal->HasOwner() == false);
 	TEST_END(retVal);
 }
+
+TEST_CASE(("Relative path forward")) {
+
+	auto retVal = TEST_ExecuteFile(JP(VSL("relative_path_forward") + DIRECTORY_SEPARATOR + VSL("main.var")));
+
+	REQUIRE(retVal != nullptr);
+	REQUIRE(retVal->Type() == t_int);
+	REQUIRE(retVal->ToInt() == 21);
+
+	REQUIRE(retVal->HasOwner() == false);
+	TEST_END(retVal);
+}
+TEST_CASE(("Relative path backward")) {
+
+	auto retVal = TEST_ExecuteFile(JP(VSL("relative_path_backward") + 
+		DIRECTORY_SEPARATOR + VSL("directory") + 
+		DIRECTORY_SEPARATOR + VSL("main.var")));
+
+	REQUIRE(retVal != nullptr);
+	REQUIRE(retVal->Type() == t_int);
+	REQUIRE(retVal->ToInt() == 22);
+
+	REQUIRE(retVal->HasOwner() == false);
+	TEST_END(retVal);
+}

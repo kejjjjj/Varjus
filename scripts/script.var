@@ -1,9 +1,32 @@
 
+fn findFile(path, receiver, rgx)
+{
+
+    if(!fs.exists(path))
+        return;
+
+    for(const kv : fs.list_directory(path)){
+
+        if(kv.type === "d"){
+            findFile(kv.path, receiver, rgx);
+            continue;
+        }
+
+        if(regex.search(rgx, kv.path))
+            receiver.push(kv.path);
+    }
+}
+
 fn main()
 {
-    return [
-        "hello hello!".find_last("hello"),
-        "haello haello!".find_last("hello")
-    ];
+    const arr = [];
+    const then = date.now();
+    findFile("D:\\Varjus", arr, "\\.cpp");
+    const now = date.now();
+
+    for(const v : arr)
+        console.log(v);
     
+    console.log("num found: ", arr.length);
+    console.log(`time taken: ${number.setprecision((now - then) / 1000.0, 3)}s`);
 }
