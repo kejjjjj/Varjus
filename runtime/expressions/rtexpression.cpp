@@ -33,6 +33,30 @@ IValue* CRuntimeExpression::Evaluate(CRuntimeContext* const ctx)
 	return Evaluate(ctx, m_pAST.get());
 }
 
+static IValue* ConditionalShortcut(CRuntimeContext* const ctx, IValue* lhs, Punctuation punctuation)
+{
+	if (punctuation == p_logical_or) {
+		//if lhs of || is true, we can exit early
+
+		if (lhs->IsBooleanConvertible() && lhs->ToBoolean()) {
+			//ok we can exit early
+			if (!lhs->HasOwner()) lhs->Release();
+
+			return CBooleanValue::Construct(ctx->m_pRuntime, true);
+		}
+
+	} else if (punctuation == p_logical_and) {
+		//if lhs of && is false, we can exit early
+
+		if (lhs->IsBooleanConvertible() && !lhs->ToBoolean()) {
+			//ok we can exit early
+			if (!lhs->HasOwner()) lhs->Release();
+			return CBooleanValue::Construct(ctx->m_pRuntime, false);
+		}
+	}
+
+	return nullptr;
+}
 #pragma pack(push)
 WARNING_DISABLE(4061)
 WARNING_DISABLE(4062)
@@ -64,6 +88,12 @@ IValue* CRuntimeExpression::Evaluate(CRuntimeContext* const ctx, const AbstractS
 		return EvaluateLeaf(ctx, node);
 
 	auto lhs = Evaluate(ctx, node->left.get());
+
+	const auto punctuation = node->GetOperator()->m_ePunctuation;
+
+	if (const auto v = ConditionalShortcut(ctx, lhs, punctuation))
+		return v;
+
 	auto rhs = Evaluate(ctx, node->right.get());
 
 	if (ctx->m_pRuntime->ExceptionThrown()) {
@@ -73,7 +103,7 @@ IValue* CRuntimeExpression::Evaluate(CRuntimeContext* const ctx, const AbstractS
 	}
 	assert(node->IsOperator());
 
-	auto& func = m_oOperatorTable[static_cast<std::size_t>(node->GetOperator()->m_ePunctuation)];
+	auto& func = m_oOperatorTable[static_cast<std::size_t>(punctuation)];
 
 	if (!func)
 		throw CRuntimeError(ctx->m_pRuntime, VSL("this operator isn't supported yet"));

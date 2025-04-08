@@ -46,3 +46,30 @@ TEST_CASE(("operator precedence in ternary operations")) {
 	REQUIRE(retVal->HasOwner() == false);
 	TEST_END(retVal);
 }
+
+TEST_CASE(("conditional and shortcuts"))
+{
+	auto retVal = TEST_ExecuteFile(JP(VSL("conditional_and.var")));
+
+	AssertArray(retVal, AssertArrayValue<ASSERT_BOOL>(t_boolean, {
+		false,
+		true,
+		true
+	}));
+
+	REQUIRE(retVal->HasOwner() == false);
+	TEST_END(retVal);
+}
+TEST_CASE(("conditional or shortcuts"))
+{
+	auto retVal = TEST_ExecuteFile(JP(VSL("conditional_or.var")));
+
+	AssertArray(retVal, AssertArrayValue<ASSERT_BOOL>(t_boolean, {
+		true,
+		true,
+		false
+	}));
+
+	REQUIRE(retVal->HasOwner() == false);
+	TEST_END(retVal);
+}

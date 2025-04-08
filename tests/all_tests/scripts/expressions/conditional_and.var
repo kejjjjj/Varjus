@@ -1,0 +1,10 @@
+fn main(){
+
+    let val = 2;
+
+    return [
+        false && ++"very illegal syntax",
+        true && ++val,
+        val === 3
+    ];
+}
