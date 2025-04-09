@@ -1,10 +1,10 @@
-fn main(){
+fn main() {
 
-    let val = 2;
+    let a = 2;
+    const b = 3;
 
-    return [
-        true || ++"very illegal syntax",
-        false || ++val,
-        val === 2
-    ];
+    a <=> b;
+
+    return a;
+    
 }

@@ -173,10 +173,21 @@ OperatorIterator AbstractSyntaxTree::FindLowestPriorityOperator(Operators& opera
 }
 bool AbstractSyntaxTree::IsAssignment() const noexcept
 {
-	return GetOperator()->m_ePunctuation >= p_assign && GetOperator()->m_ePunctuation <= p_assignment_bitwise_and;
+	return GetOperator()->m_ePunctuation >= p_assign && GetOperator()->m_ePunctuation <= p_swap;
 }
 void AbstractSyntaxTree::CheckConstness(CMemory* const owner) const
 {
+	if (GetOperator()->m_ePunctuation == p_swap) {
+		if (left->IsVariable() && left->GetVariable()->m_bIsConst) {
+			owner->GetModule()->PushError(VSL("lhs is declared const"), left->m_oApproximatePosition);
+			return;
+		}
+		if (right->IsVariable() && right->GetVariable()->m_bIsConst) {
+			owner->GetModule()->PushError(VSL("rhs is declared const"), right->m_oApproximatePosition);
+			return;
+		}
+	}
+
 	if (left->IsVariable() && left->GetVariable()->m_bIsConst) {
 		owner->GetModule()->PushError(VSL("lhs is declared const"), left->m_oApproximatePosition);
 		return;
