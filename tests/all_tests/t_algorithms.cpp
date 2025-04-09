@@ -197,3 +197,12 @@ TEST_CASE(("FractalGenerator(10)")) {
 	REQUIRE(retVal->HasOwner() == false);
 	TEST_END(retVal);
 }
+TEST_CASE(("ExpressionEvaluator()")) {
+
+	auto retVal = TEST_ExecuteFile(JP(VSL("expression_evaluator.var")));
+
+	AssertArray(retVal, AssertArrayValue<ASSERT_STRING>(t_string, { VSL("17.0"), VSL("3.5"), VSL("64.0")}));
+
+	REQUIRE(retVal->HasOwner() == false);
+	TEST_END(retVal);
+}

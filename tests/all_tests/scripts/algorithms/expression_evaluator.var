@@ -106,11 +106,11 @@ fn main()
 {
     try{
         return [
-            number.setprecision(evaluate("2 + 3 * 5"), 1), //17.0
-            number.setprecision(evaluate("3 + 4 * 2 / (1 - 5)^2"), 1), //3.5
-            number.setprecision(evaluate("8 ^ 2"), 1) // 64
+            number.setprecision(evaluate("2 + 3 * 5"), 1),             // "17.0"
+            number.setprecision(evaluate("3 + 4 * 2 / (1 - 5)^2"), 1), // "3.5"
+            number.setprecision(evaluate("8 ^ 2"), 1)                  // "64.0"
         ];
-    }catch(ex){
+    } catch(ex){
         return ex;
     }
 }
