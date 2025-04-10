@@ -206,3 +206,15 @@ TEST_CASE(("ExpressionEvaluator()")) {
 	REQUIRE(retVal->HasOwner() == false);
 	TEST_END(retVal);
 }
+TEST_CASE(("AutoComplete()")) {
+
+	auto retVal = TEST_ExecuteFile(JP(VSL("auto_complete.var")));
+
+	AssertArray(retVal, AssertArrayValue<ASSERT_STRING>(t_string, { 
+		VSL("app"), VSL("apple"), VSL("ape"), 
+		VSL("bat"), VSL("bath"), VSL("banana") 
+	}));
+
+	REQUIRE(retVal->HasOwner() == false);
+	TEST_END(retVal);
+}

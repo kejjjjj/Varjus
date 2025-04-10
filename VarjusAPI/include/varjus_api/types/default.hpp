@@ -71,6 +71,8 @@ public:
 
 	[[nodiscard]] virtual VarjusString TypeAsString() const { return VSL("undefined"); }
 	[[nodiscard]] virtual VarjusString ValueAsString() const { return VSL("undefined"); }
+
+	//removes the surrounding quotes (for strings)
 	[[nodiscard]] virtual VarjusString ValueAsEscapedString() const { return ValueAsString(); }
 
 
