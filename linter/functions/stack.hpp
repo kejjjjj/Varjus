@@ -56,10 +56,11 @@ public:
 
 	[[nodiscard]] auto& GetProgramInformation() noexcept { return m_pProgram; }
 
-
 	[[nodiscard]] bool IsHoisting() const noexcept { return !m_pGlobal->m_pHoister; }
 	[[nodiscard]] bool HasHoistedData() const noexcept { return !!m_pGlobal->m_pHoister; }
 	[[nodiscard]] auto& GetHoister() const noexcept { return m_pGlobal->m_pHoister; }
+
+	[[nodiscard]] virtual const VectorOf<RuntimeBlock>& GetInstructions() const noexcept { return m_oInstructions; }
 
 	VarManager<CLinterVariable> m_VariableManager;
 	std::unique_ptr<CFunctionManager> m_FunctionManager;
@@ -95,6 +96,7 @@ public:
 	[[nodiscard]] constexpr bool IsLocalFunction() const noexcept override { return !!m_pLowerFunction; };
 
 	void AddFunctionInstruction(RuntimeBlock&& block) const;
+	[[nodiscard]] const VectorOf<RuntimeBlock>& GetInstructions() const noexcept override;
 
 	std::unique_ptr<CFunctionBlock> m_pFunction;
 	CStack* m_pLowerFunction{ nullptr };

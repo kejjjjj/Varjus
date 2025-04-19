@@ -12,9 +12,9 @@ FORWARD_DECLARE_METHOD(RegexReplace);
 
 void CStdRegex::Construct(ObjectDeclaration_t& receiver)
 {
-	receiver.AddMethod(VSL("search"),  RegexSearch,  2);
-	receiver.AddMethod(VSL("match"),   RegexMatch,   2);
-	receiver.AddMethod(VSL("replace"), RegexReplace, 3);
+	receiver.AddMethod(VSL("search"),     RegexSearch,  2);
+	receiver.AddMethod(VSL("full_match"), RegexMatch,   2);
+	receiver.AddMethod(VSL("replace"),    RegexReplace, 3);
 
 
 }

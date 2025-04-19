@@ -15,9 +15,34 @@
 CScopeLinter::CScopeLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const owner)
 	: CLinterSingle(pos, end), m_pScope(scope), m_pOwner(owner) {
 
-	assert(!IsEndOfBuffer() && (*m_iterPos)->IsOperator(p_curlybracket_open));
+	assert(!IsEndOfBuffer());
 }
+Success CScopeLinter::ParseUntil(bool(*test)(LinterIterator& iter))
+{
+	CLinterContext ctx{
+		.m_iterPos = m_iterPos,
+		.m_iterEnd = m_iterEnd,
+		.scope = m_pScope,
+		.memory = m_pOwner,
+		.m_pModule = m_pOwner->GetModule(),
+		.m_bAddInstructions = !m_pOwner->IsHoisting()
+	};
 
+	do {
+		if (!CBufferLinter::LintToken(ctx))
+			break;
+
+		std::advance(m_iterPos, 1);
+
+	} while (!IsEndOfBuffer() && !test(m_iterPos));
+
+	std::advance(m_iterPos, -1); // go back in case the context is needed
+
+	if (IsEndOfBuffer())
+		return success;
+
+	return success;
+}
 Success CScopeLinter::Parse()
 {
 	assert(!IsEndOfBuffer() && (*m_iterPos)->IsOperator(p_curlybracket_open));
@@ -28,27 +53,13 @@ Success CScopeLinter::Parse()
 		return failure;
 	}
 
-	CLinterContext ctx{
-	.m_iterPos = m_iterPos,
-	.m_iterEnd = m_iterEnd,
-	.scope = m_pScope,
-	.memory = m_pOwner,
-	.m_pModule = m_pOwner->GetModule(),
-	.m_bAddInstructions = !m_pOwner->IsHoisting()
-	};
+	const auto ret = ParseUntil([](LinterIterator& i) { 
+		return (*i)->IsOperator(p_curlybracket_close); 
+	});
 
-	do {
-		if (!CBufferLinter::LintToken(ctx))
-			break;
+	std::advance(m_iterPos, 1); //skip }
+	return ret;
 
-		std::advance(m_iterPos, 1);
-
-	} while (!IsEndOfBuffer() && !(*m_iterPos)->IsOperator(p_curlybracket_close));
-
-	if (IsEndOfBuffer())
-		return success;
-
-	return success;
 }
 CScope::CScope(CMemory* const owner) : m_pOwner(owner){}
 CScope::~CScope() {
@@ -105,10 +116,6 @@ bool CScope::VariableExists(const VarjusString& var) const
 	return m_pLowerScope->VariableExists(var);
 }
 
-bool CScope::IsLoopScope() const noexcept
-{
-	return m_bIsWithinLoop;
-}
 void CScope::AddInstruction(RuntimeBlock&& block)
 {
 	m_oInstructions.emplace_back(std::move(block));

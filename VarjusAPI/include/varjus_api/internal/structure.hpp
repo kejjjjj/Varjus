@@ -23,6 +23,8 @@ enum EStructureType
 	st_for,
 	st_ranged_for,
 	st_while,
+	st_match,
+	st_case,
 	st_return,
 	st_loop_control,
 	st_try_catch,
@@ -49,6 +51,7 @@ class FmtStringASTNode;
 class CVariable;
 class CProgramRuntime;
 class CRuntimeModule;
+class CRuntimeCaseStatement;
 
 struct CFunctionBlock;
 
@@ -88,6 +91,7 @@ public:
 
 	[[nodiscard]] static EExecutionControl ToControlStatement(const IValue* rv);
 
+	[[nodiscard]] virtual CRuntimeCaseStatement* ToCaseStatement() { return nullptr; }
 
 protected:
 };
@@ -115,6 +119,7 @@ using ObjectInitializer = VectorOf<KeyValue<ElementIndex, IValue*>>;
 using ObjectInitializerData = VectorOf<KeyValue<ElementIndex, ASTNode>>;
 
 // contains more than one instruction
+
 class IRuntimeStructureSequence : public IRuntimeStructure
 {
 	NONCOPYABLE(IRuntimeStructureSequence);
@@ -337,6 +342,41 @@ private:
 	std::unique_ptr<CRuntimeExpression> m_pCondition;
 };
 
+class CRuntimeCaseStatement final : public IRuntimeStructureSequence
+{
+	NONCOPYABLE(CRuntimeCaseStatement);
+	friend class CRuntimeMatchStatement;
+public:
+	CRuntimeCaseStatement(ASTNode&& condition, InstructionSequence&& insns);
+	~CRuntimeCaseStatement();
+
+	[[maybe_unused]] IValue* Execute(CRuntimeContext* const ctx) override;
+	[[nodiscard]] inline bool IsDefaultClause() const noexcept { return !m_pCondition->HasAST(); }
+protected:
+	[[nodiscard]] constexpr EStructureType Type() const noexcept override { return st_case; };
+	[[nodiscard]] CRuntimeCaseStatement* ToCaseStatement() override { return this; }
+
+private:
+	std::unique_ptr<CRuntimeExpression> m_pCondition; //no value == default clause
+};
+class CRuntimeMatchStatement final : public IRuntimeStructureSequence
+{
+	NONCOPYABLE(CRuntimeMatchStatement);
+public:
+	CRuntimeMatchStatement(ASTNode&& condition, CRuntimeCaseStatement* const defaultClause, InstructionSequence&& insns);
+	~CRuntimeMatchStatement();
+
+	[[maybe_unused]] IValue* Execute(CRuntimeContext* const ctx) override;
+
+protected:
+	[[nodiscard]] constexpr EStructureType Type() const noexcept override { return st_match; };
+
+private:
+	[[nodiscard]] std::size_t GetCaseIndex(CRuntimeContext* const ctx) const noexcept;
+
+	CRuntimeCaseStatement* const m_pDefaultCase;
+	std::unique_ptr<CRuntimeExpression> m_pCondition;
+};
 class CRuntimeRepeatStatement final : public IRuntimeStructureSequence
 {
 	NONCOPYABLE(CRuntimeRepeatStatement);

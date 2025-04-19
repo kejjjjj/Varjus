@@ -16,9 +16,9 @@ TEST_CASE(("regexsearch()")) {
 	REQUIRE(retVal->HasOwner() == false);
 	TEST_END(retVal);
 }
-TEST_CASE(("regexmatch()")) {
+TEST_CASE(("regexfullmatch()")) {
 
-	auto retVal = TEST_ExecuteFile(JP(VSL("match.var")));
+	auto retVal = TEST_ExecuteFile(JP(VSL("full_match.var")));
 
 	AssertArray(retVal, AssertArrayValue<ASSERT_BOOL>(t_boolean, {
 		true, false

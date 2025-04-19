@@ -15,6 +15,7 @@ public:
 	explicit CScopeLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& s, CMemory* const owner);
 
 	[[maybe_unused]] Success Parse();
+	[[maybe_unused]] Success ParseUntil(bool(*test)(LinterIterator& i));
 
 private:
 
@@ -42,14 +43,18 @@ public:
 	[[nodiscard]] bool VariableExists(const VarjusString& var) const;
 
 	constexpr void MakeLoopScope(bool s = true) noexcept { m_bIsWithinLoop = s; }
-	[[nodiscard]] bool IsLoopScope() const noexcept;
+	[[nodiscard]] constexpr bool IsLoopScope() const noexcept { return m_bIsWithinLoop; }
+
+	constexpr void MakeMatchScope(bool s = true) noexcept { m_bIsMatchStatement = s; }
+	[[nodiscard]] constexpr bool IsMatchScope() const noexcept { return m_bIsMatchStatement; }
 
 	void AddInstruction(RuntimeBlock&& block);
 	void AddInstructions(VectorOf<RuntimeBlock>&& block);
 
-	VectorOf<RuntimeBlock>&& MoveInstructions();
+	[[nodiscard]] VectorOf<RuntimeBlock>&& MoveInstructions();
+	[[nodiscard]] IRuntimeStructure* GetLatestInstruction() const noexcept;
 
-	IRuntimeStructure* GetLatestInstruction() const noexcept;
+	[[nodiscard]] constexpr auto& GetInstructions() const noexcept { return m_oInstructions; }
 
 private:
 
@@ -59,4 +64,5 @@ private:
 	CScope* m_pLowerScope{};
 	std::unordered_set<VarjusString> m_oLocalVariables;
 	bool m_bIsWithinLoop{ false };
+	bool m_bIsMatchStatement{ false };
 };

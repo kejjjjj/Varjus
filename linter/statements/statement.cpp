@@ -63,6 +63,7 @@ ASTNode CStatementLinter::ParseExpression()
 
 Success CStatementLinter::ParseScope()
 {
+
 	if (IsEndOfBuffer()) {
 		m_pOwner->GetModule()->PushError(VSL("expected a \"{\" or an expression"), (*std::prev(m_iterPos))->m_oSourcePosition);
 		return failure;

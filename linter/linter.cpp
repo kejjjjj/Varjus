@@ -22,6 +22,8 @@
 #include "statements/throw/throw.hpp"
 #include "statements/try_catch/try_catch.hpp"
 #include "statements/while/while.hpp"
+#include "statements/match/match.hpp"
+#include "statements/match/case.hpp"
 
 #include "varjus_api/types/internal/objects.hpp"
 #include "varjus_api/types/internal/callbacks.hpp"
@@ -112,6 +114,15 @@ Success CBufferLinter::LintToken(const CLinterContext& ctx)
 	if (ctx.m_iterPos == ctx.m_iterEnd)
 		return failure;
 
+	if ((*ctx.m_iterPos)->Type() != tt_case && (*ctx.m_iterPos)->Type() != tt_default) {
+		if (const auto s = ctx.scope.lock()) {
+			if (s->IsMatchScope()) {
+				ctx.m_pModule->PushError(VSL("match blocks must start with a case label"), (*ctx.m_iterPos)->m_oSourcePosition);
+				return failure;
+			}
+		} else { return failure; }
+	}
+
 	switch ((*ctx.m_iterPos)->Type()) {
 	case tt_let:
 	case tt_const:
@@ -140,6 +151,11 @@ Success CBufferLinter::LintToken(const CLinterContext& ctx)
 		return Lint<CForStatementLinter>(ctx);
 	case tt_while:
 		return Lint<CWhileStatementLinter>(ctx);
+	case tt_match:
+		return Lint<CMatchStatementLinter>(ctx);
+	case tt_default:
+	case tt_case:
+		return Lint<CCaseStatementLinter>(ctx);
 	case tt_repeat:
 		return Lint<CRepeatStatementLinter>(ctx);
 	case tt_return:

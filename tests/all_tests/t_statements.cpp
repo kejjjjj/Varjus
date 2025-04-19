@@ -182,3 +182,57 @@ TEST_CASE(("ranged for loop iterates variable \"hello\"")) {
 	REQUIRE(retVal->HasOwner() == false);
 	TEST_END(retVal);
 }
+
+TEST_CASE(("match without default")) {
+
+	auto retVal = TEST_ExecuteFile(JP(VSL("match") + DIRECTORY_SEPARATOR + VSL("match_no_default.var")));
+
+	AssertArray(retVal, AssertArrayValue<ASSERT_STRING>{t_string, { 
+		VSL("case 0"), 
+		VSL("case 1"), 
+		VSL("undefined") 
+	}});
+
+	REQUIRE(retVal->HasOwner() == false);
+	TEST_END(retVal);
+}
+TEST_CASE(("match with default")) {
+
+	auto retVal = TEST_ExecuteFile(JP(VSL("match") + DIRECTORY_SEPARATOR + VSL("match_default.var")));
+
+	AssertArray(retVal, AssertArrayValue<ASSERT_STRING>{t_string, {
+		VSL("case 0"),
+		VSL("case 1"),
+		VSL("other")
+	}});
+
+	REQUIRE(retVal->HasOwner() == false);
+	TEST_END(retVal);
+}
+TEST_CASE(("match only default")) {
+
+	auto retVal = TEST_ExecuteFile(JP(VSL("match") + DIRECTORY_SEPARATOR + VSL("match_only_default.var")));
+
+	AssertArray(retVal, AssertArrayValue<ASSERT_STRING>{t_string, {
+		VSL("other"),
+		VSL("other"),
+		VSL("other")
+	}});
+
+	REQUIRE(retVal->HasOwner() == false);
+	TEST_END(retVal);
+}
+TEST_CASE(("nested match")) {
+
+	auto retVal = TEST_ExecuteFile(JP(VSL("match") + DIRECTORY_SEPARATOR + VSL("match_nested.var")));
+
+	AssertArray(retVal, AssertArrayValue<ASSERT_STRING>{t_string, {
+		VSL("val2: 0"),
+		VSL("val2: 1"),
+		VSL("val2: default"),
+		VSL("other")
+		}});
+
+	REQUIRE(retVal->HasOwner() == false);
+	TEST_END(retVal);
+}
