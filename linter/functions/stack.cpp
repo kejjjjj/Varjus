@@ -41,7 +41,11 @@ CStack::~CStack() = default;
 void CStack::AddFunctionInstruction(RuntimeBlock&& block) const{
 	m_pFunction->m_oInstructions.emplace_back(std::move(block));
 }
-
+const VectorOf<RuntimeBlock>& CStack::GetInstructions() const noexcept
+{
+	assert(m_pFunction);
+	return m_pFunction->m_oInstructions;
+}
 CStack* CStack::GetGlobalFunction()
 {
 	auto func = this;

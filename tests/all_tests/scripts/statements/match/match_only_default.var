@@ -1,0 +1,17 @@
+fn testMatch(val)
+{
+    match(val){
+    default:
+        return "other";
+    }
+}
+
+fn main()
+{
+
+    return [
+        tostring testMatch(0),
+        tostring testMatch(1),
+        tostring testMatch(2)
+    ];
+}

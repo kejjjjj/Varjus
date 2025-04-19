@@ -1,0 +1,8 @@
+fn main()
+{
+    const str = "HelloWorld!";
+    return [
+        regex.full_match("Hello(.*)", str),
+        regex.full_match("Hallo(.*)", str)
+    ];
+}
