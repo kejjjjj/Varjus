@@ -229,6 +229,7 @@ public:
 	Function_t m_pFunction;
 };
 
+using RuntimeAST = ASTNode;
 
 class CRuntimeExpression final : public IRuntimeStructure
 {
@@ -247,21 +248,21 @@ protected:
 	[[nodiscard]] constexpr EStructureType Type() const noexcept override { return st_expression;};
 
 private:
-	[[nodiscard]] static IValue* Evaluate(CRuntimeContext* const ctx, const AbstractSyntaxTree* node);
-	[[nodiscard]] static IValue* EvaluateLeaf(CRuntimeContext* const ctx, const AbstractSyntaxTree* node);
-	[[nodiscard]] static IValue* EvaluatePostfix(CRuntimeContext* const ctx, const PostfixASTNode* node);
-	[[nodiscard]] static IValue* EvaluateUnary(CRuntimeContext* const ctx, const UnaryASTNode* node);
+	[[nodiscard]] static IValue* Evaluate(CRuntimeContext* const ctx, RuntimeAST& node);
+	[[nodiscard]] static IValue* EvaluateLeaf(CRuntimeContext* const ctx, RuntimeAST& node);
+	[[nodiscard]] static IValue* EvaluatePostfix(CRuntimeContext* const ctx, PostfixASTNode* node);
+	[[nodiscard]] static IValue* EvaluateUnary(CRuntimeContext* const ctx, UnaryASTNode* node);
 
-	[[nodiscard]] static IValue* EvaluateSequence(CRuntimeContext* const ctx, const AbstractSyntaxTree* node);
-	[[nodiscard]] static IValue* EvaluateTernary(CRuntimeContext* const ctx, const TernaryASTNode* node);
-	[[nodiscard]] static IValue* EvaluateFmtString(CRuntimeContext* const ctx, const FmtStringASTNode* node);
+	[[nodiscard]] static IValue* EvaluateSequence(CRuntimeContext* const ctx, RuntimeAST& node);
+	[[nodiscard]] static IValue* EvaluateTernary(CRuntimeContext* const ctx, TernaryASTNode* node);
+	[[nodiscard]] static IValue* EvaluateFmtString(CRuntimeContext* const ctx, FmtStringASTNode* node);
 
 	[[nodiscard]] static IValue* EvaluateMemberAccess(CRuntimeContext* const ctx, IValue* operand, const MemberAccessASTNode* node);
-	[[nodiscard]] static IValue* EvaluateSubscript(CRuntimeContext* const ctx, IValue* operand, const SubscriptASTNode* node);
-	[[nodiscard]] static IValue* EvaluateFunctionCall(CRuntimeContext* const ctx, IValue* operand, const FunctionCallASTNode* node);
+	[[nodiscard]] static IValue* EvaluateSubscript(CRuntimeContext* const ctx, IValue* operand, SubscriptASTNode* node);
+	[[nodiscard]] static IValue* EvaluateFunctionCall(CRuntimeContext* const ctx, IValue* operand, FunctionCallASTNode* node);
 
-	[[nodiscard]] static VectorOf<IValue*> EvaluateList(CRuntimeContext* const ctx, const ExpressionList& list);
-	[[nodiscard]] static ObjectInitializer EvaluateObject(CRuntimeContext* const ctx, const ObjectInitializerData& obj);
+	[[nodiscard]] static VectorOf<IValue*> EvaluateList(CRuntimeContext* const ctx, ExpressionList& list);
+	[[nodiscard]] static ObjectInitializer EvaluateObject(CRuntimeContext* const ctx, ObjectInitializerData& obj);
 	ASTNode m_pAST;
 
 };

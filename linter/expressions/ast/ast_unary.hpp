@@ -10,6 +10,8 @@ public:
 	~UnaryASTNode() = default;
 
 	[[nodiscard]] constexpr const UnaryASTNode* GetUnary() const noexcept override { return this; }
+	[[nodiscard]] constexpr UnaryASTNode* GetUnary() noexcept override { return this; }
+
 	[[nodiscard]] constexpr bool IsUnary() const noexcept override { return true; }
 
 	[[nodiscard]] virtual constexpr bool IsNegation() const noexcept  { return false; }

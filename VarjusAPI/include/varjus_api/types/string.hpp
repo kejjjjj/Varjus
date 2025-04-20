@@ -24,7 +24,9 @@ public:
 	[[nodiscard]] constexpr auto& GetString() noexcept { return Get().m_sString; }
 	[[nodiscard]] constexpr auto& GetString() const noexcept { return Get().m_sString; }
 
-	[[nodiscard]] std::size_t Length() const noexcept;
+	[[nodiscard]] constexpr std::size_t Length() const noexcept {
+		return m_oValue.m_sString.length();
+	}
 
 protected:
 	CStringContent m_oValue;
@@ -57,12 +59,15 @@ public:
 
 	[[nodiscard]] CStringValue* ToCString() override { return this; }
 
-	[[nodiscard]] CInternalStringValue* Internal();
-	[[nodiscard]] const CInternalStringValue* Internal() const;
+	[[nodiscard]] constexpr CInternalStringValue* Internal() { return &Get(); }
+	[[nodiscard]] constexpr const CInternalStringValue* Internal() const { return &Get(); }
 
 	[[nodiscard]] IValue* Index(IValue* index) override;
 	[[nodiscard]] IValue* GetAggregate(CRuntimeContext* const ctx, std::size_t memberIdx) override;
 	[[nodiscard]] IValues ToIterable() const override;
+
+	[[nodiscard]] constexpr std::size_t SizeOf() const noexcept override { return Get().Length(); }
+	[[nodiscard]] constexpr VarjusString ValueAsBytes() const noexcept override { return Internal()->GetString(); }
 
 private:
 	[[nodiscard]] VarjusString TypeAsString() const override { return VSL("string"); }

@@ -242,6 +242,18 @@ ConstantASTNode::ConstantASTNode(const CodePosition& pos, const VarjusString& da
 }
 ConstantASTNode::~ConstantASTNode() = default;
 
+#include "varjus_api/types/default.hpp"
+ASTNode ConstantASTNode::FromIValue(const ConstantASTNode* _this, IValue* const value) noexcept
+{
+	assert(value && value->Type() <= t_string);
+
+	return std::make_shared<ConstantASTNode>(
+		_this->GetCodePosition(), 
+		value->ValueAsBytes(), 
+		value->Type()
+	);
+}
+
 ArrayASTNode::ArrayASTNode(const CodePosition& pos, ExpressionList&& expressions)
 	: AbstractSyntaxTree(pos), m_oExpressions(std::move(expressions)) {
 }

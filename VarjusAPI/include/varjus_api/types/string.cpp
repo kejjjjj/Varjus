@@ -31,12 +31,7 @@ void CStringValue::Release()
 	ReleaseInternal();
 	m_pAllocator->FreeValue<CStringValue>(this);
 }
-CInternalStringValue* CStringValue::Internal() {
-	return &Get();
-}
-const CInternalStringValue* CStringValue::Internal() const {
-	return &Get();
-}
+
 IValue* CStringValue::Index(IValue* vIndex)
 {
 	if (!vIndex->IsIntegral())
@@ -98,10 +93,4 @@ void CInternalStringValue::Release()
 void CInternalStringValue::Set(const VarjusString& value) {
 	m_oValue.m_sString = value;
 }
-
-std::size_t CInternalStringValue::Length() const noexcept
-{
-	return m_oValue.m_sString.length();
-}
-
 

@@ -20,9 +20,9 @@ static IValue* EvaluateBitwiseNot(CProgramRuntime* const runtime, IValue* operan
 static IValue* EvaluateTypeOf(CProgramRuntime* const runtime, IValue* operand);
 static IValue* EvaluateToString(CProgramRuntime* const runtime, IValue* operand);
 
-IValue* CRuntimeExpression::EvaluateUnary(CRuntimeContext* const ctx, const UnaryASTNode* node)
+IValue* CRuntimeExpression::EvaluateUnary(CRuntimeContext* const ctx, UnaryASTNode* node)
 {
-	auto operand = Evaluate(ctx, node->left.get());
+	auto operand = Evaluate(ctx, node->left);
 	IValue* returnVal{ nullptr };
 
 	if (node->IsNegation()) {

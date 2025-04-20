@@ -15,9 +15,9 @@
 static IValue* EvaluateIncrement(CProgramRuntime* const runtime, IValue* operand);
 static IValue* EvaluateDecrement(CProgramRuntime* const runtime, IValue* operand);
 
-IValue* CRuntimeExpression::EvaluatePostfix(CRuntimeContext* const ctx, const PostfixASTNode* node)
+IValue* CRuntimeExpression::EvaluatePostfix(CRuntimeContext* const ctx, PostfixASTNode* node)
 {
-	auto operand = Evaluate(ctx, node->left.get());
+	auto operand = Evaluate(ctx, node->left);
 
 	IValue* returnVal{ nullptr };
 
@@ -63,12 +63,12 @@ IValue* CRuntimeExpression::EvaluateMemberAccess(CRuntimeContext* const ctx, IVa
 	return operand->GetAggregate(ctx, node->m_uGlobalMemberIndex);
 
 }
-IValue* CRuntimeExpression::EvaluateSubscript(CRuntimeContext* const ctx, IValue* operand, const SubscriptASTNode* node)
+IValue* CRuntimeExpression::EvaluateSubscript(CRuntimeContext* const ctx, IValue* operand, SubscriptASTNode* node)
 {
 	if (!operand->IsIndexable())
 		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("a value of type \"{}\" cannot be indexed"), operand->TypeAsString()));
 
-	auto accessor = Evaluate(ctx, node->m_pAST.get());
+	auto accessor = Evaluate(ctx, node->m_pAST);
 
 	auto index = operand->Index(accessor);
 
@@ -79,7 +79,7 @@ IValue* CRuntimeExpression::EvaluateSubscript(CRuntimeContext* const ctx, IValue
 
 	return index;
 }
-IValue* CRuntimeExpression::EvaluateFunctionCall(CRuntimeContext* const ctx, IValue* operand, const FunctionCallASTNode* node)
+IValue* CRuntimeExpression::EvaluateFunctionCall(CRuntimeContext* const ctx, IValue* operand, FunctionCallASTNode* node)
 {
 
 	if (!operand->IsCallable())

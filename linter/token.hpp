@@ -108,11 +108,11 @@ public:
 
 	std::tuple<size_t, size_t> m_oSourcePosition{1, 1};
 
-	constexpr auto Type() const noexcept { return m_eTokenType; }
-	virtual bool IsOperator() const noexcept { return false; }
-	virtual bool IsOperator([[maybe_unused]]Punctuation p) const noexcept { return false; }
+	[[nodiscard]] constexpr auto Type() const noexcept { return m_eTokenType; }
+	[[nodiscard]] virtual bool IsOperator() const noexcept { return false; }
+	[[nodiscard]] virtual bool IsOperator([[maybe_unused]]Punctuation p) const noexcept { return false; }
 
-	constexpr auto& Source() const noexcept { return m_sSource; }
+	[[nodiscard]] constexpr auto& Source() const noexcept { return m_sSource; }
 
 private:
 	TokenType m_eTokenType{ tt_error };
@@ -126,8 +126,8 @@ public:
 	CPunctuationToken(const CPunctuation& p);
 	~CPunctuationToken();
 
-	bool IsOperator() const noexcept override { return true; }
-	bool IsOperator(Punctuation p) const noexcept override { return m_ePunctuation == p; }
+	[[nodiscard]] bool IsOperator() const noexcept override { return true; }
+	[[nodiscard]] bool IsOperator(Punctuation p) const noexcept override { return m_ePunctuation == p; }
 
 	Punctuation m_ePunctuation{};
 	OperatorPriority m_ePriority{};
