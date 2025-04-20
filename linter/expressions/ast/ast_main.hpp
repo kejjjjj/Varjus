@@ -69,16 +69,25 @@ public:
 	[[nodiscard]] virtual constexpr bool IsSequence() const noexcept { return false; }
 
 	[[nodiscard]] virtual constexpr const OperatorASTNode* GetOperator() const noexcept { return nullptr; }
+	[[nodiscard]] virtual constexpr OperatorASTNode* GetOperator() noexcept { return nullptr; }
+
 	[[nodiscard]] virtual constexpr const VariableASTNode* GetVariable() const noexcept { return nullptr; }
 	[[nodiscard]] virtual constexpr VariableASTNode* GetVariable() noexcept { return nullptr; }
 
 	[[nodiscard]] virtual constexpr const ConstantASTNode* GetConstant() const noexcept { return nullptr; }
 	[[nodiscard]] virtual constexpr const FunctionASTNode* GetFunction() const noexcept { return nullptr; }
 	[[nodiscard]] virtual constexpr const ArrayASTNode* GetArray() const noexcept { return nullptr; }
+	[[nodiscard]] virtual constexpr ArrayASTNode* GetArray() noexcept { return nullptr; }
+
 	[[nodiscard]] virtual constexpr const ObjectASTNode* GetObject() const noexcept { return nullptr; }
+	[[nodiscard]] virtual constexpr ObjectASTNode* GetObject() noexcept { return nullptr; }
+
 	[[nodiscard]] virtual constexpr const TernaryASTNode* GetTernary() const noexcept { return nullptr; }
+	[[nodiscard]] virtual constexpr TernaryASTNode* GetTernary() noexcept { return nullptr; }
+
 	[[nodiscard]] virtual constexpr const LambdaASTNode* GetLambda() const noexcept { return nullptr; }
 	[[nodiscard]] virtual constexpr const FmtStringASTNode* GetFmtString() const noexcept { return nullptr; }
+	[[nodiscard]] virtual constexpr FmtStringASTNode* GetFmtString() noexcept { return nullptr; }
 
 	ASTNode left;
 	ASTNode right;
@@ -150,6 +159,8 @@ public:
 	[[nodiscard]] constexpr bool IsConstant() const noexcept override { return true; }
 	[[nodiscard]] constexpr const ConstantASTNode* GetConstant() const noexcept override { return this; }
 
+	[[nodiscard]] static ASTNode FromIValue(const ConstantASTNode* _this, class IValue* const value) noexcept;
+
 	// contains the raw data for the constant
 	VarjusString m_pConstant;
 	EValueType m_eDataType{};
@@ -167,6 +178,7 @@ public:
 	[[nodiscard]] constexpr bool IsArray() const noexcept override { return true; }
 
 	[[nodiscard]] constexpr const ArrayASTNode* GetArray() const noexcept override { return this; }
+	[[nodiscard]] constexpr ArrayASTNode* GetArray() noexcept override { return this; }
 
 	ExpressionList m_oExpressions;
 };
@@ -184,6 +196,7 @@ public:
 	[[nodiscard]] constexpr bool IsObject() const noexcept override { return true; }
 
 	[[nodiscard]] constexpr const ObjectASTNode* GetObject() const noexcept override { return this; }
+	[[nodiscard]] constexpr ObjectASTNode* GetObject() noexcept override { return this; }
 
 	VectorOf<KeyValue<std::size_t, ASTNode>> m_oAttributes;
 };
@@ -201,6 +214,7 @@ public:
 	[[nodiscard]] constexpr bool IsTernary() const noexcept override { return true; }
 
 	[[nodiscard]] constexpr const TernaryASTNode* GetTernary() const noexcept override { return this; }
+	[[nodiscard]] constexpr TernaryASTNode* GetTernary() noexcept override { return this; }
 
 	ASTNode m_pOperand;
 	ASTNode m_pTrue;
@@ -247,6 +261,7 @@ public:
 	[[nodiscard]] constexpr bool IsFmtString() const noexcept override { return true; }
 
 	[[nodiscard]] constexpr const FmtStringASTNode* GetFmtString() const noexcept override { return this; }
+	[[nodiscard]] constexpr FmtStringASTNode* GetFmtString() noexcept override { return this; }
 
 
 	VectorOf<FmtStringAST> m_oNodes;
@@ -265,13 +280,18 @@ public:
 
 
 	[[nodiscard]] constexpr const OperatorASTNode* GetOperator() const noexcept override { return this; }
+	[[nodiscard]] constexpr OperatorASTNode* GetOperator() noexcept override { return this; }
+
 	[[nodiscard]] constexpr bool IsOperator() const noexcept override { return true; }
 
 	[[nodiscard]] virtual constexpr bool IsPostfix() const noexcept { return false; }
 	[[nodiscard]] virtual constexpr bool IsUnary() const noexcept { return false; }
 
 	[[nodiscard]] virtual constexpr const PostfixASTNode* GetPostfix() const noexcept { return nullptr; }
+	[[nodiscard]] virtual constexpr PostfixASTNode* GetPostfix() noexcept { return nullptr; }
+
 	[[nodiscard]] virtual constexpr const UnaryASTNode* GetUnary() const noexcept { return nullptr; }
+	[[nodiscard]] virtual constexpr UnaryASTNode* GetUnary() noexcept { return nullptr; }
 
 	[[nodiscard]] virtual constexpr bool IsSequence() const noexcept { return m_ePunctuation == p_comma; }
 

@@ -1,29 +1,17 @@
-fn testMatch(val, val2)
+
+fn toSeconds(ms)
 {
-    match(val){
-        case 0:
-            match(val2){
-                case 0: {
-                    return "val2: 0";
-                }
-                case 1:
-                    return "val2: 1";
-                default: {
-                    return "val2: default";
-                }
-            }
-        default:
-            return "other";
-    }
+    return ms / 1000.0;
 }
 
 fn main()
 {
 
-    return [
-        tostring testMatch(0, 0),
-        tostring testMatch(0, 1),
-        tostring testMatch(0, 2),
-        tostring testMatch(1, 0)
-    ];
+    const then = date.now();
+
+    let a = 0;
+    for(let i = 0; i < 20000; i++)
+        a = 0 && true;
+
+    return `${a} in ${toSeconds(date.now() - then)}s`;
 }

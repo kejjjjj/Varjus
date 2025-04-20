@@ -99,9 +99,3 @@ void CInternalStringValue::Set(const VarjusString& value) {
 	m_oValue.m_sString = value;
 }
 
-std::size_t CInternalStringValue::Length() const noexcept
-{
-	return m_oValue.m_sString.length();
-}
-
-

@@ -14,6 +14,7 @@ public:
 	~PostfixASTNode() = default;
 
 	[[nodiscard]] constexpr const PostfixASTNode* GetPostfix() const noexcept override { return this; }
+	[[nodiscard]] constexpr PostfixASTNode* GetPostfix() noexcept override { return this; }
 
 	[[nodiscard]] constexpr bool IsPostfix() const noexcept override { return true; }
 
@@ -25,8 +26,10 @@ public:
 	[[nodiscard]] virtual constexpr bool IsDecrement() const noexcept { return false; }
 
 	[[nodiscard]] virtual constexpr const SubscriptASTNode* GetSubscript() const noexcept { return nullptr; }
+	[[nodiscard]] virtual constexpr SubscriptASTNode* GetSubscript() noexcept { return nullptr; }
 	[[nodiscard]] virtual constexpr const MemberAccessASTNode* GetMemberAccess() const noexcept { return nullptr; }
 	[[nodiscard]] virtual constexpr const FunctionCallASTNode* GetFunctionCall() const noexcept { return nullptr; }
+	[[nodiscard]] virtual constexpr FunctionCallASTNode* GetFunctionCall() noexcept { return nullptr; }
 
 };
 
@@ -54,6 +57,7 @@ public:
 	
 	[[nodiscard]] constexpr bool IsSubscript() const noexcept override { return true; }
 	[[nodiscard]] constexpr const SubscriptASTNode* GetSubscript() const noexcept override { return this; }
+	[[nodiscard]] constexpr SubscriptASTNode* GetSubscript() noexcept override { return this; }
 
 	ASTNode m_pAST;
 };
@@ -67,6 +71,7 @@ public:
 	}
 	[[nodiscard]] constexpr bool IsFunctionCall() const noexcept override { return true; }
 	[[nodiscard]] constexpr const FunctionCallASTNode* GetFunctionCall() const noexcept override { return this; }
+	[[nodiscard]] constexpr FunctionCallASTNode* GetFunctionCall() noexcept override { return this; }
 
 	VectorOf<ASTNode> m_oArguments;
 };

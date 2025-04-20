@@ -28,9 +28,8 @@ IValue* CRuntimeExpression::Execute(CRuntimeContext* const ctx)
 
 	return nullptr;
 }
-IValue* CRuntimeExpression::Evaluate(CRuntimeContext* const ctx)
-{
-	return Evaluate(ctx, m_pAST.get());
+IValue* CRuntimeExpression::Evaluate(CRuntimeContext* const ctx) {
+	return Evaluate(ctx, m_pAST);
 }
 
 static IValue* ConditionalShortcut(CRuntimeContext* const ctx, IValue* lhs, Punctuation punctuation)
@@ -60,7 +59,7 @@ static IValue* ConditionalShortcut(CRuntimeContext* const ctx, IValue* lhs, Punc
 #pragma pack(push)
 WARNING_DISABLE(4061)
 WARNING_DISABLE(4062)
-IValue* CRuntimeExpression::Evaluate(CRuntimeContext* const ctx, const AbstractSyntaxTree* node)
+IValue* CRuntimeExpression::Evaluate(CRuntimeContext* const ctx, RuntimeAST& node)
 {
 	if (ctx->m_pRuntime->ExceptionThrown())
 		return ctx->m_pRuntime->GetExceptionValue();
@@ -87,14 +86,19 @@ IValue* CRuntimeExpression::Evaluate(CRuntimeContext* const ctx, const AbstractS
 	if (node->IsLeaf()) 
 		return EvaluateLeaf(ctx, node);
 
-	auto lhs = Evaluate(ctx, node->left.get());
+	auto lhs = Evaluate(ctx, node->left);
 
 	const auto punctuation = node->GetOperator()->m_ePunctuation;
 
-	if (const auto v = ConditionalShortcut(ctx, lhs, punctuation))
+	if (const auto v = ConditionalShortcut(ctx, lhs, punctuation)) {
+		// optimize the expression
+		if (node->left->IsConstant() && node->right->IsConstant()) {
+			node = ConstantASTNode::FromIValue(node->left->GetConstant(), v);
+		}
 		return v;
+	}
 
-	auto rhs = Evaluate(ctx, node->right.get());
+	auto rhs = Evaluate(ctx, node->right);
 
 	if (ctx->m_pRuntime->ExceptionThrown()) {
 		if (lhs != ctx->m_pRuntime->GetExceptionValue() && !lhs->HasOwner())
@@ -112,6 +116,11 @@ IValue* CRuntimeExpression::Evaluate(CRuntimeContext* const ctx, const AbstractS
 
 	if (!lhs->HasOwner()) lhs->Release();
 	if (!rhs->HasOwner()) rhs->Release();
+
+	// optimize the expression
+	if (node->left->IsConstant() && node->right->IsConstant()) {
+		node = ConstantASTNode::FromIValue(node->left->GetConstant(), result);
+	}
 
 	assert(result != nullptr);
 
@@ -169,7 +178,7 @@ inline IValue* EvaluateLambda(CRuntimeContext* const ctx, const LambdaASTNode* c
 
 	return v;
 }
-IValue* CRuntimeExpression::EvaluateLeaf(CRuntimeContext* const ctx, const AbstractSyntaxTree* node)
+IValue* CRuntimeExpression::EvaluateLeaf(CRuntimeContext* const ctx, RuntimeAST& node)
 {
 
 	if (node->IsVariable()) {
@@ -215,20 +224,20 @@ IValue* CRuntimeExpression::EvaluateLeaf(CRuntimeContext* const ctx, const Abstr
 	assert(false);
 	return nullptr;
 }
-IValue* CRuntimeExpression::EvaluateSequence(CRuntimeContext* const ctx, const AbstractSyntaxTree* node)
+IValue* CRuntimeExpression::EvaluateSequence(CRuntimeContext* const ctx, RuntimeAST& node)
 {
 	//discard lhs
-	auto lhs = Evaluate(ctx, node->left.get());
+	auto lhs = Evaluate(ctx, node->left);
 
 	if (!lhs->HasOwner())
 		lhs->Release();
 
-	return Evaluate(ctx, node->right.get());
+	return Evaluate(ctx, node->right);
 }
 
-IValue* CRuntimeExpression::EvaluateTernary(CRuntimeContext* const ctx, const TernaryASTNode* node)
+IValue* CRuntimeExpression::EvaluateTernary(CRuntimeContext* const ctx, TernaryASTNode* node)
 {
-	auto operand = Evaluate(ctx, node->m_pOperand.get());
+	auto operand = Evaluate(ctx, node->m_pOperand);
 
 	if (!operand->IsBooleanConvertible())
 		throw CRuntimeError(ctx->m_pRuntime, VSL("the operand is not convertible to a boolean"));
@@ -239,22 +248,22 @@ IValue* CRuntimeExpression::EvaluateTernary(CRuntimeContext* const ctx, const Te
 		operand->Release();
 
 	if (boolValue) {
-		return Evaluate(ctx, node->m_pTrue.get());
+		return Evaluate(ctx, node->m_pTrue);
 	}
 
-	return Evaluate(ctx, node->m_pFalse.get());
+	return Evaluate(ctx, node->m_pFalse);
 
 }
-IValue* CRuntimeExpression::EvaluateFmtString(CRuntimeContext* const ctx, const FmtStringASTNode* node)
+IValue* CRuntimeExpression::EvaluateFmtString(CRuntimeContext* const ctx, FmtStringASTNode* node)
 {
 	VarjusString fullString;
-	for (const auto& [t, v] : node->m_oNodes) {
+	for (auto& [t, v] : node->m_oNodes) {
 
 		if (t == FmtStringAST::TEXT) {
 			fullString += std::get<0>(v);
 		}else if (t == FmtStringAST::PLACEHOLDER) {
 
-			auto operand = Evaluate(ctx, std::get<1>(v).get());
+			auto operand = Evaluate(ctx, std::get<1>(v));
 			fullString += operand->ValueAsEscapedString();
 
 			if (!operand->HasOwner())

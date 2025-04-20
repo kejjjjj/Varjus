@@ -127,6 +127,8 @@ public:
 	[[nodiscard]] constexpr auto GetAllocator() const noexcept { return m_pAllocator; }
 
 	[[nodiscard]] VarjusString Dump(VarjusUInt indent = 0, VarjusChar indentChar = '\t') const;
+	[[nodiscard]] virtual constexpr std::size_t SizeOf() const noexcept { return std::size_t{ 0 }; }
+	[[nodiscard]] virtual constexpr VarjusString ValueAsBytes() const noexcept { return VSL("\x00"); }
 
 protected:
 
@@ -176,6 +178,10 @@ public:
 			return *std::get<1>(m_oValue);
 		return std::get<0>(m_oValue);
 	}
+	//strings need it to be virtual
+	[[nodiscard]] virtual constexpr std::size_t SizeOf() const noexcept override { return sizeof(Value); }
+	[[nodiscard]] virtual constexpr VarjusString ValueAsBytes() const noexcept override { 
+		return VarjusString((VarjusChar*)&Get(), SizeOf()); }
 
 	void SetStorageValue(Value&& v) { m_oValue = std::move(v); }
 	void SetStorageValue(const Value& v) { m_oValue = v; }
