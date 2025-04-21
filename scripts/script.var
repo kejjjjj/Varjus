@@ -1,17 +1,7 @@
 
-fn toSeconds(ms)
-{
-    return ms / 1000.0;
-}
-
 fn main()
 {
-
-    const then = date.now();
-
-    let a = 0;
-    for(let i = 0; i < 20000; i++)
-        a = 0 && true;
-
-    return `${a} in ${toSeconds(date.now() - then)}s`;
+    let a = 2;
+    
+    a = 1();
 }

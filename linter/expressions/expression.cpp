@@ -158,3 +158,17 @@ RuntimeBlock CLinterExpression::ToRuntimeObject() const
 	assert(!m_pOwner->IsHoisting());
 	return std::make_unique<CRuntimeExpression>(ToMergedAST());
 }
+
+bool CLinterExpression::CanBeDiscarded(const ASTNode& node) noexcept
+{
+	if (node->IsMeaningful())
+		return false;
+
+	if (node->left)
+		return CanBeDiscarded(node->left);
+
+	if (node->right)
+		return CanBeDiscarded(node->right);
+
+	return true;
+}

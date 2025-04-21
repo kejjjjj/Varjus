@@ -244,6 +244,8 @@ public:
 	[[maybe_unused]] IValue* Execute(CRuntimeContext* const ctx) override;
 	[[nodiscard]] IValue* Evaluate(CRuntimeContext* const ctx);
 	[[nodiscard]] inline bool HasAST() { return !!m_pAST.get(); }
+	[[nodiscard]] inline ASTNode& GetAST() { return m_pAST; }
+
 protected:
 	[[nodiscard]] constexpr EStructureType Type() const noexcept override { return st_expression;};
 

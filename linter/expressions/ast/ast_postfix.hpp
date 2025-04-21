@@ -31,6 +31,8 @@ public:
 	[[nodiscard]] virtual constexpr const FunctionCallASTNode* GetFunctionCall() const noexcept { return nullptr; }
 	[[nodiscard]] virtual constexpr FunctionCallASTNode* GetFunctionCall() noexcept { return nullptr; }
 
+	[[nodiscard]] virtual constexpr bool IsMeaningful() const noexcept override { return false; }
+
 };
 
 class MemberAccessASTNode : public PostfixASTNode
@@ -72,6 +74,7 @@ public:
 	[[nodiscard]] constexpr bool IsFunctionCall() const noexcept override { return true; }
 	[[nodiscard]] constexpr const FunctionCallASTNode* GetFunctionCall() const noexcept override { return this; }
 	[[nodiscard]] constexpr FunctionCallASTNode* GetFunctionCall() noexcept override { return this; }
+	[[nodiscard]] constexpr bool IsMeaningful() const noexcept override { return true; }
 
 	VectorOf<ASTNode> m_oArguments;
 };
@@ -85,6 +88,8 @@ public:
 	}
 
 	[[nodiscard]] constexpr bool IsIncrement() const noexcept override { return true; }
+	[[nodiscard]] constexpr bool IsMeaningful() const noexcept override { return true; }
+
 };
 class PostfixDecrementAST : public PostfixASTNode
 {
@@ -95,4 +100,6 @@ public:
 	}
 
 	[[nodiscard]] constexpr bool IsDecrement() const noexcept override { return true; }
+	[[nodiscard]] constexpr bool IsMeaningful() const noexcept override { return true; }
+
 };

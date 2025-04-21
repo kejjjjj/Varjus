@@ -171,7 +171,7 @@ OperatorIterator AbstractSyntaxTree::FindLowestPriorityOperator(Operators& opera
 
 	return lowestPriorityOperatorItr;
 }
-bool AbstractSyntaxTree::IsAssignment() const noexcept
+constexpr bool AbstractSyntaxTree::IsAssignment() const noexcept
 {
 	return GetOperator()->m_ePunctuation >= p_assign && GetOperator()->m_ePunctuation <= p_swap;
 }

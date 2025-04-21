@@ -1,6 +1,6 @@
 fn testPass(value)
 {
-	value;
+	value = 2;
 }
 
 fn main()
