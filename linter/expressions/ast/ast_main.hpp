@@ -1,13 +1,13 @@
 #pragma once
 
 #include <memory>
-#include <utility>
 #include <stdexcept>
+#include <utility>
 #include <variant>
 
-#include "varjus_api/internal/globalDefinitions.hpp"
 #include "linter/expressions/definitions.hpp"
 #include "linter/punctuation.hpp"
+#include "varjus_api/internal/globalDefinitions.hpp"
 #include "varjus_api/types/internal/references.hpp"
 
 class AbstractSyntaxTree;
@@ -89,6 +89,9 @@ public:
 	[[nodiscard]] virtual constexpr const FmtStringASTNode* GetFmtString() const noexcept { return nullptr; }
 	[[nodiscard]] virtual constexpr FmtStringASTNode* GetFmtString() noexcept { return nullptr; }
 
+	//if there is no meaning, it is safe to assume that it can be discarded
+	[[nodiscard]] virtual bool IsMeaningful() const noexcept { return false; }
+
 	ASTNode left;
 	ASTNode right;
 
@@ -103,7 +106,6 @@ private:
 	static void CreateTernary(ASTNode& _this, CMemory* const owner,
 		Operands& lhs_operands, Operators& lhs_operators, Operands& rhs_operands, Operators& rhs_operators);
 
-	[[nodiscard]] bool IsAssignment() const noexcept;
 	
 	void CheckConstness(CMemory* const owner) const;
 	void CheckSelfCapture(CMemory* const owner);
@@ -111,6 +113,10 @@ private:
 	[[nodiscard]] bool IsSelfReferencingCapture(const AbstractSyntaxTree* lhs, const AbstractSyntaxTree* rhs);
 
 	CodePosition m_oApproximatePosition;
+
+protected:
+	[[nodiscard]] bool IsAssignment() const noexcept;
+
 };
 
 struct CLinterVariable;
@@ -294,6 +300,8 @@ public:
 	[[nodiscard]] virtual constexpr UnaryASTNode* GetUnary() noexcept { return nullptr; }
 
 	[[nodiscard]] virtual constexpr bool IsSequence() const noexcept { return m_ePunctuation == p_comma; }
+
+	[[nodiscard]] virtual bool IsMeaningful() const noexcept override { return IsAssignment(); }
 
 	//private:
 	Punctuation m_ePunctuation{};

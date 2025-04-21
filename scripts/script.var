@@ -1,17 +1,9 @@
-
-fn toSeconds(ms)
+fn testPass(value)
 {
-    return ms / 1000.0;
+    value++;
 }
 
 fn main()
 {
-
-    const then = date.now();
-
-    let a = 0;
-    for(let i = 0; i < 20000; i++)
-        a = 0 && true;
-
-    return `${a} in ${toSeconds(date.now() - then)}s`;
+    return testPass(5);
 }

@@ -52,10 +52,14 @@ public:
 	[[nodiscard]] ExpressionList ToExpressionList() const;
 
 	[[nodiscard]] RuntimeBlock ToRuntimeObject() const override;
+
+	//note: doesn't check context
+	[[nodiscard]] static bool CanBeDiscarded(const ASTNode& node) noexcept;
 private:
 	[[nodiscard]] ASTNode ToAST() const;
 
 	[[nodiscard]] bool EndOfExpression(const std::optional<PairMatcher>& eoe) const noexcept;
+
 
 	UniquePointerVector<CLinterSubExpression> m_oSubExpressions;
 	WeakScope m_pScope;

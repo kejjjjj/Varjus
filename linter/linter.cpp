@@ -6,6 +6,7 @@
 
 #include "declarations/variable_declarations.hpp"
 #include "expressions/expression.hpp"
+#include "expressions/ast.hpp"
 #include "functions/function.hpp"
 #include "functions/stack.hpp"
 #include "hoisting/hoisting.hpp"
@@ -49,14 +50,37 @@ static Success AddInstruction(RuntimeBlock&& block, const WeakScope& scope)
 	return success;
 }
 
-template<typename Linter> Success Lint(const CLinterContext& ctx)
+static Success LintExpression(CLinterExpression& linter, const CLinterContext& ctx)
+{
+
+
+	if (ctx.m_bAddInstructions) {
+		auto&& asRuntime = linter.ToRuntimeObject();
+		auto asExpression = dynamic_cast<CRuntimeExpression*>(asRuntime.get());
+		auto& theAST = asExpression->GetAST();
+
+		if (CLinterExpression::CanBeDiscarded(theAST)) {
+			ctx.m_pModule->PushError(VSL("this expression doesn't do anything"), theAST->GetCodePosition());
+			return failure;
+		}
+		return AddInstruction(std::move(asRuntime), ctx.scope);
+	}
+	else
+		return success;
+
+}
+template<typename Linter> 
+Success Lint(const CLinterContext& ctx)
 {
 
 	Linter linter(ctx.m_iterPos, ctx.m_iterEnd, ctx.scope, ctx.memory);
 	if (!linter.Parse())
 		return failure;
 
-	if constexpr (
+	if constexpr (std::is_same_v<CLinterExpression, Linter>)
+		return LintExpression(linter, ctx);
+
+	else if constexpr(
 		std::is_same_v<CFunctionLinter, Linter> || 
 		std::is_same_v<CElseStatementLinter, Linter> ||
 		std::is_same_v<CImportLinter, Linter>)
