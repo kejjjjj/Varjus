@@ -90,7 +90,7 @@ public:
 	[[nodiscard]] virtual constexpr FmtStringASTNode* GetFmtString() noexcept { return nullptr; }
 
 	//if there is no meaning, it is safe to assume that it can be discarded
-	[[nodiscard]] virtual constexpr bool IsMeaningful() const noexcept { return false; }
+	[[nodiscard]] virtual bool IsMeaningful() const noexcept { return false; }
 
 	ASTNode left;
 	ASTNode right;
@@ -115,7 +115,7 @@ private:
 	CodePosition m_oApproximatePosition;
 
 protected:
-	[[nodiscard]] constexpr bool IsAssignment() const noexcept;
+	[[nodiscard]] bool IsAssignment() const noexcept;
 
 };
 
@@ -301,7 +301,7 @@ public:
 
 	[[nodiscard]] virtual constexpr bool IsSequence() const noexcept { return m_ePunctuation == p_comma; }
 
-	[[nodiscard]] virtual constexpr bool IsMeaningful() const noexcept override { return IsAssignment(); }
+	[[nodiscard]] virtual bool IsMeaningful() const noexcept override { return IsAssignment(); }
 
 	//private:
 	Punctuation m_ePunctuation{};

@@ -23,7 +23,7 @@ public:
 	[[nodiscard]] virtual constexpr bool IsTypeOf() const noexcept { return false; }
 	[[nodiscard]] virtual constexpr bool IsToString() const noexcept { return false; }
 
-	[[nodiscard]] virtual constexpr bool IsMeaningful() const noexcept override { return false; }
+	[[nodiscard]] virtual bool IsMeaningful() const noexcept override { return false; }
 };
 class UnaryNegationAST : public UnaryASTNode
 {
@@ -45,7 +45,7 @@ public:
 	}
 
 	[[nodiscard]] constexpr bool IsIncrement() const noexcept override { return true; }
-	[[nodiscard]] constexpr bool IsMeaningful() const noexcept override { return true; }
+	[[nodiscard]] bool IsMeaningful() const noexcept override { return true; }
 
 };
 class UnaryDecrementAST : public UnaryASTNode
@@ -57,7 +57,7 @@ public:
 	}
 
 	[[nodiscard]] constexpr bool IsDecrement() const noexcept override { return true; }
-	[[nodiscard]] constexpr bool IsMeaningful() const noexcept override { return true; }
+	[[nodiscard]] bool IsMeaningful() const noexcept override { return true; }
 
 };
 class UnaryLogicalNotAST : public UnaryASTNode
