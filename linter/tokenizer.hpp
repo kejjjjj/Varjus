@@ -44,6 +44,7 @@ private:
 	[[nodiscard]] bool BeginningOfFmtString() const;
 
 	[[nodiscard]] VarjusChar ReadEscapeCharacter();
+	[[nodiscard]] VarjusChar ReadHexCharacter();
 
 	[[nodiscard]] Success ReadName(CToken& token) noexcept;
 

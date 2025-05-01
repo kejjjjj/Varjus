@@ -24,7 +24,12 @@ constexpr bool IsAlpha(VarjusChar c) {
 	return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z');
 #endif
 }
-
+constexpr auto IsHex(VarjusChar c) -> bool
+{
+	return (c >= '0' && c <= '9') ||
+		(c >= 'a' && c <= 'f') ||
+		(c >= 'A' && c <= 'F');
+}
 CBufferTokenizer::CBufferTokenizer(CProgramInformation* const program, const STD_STRING_VIEW& buffer) 
 	: m_sSource(buffer), m_eSuccess(success), m_pProgram(program) {
 
@@ -343,12 +348,7 @@ Success CBufferTokenizer::ReadHex(CToken& token)
 
 		auto c = *m_oScriptPos;
 
-		const auto isHex = 
-			(c >= '0' && c <= '9') ||
-			(c >= 'a' && c <= 'f') ||
-			(c >= 'A' && c <= 'F');
-
-		if (!isHex)
+		if (!IsHex(c))
 			break;
 
 		hexStr.push_back(*m_oScriptPos++);
@@ -522,6 +522,51 @@ std::unique_ptr<CToken> CBufferTokenizer::ReadFormatString()
 
 	return token;
 }
+
+
+
+VarjusChar CBufferTokenizer::ReadHexCharacter()
+{
+	auto& [line, column] = m_oParserPosition;
+	m_oScriptPos++;  //skip 'x'
+	column++;
+
+	if (EndOfBuffer()) {
+		m_pProgram->PushError(VSL("unexpected end of file"), m_oParserPosition);
+		return 0;
+	}
+
+	if(!IsHex(*m_oScriptPos)) {
+		m_pProgram->PushError(VSL("invalid hex literal"), m_oParserPosition);
+		return 0;
+	}
+
+	VarjusString hexStr(1, *m_oScriptPos);
+	m_oScriptPos++;  //skip first character
+	column++;
+
+	if (EndOfBuffer()) {
+		m_pProgram->PushError(VSL("unexpected end of file"), m_oParserPosition);
+		return 0;
+	}
+
+	if (!IsHex(*m_oScriptPos)) {
+		m_oScriptPos--;
+		column--;
+
+	} else {
+		hexStr.push_back(*m_oScriptPos);
+	}
+#ifdef UNICODE
+	auto ansiHex = LocaleConverter::u16string_to_ansi(hexStr);
+	auto intValue = std::stoll(ansiHex, nullptr, 16);
+#else
+	auto intValue = std::stoll(hexStr, nullptr, 16);
+#endif
+
+	return static_cast<VarjusChar>(static_cast<unsigned char>(intValue)); //it's fine!!!!!
+
+}
 VarjusChar CBufferTokenizer::ReadEscapeCharacter()
 {
 	auto& [line, column] = m_oParserPosition;
@@ -545,6 +590,7 @@ VarjusChar CBufferTokenizer::ReadEscapeCharacter()
 	case 'b': c = '\b'; break;
 	case 'f': c = '\f'; break;
 	case 'a': c = '\a'; break;
+	case 'x': return ReadHexCharacter();
 	case '\'': c = '\''; break;
 	case '\"': c = '\"'; break;
 	case '\?': c = '\?'; break;
