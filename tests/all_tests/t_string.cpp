@@ -120,3 +120,15 @@ TEST_CASE("string.find_last") {
 	REQUIRE(retVal->HasOwner() == false);
 	TEST_END(retVal);
 }
+TEST_CASE("hello world as hex literal") {
+
+	auto retVal = TEST_ExecuteFile(JP(VSL("hex_literal.var")));
+
+	REQUIRE(retVal);
+	REQUIRE(retVal->Type() == t_string);
+
+	REQUIRE(retVal->AsString() == VSL("Hello, world!"));
+
+	REQUIRE(retVal->HasOwner() == false);
+	TEST_END(retVal);
+}
