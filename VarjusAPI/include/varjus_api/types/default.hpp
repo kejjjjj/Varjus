@@ -130,6 +130,8 @@ public:
 	[[nodiscard]] virtual constexpr std::size_t SizeOf() const noexcept { return std::size_t{ 0 }; }
 	[[nodiscard]] virtual constexpr VarjusString ValueAsBytes() const noexcept { return VSL("\x00"); }
 
+	[[nodiscard]] virtual std::size_t GetSharedPointer() const noexcept { return 0; }
+
 protected:
 
 	void ReleaseInternal();

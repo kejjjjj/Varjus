@@ -8,7 +8,8 @@
 
 
 class CInternalArrayValue;
-class CVariable;
+class CChildVariable;
+class CArrayValue;
 
 template<typename K, typename V>
 using KeyValue = std::pair<K, V>;
@@ -16,7 +17,16 @@ using KeyValue = std::pair<K, V>;
 
 struct CArrayContent final
 {
-	VectorOf<CVariable*> m_oVariables;
+	[[maybe_unused]] CChildVariable* PushVariable(CProgramRuntime* const runtime, IValue* value);
+	[[maybe_unused]] CChildVariable* PushFrontVariable(CProgramRuntime* const runtime, IValue* value);
+	
+	constexpr auto& GetVariables() noexcept { return m_oVariables; }
+	constexpr auto& GetVariables() const noexcept { return m_oVariables; }
+
+	CArrayValue* m_pArrayOwner{};
+
+private:
+	VectorOf<CChildVariable*> m_oVariables;
 };
 
 class CInternalArrayValue final
@@ -27,12 +37,12 @@ public:
 
 	void Release();
 
-	void Set(CProgramRuntime* const runtime, VectorOf<IValue*>&& v);
+	void Set(CArrayValue* self, CProgramRuntime* const runtime, VectorOf<IValue*>&& v);
 	constexpr auto& Get() noexcept { return m_oValue; }
 	constexpr auto& Get() const noexcept { return m_oValue; }
 
-	[[nodiscard]] constexpr auto& GetVariables() noexcept { return Get().m_oVariables; }
-	[[nodiscard]] constexpr auto& GetVariables() const noexcept { return Get().m_oVariables; }
+	[[nodiscard]] constexpr auto& GetContent() noexcept { return Get(); }
+	[[nodiscard]] constexpr auto& GetContent() const noexcept { return Get(); }
 
 	[[nodiscard]] std::size_t Length() const noexcept;
 
@@ -75,10 +85,10 @@ public:
 		return reinterpret_cast<std::size_t>(GetShared().get()); 
 	}
 
-	[[nodiscard]] VectorOf<CVariable*>& GetVariables();
-	[[nodiscard]] VectorOf<CVariable*>& GetVariables() const;
+	[[maybe_unused]] CChildVariable* PushVariable(CProgramRuntime* const runtime, IValue* value);
+	[[maybe_unused]] CChildVariable* PushFrontVariable(CProgramRuntime* const runtime, IValue* value);
 
-
+	[[nodiscard]] std::size_t GetSharedPointer() const noexcept override { return reinterpret_cast<std::size_t>(GetShared().get()); }
 private:
 	[[nodiscard]] VarjusString TypeAsString() const override { return VSL("array"); }
 	[[nodiscard]] VarjusString ValueAsString() const override;

@@ -11,6 +11,21 @@
 #define DEFINE_OPERATOR(Name)\
 IValue* Name([[maybe_unused]]CProgramRuntime* const runtime, IValue* _lhs, IValue* _rhs)
 
+[[nodiscard]] static bool IsSelfReferencingArray(IValue* lhs, CArrayValue* rhs)
+{
+	if (!lhs->HasOwner())
+		return false;
+
+	const auto owner = lhs->GetOwner();
+
+	if (auto lhsParent = owner->GetParent()) {
+		assert(lhsParent->GetSharedPointer());
+		return lhsParent->GetSharedPointer() == rhs->GetSharedPointer();
+	}
+
+	return false;
+}
+
 DEFINE_OPERATOR(OP_ASSIGNMENT)
 {
 	auto variable = _lhs->GetOwner();
@@ -50,6 +65,10 @@ DEFINE_OPERATOR(OP_ASSIGNMENT)
 			break;
 		case t_array:
 			assert(_rhs->ToArray());
+
+			if (IsSelfReferencingArray(_lhs, _rhs->ToArray()))
+				throw CRuntimeError(runtime, VSL("self referencing arrays are not allowed"));
+
 			variable->SetValue(_rhs->ToArray()->Copy());
 			break;
 		case t_object:

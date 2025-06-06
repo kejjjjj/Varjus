@@ -23,9 +23,9 @@ using CodePosition = std::tuple<size_t, size_t>;
 using RuntimeBlock = std::unique_ptr<IRuntimeStructure>;
 
 template<typename T>
-concept IValueChild = std::is_base_of_v<IValue, T> || std::is_same_v<CVariable, T>;
+concept IValueChild = std::is_base_of_v<IValue, T> || std::is_same_v<CVariable, T> || std::is_same_v<CChildVariable, T>;
 template<typename T>
-concept VariableT = std::is_same_v<CVariable, T>;
+concept VariableT = std::is_same_v<CVariable, T> || std::is_same_v<CChildVariable, T>;
 
 using RuntimeModules = VectorOf<std::unique_ptr<CRuntimeModule>>;
 
@@ -75,11 +75,12 @@ public:
 	[[nodiscard]] inline bool WaitingToAbort() const noexcept { return m_bAbort.load(); }
 
 private:
-	//very important that I am initialied before m_oValuePools
+	//very important that I am initialized before m_oValuePools
 	std::unique_ptr<CProgramInformation> m_pInformation;
 
 	std::tuple<
 		COwningObjectPool<CVariable>,
+		COwningObjectPool<CChildVariable>,
 		COwningObjectPool<IValue>,
 		COwningObjectPool<CBooleanValue>,
 		COwningObjectPool<CIntValue>,
@@ -130,6 +131,10 @@ public:
 	[[nodiscard]] CVariable* AcquireNewVariable();
 	[[nodiscard]] VectorOf<CVariable*> AcquireNewVariables(std::size_t count);
 	void FreeVariable(CVariable* var);
+
+	[[nodiscard]] CChildVariable* AcquireNewChildVariable(IValue* parent);
+	[[nodiscard]] VectorOf<CChildVariable*> AcquireNewChildVariables(std::size_t count, IValue* parent);
+	void FreeChildVariable(CChildVariable* var);
 
 	template <IValueChild T>
 	[[nodiscard]] constexpr T* AcquireNewValue() {
