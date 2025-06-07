@@ -15,15 +15,14 @@ CArrayValue* CArrayValue::Construct(CProgramRuntime* const runtime, IValues&& va
 	auto ptr = runtime->AcquireNewValue<CArrayValue>();
 	ptr->MakeShared();
 	auto internal = ptr->Internal();
-	internal->Set(ptr, runtime, std::move(values));
+	internal->Set(ptr->GetShared(), runtime, std::move(values));
 	return ptr;
 }
 
 CArrayValue::~CArrayValue() = default;
 
 void CArrayValue::Release(){
-
-
+	//std::cout << std::hex << this << ": " << "numRefs: " << SharedRefCount() << '\n';
 	if (SharedRefCount() == 1) {
 		Get().Release();
 	}
@@ -109,21 +108,32 @@ CChildVariable* CArrayValue::PushFrontVariable(CProgramRuntime* const runtime, I
 	return GetShared()->GetContent().PushFrontVariable(runtime, var);
 }
 
+//static bool SelfRef(CProgramRuntime* const runtime, IValue* var, const ArrayOwner& owner)
+//{
+//	if (auto arr = var->ToArray()) {
+//		if (auto arrayPtr = owner.lock()) {
+//			return arr->GetSharedPointer() == reinterpret_cast<std::size_t>(arrayPtr.get());
+//		}
+//		else {
+//			throw CRuntimeError(runtime, VSL("internal error within CArrayContent::SelfRef"));
+//		}
+//	}
+//
+//	return false;
+//}
+
 CChildVariable* CArrayContent::PushVariable(CProgramRuntime* const runtime, IValue* var)
 {
-	if (auto arr = var->ToArray()) {
-		if(arr->GetSharedPointer() == m_pArrayOwner->GetSharedPointer())
-			throw CRuntimeError(runtime, VSL("self referencing arrays are not allowed"));
-	}
-	return m_oVariables.emplace_back(CChildVariable::Construct(runtime, var, m_pArrayOwner));
+	//const auto isRef = SelfRef(runtime, var, m_pArrayOwner);
+	auto ret =  m_oVariables.emplace_back(CChildVariable::Construct(runtime, var, m_pArrayOwner));
+	//if (isRef)
+	//	ret->m_bSelfCapturing = true;
+
+	return ret;
 }
 CChildVariable* CArrayContent::PushFrontVariable(CProgramRuntime* const runtime, IValue* var)
 {
-	if (auto arr = var->ToArray()) {
-		if (arr->GetSharedPointer() == m_pArrayOwner->GetSharedPointer())
-			throw CRuntimeError(runtime, VSL("self referencing arrays are not allowed"));
-	}
-
+	//SelfRef(runtime, var, m_pArrayOwner);
 	return *m_oVariables.insert(m_oVariables.begin(), CChildVariable::Construct(runtime, var, m_pArrayOwner));
 }
 CInternalArrayValue::~CInternalArrayValue() = default;
@@ -133,14 +143,16 @@ void CInternalArrayValue::Release()
 	for (auto& v : m_oValue.GetVariables()) {
 		v->Release();
 	}
+
+	m_oValue.m_pArrayOwner.reset();
 }
-void CInternalArrayValue::Set(CArrayValue* self, CProgramRuntime* const runtime, VectorOf<IValue*>&& v){
+void CInternalArrayValue::Set(const ArrayOwner& self, CProgramRuntime* const runtime, VectorOf<IValue*>&& v){
 	
-	assert(self);
+	assert(self.lock());
 	m_oValue.GetVariables() = runtime->AcquireNewChildVariables(v.size(), self);
 	m_oValue.m_pArrayOwner = self;
 
-	for (auto i = size_t(0); auto & var : m_oValue.GetVariables()) {
+	for (auto i = size_t(0); auto& var : m_oValue.GetVariables()) {
 		var->SetValue(v[i++]);
 	}
 }
@@ -160,7 +172,7 @@ VarjusString CArrayValue::ValueAsString() const
 
 	for (const auto& v : vec) {
 		const auto ptr = v->GetValue();
-		ss += fmt::format(VSL("{}, "), ptr == this ? VSL("...") : ptr->ValueAsString());
+		ss += fmt::format(VSL("{}, "), ptr->GetSharedPointer() == this->GetSharedPointer() ? VSL("...") : ptr->ValueAsString());
 	}
 	ss.erase(ss.size() - 2, 2);
 

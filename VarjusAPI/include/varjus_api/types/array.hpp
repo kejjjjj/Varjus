@@ -14,6 +14,7 @@ class CArrayValue;
 template<typename K, typename V>
 using KeyValue = std::pair<K, V>;
 
+using ArrayOwner = std::weak_ptr<CInternalArrayValue>;
 
 struct CArrayContent final
 {
@@ -23,8 +24,8 @@ struct CArrayContent final
 	constexpr auto& GetVariables() noexcept { return m_oVariables; }
 	constexpr auto& GetVariables() const noexcept { return m_oVariables; }
 
-	CArrayValue* m_pArrayOwner{};
-
+	//more persistent than a simple reference to a CArrayValue
+	ArrayOwner m_pArrayOwner;
 private:
 	VectorOf<CChildVariable*> m_oVariables;
 };
@@ -37,7 +38,7 @@ public:
 
 	void Release();
 
-	void Set(CArrayValue* self, CProgramRuntime* const runtime, VectorOf<IValue*>&& v);
+	void Set(const ArrayOwner& self, CProgramRuntime* const runtime, VectorOf<IValue*>&& v);
 	constexpr auto& Get() noexcept { return m_oValue; }
 	constexpr auto& Get() const noexcept { return m_oValue; }
 

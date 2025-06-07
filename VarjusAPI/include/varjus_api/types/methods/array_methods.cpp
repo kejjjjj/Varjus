@@ -657,7 +657,8 @@ DEFINE_METHOD(Resize, args)
 
 
 	auto __this = GetThisArray(_this);
-	auto& vars = __this->Get().GetContent().GetVariables();
+	auto& asShared = __this->GetShared();
+	auto& vars = asShared->GetContent().GetVariables();
 
 	auto uintval = value->ToUInt();
 
@@ -669,7 +670,7 @@ DEFINE_METHOD(Resize, args)
 		const auto delta = uintval - oldSize;
 
 		for ([[maybe_unused]] auto i : std::views::iota(0u, delta)) {
-			vars.push_back(CChildVariable::Construct(ctx->m_pRuntime, IValue::Construct(ctx->m_pRuntime), __this));
+			vars.push_back(CChildVariable::Construct(ctx->m_pRuntime, IValue::Construct(ctx->m_pRuntime), asShared));
 		}
 	} else if (uintval < oldSize) {
 		//shrink me :3

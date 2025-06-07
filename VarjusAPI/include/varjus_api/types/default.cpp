@@ -87,7 +87,7 @@ VarjusString DumpArray(VarjusUInt indent, VarjusChar indentChar, const CArrayVal
 	VarjusString ss;
 
 	for (auto& v : arr->Internal()->GetContent().GetVariables()) {
-		const auto str = v->GetValue() == arr ? "..." : v->GetValue()->Dump(indent, indentChar);
+		const auto str = v->GetValue() == arr ? VSL("...") : v->GetValue()->Dump(indent, indentChar);
 		ss += str + VSL(", ");
 	}
 

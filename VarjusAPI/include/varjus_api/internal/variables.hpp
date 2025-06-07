@@ -8,6 +8,10 @@
 
 class IValue;
 class CProgramRuntime;
+class CInternalArrayValue;
+
+using ArrayOwner = std::weak_ptr<CInternalArrayValue>;
+
 
 class CVariable
 {
@@ -28,7 +32,7 @@ public:
 	[[nodiscard]] constexpr std::size_t& RefCount() noexcept { return m_uRefCount; }
 
 	[[nodiscard]] constexpr virtual bool IsChild() const noexcept { return false; }
-	[[nodiscard]] constexpr virtual IValue* GetParent() const noexcept { return nullptr; }
+	[[nodiscard]] virtual ArrayOwner GetParent() const noexcept { return {}; }
 
 	bool m_bSelfCapturing{ false }; //not exactly the most efficient way to include this here
 
@@ -51,15 +55,15 @@ public:
 	[[maybe_unused]] bool Release() override;
 
 
-	[[nodiscard]] static CChildVariable* Construct(CProgramRuntime* const runtime, IValue* parent);
-	[[nodiscard]] static CChildVariable* Construct(CProgramRuntime* const runtime, IValue* v, IValue* parent);
+	[[nodiscard]] static CChildVariable* Construct(CProgramRuntime* const runtime, const ArrayOwner& parent);
+	[[nodiscard]] static CChildVariable* Construct(CProgramRuntime* const runtime, IValue* v, const ArrayOwner& parent);
 
 	[[nodiscard]] constexpr CVariable* Copy() noexcept override { m_uRefCount++; return this; }
 
 	[[nodiscard]] constexpr virtual bool IsChild() const noexcept { return true; }
-	[[nodiscard]] constexpr IValue* GetParent() const noexcept override { return m_pParent; }
+	[[nodiscard]] ArrayOwner GetParent() const noexcept override { return m_pParent; }
 
-	constexpr void SetParent(IValue* parent) { m_pParent = parent; }
+	void SetParent(ArrayOwner parent) { m_pParent = parent; }
 private:
-	IValue* m_pParent{};
+	ArrayOwner m_pParent{};
 };

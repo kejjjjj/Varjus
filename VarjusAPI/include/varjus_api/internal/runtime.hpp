@@ -132,8 +132,8 @@ public:
 	[[nodiscard]] VectorOf<CVariable*> AcquireNewVariables(std::size_t count);
 	void FreeVariable(CVariable* var);
 
-	[[nodiscard]] CChildVariable* AcquireNewChildVariable(IValue* parent);
-	[[nodiscard]] VectorOf<CChildVariable*> AcquireNewChildVariables(std::size_t count, IValue* parent);
+	[[nodiscard]] CChildVariable* AcquireNewChildVariable(const ArrayOwner& parent);
+	[[nodiscard]] VectorOf<CChildVariable*> AcquireNewChildVariables(std::size_t count, const ArrayOwner& parent);
 	void FreeChildVariable(CChildVariable* var);
 
 	template <IValueChild T>
