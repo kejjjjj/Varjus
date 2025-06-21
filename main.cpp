@@ -18,7 +18,6 @@ VARJUS_DEFINE_ARGS(AddArgs, ctx, receiver)
         CIntValue::Construct(ctx, 1),
         CStringValue::Construct(ctx, VSL("aaaaaaaaaa!")) 
     }));
-
 }
 
 #ifdef _WIN32

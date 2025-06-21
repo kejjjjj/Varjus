@@ -22,7 +22,7 @@ CArrayValue* CArrayValue::Construct(CProgramRuntime* const runtime, IValues&& va
 CArrayValue::~CArrayValue() = default;
 
 void CArrayValue::Release(){
-	//std::cout << std::hex << this << ": " << "numRefs: " << SharedRefCount() << '\n';
+
 	if (SharedRefCount() == 1) {
 		Get().Release();
 	}

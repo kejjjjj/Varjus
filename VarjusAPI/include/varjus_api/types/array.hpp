@@ -94,7 +94,6 @@ private:
 	[[nodiscard]] VarjusString TypeAsString() const override { return VSL("array"); }
 	[[nodiscard]] VarjusString ValueAsString() const override;
 	[[nodiscard]] VarjusString ValueAsEscapedString() const override { return ValueAsString(); }
-
 };
 
 

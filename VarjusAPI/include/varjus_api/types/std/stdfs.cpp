@@ -65,11 +65,9 @@ DEFINE_METHOD(FsWrite, args)
 		static_cast<std::ios_base::openmode>(std::ios_base::out | std::ios_base::binary));
 
 	stream << LocaleConverter::u16string_to_ansi(data->ToString());
-
 #else
-	std::fstream stream(data->ToString(), static_cast<std::ios_base::openmode>(std::ios_base::in | std::ios_base::binary));
+	std::fstream stream(path->ToString(), static_cast<std::ios_base::openmode>(std::ios_base::out | std::ios_base::binary));
 	stream << data->ToString();
-
 #endif
 	return IValue::Construct(ctx->m_pRuntime);
 }
@@ -92,9 +90,8 @@ DEFINE_METHOD(FsAppend, args)
 	stream << LocaleConverter::u16string_to_ansi(data->ToString());
 
 #else
-	std::fstream stream(data->ToString(), static_cast<std::ios_base::openmode>(std::ios_base::in | std::ios_base::binary));
+	std::fstream stream(path->ToString(), static_cast<std::ios_base::openmode>(std::ios_base::app | std::ios_base::binary));
 	stream << data->ToString();
-
 #endif
 	return IValue::Construct(ctx->m_pRuntime);
 }
