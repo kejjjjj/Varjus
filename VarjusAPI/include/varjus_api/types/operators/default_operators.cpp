@@ -10,7 +10,6 @@
 
 #define DEFINE_OPERATOR(Name)\
 IValue* Name([[maybe_unused]]CProgramRuntime* const runtime, IValue* _lhs, IValue* _rhs)
-
 DEFINE_OPERATOR(OP_ASSIGNMENT)
 {
 	auto variable = _lhs->GetOwner();

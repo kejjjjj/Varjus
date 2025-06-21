@@ -86,24 +86,22 @@ DEFINE_PROPERTY(ArrayLength) {
 DEFINE_METHOD(Push, args)
 {
 	auto __this = GetThisArray(_this);
-	auto& vars = __this->GetVariables();
-	auto& newVar = vars.emplace_back(CVariable::Construct(ctx->m_pRuntime, args.front()->Copy()));
+
+	auto newVar = __this->PushVariable(ctx->m_pRuntime, args.front()->Copy());
 	return newVar->GetValue()->Copy();
 }
 DEFINE_METHOD(PushFront, args)
 {
 	auto __this = GetThisArray(_this);
-	auto& vars = __this->GetVariables();
-
-	auto it = vars.insert(vars.begin(), CVariable::Construct(ctx->m_pRuntime, args.front()->Copy()));
-	return (*it)->GetValue()->Copy();
+	auto newVar = __this->PushFrontVariable(ctx->m_pRuntime, args.front()->Copy());
+	return newVar->GetValue()->Copy();
 }
 
 DEFINE_METHOD(Pop, args)
 {
 
 	auto __this = GetThisArray(_this);
-	auto& vars = __this->GetVariables();
+	auto& vars = __this->Get().GetContent().GetVariables();
 
 	if (vars.empty())
 		throw CRuntimeError(ctx->m_pRuntime, VSL("attempted to pop an empty array"));
@@ -120,7 +118,7 @@ DEFINE_METHOD(PopFront, args)
 {
 
 	auto __this = GetThisArray(_this);
-	auto& vars = __this->GetVariables();
+	auto& vars = __this->Get().GetContent().GetVariables();
 
 	if (vars.empty())
 		throw CRuntimeError(ctx->m_pRuntime, VSL("attempted to pop_front an empty array"));
@@ -143,7 +141,7 @@ DEFINE_METHOD(Transform, args)
 		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("array.transform expected \"callable\", but got \"{}\""), mapFunc->TypeAsString()));
 
 	auto __this = GetThisArray(_this);
-	auto& vars = __this->GetVariables();
+	auto& vars = __this->Get().GetContent().GetVariables();
 
 	IValues results(vars.size());
 	IValues call_args(1);
@@ -204,7 +202,7 @@ static inline IValue* FindInternal(CArrayValue* _this, CRuntimeContext* const ct
 	if (!mapFunc->IsCallable())
 		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("array.find expected \"callable\", but got \"{}\""), mapFunc->TypeAsString()));
 
-	auto& vars = _this->GetVariables();
+	auto& vars = _this->Get().GetContent().GetVariables();
 
 	IValue* result{ nullptr };
 
@@ -273,7 +271,7 @@ static inline IValue* FindIndexInternal(CArrayValue* _this, CRuntimeContext* con
 	if (!mapFunc->IsCallable())
 		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("array.findindex expected \"callable\", but got \"{}\""), mapFunc->TypeAsString()));
 
-	auto& vars = _this->GetVariables();
+	auto& vars = _this->Get().GetContent().GetVariables();
 
 	IValue* result{ nullptr };
 
@@ -324,7 +322,7 @@ DEFINE_METHOD(Filter, args)
 		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("array.filter expected \"callable\", but got \"{}\""), mapFunc->TypeAsString()));
 
 	auto __this = GetThisArray(_this);
-	auto& vars = __this->GetVariables();
+	auto& vars = __this->Get().GetContent().GetVariables();
 
 	IValues results;
 	IValues call_args(1);
@@ -370,7 +368,7 @@ DEFINE_METHOD(Contains, args)
 	auto& searchElement = args.front();
 
 	auto __this = GetThisArray(_this);
-	auto& vars = __this->GetVariables();
+	auto& vars = __this->Get().GetContent().GetVariables();
 
 	IValue* result{ nullptr };
 
@@ -393,7 +391,7 @@ DEFINE_METHOD(Contains, args)
 DEFINE_METHOD(Reverse, args) {
 	
 	auto __this = GetThisArray(_this);
-	auto& vars = __this->GetVariables();
+	auto& vars = __this->Get().GetContent().GetVariables();
 	IValues valuesAsCopy(vars.size());
 
 	for (auto i = size_t(0); auto& var : vars)
@@ -424,7 +422,7 @@ DEFINE_METHOD(Join, args)
 
 	VectorOf<VarjusString> stringValues;
 	auto __this = GetThisArray(_this);
-	auto& vars = __this->GetVariables();
+	auto& vars = __this->Get().GetContent().GetVariables();
 
 	for (auto& var : vars) {
 		auto& value = var->GetValue();
@@ -447,7 +445,7 @@ DEFINE_METHOD(All, args)
 		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("array.all expected \"callable\", but got \"{}\""), mapFunc->TypeAsString()));
 
 	auto __this = GetThisArray(_this);
-	auto& vars = __this->GetVariables();
+	auto& vars = __this->Get().GetContent().GetVariables();
 
 	IValues call_args(1);
 
@@ -490,7 +488,7 @@ DEFINE_METHOD(Any, args)
 		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("array.all expected \"callable\", but got \"{}\""), mapFunc->TypeAsString()));
 
 	auto __this = GetThisArray(_this);
-	auto& vars = __this->GetVariables();
+	auto& vars = __this->Get().GetContent().GetVariables();
 
 	IValues call_args(1);
 
@@ -528,7 +526,7 @@ DEFINE_METHOD(Any, args)
 DEFINE_METHOD(Slice, args) {
 
 	auto __this = GetThisArray(_this);
-	auto& vars = __this->GetVariables();
+	auto& vars = __this->Get().GetContent().GetVariables();
 
 	auto& a = args[0];
 	auto& b = args[1];
@@ -634,7 +632,7 @@ DEFINE_METHOD(Sort, args)
 		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("array.sort expected \"callable\", but got \"{}\""), mapFunc->TypeAsString()));
 
 	auto __this = GetThisArray(_this);
-	auto& vars = __this->GetVariables();
+	auto& vars = __this->Get().GetContent().GetVariables();
 
 	IValues valuesAsCopy(vars.size());
 
@@ -659,7 +657,8 @@ DEFINE_METHOD(Resize, args)
 
 
 	auto __this = GetThisArray(_this);
-	auto& vars = __this->GetVariables();
+	auto& asShared = __this->GetShared();
+	auto& vars = asShared->GetContent().GetVariables();
 
 	auto uintval = value->ToUInt();
 
@@ -671,7 +670,7 @@ DEFINE_METHOD(Resize, args)
 		const auto delta = uintval - oldSize;
 
 		for ([[maybe_unused]] auto i : std::views::iota(0u, delta)) {
-			vars.push_back(CVariable::Construct(ctx->m_pRuntime, IValue::Construct(ctx->m_pRuntime)));
+			vars.push_back(CChildVariable::Construct(ctx->m_pRuntime, IValue::Construct(ctx->m_pRuntime), asShared));
 		}
 	} else if (uintval < oldSize) {
 		//shrink me :3
@@ -692,7 +691,7 @@ DEFINE_METHOD(Fill, args)
 	auto& value = args.front();
 
 	auto __this = GetThisArray(_this);
-	auto& vars = __this->GetVariables();
+	auto& vars = __this->Get().GetContent().GetVariables();
 
 	for (auto& v : vars) {
 		v->SetValue(value->Copy());
@@ -709,7 +708,7 @@ DEFINE_METHOD(ForEach, args)
 		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("array.for_each expected \"callable\", but got \"{}\""), mapFunc->TypeAsString()));
 
 	auto __this = GetThisArray(_this);
-	auto& vars = __this->GetVariables();
+	auto& vars = __this->Get().GetContent().GetVariables();
 
 	IValues call_args(1);
 
@@ -745,7 +744,7 @@ DEFINE_METHOD(Accumulate, args)
 
 
 	auto __this = GetThisArray(_this);
-	auto& vars = __this->GetVariables();
+	auto& vars = __this->Get().GetContent().GetVariables();
 
 	if(vars.empty())
 		return IValue::Construct(ctx->m_pRuntime);

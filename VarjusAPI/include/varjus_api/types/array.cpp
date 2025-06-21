@@ -15,7 +15,7 @@ CArrayValue* CArrayValue::Construct(CProgramRuntime* const runtime, IValues&& va
 	auto ptr = runtime->AcquireNewValue<CArrayValue>();
 	ptr->MakeShared();
 	auto internal = ptr->Internal();
-	internal->Set(runtime, std::move(values));
+	internal->Set(ptr->GetShared(), runtime, std::move(values));
 	return ptr;
 }
 
@@ -54,7 +54,7 @@ IValue* CArrayValue::Index(IValue* vIndex)
 
 	auto index = vIndex->ToUInt();
 
-	auto& vec = GetShared()->GetVariables();
+	auto& vec = GetShared()->GetContent().GetVariables();
 
 	if (index >= vec.size())
 		throw CRuntimeError(m_pAllocator, fmt::format(VSL("array index {} out of bounds (len: {})"), index, Internal()->Length()));
@@ -89,10 +89,11 @@ IValue* CArrayValue::GetAggregate(CRuntimeContext* const ctx, std::size_t member
 
 IValues CArrayValue::ToIterable() const
 {
-	auto& vars = GetVariables();
+	auto& vars = GetShared()->GetContent().GetVariables();
+
 	IValues results(vars.size());
 
-	for (std::size_t i = {}; auto& var : GetVariables()) {
+	for (std::size_t i = {}; auto& var : vars) {
 		results[i] = var->GetValue()->Copy();
 		i++;
 	}
@@ -100,43 +101,79 @@ IValues CArrayValue::ToIterable() const
 	return results;
 }
 
-VectorOf<CVariable*>& CArrayValue::GetVariables() {
-	return GetShared()->GetVariables();
+CChildVariable* CArrayValue::PushVariable(CProgramRuntime* const runtime, IValue* var) {
+	return GetShared()->GetContent().PushVariable(runtime, var);
 }
-VectorOf<CVariable*>& CArrayValue::GetVariables() const {
-	return GetShared()->GetVariables();
+CChildVariable* CArrayValue::PushFrontVariable(CProgramRuntime* const runtime, IValue* var){
+	return GetShared()->GetContent().PushFrontVariable(runtime, var);
+}
+
+//static bool SelfRef(CProgramRuntime* const runtime, IValue* var, const ArrayOwner& owner)
+//{
+//	if (auto arr = var->ToArray()) {
+//		if (auto arrayPtr = owner.lock()) {
+//			return arr->GetSharedPointer() == reinterpret_cast<std::size_t>(arrayPtr.get());
+//		}
+//		else {
+//			throw CRuntimeError(runtime, VSL("internal error within CArrayContent::SelfRef"));
+//		}
+//	}
+//
+//	return false;
+//}
+
+CChildVariable* CArrayContent::PushVariable(CProgramRuntime* const runtime, IValue* var)
+{
+	//const auto isRef = SelfRef(runtime, var, m_pArrayOwner);
+	auto ret =  m_oVariables.emplace_back(CChildVariable::Construct(runtime, var, m_pArrayOwner));
+	//if (isRef)
+	//	ret->m_bSelfCapturing = true;
+
+	return ret;
+}
+CChildVariable* CArrayContent::PushFrontVariable(CProgramRuntime* const runtime, IValue* var)
+{
+	//SelfRef(runtime, var, m_pArrayOwner);
+	return *m_oVariables.insert(m_oVariables.begin(), CChildVariable::Construct(runtime, var, m_pArrayOwner));
 }
 CInternalArrayValue::~CInternalArrayValue() = default;
 
 void CInternalArrayValue::Release()
 {
-	for (auto& v : GetVariables()) {
+	for (auto& v : m_oValue.GetVariables()) {
 		v->Release();
 	}
-}
-void CInternalArrayValue::Set(CProgramRuntime* const runtime, VectorOf<IValue*>&& v){
-	m_oValue.m_oVariables = runtime->AcquireNewVariables(v.size());
 
-	for (auto i = size_t(0); auto & var : m_oValue.m_oVariables)
+	m_oValue.m_pArrayOwner.reset();
+}
+void CInternalArrayValue::Set(const ArrayOwner& self, CProgramRuntime* const runtime, VectorOf<IValue*>&& v){
+	
+	assert(self.lock());
+	m_oValue.GetVariables() = runtime->AcquireNewChildVariables(v.size(), self);
+	m_oValue.m_pArrayOwner = self;
+
+	for (auto i = size_t(0); auto& var : m_oValue.GetVariables()) {
 		var->SetValue(v[i++]);
+	}
 }
 
 std::size_t CInternalArrayValue::Length() const noexcept
 {
-	return GetVariables().size();
+	return m_oValue.GetVariables().size();
 }
 VarjusString CArrayValue::ValueAsString() const
 {
-	auto& vec = Internal()->GetVariables();
+	auto& vec = Internal()->GetContent().GetVariables();
 
 	if (vec.empty())
 		return VSL("[]");
 
 	VarjusString ss;
 
-	for (const auto& v : vec)
-		ss += fmt::format(VSL("{}, "), v->GetValue()->ValueAsString());
-
+	for (const auto& v : vec) {
+		const auto ptr = v->GetValue();
+		ss += fmt::format(VSL("{}, "), ptr->GetSharedPointer() == this->GetSharedPointer() ? VSL("...") : ptr->ValueAsString());
+	}
 	ss.erase(ss.size() - 2, 2);
 
 	return VSL("[ ") + ss + VSL(" ]");

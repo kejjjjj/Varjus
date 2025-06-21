@@ -102,7 +102,7 @@ void AssertArray(IValue* retVal, const AssertArrayValue<T>& assertValue)
 	REQUIRE(array != nullptr);
 	auto internal = array->Internal();
 	REQUIRE(internal != nullptr);
-	auto& vars = internal->GetVariables();
+	auto& vars = internal->GetContent().GetVariables();
 
 	REQUIRE(internal->Length() == assertValue.m_targetValues.size());
 	REQUIRE(vars.size() == assertValue.m_targetValues.size());

@@ -15,9 +15,6 @@ CVariable* CVariable::Construct(CProgramRuntime* const runtime, IValue* v)
 	return var;
 }
 
-CVariable::CVariable() {}
-CVariable::~CVariable() = default;
-
 void CVariable::SetValue(IValue* v)
 {
 	assert(v);
@@ -73,4 +70,61 @@ void CProgramRuntime::FreeVariable(CVariable* var){
 	var->RefCount() = 1;
 	GetPool<CVariable>().Release(var);
 	var->m_pAllocator = nullptr;
+}
+
+CChildVariable* CProgramRuntime::AcquireNewChildVariable(const ArrayOwner& parent)
+{
+	auto var = GetPool<CChildVariable>().Acquire();
+	var->RefCount() = 1;
+	var->m_pAllocator = this;
+	var->SetParent(parent);
+	return var;
+}
+VectorOf<CChildVariable*> CProgramRuntime::AcquireNewChildVariables(std::size_t count, const ArrayOwner& parent)
+{
+	auto&& vars = GetPool<CChildVariable>().Acquire(count);
+
+	for (auto& v : vars) {
+		v->m_pAllocator = this;
+		v->SetParent(parent);
+	}
+	return vars;
+}
+void CProgramRuntime::FreeChildVariable(CChildVariable* var)
+{
+	assert(var->RefCount() == 0);
+	var->RefCount() = 1;
+	GetPool<CChildVariable>().Release(var);
+	var->m_pAllocator = nullptr;
+	var->SetParent({});
+}
+
+CChildVariable* CChildVariable::Construct(CProgramRuntime* const runtime, const ArrayOwner& parent) {
+	auto v = runtime->AcquireNewChildVariable(parent);
+	v->m_pAllocator = runtime;
+	return v;
+}
+CChildVariable* CChildVariable::Construct(CProgramRuntime* const runtime, IValue* v, const ArrayOwner& parent) {
+	auto var = runtime->AcquireNewChildVariable(parent);
+	var->SetValue(v);
+	return var;
+}
+
+bool CChildVariable::Release()
+{
+	assert(m_uRefCount > 0);
+	if (m_uRefCount != 1) {
+		m_uRefCount--;
+		return false;
+	}
+
+	m_uRefCount = 0;
+
+	auto& v = GetValue();
+	assert(v && v->HasOwner());
+	v->Release();
+	v = nullptr;
+	m_bSelfCapturing = false;
+	m_pAllocator->FreeChildVariable(this);
+	return true;
 }

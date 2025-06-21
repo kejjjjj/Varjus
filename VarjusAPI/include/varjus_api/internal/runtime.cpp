@@ -91,9 +91,6 @@ IValue* CProgramRuntime::BeginExecution(CRuntimeFunction* entryFunc, IValues& ar
 void CProgramRuntime::Cleanup()
 {
 	FreeAllPools();
-
-
-
 }
 CRuntimeFunction* CProgramRuntime::FindMainFunction(const RuntimeModules& modules)
 {
@@ -131,6 +128,7 @@ bool CProgramRuntime::HasLeaks()
 		HasLeak<CArrayValue>(this) ||
 		HasLeak<CObjectValue>(this) ||
 		HasLeak<CVariable>(this) ||
+		HasLeak<CChildVariable>(this) ||
 		HasLeak<CBuiltInObject>(this)
 	);
 }
@@ -146,6 +144,7 @@ void CProgramRuntime::PrintAllLeaks()
 	PrintLeaks<CArrayValue>(this, VSL("array"));
 	PrintLeaks<CObjectValue>(this, VSL("object"));
 	PrintLeaks<CVariable>(this, VSL("variable"));
+	PrintLeaks<CChildVariable>(this, VSL("child variable"));
 	PrintLeaks<CBuiltInObject>(this, VSL("built-in object"));
 }
 void CProgramRuntime::FreeAllPools()
@@ -160,6 +159,7 @@ void CProgramRuntime::FreeAllPools()
 	ClearPool<CArrayValue>(this);
 	ClearPool<CObjectValue>(this);
 	ClearPool<CVariable>(this);
+	ClearPool<CChildVariable>(this);
 	ClearPool<CBuiltInObject>(this);
 }
 VarjusString CProgramRuntime::KeyToString(ElementIndex index) const noexcept {
