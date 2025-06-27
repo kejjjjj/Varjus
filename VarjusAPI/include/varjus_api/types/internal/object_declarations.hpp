@@ -53,9 +53,6 @@ void Name(class CProgramRuntime* const ctx, IValues& receiver)
 //msvc is unable to use the move constructor for the unique_ptr, so it has to be explicitly defined pagman
 struct BuiltInMethod_t : std::unordered_map<std::size_t, std::unique_ptr<class CBuiltInRuntimeMethod>>
 {
-    friend class CBuiltInObject;
-    friend VarjusString DumpBuiltInObject(VarjusUInt indent, VarjusChar indentChar, const CBuiltInObject* obj);
-
     using unordered_map::unordered_map;
 
     BuiltInMethod_t() = delete;
@@ -69,21 +66,19 @@ struct BuiltInMethod_t : std::unordered_map<std::size_t, std::unique_ptr<class C
     constexpr void SetContext(CProgramInformation* const info) { m_pInfo = info; }
     void AddMethod(const VarjusString& name, Method_t method, std::size_t numArgs);
 
-private:
+
     CProgramInformation* m_pInfo;
 };
 
 struct BuiltInProperty_t : std::unordered_map<std::size_t, Property_t>
 {
-    friend class CBuiltInObject;
-    friend VarjusString DumpBuiltInObject(VarjusUInt indent, VarjusChar indentChar, const CBuiltInObject* obj);
 
     BuiltInProperty_t() = delete;
     BuiltInProperty_t(CProgramInformation* const ptr) : m_pInfo(ptr) {}
 
 	constexpr void SetContext(CProgramInformation* const info) { m_pInfo = info; }
 	void AddProperty(const VarjusString& name, Property_t property);
-private:
+
 	CProgramInformation* m_pInfo{};
 };
 
