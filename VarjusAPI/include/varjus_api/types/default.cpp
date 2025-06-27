@@ -1,7 +1,7 @@
 #include "types.hpp"
 #include "varjus_api/internal/runtime.hpp"
-
-
+#include "varjus_api/types/internal/object_declarations.hpp"
+#include "linter/context.hpp"
 
 
 IValue* IValue::Construct(CProgramRuntime* const runtime) {
@@ -42,7 +42,7 @@ VarjusString IValue::ToPrintableString() const
 	return fmt::format(VSL("{}: {}"), ValueAsString(), TypeAsString());
 }
 
-IValue* IValue::Index([[maybe_unused]]IValue* index)
+IValue* IValue::Index([[maybe_unused]] CRuntimeContext* const ctx, [[maybe_unused]] IValue* index)
 {
 	assert(false);
 	return nullptr;
@@ -100,6 +100,9 @@ VarjusString DumpArray(VarjusUInt indent, VarjusChar indentChar, const CArrayVal
 
 VarjusString DumpObject(VarjusUInt indent, VarjusChar indentChar, const CObjectValue* obj)
 {
+	if (const auto bobj = obj->ToBuiltInObject())
+		return DumpBuiltInObject(indent, indentChar, bobj);
+
 	VarjusString ss;
 	const auto write = [&ss](const VarjusString& v) { ss += v; };
 
@@ -131,4 +134,44 @@ VarjusString DumpObject(VarjusUInt indent, VarjusChar indentChar, const CObjectV
 	write(VSL("}"));
 
 	return ss;
+}
+VarjusString DumpBuiltInObject(VarjusUInt indent, VarjusChar indentChar, const CBuiltInObject* obj)
+{
+	VarjusString ss;
+	const auto write = [&ss](const VarjusString& v) { ss += v; };
+
+	VarjusString indent_string(indent, indentChar);
+
+	if (obj->m_oMethods->empty() && obj->m_oProperties->empty()) {
+		write(VSL("{}"));
+		return ss;
+	}
+
+	write(VSL("{\n"));
+
+	const auto& methodInfo = obj->m_oMethods->m_pInfo;
+
+	for (const auto& [id, _] : *obj->m_oMethods) {
+		write(indent_string);
+		write(VSL("\"") + methodInfo->m_oAllMembers.At(id) + VSL("\""));
+		write(VSL(": \"method\",\n"));
+	}
+
+	const auto& propertyInfo = obj->m_oProperties->m_pInfo;
+
+	for (const auto& [id, _] : *obj->m_oMethods) {
+		write(indent_string);
+		write(VSL("\"") + propertyInfo->m_oAllMembers.At(id) + VSL("\""));
+		write(VSL(": \"property\",\n"));
+	}
+
+	//remove ,\n
+	ss.erase(ss.size() - 2, 2);
+
+	write(VSL("\n"));
+	write(indent_string);
+	write(VSL("}"));
+
+	return ss;
+
 }

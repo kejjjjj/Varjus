@@ -32,7 +32,7 @@ void CStringValue::Release()
 	m_pAllocator->FreeValue<CStringValue>(this);
 }
 
-IValue* CStringValue::Index(IValue* vIndex)
+IValue* CStringValue::Index([[maybe_unused]] CRuntimeContext* const ctx, IValue* vIndex)
 {
 	if (!vIndex->IsIntegral())
 		throw CRuntimeError(m_pAllocator, fmt::format(VSL("array accessor must be integral, but is \"{}\""), vIndex->TypeAsString()));

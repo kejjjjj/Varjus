@@ -66,18 +66,19 @@ struct BuiltInMethod_t : std::unordered_map<std::size_t, std::unique_ptr<class C
     constexpr void SetContext(CProgramInformation* const info) { m_pInfo = info; }
     void AddMethod(const VarjusString& name, Method_t method, std::size_t numArgs);
 
-private:
+
     CProgramInformation* m_pInfo;
 };
 
 struct BuiltInProperty_t : std::unordered_map<std::size_t, Property_t>
 {
+
     BuiltInProperty_t() = delete;
     BuiltInProperty_t(CProgramInformation* const ptr) : m_pInfo(ptr) {}
 
 	constexpr void SetContext(CProgramInformation* const info) { m_pInfo = info; }
 	void AddProperty(const VarjusString& name, Property_t property);
-private:
+
 	CProgramInformation* m_pInfo{};
 };
 

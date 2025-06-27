@@ -78,7 +78,7 @@ CInternalObjectValue* CObjectValue::Internal() {
 CInternalObjectValue* CObjectValue::Internal() const {
 	return GetShared().get();
 }
-IValue* CObjectValue::Index(IValue* index) {
+IValue* CObjectValue::Index([[maybe_unused]] CRuntimeContext* const ctx, IValue* index) {
 	const auto key = index->ValueAsEscapedString();
 
 	if (!m_pAllocator->ContainsKey(key)) {
