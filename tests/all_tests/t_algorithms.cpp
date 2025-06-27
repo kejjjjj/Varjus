@@ -211,7 +211,7 @@ TEST_CASE(("AutoComplete()")) {
 	auto retVal = TEST_ExecuteFile(JP(VSL("auto_complete.var")));
 
 	AssertArray(retVal, AssertArrayValue<ASSERT_STRING>(t_string, { 
-		VSL("app"), VSL("apple"), VSL("ape"), 
+		VSL("ape"), VSL("app"), VSL("apple"),
 		VSL("bat"), VSL("bath"), VSL("banana") 
 	}));
 

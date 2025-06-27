@@ -78,7 +78,7 @@ public:
 	[[nodiscard]] CInternalArrayValue* Internal();
 	[[nodiscard]] CInternalArrayValue* Internal() const;
 	
-	[[nodiscard]] IValue* Index(IValue* index) override;
+	[[nodiscard]] IValue* Index(CRuntimeContext* const ctx, IValue* index) override;
 	[[nodiscard]] IValue* GetAggregate(CRuntimeContext* const ctx, std::size_t memberIdx) override;
 	[[nodiscard]] IValues ToIterable() const override;
 

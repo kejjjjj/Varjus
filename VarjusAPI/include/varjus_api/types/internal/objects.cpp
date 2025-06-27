@@ -6,6 +6,7 @@
 
 #include "linter/context.hpp"
 #include <iostream>
+#include <varjus_api/internal/exceptions/exception.hpp>
 
 CBuiltInObject::CBuiltInObject() : CObjectValue() {}
 CBuiltInObject::~CBuiltInObject() = default;
@@ -43,7 +44,27 @@ IValue* CBuiltInObject::Copy() {
 	ptr->m_oProperties = m_oProperties;
 	return ptr;
 }
+IValue* CBuiltInObject::Index(CRuntimeContext* const ctx, IValue* index) {
+	const auto key = index->ValueAsEscapedString();
 
+	if (!m_pAllocator->ContainsKey(key)) {
+		throw CRuntimeError(m_pAllocator, fmt::format(VSL("this aggregate doesn't have the attribute \"{}\""), key));
+	}
+
+	const auto memberIdx = m_pAllocator->StringToKey(key);
+
+	if (m_oMethods->contains(memberIdx)) {
+		auto v = m_pAllocator->AcquireNewValue<CCallableValue>();
+		METHOD_BIND(v, m_oMethods, this->Copy());
+		return v;
+	}
+
+	if (m_oProperties->contains(memberIdx)) {
+		return m_oProperties->at(memberIdx)(ctx, this);
+	}
+
+	return Internal()->GetAggregateValue().ElementLookup(m_pAllocator->StringToKey(key));
+}
 IValue* CBuiltInObject::GetAggregate(CRuntimeContext* const ctx, std::size_t memberIdx) {
 
 	if (m_oMethods->contains(memberIdx)) {
@@ -57,6 +78,27 @@ IValue* CBuiltInObject::GetAggregate(CRuntimeContext* const ctx, std::size_t mem
 	}
 
 	return CObjectValue::GetAggregate(ctx, memberIdx);
+}
+
+VarjusString CBuiltInObject::ValueAsString() const
+{
+	assert(m_oMethods && m_oMethods->m_pInfo);
+	assert(m_oProperties && m_oProperties->m_pInfo);
+
+	VarjusString ss;
+	for (auto& [id, _] : *m_oMethods) {
+		ss += fmt::format(VSL("\"{}\":\"method\","), m_oMethods->m_pInfo->m_oAllMembers.At(id));
+	}
+	for (auto& [id, _] : *m_oProperties) {
+		ss += fmt::format(VSL("\"{}\":\"property\","), m_oProperties->m_pInfo->m_oAllMembers.At(id));
+	}
+	if (ss.empty())
+		return VSL("{}");
+
+	ss.pop_back(); // remove comma
+
+	return VSL("{") + ss + VSL("}");
+
 }
 
 CBuiltInObjectPairs::~CBuiltInObjectPairs() = default;

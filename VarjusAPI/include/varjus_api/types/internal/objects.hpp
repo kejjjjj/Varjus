@@ -22,12 +22,21 @@ public:
 
 	void Release() override;
 
+	[[nodiscard]] virtual const constexpr CBuiltInObject* ToBuiltInObject() const noexcept { return this; }
+	[[nodiscard]] virtual constexpr CBuiltInObject* ToBuiltInObject() noexcept { return this; }
+
 	[[nodiscard]] IValue* Copy() override;
+	[[nodiscard]] IValue* Index(CRuntimeContext* const ctx, IValue* index) override;
 	[[nodiscard]] IValue* GetAggregate(CRuntimeContext* const ctx, std::size_t memberIdx) override;
 
 private:
+	[[nodiscard]] VarjusString ValueAsString() const override;
+	[[nodiscard]] VarjusString ValueAsEscapedString() const override { return CBuiltInObject::ValueAsString(); }
+
 	std::shared_ptr<BuiltInMethod_t> m_oMethods;
 	std::shared_ptr<BuiltInProperty_t> m_oProperties;
+
+	friend VarjusString DumpBuiltInObject(VarjusUInt indent, VarjusChar indentChar, const CBuiltInObject* obj);
 };
 
 template<typename Type> requires std::is_same_v<void, std::remove_reference_t<Type>>

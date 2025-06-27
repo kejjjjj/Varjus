@@ -61,14 +61,17 @@ public:
 	[[nodiscard]] constexpr bool IsAggregate() const noexcept override { return true; }
 	[[nodiscard]] constexpr bool IsBooleanConvertible() const noexcept override { return false; }
 	[[nodiscard]] constexpr bool IsIndexable() const noexcept override { return true; }
+	[[nodiscard]] virtual const constexpr class CBuiltInObject* ToBuiltInObject() const noexcept { return nullptr; }
+	[[nodiscard]] virtual constexpr class CBuiltInObject* ToBuiltInObject() noexcept { return nullptr; }
 
 	[[nodiscard]] virtual IValue* Copy() override;
 	[[nodiscard]] CInternalObjectValue* Internal();
 	[[nodiscard]] CInternalObjectValue* Internal() const;
 
-	[[nodiscard]] IValue* Index(IValue* index) override;
+	[[nodiscard]] virtual IValue* Index(CRuntimeContext* const ctx, IValue* index) override;
 	[[nodiscard]] virtual IValue* GetAggregate(CRuntimeContext* const ctx, std::size_t memberIdx) override;
 	void AddAttribute(IValue* const key, IValue* value);
+
 
 	[[nodiscard]] CObjectValue* ToObject() override { return this; }
 	[[nodiscard]] const CObjectValue* ToObject() const override { return this; }
@@ -79,7 +82,7 @@ public:
 
 protected:
 	[[nodiscard]] VarjusString TypeAsString() const override { return VSL("object"); }
-	[[nodiscard]] VarjusString ValueAsString() const override;
-	[[nodiscard]] VarjusString ValueAsEscapedString() const override { return ValueAsString(); }
+	[[nodiscard]] virtual VarjusString ValueAsString() const override;
+	[[nodiscard]] virtual VarjusString ValueAsEscapedString() const override { return ValueAsString(); }
 
 };

@@ -47,7 +47,7 @@ CInternalArrayValue* CArrayValue::Internal() const {
 	return GetShared().get();
 }
 
-IValue* CArrayValue::Index(IValue* vIndex)
+IValue* CArrayValue::Index([[maybe_unused]] CRuntimeContext* const ctx, IValue* vIndex)
 {
 	if (!vIndex->IsIntegral())
 		throw CRuntimeError(m_pAllocator, fmt::format(VSL("array accessor must be integral, but is \"{}\""), vIndex->TypeAsString()));

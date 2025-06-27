@@ -70,7 +70,7 @@ IValue* CRuntimeExpression::EvaluateSubscript(CRuntimeContext* const ctx, IValue
 
 	auto accessor = Evaluate(ctx, node->m_pAST);
 
-	auto index = operand->Index(accessor);
+	auto index = operand->Index(ctx, accessor);
 
 	if (!accessor->HasOwner())
 		accessor->Release();
