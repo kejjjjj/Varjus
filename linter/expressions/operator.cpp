@@ -12,6 +12,8 @@
 
 #include <cassert>
 
+using namespace Varjus;
+
 Punctuation CLinterOperator::GetPunctuation() const noexcept { return m_pToken->m_ePunctuation; }
 
 VarjusString CLinterOperator::ToString() const noexcept
@@ -27,7 +29,7 @@ CLinterOperatorParser::CLinterOperatorParser(LinterIterator& pos, LinterIterator
 }
 CLinterOperatorParser::~CLinterOperatorParser() = default;
 
-Success CLinterOperatorParser::ParseOperator(std::optional<PairMatcher>& eoe, 
+Varjus::Success CLinterOperatorParser::ParseOperator(std::optional<PairMatcher>& eoe, 
 	CExpressionList* expression, EvaluationType evalType)
 {
 
@@ -64,7 +66,7 @@ Success CLinterOperatorParser::ParseOperator(std::optional<PairMatcher>& eoe,
 	return success;
 }
 
-Success CLinterOperatorParser::ParseSequence(std::optional<PairMatcher>& m_oEndOfExpression, CExpressionList* expression)
+Varjus::Success CLinterOperatorParser::ParseSequence(std::optional<PairMatcher>& m_oEndOfExpression, CExpressionList* expression)
 {
 	// don't evaluate a sequence when parsing a list
 	const auto parsingList = m_oEndOfExpression && m_oEndOfExpression->IsClosing(p_comma);

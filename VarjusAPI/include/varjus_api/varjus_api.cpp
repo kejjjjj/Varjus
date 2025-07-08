@@ -40,7 +40,7 @@ Varjus::State::~State() {
 
 }
 
-Success Varjus::State::UseStdLibrary(const std::span<VarjusString>& ignore)
+Varjus::Success Varjus::State::UseStdLibrary(const std::span<VarjusString>& ignore)
 {
     if (!m_pLinter || !m_pLinter->m_oBuiltInObjects) {
         m_sErrorMessage = VSL("Varjus::State::UseStdLibrary(): no linter context... did you forget to create a new state?");
@@ -68,7 +68,7 @@ Success Varjus::State::UseStdLibrary(const std::span<VarjusString>& ignore)
     return success;
 }
 
-Success Varjus::State::LoadScriptFromFile(const VarjusString& fullFilePath, EncodingType fileEncoding)
+Varjus::Success Varjus::State::LoadScriptFromFile(const VarjusString& fullFilePath, Varjus::EncodingType fileEncoding)
 {
 
     if (!m_pLinter || !m_pLinter->m_oBuiltInObjects) {
@@ -103,7 +103,7 @@ Success Varjus::State::LoadScriptFromFile(const VarjusString& fullFilePath, Enco
 
     return failure;
 }
-Success Varjus::State::LoadScript(const VarjusString& script)
+Varjus::Success Varjus::State::LoadScript(const VarjusString& script)
 {
     if (!m_pLinter || !m_pLinter->m_oBuiltInObjects) {
         m_sErrorMessage = VSL("Varjus::State::LoadScript(): no linter context... did you forget to create a new state?");
@@ -144,7 +144,7 @@ Success Varjus::State::LoadScript(const VarjusString& script)
 
     return failure;
 }
-IValue* Varjus::State::ExecuteScript(void(*callback)(CProgramRuntime* const ctx, IValues& receiver))
+IValue* Varjus::State::ExecuteScript(void(*callback)(Varjus::CProgramRuntime* const ctx, IValues& receiver))
 {
 
     if (!m_pLinter || !m_pLinter->m_oBuiltInObjects) {
@@ -202,7 +202,7 @@ IValue* Varjus::State::GetReturnValue() const noexcept
     return m_pReturnValue;
 }
 
-Success Varjus::State::Abort()
+Varjus::Success Varjus::State::Abort()
 {
     if (!m_pRuntime) {
         m_sErrorMessage = VSL("Varjus::State::Abort(): No existing runtime");
@@ -212,7 +212,7 @@ Success Varjus::State::Abort()
     m_pRuntime->Abort();
     return success;
 }
-Success Varjus::State::HasFinished()
+Varjus::Success Varjus::State::HasFinished()
 {
     if (!m_pRuntime || !m_pReturnValue)
         return failure;
@@ -223,7 +223,7 @@ std::optional<VarjusString> Varjus::State::GetErrorMessage() const noexcept {
     return m_sErrorMessage.size() ? std::make_optional<VarjusString>(m_sErrorMessage) : std::nullopt;
 }
 
-Success Varjus::State::AddNewStaticObject(const VarjusString& name, const OptionalCtor<void>& constructor)
+Varjus::Success Varjus::State::AddNewStaticObject(const VarjusString& name, const OptionalCtor<void>& constructor)
 {
     if (!m_pLinter || !m_pLinter->m_oBuiltInObjects) {
         m_sErrorMessage = VSL("Varjus::State::AddNewStaticObject(): no linter context... did you forget to create a new state?");
@@ -234,7 +234,7 @@ Success Varjus::State::AddNewStaticObject(const VarjusString& name, const Option
     return success;
 }
 
-Success Varjus::State::AddNewCallback(const VarjusString& name, const Function_t& callback, std::size_t numArgs)
+Varjus::Success Varjus::State::AddNewCallback(const VarjusString& name, const Function_t& callback, std::size_t numArgs)
 {
     if (!m_pLinter || !m_pLinter->m_oBuiltInFunctions) {
         m_sErrorMessage = VSL("Varjus::State::AddNewCallback(): no linter context... did you forget to create a new state?");

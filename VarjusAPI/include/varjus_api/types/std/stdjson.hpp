@@ -1,5 +1,7 @@
 #pragma once
 
+namespace Varjus { struct ObjectDeclaration_t; }
+
 struct CStdJsonValue final {
-	static void Construct(struct ObjectDeclaration_t& receiver);
+	static void Construct(Varjus::ObjectDeclaration_t& receiver);
 };

@@ -8,6 +8,8 @@
 
 #include <cmath>
 
+using namespace Varjus;
+
 #define DEFINE_OPERATOR(Name)\
 IValue* Name([[maybe_unused]]CProgramRuntime* const runtime, IValue* _lhs, IValue* _rhs)
 DEFINE_OPERATOR(OP_ASSIGNMENT)
@@ -86,7 +88,7 @@ DEFINE_OPERATOR(OP_ADDITION)
 	case t_callable:
 	case t_array:
 	case t_object:
-		throw CRuntimeError(runtime, fmt::format(VSL("incompatible operands \"{}\" and \"{}\""), lhs->TypeAsString(), rhs->TypeAsString()));
+		throw CRuntimeError(runtime, Varjus::fmt::format(VSL("incompatible operands \"{}\" and \"{}\""), lhs->TypeAsString(), rhs->TypeAsString()));
 	}
 
 	//was this allocated just now?
@@ -118,7 +120,7 @@ DEFINE_OPERATOR(OP_SUBTRACTION)
 	case t_callable:
 	case t_array:
 	case t_object:
-		throw CRuntimeError(runtime, fmt::format(VSL("incompatible operands \"{}\" and \"{}\""), lhs->TypeAsString(), rhs->TypeAsString()));
+		throw CRuntimeError(runtime, Varjus::fmt::format(VSL("incompatible operands \"{}\" and \"{}\""), lhs->TypeAsString(), rhs->TypeAsString()));
 	}
 
 	//was this allocated just now?
@@ -150,7 +152,7 @@ DEFINE_OPERATOR(OP_MULTIPLICATION)
 	case t_callable:
 	case t_array:
 	case t_object:
-		throw CRuntimeError(runtime, fmt::format(VSL("incompatible operands \"{}\" and \"{}\""), lhs->TypeAsString(), rhs->TypeAsString()));
+		throw CRuntimeError(runtime, Varjus::fmt::format(VSL("incompatible operands \"{}\" and \"{}\""), lhs->TypeAsString(), rhs->TypeAsString()));
 	}
 
 	//was this allocated just now?
@@ -194,7 +196,7 @@ DEFINE_OPERATOR(OP_DIVISION)
 	case t_callable:
 	case t_array:
 	case t_object:
-		throw CRuntimeError(runtime, fmt::format(VSL("incompatible operands \"{}\" and \"{}\""), lhs->TypeAsString(), rhs->TypeAsString()));
+		throw CRuntimeError(runtime, Varjus::fmt::format(VSL("incompatible operands \"{}\" and \"{}\""), lhs->TypeAsString(), rhs->TypeAsString()));
 	}
 
 	//was this allocated just now?
@@ -237,7 +239,7 @@ DEFINE_OPERATOR(OP_MODULO)
 	case t_callable:
 	case t_array:
 	case t_object:
-		throw CRuntimeError(runtime, fmt::format(VSL("incompatible operands \"{}\" and \"{}\""), lhs->TypeAsString(), rhs->TypeAsString()));
+		throw CRuntimeError(runtime, Varjus::fmt::format(VSL("incompatible operands \"{}\" and \"{}\""), lhs->TypeAsString(), rhs->TypeAsString()));
 	}
 
 	//was this allocated just now?
@@ -269,7 +271,7 @@ DEFINE_OPERATOR(OP_LESS_THAN)
 	case t_callable:
 	case t_array:
 	case t_object:
-		throw CRuntimeError(runtime, fmt::format(VSL("incompatible operands \"{}\" and \"{}\""), lhs->TypeAsString(), rhs->TypeAsString()));
+		throw CRuntimeError(runtime, Varjus::fmt::format(VSL("incompatible operands \"{}\" and \"{}\""), lhs->TypeAsString(), rhs->TypeAsString()));
 	}
 
 	//was this allocated just now?
@@ -301,7 +303,7 @@ DEFINE_OPERATOR(OP_LESS_EQUAL)
 	case t_callable:
 	case t_array:
 	case t_object:
-		throw CRuntimeError(runtime, fmt::format(VSL("incompatible operands \"{}\" and \"{}\""), lhs->TypeAsString(), rhs->TypeAsString()));
+		throw CRuntimeError(runtime, Varjus::fmt::format(VSL("incompatible operands \"{}\" and \"{}\""), lhs->TypeAsString(), rhs->TypeAsString()));
 	}
 
 	//was this allocated just now?
@@ -333,7 +335,7 @@ DEFINE_OPERATOR(OP_GREATER_THAN)
 	case t_callable:
 	case t_array:
 	case t_object:
-		throw CRuntimeError(runtime, fmt::format(VSL("incompatible operands \"{}\" and \"{}\""), lhs->TypeAsString(), rhs->TypeAsString()));
+		throw CRuntimeError(runtime, Varjus::fmt::format(VSL("incompatible operands \"{}\" and \"{}\""), lhs->TypeAsString(), rhs->TypeAsString()));
 	}
 
 	//was this allocated just now?
@@ -365,7 +367,7 @@ DEFINE_OPERATOR(OP_GREATER_EQUAL)
 	case t_callable:
 	case t_array:
 	case t_object:
-		throw CRuntimeError(runtime, fmt::format(VSL("incompatible operands \"{}\" and \"{}\""), lhs->TypeAsString(), rhs->TypeAsString()));
+		throw CRuntimeError(runtime, Varjus::fmt::format(VSL("incompatible operands \"{}\" and \"{}\""), lhs->TypeAsString(), rhs->TypeAsString()));
 	}
 
 	//was this allocated just now?
@@ -468,20 +470,20 @@ DEFINE_OPERATOR(OP_STRICT_UNEQUALITY)
 DEFINE_OPERATOR(OP_LOGICAL_AND)
 {
 	if(!_lhs->IsBooleanConvertible())
-		throw CRuntimeError(runtime, fmt::format(VSL("\"{}\" is not convertible to a boolean"), _lhs->TypeAsString()));
+		throw CRuntimeError(runtime, Varjus::fmt::format(VSL("\"{}\" is not convertible to a boolean"), _lhs->TypeAsString()));
 
 	if (!_rhs->IsBooleanConvertible())
-		throw CRuntimeError(runtime, fmt::format(VSL("\"{}\" is not convertible to a boolean"), _rhs->TypeAsString()));
+		throw CRuntimeError(runtime, Varjus::fmt::format(VSL("\"{}\" is not convertible to a boolean"), _rhs->TypeAsString()));
 
 	return CBooleanValue::Construct(runtime, _lhs->ToBoolean() && _rhs->ToBoolean());
 }
 DEFINE_OPERATOR(OP_LOGICAL_OR)
 {
 	if (!_lhs->IsBooleanConvertible())
-		throw CRuntimeError(runtime, fmt::format(VSL("\"{}\" is not convertible to a boolean"), _lhs->TypeAsString()));
+		throw CRuntimeError(runtime, Varjus::fmt::format(VSL("\"{}\" is not convertible to a boolean"), _lhs->TypeAsString()));
 
 	if (!_rhs->IsBooleanConvertible())
-		throw CRuntimeError(runtime, fmt::format(VSL("\"{}\" is not convertible to a boolean"), _rhs->TypeAsString()));
+		throw CRuntimeError(runtime, Varjus::fmt::format(VSL("\"{}\" is not convertible to a boolean"), _rhs->TypeAsString()));
 
 	return CBooleanValue::Construct(runtime, _lhs->ToBoolean() || _rhs->ToBoolean());
 }
@@ -504,7 +506,7 @@ DEFINE_OPERATOR(OP_LEFT_SHIFT)
 	case t_callable:
 	case t_array:
 	case t_object:
-		throw CRuntimeError(runtime, fmt::format(VSL("you can only shift int operands, had \"{}\" and \"{}\""), 
+		throw CRuntimeError(runtime, Varjus::fmt::format(VSL("you can only shift int operands, had \"{}\" and \"{}\""), 
 			lhs->TypeAsString(), rhs->TypeAsString()));
 	}
 
@@ -533,7 +535,7 @@ DEFINE_OPERATOR(OP_RIGHT_SHIFT)
 	case t_callable:
 	case t_array:
 	case t_object:
-		throw CRuntimeError(runtime, fmt::format(VSL("you can only shift int operands, had \"{}\" and \"{}\""),
+		throw CRuntimeError(runtime, Varjus::fmt::format(VSL("you can only shift int operands, had \"{}\" and \"{}\""),
 			lhs->TypeAsString(), rhs->TypeAsString()));
 	}
 
@@ -562,7 +564,7 @@ DEFINE_OPERATOR(OP_BITWISE_OR)
 	case t_callable:
 	case t_array:
 	case t_object:
-		throw CRuntimeError(runtime, fmt::format(VSL("you can only use bitwise operations with int operands, had \"{}\" and \"{}\""),
+		throw CRuntimeError(runtime, Varjus::fmt::format(VSL("you can only use bitwise operations with int operands, had \"{}\" and \"{}\""),
 			lhs->TypeAsString(), rhs->TypeAsString()));
 	}
 
@@ -591,7 +593,7 @@ DEFINE_OPERATOR(OP_BITWISE_XOR)
 	case t_callable:
 	case t_array:
 	case t_object:
-		throw CRuntimeError(runtime, fmt::format(VSL("you can only use bitwise operations with int operands, had \"{}\" and \"{}\""),
+		throw CRuntimeError(runtime, Varjus::fmt::format(VSL("you can only use bitwise operations with int operands, had \"{}\" and \"{}\""),
 			lhs->TypeAsString(), rhs->TypeAsString()));
 	}
 
@@ -620,7 +622,7 @@ DEFINE_OPERATOR(OP_BITWISE_AND)
 	case t_callable:
 	case t_array:
 	case t_object:
-		throw CRuntimeError(runtime, fmt::format(VSL("you can only use bitwise operations with int operands, had \"{}\" and \"{}\""),
+		throw CRuntimeError(runtime, Varjus::fmt::format(VSL("you can only use bitwise operations with int operands, had \"{}\" and \"{}\""),
 			lhs->TypeAsString(), rhs->TypeAsString()));
 	}
 
@@ -640,7 +642,7 @@ inline static void OP_ASSIGNMENT_CHECK(IValue* lhs, IValue* rhs)
 		throw CRuntimeError(lhs->GetAllocator(), VSL("cannot assign to a temporary value"));
 
 	if (lhs->Type() != rhs->Type())
-		throw CRuntimeError(lhs->GetAllocator(), fmt::format(VSL("can't assign \"{}\" to \"{}\""), rhs->TypeAsString(), lhs->TypeAsString()));
+		throw CRuntimeError(lhs->GetAllocator(), Varjus::fmt::format(VSL("can't assign \"{}\" to \"{}\""), rhs->TypeAsString(), lhs->TypeAsString()));
 }
 
 DEFINE_OPERATOR(OP_ASSIGNMENT_ADDITION)
@@ -666,7 +668,7 @@ DEFINE_OPERATOR(OP_ASSIGNMENT_ADDITION)
 	case t_callable:
 	case t_array:
 	case t_object:
-		throw CRuntimeError(runtime, fmt::format(VSL("incompatible operands \"{}\" and \"{}\""), _lhs->TypeAsString(), _rhs->TypeAsString()));
+		throw CRuntimeError(runtime, Varjus::fmt::format(VSL("incompatible operands \"{}\" and \"{}\""), _lhs->TypeAsString(), _rhs->TypeAsString()));
 	}
 
 	return _lhs;
@@ -692,7 +694,7 @@ DEFINE_OPERATOR(OP_ASSIGNMENT_SUBTRACTION)
 	case t_callable:
 	case t_array:
 	case t_object:
-		throw CRuntimeError(runtime, fmt::format(VSL("incompatible operands \"{}\" and \"{}\""), _lhs->TypeAsString(), _rhs->TypeAsString()));
+		throw CRuntimeError(runtime, Varjus::fmt::format(VSL("incompatible operands \"{}\" and \"{}\""), _lhs->TypeAsString(), _rhs->TypeAsString()));
 	}
 
 	return _lhs;
@@ -718,7 +720,7 @@ DEFINE_OPERATOR(OP_ASSIGNMENT_MULTIPLICATION)
 	case t_callable:
 	case t_array:
 	case t_object:
-		throw CRuntimeError(runtime, fmt::format(VSL("incompatible operands \"{}\" and \"{}\""), _lhs->TypeAsString(), _rhs->TypeAsString()));
+		throw CRuntimeError(runtime, Varjus::fmt::format(VSL("incompatible operands \"{}\" and \"{}\""), _lhs->TypeAsString(), _rhs->TypeAsString()));
 	}
 
 	return _lhs;
@@ -758,7 +760,7 @@ DEFINE_OPERATOR(OP_ASSIGNMENT_DIVISION)
 	case t_callable:
 	case t_array:
 	case t_object:
-		throw CRuntimeError(runtime, fmt::format(VSL("incompatible operands \"{}\" and \"{}\""), _lhs->TypeAsString(), _rhs->TypeAsString()));
+		throw CRuntimeError(runtime, Varjus::fmt::format(VSL("incompatible operands \"{}\" and \"{}\""), _lhs->TypeAsString(), _rhs->TypeAsString()));
 	}
 
 	return _lhs;
@@ -798,7 +800,7 @@ DEFINE_OPERATOR(OP_ASSIGNMENT_MODULO)
 	case t_callable:
 	case t_array:
 	case t_object:
-		throw CRuntimeError(runtime, fmt::format(VSL("incompatible operands \"{}\" and \"{}\""), _lhs->TypeAsString(), _rhs->TypeAsString()));
+		throw CRuntimeError(runtime, Varjus::fmt::format(VSL("incompatible operands \"{}\" and \"{}\""), _lhs->TypeAsString(), _rhs->TypeAsString()));
 	}
 
 	return _lhs;
@@ -822,7 +824,7 @@ DEFINE_OPERATOR(OP_ASSIGNMENT_LEFT_SHIFT)
 	case t_callable:
 	case t_array:
 	case t_object:
-		throw CRuntimeError(runtime, fmt::format(VSL("you can only shift int operands, had \"{}\" and \"{}\""),
+		throw CRuntimeError(runtime, Varjus::fmt::format(VSL("you can only shift int operands, had \"{}\" and \"{}\""),
 			_lhs->TypeAsString(), _rhs->TypeAsString()));
 	}
 
@@ -847,7 +849,7 @@ DEFINE_OPERATOR(OP_ASSIGNMENT_RIGHT_SHIFT)
 	case t_callable:
 	case t_array:
 	case t_object:
-		throw CRuntimeError(runtime, fmt::format(VSL("you can only shift int operands, had \"{}\" and \"{}\""),
+		throw CRuntimeError(runtime, Varjus::fmt::format(VSL("you can only shift int operands, had \"{}\" and \"{}\""),
 			_lhs->TypeAsString(), _rhs->TypeAsString()));
 	}
 
@@ -873,7 +875,7 @@ DEFINE_OPERATOR(OP_ASSIGNMENT_BITWISE_OR)
 	case t_callable:
 	case t_array:
 	case t_object:
-		throw CRuntimeError(runtime, fmt::format(VSL("you can only use bitwise operations with int operands, had \"{}\" and \"{}\""),
+		throw CRuntimeError(runtime, Varjus::fmt::format(VSL("you can only use bitwise operations with int operands, had \"{}\" and \"{}\""),
 			_lhs->TypeAsString(), _rhs->TypeAsString()));
 	}
 
@@ -899,7 +901,7 @@ DEFINE_OPERATOR(OP_ASSIGNMENT_BITWISE_XOR)
 	case t_callable:
 	case t_array:
 	case t_object:
-		throw CRuntimeError(runtime, fmt::format(VSL("you can only use bitwise operations with int operands, had \"{}\" and \"{}\""),
+		throw CRuntimeError(runtime, Varjus::fmt::format(VSL("you can only use bitwise operations with int operands, had \"{}\" and \"{}\""),
 			_lhs->TypeAsString(), _rhs->TypeAsString()));
 	}
 
@@ -925,7 +927,7 @@ DEFINE_OPERATOR(OP_ASSIGNMENT_BITWISE_AND)
 	case t_callable:
 	case t_array:
 	case t_object:
-		throw CRuntimeError(runtime, fmt::format(VSL("you can only use bitwise operations with int operands, had \"{}\" and \"{}\""),
+		throw CRuntimeError(runtime, Varjus::fmt::format(VSL("you can only use bitwise operations with int operands, had \"{}\" and \"{}\""),
 			_lhs->TypeAsString(), _rhs->TypeAsString()));
 	}
 

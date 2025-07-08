@@ -11,6 +11,7 @@
 
 #include <sstream>
 
+using namespace Varjus;
 
 CObjectValue::~CObjectValue() = default;
 
@@ -25,7 +26,7 @@ void CObjectValue::AddAttribute(IValue* const key, IValue* value)
 	auto var = aggregate.AddAttribute((*members)[key->ValueAsEscapedString()]);
 	var->SetValue(value->Copy());
 }
-CObjectValue* CObjectValue::Construct(CProgramRuntime* const runtime, ObjectValues&& values)
+CObjectValue* CObjectValue::Construct(Varjus::CProgramRuntime* const runtime, __ObjectValues&& values)
 {
 	auto ptr = runtime->AcquireNewValue<CObjectValue>();
 	ptr->MakeShared();
@@ -43,7 +44,7 @@ CObjectValue* CObjectValue::Construct(CProgramRuntime* const runtime, ObjectValu
 	return ptr;
 }
 
-CObjectValue* CObjectValue::_ConstructInternal(CProgramRuntime* const runtime, ObjectInitializer&& values)
+CObjectValue* CObjectValue::_ConstructInternal(Varjus::CProgramRuntime* const runtime, ObjectInitializer&& values)
 {
 	auto ptr = runtime->AcquireNewValue<CObjectValue>();
 	ptr->MakeShared();
@@ -82,7 +83,7 @@ IValue* CObjectValue::Index([[maybe_unused]] CRuntimeContext* const ctx, IValue*
 	const auto key = index->ValueAsEscapedString();
 
 	if (!m_pAllocator->ContainsKey(key)) {
-		throw CRuntimeError(m_pAllocator, fmt::format(VSL("this aggregate doesn't have the attribute \"{}\""), key));
+		throw CRuntimeError(m_pAllocator, Varjus::fmt::format(VSL("this aggregate doesn't have the attribute \"{}\""), key));
 	}
 
 	return Internal()->GetAggregateValue().ElementLookup(m_pAllocator->StringToKey(key));
@@ -95,7 +96,7 @@ IValue* CObjectValue::GetAggregate(CRuntimeContext* const ctx, std::size_t membe
 
 	if (methods->contains(memberIdx)) {
 		auto v = m_pAllocator->AcquireNewValue<CCallableValue>();
-		METHOD_BIND(v, methods, this->Copy());
+		VARJUS_METHOD_BIND(v, methods, this->Copy());
 		return v;
 	}
 
@@ -113,7 +114,7 @@ VarjusString CObjectValue::ValueAsString() const
 	VarjusString ss;
 
 	for (const auto& [key, value] : GetShared()->GetAggregateValue().Iterator()) {
-		ss += fmt::format(VSL("\"{}\":{},"), m_pAllocator->KeyToString(key), value->GetValue()->ValueAsString());
+		ss += Varjus::fmt::format(VSL("\"{}\":{},"), m_pAllocator->KeyToString(key), value->GetValue()->ValueAsString());
 	}
 
 	if (ss.empty())

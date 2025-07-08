@@ -17,10 +17,12 @@
 #include <cassert>
 #include <filesystem>
 
+using namespace Varjus;
+
 CImportLinter::CImportLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack)
 	: CLinterSingle(pos, end), m_pScope(scope), m_pOwner(stack) {}
 
-Success CImportLinter::Parse()
+Varjus::Success CImportLinter::Parse()
 {
 
 	if (IsEndOfBuffer() || (*m_iterPos)->Type() != tt_import) {
@@ -56,7 +58,7 @@ Success CImportLinter::Parse()
 	return success;
 }
 
-Success CImportLinter::ParseIdentifierRecursively()
+Varjus::Success CImportLinter::ParseIdentifierRecursively()
 {
 
 	if (IsEndOfBuffer() || (*m_iterPos)->Type() != tt_name) {
@@ -110,7 +112,7 @@ static VarjusString FixRelativePath(const VarjusString& wd, const VarjusString& 
 #endif
 }
 
-Success CImportLinter::ParseFilePath()
+Varjus::Success CImportLinter::ParseFilePath()
 {
 	if (IsEndOfBuffer() || (*m_iterPos)->Type() != tt_string) {
 		m_pOwner->GetModule()->PushError(VSL("expected a string"), GetIteratorSafe()->m_oSourcePosition);
@@ -123,14 +125,14 @@ Success CImportLinter::ParseFilePath()
 	const auto fullPath = FixRelativePath(wd, relativePath);
 
 	if (!fs::file_exists(fullPath)) {
-		m_pOwner->GetModule()->PushError(fmt::format(VSL("\"{}\" does not exist"), fullPath), GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError(Varjus::fmt::format(VSL("\"{}\" does not exist"), fullPath), GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 
 	m_oTargetFile = fullPath;
 
 	if (m_oTargetFile == m_pOwner->GetModule()->GetFilePath()) {
-		m_pOwner->GetModule()->PushError(fmt::format(VSL("attempted to import a symbol that is exported in the same file"), fullPath),
+		m_pOwner->GetModule()->PushError(Varjus::fmt::format(VSL("attempted to import a symbol that is exported in the same file"), fullPath),
 			GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
@@ -140,7 +142,7 @@ Success CImportLinter::ParseFilePath()
 	return success;
 }
 
-Success CImportLinter::ParseFile()
+Varjus::Success CImportLinter::ParseFile()
 {
 	auto modules = m_pOwner->GetProgramInformation()->GetModules();
 	assert(modules);
@@ -178,7 +180,7 @@ Success CImportLinter::ParseFile()
 		const auto exportedSymbol = thisModule->GetExport(name);
 
 		if (!exportedSymbol) {
-			thisModule->PushError(fmt::format(VSL("\"{}\" is not an exported symbol"), name), GetIteratorSafe()->m_oSourcePosition);
+			thisModule->PushError(Varjus::fmt::format(VSL("\"{}\" is not an exported symbol"), name), GetIteratorSafe()->m_oSourcePosition);
 			return failure;
 		}
 		if (exportedSymbol->Type() == es_variable) {
@@ -226,7 +228,7 @@ CModule* CImportLinter::GetFileModule() const
 
 }
 
-Success CImportLinter::DeclareVariable(const VarjusString& symbolName,
+Varjus::Success CImportLinter::DeclareVariable(const VarjusString& symbolName,
 	CExportedSymbol* const s, std::size_t moduleIndex)
 {
 
@@ -238,7 +240,7 @@ Success CImportLinter::DeclareVariable(const VarjusString& symbolName,
 	}
 
 	if (!scope->DeclareVariable(symbolName)) {
-		m_pOwner->GetModule()->PushError(fmt::format(VSL("variable \"{}\" already declared"), symbolName), (*m_iterPos)->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError(Varjus::fmt::format(VSL("variable \"{}\" already declared"), symbolName), (*m_iterPos)->m_oSourcePosition);
 		return failure;
 	}
 
@@ -250,12 +252,12 @@ Success CImportLinter::DeclareVariable(const VarjusString& symbolName,
 	return success;
 }
 
-Success CImportLinter::DeclareFunction(const VarjusString& symbolName,
+Varjus::Success CImportLinter::DeclareFunction(const VarjusString& symbolName,
 	CExportedSymbol* const s, std::size_t moduleIndex)
 {
 
 	if (m_pOwner->m_FunctionManager->ContainsFunction(symbolName)) {
-		m_pOwner->GetModule()->PushError(fmt::format(VSL("function \"{}\" already declared"), symbolName), (*m_iterPos)->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError(Varjus::fmt::format(VSL("function \"{}\" already declared"), symbolName), (*m_iterPos)->m_oSourcePosition);
 		return failure;
 	}
 

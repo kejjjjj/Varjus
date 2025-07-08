@@ -6,7 +6,7 @@
 
 #include "varjus_api/internal/globalDefinitions.hpp"
 
-enum Success : signed char;
+enum Varjus::Success : signed char;
 class CPunctuationToken;
 class CToken;
 class CLinterOperator;

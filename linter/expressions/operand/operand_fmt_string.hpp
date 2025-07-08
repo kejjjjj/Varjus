@@ -38,7 +38,7 @@ private:
 struct CFmtStringOperand final : public IOperand
 {
 
-	NONCOPYABLE(CFmtStringOperand);
+	VARJUS_NONCOPYABLE(CFmtStringOperand);
 
 	CFmtStringOperand() = default;
 	CFmtStringOperand(VectorOf<FmtStringAST>&& nodes);

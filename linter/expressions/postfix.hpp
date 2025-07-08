@@ -15,7 +15,7 @@ public:
 	explicit CPostfixLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack);
 	~CPostfixLinter();
 
-	[[maybe_unused]] Success ParsePostfix();
+	[[maybe_unused]] Varjus::Success ParsePostfix();
 
 	[[nodiscard]] VectorOf<std::unique_ptr<IPostfixBase>> Move() noexcept;
 private:
@@ -43,7 +43,7 @@ enum EPostfixType
 
 class IPostfixBase
 {
-	NONCOPYABLE(IPostfixBase);
+	VARJUS_NONCOPYABLE(IPostfixBase);
 public:
 	IPostfixBase() = default;
 	virtual ~IPostfixBase() = default;
@@ -56,7 +56,7 @@ public:
 
 class CPostfixMemberAccess final : public IPostfixBase
 {
-	NONCOPYABLE(CPostfixMemberAccess);
+	VARJUS_NONCOPYABLE(CPostfixMemberAccess);
 public:
 	CPostfixMemberAccess(std::size_t globalMemberIndex)
 		: m_uGlobalMemberIndex(globalMemberIndex) {}
@@ -71,7 +71,7 @@ private:
 
 class CPostfixSubscript final : public IPostfixBase
 {
-	NONCOPYABLE(CPostfixSubscript);
+	VARJUS_NONCOPYABLE(CPostfixSubscript);
 public:
 	CPostfixSubscript(ASTNode&& ast);
 	~CPostfixSubscript();
@@ -86,7 +86,7 @@ private:
 
 class CPostfixFunctionCall final : public IPostfixBase
 {
-	NONCOPYABLE(CPostfixFunctionCall);
+	VARJUS_NONCOPYABLE(CPostfixFunctionCall);
 public:
 	CPostfixFunctionCall();
 	CPostfixFunctionCall(ExpressionList&& args);
@@ -101,7 +101,7 @@ private:
 
 class CPostfixIncrement final : public IPostfixBase
 {
-	NONCOPYABLE(CPostfixIncrement);
+	VARJUS_NONCOPYABLE(CPostfixIncrement);
 public:
 	CPostfixIncrement() = default;
 	[[nodiscard]] constexpr EPostfixType Type() const noexcept override { return pf_increment; }
@@ -110,7 +110,7 @@ public:
 };
 class CPostfixDecrement final : public IPostfixBase
 {
-	NONCOPYABLE(CPostfixDecrement);
+	VARJUS_NONCOPYABLE(CPostfixDecrement);
 public:
 	CPostfixDecrement() = default;
 	[[nodiscard]] constexpr EPostfixType Type() const noexcept override { return pf_decrement; }

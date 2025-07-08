@@ -7,6 +7,8 @@
 #include <charconv>
 #include <cassert>
 
+using namespace Varjus;
+
 std::unique_ptr<IOperand> CLinterOperand::ParseImmediate(){
 	auto& oldIter = m_iterPos;
 	auto&& v = std::make_unique<CImmediateOperand>(*m_iterPos);
@@ -22,22 +24,22 @@ ASTNode CImmediateOperand::ToAST(){
 #pragma pack(push)
 WARNING_DISABLE(4061)
 WARNING_DISABLE(4062)
-EValueType CImmediateOperand::GetImmediateType() const noexcept
+Varjus::EValueType CImmediateOperand::GetImmediateType() const noexcept
 {
 	switch (m_pToken->Type()) {
 	case TokenType::tt_undefined:
-		return EValueType::t_undefined;
+		return Varjus::EValueType::t_undefined;
 	case TokenType::tt_false:
 	case TokenType::tt_true:
-		return EValueType::t_boolean;
+		return Varjus::EValueType::t_boolean;
 	case TokenType::tt_int:
-		return EValueType::t_int;
+		return Varjus::EValueType::t_int;
 	case TokenType::tt_uint:
-		return EValueType::t_uint;
+		return Varjus::EValueType::t_uint;
 	case TokenType::tt_double:
-		return EValueType::t_double;
+		return Varjus::EValueType::t_double;
 	case TokenType::tt_string:
-		return EValueType::t_string;
+		return Varjus::EValueType::t_string;
 	default:
 		assert(false);
 		return t_undefined;

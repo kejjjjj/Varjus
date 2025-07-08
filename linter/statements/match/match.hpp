@@ -10,12 +10,12 @@ struct CFunctionBlock;
 
 class CMatchStatementLinter final : public CStatementLinter, protected IRuntimeBlock
 {
-	NONCOPYABLE(CMatchStatementLinter);
+	VARJUS_NONCOPYABLE(CMatchStatementLinter);
 
 public:
 	explicit CMatchStatementLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const owner);
 	~CMatchStatementLinter();
-	[[nodiscard]] Success Parse();
+	[[nodiscard]] Varjus::Success Parse();
 
 	[[nodiscard]] RuntimeBlock ToRuntimeObject() const override;
 	[[nodiscard]] CRuntimeCaseStatement* GetDefaultCase() const noexcept;

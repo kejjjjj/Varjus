@@ -4,6 +4,8 @@
 #include "catch_amalgamated.hpp"
 #include "varjus_api/internal/variables.hpp"
 
+using namespace Varjus;
+
 [[nodiscard]] IValue* TEST_ExecuteFile(const VarjusString& srcFile);
 [[nodiscard]] IValue* TEST_ExecuteScript(const VarjusString& script);
 

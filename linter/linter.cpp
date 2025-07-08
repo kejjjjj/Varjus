@@ -32,11 +32,13 @@
 
 #include <cassert>
 
+using namespace Varjus;
+
 CBufferLinter::CBufferLinter(CProgramInformation* const program, LinterIterator& start, LinterIterator& end, const VarjusString& filePath)
 	: CLinter(start, end), m_oInitialPosition(start), m_sFilePath(filePath), m_pProgram(program) {}
 CBufferLinter::~CBufferLinter() = default;
 
-static Success AddInstruction(RuntimeBlock&& block, const WeakScope& scope)
+static Varjus::Success AddInstruction(RuntimeBlock&& block, const WeakScope& scope)
 {
 	if (block) { //nullptr when no initializer
 
@@ -50,7 +52,7 @@ static Success AddInstruction(RuntimeBlock&& block, const WeakScope& scope)
 	return success;
 }
 
-static Success LintExpression(CLinterExpression& linter, const CLinterContext& ctx)
+static Varjus::Success LintExpression(CLinterExpression& linter, const CLinterContext& ctx)
 {
 
 
@@ -70,7 +72,7 @@ static Success LintExpression(CLinterExpression& linter, const CLinterContext& c
 
 }
 template<typename Linter> 
-Success Lint(const CLinterContext& ctx)
+Varjus::Success Lint(const CLinterContext& ctx)
 {
 
 	Linter linter(ctx.m_iterPos, ctx.m_iterEnd, ctx.scope, ctx.memory);
@@ -92,7 +94,7 @@ Success Lint(const CLinterContext& ctx)
 		return success;
 }
 
-Success CBufferLinter::LintOperator(const CLinterContext& ctx)
+Varjus::Success CBufferLinter::LintOperator(const CLinterContext& ctx)
 {
 	// a new scope
 	if ((*ctx.m_iterPos)->IsOperator(p_curlybracket_open)) {
@@ -102,7 +104,7 @@ Success CBufferLinter::LintOperator(const CLinterContext& ctx)
 	// otherwise a normal expression
 	return Lint<CLinterExpression>(ctx);
 }
-Success CBufferLinter::LintScope(const CLinterContext& ctx)
+Varjus::Success CBufferLinter::LintScope(const CLinterContext& ctx)
 {
 
 	if (ctx.memory->IsGlobalMemory()) {
@@ -124,7 +126,7 @@ Success CBufferLinter::LintScope(const CLinterContext& ctx)
 	return success;
 
 }
-Success CBufferLinter::LintFunctionAmbiguity(const CLinterContext& ctx)
+Varjus::Success CBufferLinter::LintFunctionAmbiguity(const CLinterContext& ctx)
 {
 	// a new function
 	if(!ctx.memory->IsStack())
@@ -133,7 +135,7 @@ Success CBufferLinter::LintFunctionAmbiguity(const CLinterContext& ctx)
 	// otherwise a lambda
 	return Lint<CLinterExpression>(ctx);
 }
-Success CBufferLinter::LintToken(const CLinterContext& ctx)
+Varjus::Success CBufferLinter::LintToken(const CLinterContext& ctx)
 {
 	if (ctx.m_iterPos == ctx.m_iterEnd)
 		return failure;
@@ -207,7 +209,7 @@ Success CBufferLinter::LintToken(const CLinterContext& ctx)
 }
 
 
-Success CBufferLinter::Parse()
+Varjus::Success CBufferLinter::Parse()
 {
 	if (!HoistFile())
 		return failure;
@@ -243,7 +245,7 @@ static void DeclareBuiltInFunctions(CMemory* m_pOwner)
 		m_pOwner->GetModule()->AddFunction(std::make_unique<CBuiltInRuntimeFunction>(k, callable, numArgs));
 	}
 }
-Success CBufferLinter::HoistFile()
+Varjus::Success CBufferLinter::HoistFile()
 {
 	m_pHoister = std::make_unique<CHoister>();
 
@@ -282,7 +284,7 @@ Success CBufferLinter::HoistFile()
 	return success;
 }
 
-Success CBufferLinter::LintFile()
+Varjus::Success CBufferLinter::LintFile()
 {
 	m_pModule = m_pProgram->GetModules()->CreateNewModule(m_sFilePath);
 

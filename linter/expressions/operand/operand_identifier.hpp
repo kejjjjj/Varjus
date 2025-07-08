@@ -8,7 +8,7 @@ struct CMemoryIdentifier;
 
 struct CIdentifierOperand final : public IOperand
 {
-	NONCOPYABLE(CIdentifierOperand);
+	VARJUS_NONCOPYABLE(CIdentifierOperand);
 	CIdentifierOperand(CMemoryIdentifier* id) : m_pIdentifier(id) {}
 	~CIdentifierOperand() = default;
 

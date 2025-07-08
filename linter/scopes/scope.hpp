@@ -10,12 +10,12 @@ class IRuntimeStructure;
 
 class CScopeLinter final : public CLinterSingle<CToken>
 {
-	NONCOPYABLE(CScopeLinter);
+	VARJUS_NONCOPYABLE(CScopeLinter);
 public:
 	explicit CScopeLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& s, CMemory* const owner);
 
-	[[maybe_unused]] Success Parse();
-	[[maybe_unused]] Success ParseUntil(bool(*test)(LinterIterator& i));
+	[[maybe_unused]] Varjus::Success Parse();
+	[[maybe_unused]] Varjus::Success ParseUntil(bool(*test)(LinterIterator& i));
 
 private:
 
@@ -27,7 +27,7 @@ private:
 
 class CScope final
 {
-	NONCOPYABLE(CScope);
+	VARJUS_NONCOPYABLE(CScope);
 	friend class CIdentifierLinter;
 public:
 	CScope() = delete;
@@ -39,7 +39,7 @@ public:
 
 	[[nodiscard]] static CScope* DeleteScope(CScope* scope);
 
-	[[nodiscard]] Success DeclareVariable(const VarjusString& var);
+	[[nodiscard]] Varjus::Success DeclareVariable(const VarjusString& var);
 	[[nodiscard]] bool VariableExists(const VarjusString& var) const;
 
 	constexpr void MakeLoopScope(bool s = true) noexcept { m_bIsWithinLoop = s; }

@@ -11,9 +11,10 @@
 
 #include <cassert>
 
+using namespace Varjus;
 
-static IValue* EvaluateIncrement(CProgramRuntime* const runtime, IValue* operand);
-static IValue* EvaluateDecrement(CProgramRuntime* const runtime, IValue* operand);
+static IValue* EvaluateIncrement(Varjus::CProgramRuntime* const runtime, IValue* operand);
+static IValue* EvaluateDecrement(Varjus::CProgramRuntime* const runtime, IValue* operand);
 
 IValue* CRuntimeExpression::EvaluatePostfix(CRuntimeContext* const ctx, PostfixASTNode* node)
 {
@@ -58,7 +59,7 @@ IValue* CRuntimeExpression::EvaluateMemberAccess(CRuntimeContext* const ctx, IVa
 {
 
 	if(!operand->IsAggregate())
-		throw CRuntimeError(operand->GetAllocator(), fmt::format(VSL("a value of type \"{}\" is not aggregate"), operand->TypeAsString()));
+		throw CRuntimeError(operand->GetAllocator(), Varjus::fmt::format(VSL("a value of type \"{}\" is not aggregate"), operand->TypeAsString()));
 
 	return operand->GetAggregate(ctx, node->m_uGlobalMemberIndex);
 
@@ -66,7 +67,7 @@ IValue* CRuntimeExpression::EvaluateMemberAccess(CRuntimeContext* const ctx, IVa
 IValue* CRuntimeExpression::EvaluateSubscript(CRuntimeContext* const ctx, IValue* operand, SubscriptASTNode* node)
 {
 	if (!operand->IsIndexable())
-		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("a value of type \"{}\" cannot be indexed"), operand->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, Varjus::fmt::format(VSL("a value of type \"{}\" cannot be indexed"), operand->TypeAsString()));
 
 	auto accessor = Evaluate(ctx, node->m_pAST);
 
@@ -83,18 +84,18 @@ IValue* CRuntimeExpression::EvaluateFunctionCall(CRuntimeContext* const ctx, IVa
 {
 
 	if (!operand->IsCallable())
-		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("a value of type \"{}\" is not callable"), operand->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, Varjus::fmt::format(VSL("a value of type \"{}\" is not callable"), operand->TypeAsString()));
 
 	// the callee will take ownership of temp-value args
 	auto args = EvaluateList(ctx, node->m_oArguments);
 	return operand->Call(ctx, args);
 }
 
-IValue* EvaluateIncrement(CProgramRuntime* const runtime, IValue* operand)
+IValue* EvaluateIncrement(Varjus::CProgramRuntime* const runtime, IValue* operand)
 {
 	
 	if (operand->Type() != t_int && operand->Type() != t_uint)
-		throw CRuntimeError(runtime, fmt::format(VSL("the increment operand must have an (u)int type, but is \"{}\""), operand->TypeAsString()));
+		throw CRuntimeError(runtime, Varjus::fmt::format(VSL("the increment operand must have an (u)int type, but is \"{}\""), operand->TypeAsString()));
 	
 	if (!operand->HasOwner())
 		throw CRuntimeError(runtime, VSL("cannot increment a temporary value"));
@@ -112,10 +113,10 @@ IValue* EvaluateIncrement(CProgramRuntime* const runtime, IValue* operand)
 	++operand->AsUInt(); //but increment this value
 	return v;
 }
-IValue* EvaluateDecrement(CProgramRuntime* const runtime, IValue* operand)
+IValue* EvaluateDecrement(Varjus::CProgramRuntime* const runtime, IValue* operand)
 {
 	if (operand->Type() != t_int && operand->Type() != t_uint)
-		throw CRuntimeError(runtime, fmt::format(VSL("the decrement operand must have an (u)int type, but is \"{}\""), operand->TypeAsString()));
+		throw CRuntimeError(runtime, Varjus::fmt::format(VSL("the decrement operand must have an (u)int type, but is \"{}\""), operand->TypeAsString()));
 
 	if (!operand->HasOwner())
 		throw CRuntimeError(runtime, VSL("cannot decrement a temporary value"));

@@ -6,6 +6,8 @@
 
 #include <regex>
 
+using namespace Varjus;
+
 FORWARD_DECLARE_METHOD(RegexSearch);
 FORWARD_DECLARE_METHOD(RegexMatch);
 FORWARD_DECLARE_METHOD(RegexReplace);
@@ -25,10 +27,10 @@ DEFINE_METHOD(RegexSearch, args)
 	auto target = args[1];
 
 	if (toMatch->Type() != t_string)
-		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("regex.search 1. expected a string, but got \"{}\""), toMatch->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, Varjus::fmt::format(VSL("regex.search 1. expected a string, but got \"{}\""), toMatch->TypeAsString()));
 
 	if (target->Type() != t_string)
-		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("regex.search 2. expected a string, but got \"{}\""), target->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, Varjus::fmt::format(VSL("regex.search 2. expected a string, but got \"{}\""), target->TypeAsString()));
 
 
 #ifdef UNICODE
@@ -47,10 +49,10 @@ DEFINE_METHOD(RegexMatch, args)
 	auto target = args[1];
 
 	if (toMatch->Type() != t_string)
-		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("regex.match 1. expected a string, but got \"{}\""), toMatch->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, Varjus::fmt::format(VSL("regex.match 1. expected a string, but got \"{}\""), toMatch->TypeAsString()));
 
 	if (target->Type() != t_string)
-		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("regex.match 2. expected a string, but got \"{}\""), target->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, Varjus::fmt::format(VSL("regex.match 2. expected a string, but got \"{}\""), target->TypeAsString()));
 
 
 #ifdef UNICODE
@@ -70,13 +72,13 @@ DEFINE_METHOD(RegexReplace, args)
 	auto target = args[2];
 
 	if (toMatch->Type() != t_string)
-		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("regex.replace 1. expected a string, but got \"{}\""), toMatch->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, Varjus::fmt::format(VSL("regex.replace 1. expected a string, but got \"{}\""), toMatch->TypeAsString()));
 
 	if (source->Type() != t_string)
-		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("regex.replace 2. expected a string, but got \"{}\""), source->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, Varjus::fmt::format(VSL("regex.replace 2. expected a string, but got \"{}\""), source->TypeAsString()));
 
 	if (target->Type() != t_string)
-		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("regex.replace 3. expected a string, but got \"{}\""), target->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, Varjus::fmt::format(VSL("regex.replace 3. expected a string, but got \"{}\""), target->TypeAsString()));
 
 
 #ifdef UNICODE

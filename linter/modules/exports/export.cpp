@@ -11,13 +11,15 @@
 
 #include "varjus_api/internal/globalDefinitions.hpp"
 
+using namespace Varjus;
+
 CExportLinter::CExportLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack)
 	: CLinterSingle(pos, end), m_pScope(scope), m_pOwner(stack) {
 }
 CExportLinter::~CExportLinter() = default;
 
 
-Success CExportLinter::Parse()
+Varjus::Success CExportLinter::Parse()
 {
 
 	if (IsEndOfBuffer() || (*m_iterPos)->Type() != tt_export) {
@@ -44,7 +46,7 @@ Success CExportLinter::Parse()
 	m_pOwner->GetModule()->PushError(VSL("expected a declaration"), GetIteratorSafe()->m_oSourcePosition);
 	return failure;
 }
-Success CExportLinter::ParseVariableDeclaration()
+Varjus::Success CExportLinter::ParseVariableDeclaration()
 {
 	m_pVariableLinter = std::make_unique<CVariableDeclarationLinter>(m_iterPos, m_iterEnd, m_pScope, m_pOwner);
 	if (!m_pVariableLinter->Parse())
@@ -57,7 +59,7 @@ Success CExportLinter::ParseVariableDeclaration()
 	m_pOwner->GetModule()->AddExport(var->m_sName, std::make_unique<CExportedVariable>(var->m_uIndex));
 	return success;
 }
-Success CExportLinter::ParseFunctionDeclaration()
+Varjus::Success CExportLinter::ParseFunctionDeclaration()
 {
 	auto fnLinter = std::make_unique<CFunctionLinter>(m_iterPos, m_iterEnd, m_pScope, m_pOwner);
 	if (!fnLinter->Parse())

@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <ranges>
 
+using namespace Varjus;
 
 CRuntimeRepeatStatement::CRuntimeRepeatStatement(ASTNode&& condition, InstructionSequence&& insns)
 	: IRuntimeStructureSequence(std::move(insns)), m_pCondition(std::make_unique<CRuntimeExpression>(std::move(condition))) {}

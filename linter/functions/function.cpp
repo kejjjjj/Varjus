@@ -16,6 +16,8 @@
 
 #include <algorithm>
 
+using namespace Varjus;
+
 CFunctionLinter::CFunctionLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack)
 	: CLinterSingle(pos, end), m_pScope(scope), m_pOwner(stack),
 	m_pThisStack(std::make_unique<CStack>(m_pOwner->GetProgramInformation(), m_pOwner->GetGlobalMemory(), m_pOwner->m_pModule))
@@ -44,7 +46,7 @@ CFunctionLinter::~CFunctionLinter()
 	}
 
 }
-Success CFunctionLinter::Parse()
+Varjus::Success CFunctionLinter::Parse()
 {
 	if (!ParseFunctionDeclaration())
 		return failure;
@@ -93,7 +95,7 @@ Success CFunctionLinter::ParseFunctionDeclaration()
 	const auto containsVar = m_pOwner->m_VariableManager->ContainsVariable(m_oFunctionName);
 
 	if ((containsFunc && m_pOwner->IsHoisting()) || containsVar) {
-		m_pOwner->GetModule()->PushError(fmt::format(VSL("\"{}\" is already defined"), m_oFunctionName), GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError(Varjus::fmt::format(VSL("\"{}\" is already defined"), m_oFunctionName), GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 
@@ -105,7 +107,7 @@ Success CFunctionLinter::ParseFunctionDeclaration()
 
 	return success;
 }
-Success CFunctionLinter::ParseFunctionParameters()
+Varjus::Success CFunctionLinter::ParseFunctionParameters()
 {
 	if (IsEndOfBuffer() || !(*m_iterPos)->IsOperator(p_par_open)) {
 		m_pOwner->GetModule()->PushError(VSL("expected a \"(\""), GetIteratorSafe()->m_oSourcePosition);
@@ -126,7 +128,7 @@ Success CFunctionLinter::ParseFunctionParameters()
 	return success;
 }
 
-Success CFunctionLinter::ParseFunctionParametersRecursively()
+Varjus::Success CFunctionLinter::ParseFunctionParametersRecursively()
 {
 	if (IsEndOfBuffer() || !IsIdentifier((*m_iterPos))) {
 		m_pOwner->GetModule()->PushError(VSL("expected an identifier"), GetIteratorSafe()->m_oSourcePosition);
@@ -160,7 +162,7 @@ Success CFunctionLinter::ParseFunctionParametersRecursively()
 	return failure;
 }
 
-Success CFunctionLinter::ParseFunctionScope()
+Varjus::Success CFunctionLinter::ParseFunctionScope()
 {
 	if (IsEndOfBuffer() || !(*m_iterPos)->IsOperator(p_curlybracket_open)) {
 		m_pOwner->GetModule()->PushError(VSL("expected a \"{\" or an expression"), GetIteratorSafe()->m_oSourcePosition);

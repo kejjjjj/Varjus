@@ -2,13 +2,13 @@
 #include "varjus_api/types/types.hpp"
 #include "varjus_api/internal/runtime.hpp"
 
-CVariable* CVariable::Construct(CProgramRuntime* const runtime)
+CVariable* CVariable::Construct(Varjus::CProgramRuntime* const runtime)
 {
 	auto v = runtime->AcquireNewVariable();
 	v->m_pAllocator = runtime;
 	return v;
 }
-CVariable* CVariable::Construct(CProgramRuntime* const runtime, IValue* v)
+CVariable* CVariable::Construct(Varjus::CProgramRuntime* const runtime, IValue* v)
 {
 	auto var = runtime->AcquireNewVariable();
 	var->SetValue(v);
@@ -50,6 +50,7 @@ bool CVariable::Release()
 	return true;
 }
 
+using namespace Varjus;
 
 CVariable* CProgramRuntime::AcquireNewVariable(){
 	auto var = GetPool<CVariable>().Acquire();
@@ -99,12 +100,12 @@ void CProgramRuntime::FreeChildVariable(CChildVariable* var)
 	var->SetParent({});
 }
 
-CChildVariable* CChildVariable::Construct(CProgramRuntime* const runtime, const ArrayOwner& parent) {
+CChildVariable* CChildVariable::Construct(Varjus::CProgramRuntime* const runtime, const ArrayOwner& parent) {
 	auto v = runtime->AcquireNewChildVariable(parent);
 	v->m_pAllocator = runtime;
 	return v;
 }
-CChildVariable* CChildVariable::Construct(CProgramRuntime* const runtime, IValue* v, const ArrayOwner& parent) {
+CChildVariable* CChildVariable::Construct(Varjus::CProgramRuntime* const runtime, IValue* v, const ArrayOwner& parent) {
 	auto var = runtime->AcquireNewChildVariable(parent);
 	var->SetValue(v);
 	return var;

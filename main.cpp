@@ -1,6 +1,8 @@
 #include <iostream>
 #include "varjus_api/varjus_api.hpp"
 
+using namespace Varjus;
+
 #define __MU [[maybe_unused]]
 
 #ifdef UNICODE
@@ -28,7 +30,7 @@ int main(int argc, char** argv)
 #endif
 {
     if (argc != 2) {
-        fmt::print(std::cerr, VSL("usage: <file path>\n"));
+        Varjus::fmt::print(std::cerr, VSL("usage: <file path>\n"));
         return 0;
     }
     Varjus::State state;
@@ -38,26 +40,26 @@ int main(int argc, char** argv)
         };
 
     if (!state.UseStdLibrary()) {
-        fmt::print(std::cerr, VSL("state error: {}\n"), GetError(state.GetErrorMessage()));
+        Varjus::fmt::print(std::cerr, VSL("state error: {}\n"), GetError(state.GetErrorMessage()));
         return 1;
     }
 
 #if _UC
     if (!state.LoadScriptFromFile(reinterpret_cast<char16_t*>(argv[1]), e_utf8)) {
-        fmt::print(std::cerr, VSL("{}\n"), GetError(state.GetErrorMessage()));
+        Varjus::fmt::print(std::cerr, VSL("{}\n"), GetError(state.GetErrorMessage()));
         return 1;
     }
 #else
     if (!state.LoadScriptFromFile(argv[1], e_utf8)) {
-        fmt::print(std::cerr, VSL("{}\n"), GetError(state.GetErrorMessage()));
+        Varjus::fmt::print(std::cerr, VSL("{}\n"), GetError(state.GetErrorMessage()));
         return 1;
     }
 #endif
     if (const auto returnValue = state.ExecuteScript()) {
-        fmt::print(std::cout, VSL("the program returned: {}\n"), returnValue->ToPrintableString());
+        Varjus::fmt::print(std::cout, VSL("the program returned: {}\n"), returnValue->ToPrintableString());
     }
     else {
-        fmt::print(std::cerr, VSL("runtime error: {}\n"), GetError(state.GetErrorMessage()));
+        Varjus::fmt::print(std::cerr, VSL("runtime error: {}\n"), GetError(state.GetErrorMessage()));
         return 1;
     }
 
@@ -86,7 +88,7 @@ std::vector<VarjusString> ConvertArgvToWide(int argc, char** argv)
 int main(int argc, char** argv)
 {
     if (argc != 2) {
-        fmt::print(std::cerr, VSL("usage: <file path>\n"));
+        Varjus::fmt::print(std::cerr, VSL("usage: <file path>\n"));
         return 1;
     }
 
@@ -97,7 +99,7 @@ int main(int argc, char** argv)
         };
 
     if (!state.UseStdLibrary()) {
-        fmt::print(std::cerr, VSL("state error: {}\n"), GetError(state.GetErrorMessage()));
+        Varjus::fmt::print(std::cerr, VSL("state error: {}\n"), GetError(state.GetErrorMessage()));
         return 1;
     }
 
@@ -105,26 +107,26 @@ int main(int argc, char** argv)
     auto argvs = ConvertArgvToWide(argc, argv);
 
     if (argvs.size() < 2) {
-        fmt::print(std::cerr, VSL("couldn't convert argvs to char16_t strings\n"));
+        Varjus::fmt::print(std::cerr, VSL("couldn't convert argvs to char16_t strings\n"));
         return 1;
     }
     if (!state.LoadScriptFromFile(argvs[1], e_utf8)) {
-        fmt::print(std::cerr, VSL("{}\n"), GetError(state.GetErrorMessage()));
+        Varjus::fmt::print(std::cerr, VSL("{}\n"), GetError(state.GetErrorMessage()));
         return 1;
     }
 
 #else
     if (!state.LoadScriptFromFile(argv[1], e_utf8)) {
-        fmt::print(std::cerr, VSL("{}\n"), GetError(state.GetErrorMessage()));
+        Varjus::fmt::print(std::cerr, VSL("{}\n"), GetError(state.GetErrorMessage()));
         return 1;
     }
 #endif
 
     if (const auto returnValue = state.ExecuteScript()) {
-        fmt::print(std::cout, VSL("the program returned: {}\n"), returnValue->ToPrintableString());
+        Varjus::fmt::print(std::cout, VSL("the program returned: {}\n"), returnValue->ToPrintableString());
     }
     else {
-        fmt::print(std::cerr, VSL("runtime error: {}\n"), GetError(state.GetErrorMessage()));
+        Varjus::fmt::print(std::cerr, VSL("runtime error: {}\n"), GetError(state.GetErrorMessage()));
         return 1;
     }
 

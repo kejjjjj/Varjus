@@ -6,9 +6,9 @@ class CUIntValue final : public CValue<VarjusUInt>
 public:
 	CUIntValue() = default;
 
-	[[nodiscard]] static CUIntValue* Construct(CProgramRuntime* const runtime, VarjusUInt v);
+	[[nodiscard]] static CUIntValue* Construct(Varjus::CProgramRuntime* const runtime, VarjusUInt v);
 
-	[[nodiscard]] EValueType Type() const noexcept override { return t_uint; };
+	[[nodiscard]] Varjus::EValueType Type() const noexcept override { return Varjus::t_uint; };
 
 	[[nodiscard]] IValue* Copy() override;
 
@@ -28,6 +28,6 @@ public:
 
 private:
 	[[nodiscard]] VarjusString TypeAsString() const override { return VSL("uint"); }
-	[[nodiscard]] VarjusString ValueAsString() const override { return fmt::to_string(Get()); }
+	[[nodiscard]] VarjusString ValueAsString() const override { return Varjus::fmt::to_string(Get()); }
 	[[nodiscard]] VarjusString ValueAsEscapedString() const override { return ValueAsString(); }
 };

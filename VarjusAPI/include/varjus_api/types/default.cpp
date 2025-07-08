@@ -3,8 +3,9 @@
 #include "varjus_api/types/internal/object_declarations.hpp"
 #include "linter/context.hpp"
 
+using namespace Varjus;
 
-IValue* IValue::Construct(CProgramRuntime* const runtime) {
+IValue* IValue::Construct(Varjus::CProgramRuntime* const runtime) {
 	return runtime->AcquireNewValue<IValue>();
 }
 void IValue::ReleaseInternal()
@@ -39,7 +40,7 @@ VarjusString& IValue::AsString(){
 
 VarjusString IValue::ToPrintableString() const
 {
-	return fmt::format(VSL("{}: {}"), ValueAsString(), TypeAsString());
+	return Varjus::fmt::format(VSL("{}: {}"), ValueAsString(), TypeAsString());
 }
 
 IValue* IValue::Index([[maybe_unused]] CRuntimeContext* const ctx, [[maybe_unused]] IValue* index)
@@ -135,7 +136,7 @@ VarjusString DumpObject(VarjusUInt indent, VarjusChar indentChar, const CObjectV
 
 	return ss;
 }
-VarjusString DumpBuiltInObject(VarjusUInt indent, VarjusChar indentChar, const CBuiltInObject* obj)
+VarjusString Varjus::DumpBuiltInObject(VarjusUInt indent, VarjusChar indentChar, const CBuiltInObject* obj)
 {
 	VarjusString ss;
 	const auto write = [&ss](const VarjusString& v) { ss += v; };

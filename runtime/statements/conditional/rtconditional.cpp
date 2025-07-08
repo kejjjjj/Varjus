@@ -4,6 +4,7 @@
 #include "varjus_api/internal/structure.hpp"
 #include "varjus_api/internal/variables.hpp"
 
+using namespace Varjus;
 
 CRuntimeConditionalStatement* CRuntimeConditionalStatement::SeekLastBlock()
 {

@@ -13,7 +13,10 @@ class CStack;
 class IRuntimeStructure;
 class CModule;
 class CHoister;
-class CProgramInformation;
+
+namespace Varjus {
+	class CProgramInformation;
+};
 
 struct CFunctionBlock;
 struct CFileContext;
@@ -27,7 +30,7 @@ using VarManager = std::unique_ptr<CVariableManager<T>>;
 
 class CMemory
 {
-	NONCOPYABLE(CMemory);
+	VARJUS_NONCOPYABLE(CMemory);
 
 	friend class CFunctionLinter;
 	friend class CIdentifierLinter;
@@ -36,7 +39,7 @@ class CMemory
 	friend class CBufferLinter;
 
 public:
-	CMemory(CProgramInformation* const program, CMemory* globalMemory, CModule* const file);
+	CMemory(Varjus::CProgramInformation* const program, CMemory* globalMemory, CModule* const file);
 	virtual ~CMemory();
 
 	[[nodiscard]] virtual bool IsStack() const noexcept { return false; }
@@ -70,7 +73,7 @@ protected:
 	CModule* const m_pModule{};
 	CMemory* m_pGlobal{ nullptr };
 	CMemory* m_pLowerRegion{ nullptr };
-	CProgramInformation* const m_pProgram{};
+	Varjus::CProgramInformation* const m_pProgram{};
 private:
 	VectorOf<RuntimeBlock> m_oInstructions;
 	CHoister* m_pHoister{ nullptr };
@@ -82,13 +85,13 @@ using RuntimeBlock = std::unique_ptr<IRuntimeStructure>;
 
 class CStack final : public CMemory
 {
-	NONCOPYABLE(CStack);
+	VARJUS_NONCOPYABLE(CStack);
 	friend class CFunctionLinter;
 	friend class CIdentifierLinter;
 
 public:
-	CStack(CProgramInformation* const program, CMemory* globalMemory, CModule* const file);
-	CStack(CProgramInformation* const program, CMemory* globalMemory, std::unique_ptr<CFunctionBlock>&& func, CModule* const file);
+	CStack(Varjus::CProgramInformation* const program, CMemory* globalMemory, CModule* const file);
+	CStack(Varjus::CProgramInformation* const program, CMemory* globalMemory, std::unique_ptr<CFunctionBlock>&& func, CModule* const file);
 	~CStack();
 
 	[[nodiscard]] bool IsStack() const noexcept override { return true; }

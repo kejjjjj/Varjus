@@ -23,8 +23,10 @@ class CArrayValue;
 class CCallableValue;
 class CObjectValue;
 struct CRuntimeContext;
-class CProgramRuntime;
 
+namespace Varjus {
+	class CProgramRuntime;
+}
 template<typename T>
 using VectorOf = std::vector<T>;
 using IValues = VectorOf<IValue*>;
@@ -45,17 +47,20 @@ protected:
 	[[nodiscard]] virtual IValue* Copy() = 0;
 };
 
+namespace Varjus {
+	class CProgramRuntime;
+}
 
 class IValue : protected IValueDestructor, protected IValueCopy
 {
-	friend class CProgramRuntime;
+	friend class Varjus::CProgramRuntime;
 public:
 	IValue() = default;
 	virtual ~IValue() = default;
 
-	[[nodiscard]] static IValue* Construct(CProgramRuntime* const runtime);
+	[[nodiscard]] static IValue* Construct(Varjus::CProgramRuntime* const runtime);
 
-	[[nodiscard]] virtual EValueType Type() const noexcept { return t_undefined; };
+	[[nodiscard]] virtual Varjus::EValueType Type() const noexcept { return Varjus::t_undefined; };
 
 	constexpr auto SetOwner(CVariable* o) noexcept { m_pOwner = o; }
 	[[nodiscard]] constexpr auto GetOwner() const noexcept { return m_pOwner; }
@@ -135,13 +140,13 @@ public:
 protected:
 
 	void ReleaseInternal();
-	inline constexpr void ConstructInternal(CProgramRuntime* const allocator) { m_pAllocator = allocator; }
+	inline constexpr void ConstructInternal(Varjus::CProgramRuntime* const allocator) { m_pAllocator = allocator; }
 
 	void RemoveConstness() noexcept { m_bIsConst = false; }
 
 	CVariable* m_pOwner{ nullptr };
 	bool m_bIsConst{ false };
-	CProgramRuntime* m_pAllocator{ nullptr };
+	Varjus::CProgramRuntime* m_pAllocator{ nullptr };
 };
 
 template <typename Value>

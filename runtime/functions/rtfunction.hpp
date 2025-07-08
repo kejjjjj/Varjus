@@ -12,21 +12,20 @@ using VectorOf = std::vector<T>;
 
 class CVariable;
 class IValue;
-class CRuntimeModule;
-class CProgramRuntime;
 
-template<typename A, typename B>
-using KeyValue = std::pair<A, B>;
-using VariableIndex = std::size_t;
+namespace Varjus {
+	class CProgramRuntime;
+	class CRuntimeModule;
+}
 
 using VariableCaptures = std::unordered_map<CCrossModuleReference, CVariable*, CCrossModuleReferenceHasher>;
 
 class CFunction
 {
-	NONCOPYABLE(CFunction);
+	VARJUS_NONCOPYABLE(CFunction);
 	friend class CRuntimeFunction;
 public:
-	CFunction(CProgramRuntime* const ctx, VectorOf<IValue*>& args, const VariableCaptures& captures, const CRuntimeFunction& func);
+	CFunction(Varjus::CProgramRuntime* const ctx, VectorOf<IValue*>& args, const VariableCaptures& captures, const CRuntimeFunction& func);
 
 	[[nodiscard]] CVariable* GetVariableByRef(const CCrossModuleReference& ref) const;
 

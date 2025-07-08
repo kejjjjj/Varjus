@@ -125,7 +125,7 @@ struct CLinterFunction;
 class VariableASTNode final : public AbstractSyntaxTree, public CCrossModuleReference
 {
 	friend class AstToInstructionConverter;
-	NONCOPYABLE(VariableASTNode);
+	VARJUS_NONCOPYABLE(VariableASTNode);
 public:
 	VariableASTNode(const CodePosition& pos, CLinterVariable* const var);
 	~VariableASTNode();
@@ -143,7 +143,7 @@ private:
 class FunctionASTNode final : public AbstractSyntaxTree, public CCrossModuleReference
 {
 	friend class AstToInstructionConverter;
-	NONCOPYABLE(FunctionASTNode);
+	VARJUS_NONCOPYABLE(FunctionASTNode);
 public:
 	FunctionASTNode(const CodePosition& pos, CLinterFunction* const func);
 
@@ -154,11 +154,11 @@ public:
 };
 class ConstantASTNode final : public AbstractSyntaxTree
 {
-	NONCOPYABLE(ConstantASTNode);
+	VARJUS_NONCOPYABLE(ConstantASTNode);
 
 public:
 	ConstantASTNode(ConstantASTNode&& other) = default;
-	ConstantASTNode(const CodePosition& pos, const VarjusString& data, EValueType datatype);
+	ConstantASTNode(const CodePosition& pos, const VarjusString& data, Varjus::EValueType datatype);
 	~ConstantASTNode();
 
 	[[nodiscard]] constexpr bool IsLeaf() const noexcept override { return true; }
@@ -169,11 +169,11 @@ public:
 
 	// contains the raw data for the constant
 	VarjusString m_pConstant;
-	EValueType m_eDataType{};
+	Varjus::EValueType m_eDataType{};
 };
 class ArrayASTNode final : public AbstractSyntaxTree
 {
-	NONCOPYABLE(ArrayASTNode);
+	VARJUS_NONCOPYABLE(ArrayASTNode);
 
 public:
 
@@ -191,7 +191,7 @@ public:
 
 class ObjectASTNode final : public AbstractSyntaxTree
 {
-	NONCOPYABLE(ObjectASTNode);
+	VARJUS_NONCOPYABLE(ObjectASTNode);
 
 public:
 
@@ -209,7 +209,7 @@ public:
 
 class TernaryASTNode final : public AbstractSyntaxTree
 {
-	NONCOPYABLE(TernaryASTNode);
+	VARJUS_NONCOPYABLE(TernaryASTNode);
 
 public:
 
@@ -230,7 +230,7 @@ struct CCrossModuleReference;
 
 class LambdaASTNode final : public AbstractSyntaxTree
 {
-	NONCOPYABLE(LambdaASTNode);
+	VARJUS_NONCOPYABLE(LambdaASTNode);
 
 public:
 
@@ -256,7 +256,7 @@ struct FmtStringAST {
 
 class FmtStringASTNode final : public AbstractSyntaxTree
 {
-	NONCOPYABLE(FmtStringASTNode);
+	VARJUS_NONCOPYABLE(FmtStringASTNode);
 
 public:
 

@@ -11,6 +11,8 @@
 
 #include <cassert>
 
+using namespace Varjus;
+
 CIfStatementLinter::CIfStatementLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack)
 	: CStatementLinter(pos, end, scope, stack) {
 
@@ -18,7 +20,7 @@ CIfStatementLinter::CIfStatementLinter(LinterIterator& pos, LinterIterator& end,
 }
 CIfStatementLinter::~CIfStatementLinter() = default;
 
-Success CIfStatementLinter::Parse()
+Varjus::Success CIfStatementLinter::Parse()
 {
 
 	if (!ParseIdentifier(TokenType::tt_if))

@@ -13,6 +13,7 @@
 
 #include <cassert>
 
+using namespace Varjus;
 
 CLinterOperand::CLinterOperand(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack)
 	:CLinterSingle(pos, end), m_pScope(scope), m_pOwner(stack) {
@@ -22,7 +23,7 @@ CLinterOperand::CLinterOperand(LinterIterator& pos, LinterIterator& end, const W
 }
 CLinterOperand::~CLinterOperand() = default;
 
-Success CLinterOperand::ParseOperand(std::optional<PairMatcher>& eoe)
+Varjus::Success CLinterOperand::ParseOperand(std::optional<PairMatcher>& eoe)
 {
 	// Parse unary
 	CUnaryLinter unaryLinter(m_iterPos, m_iterEnd, m_pScope, m_pOwner);

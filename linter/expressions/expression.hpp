@@ -17,7 +17,7 @@ struct CSortedSubExpression;
 
 struct CExpressionList
 {
-	NONCOPYABLE(CExpressionList);
+	VARJUS_NONCOPYABLE(CExpressionList);
 	CExpressionList();
 	~CExpressionList();
 
@@ -30,7 +30,7 @@ struct CExpressionList
 
 class CLinterExpression final : public CLinterSingle<CToken>, protected IRuntimeBlock
 {
-	NONCOPYABLE(CLinterExpression);
+	VARJUS_NONCOPYABLE(CLinterExpression);
 
 public:
 
@@ -38,11 +38,11 @@ public:
 	explicit CLinterExpression(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack);
 	~CLinterExpression();
 
-	[[nodiscard]] Success Parse(
+	[[nodiscard]] Varjus::Success Parse(
 		std::optional<PairMatcher> m_oEndOfExpression=std::nullopt, 
 		CExpressionList* expression=nullptr,
 		EvaluationType evalType = evaluate_everything);
-	[[nodiscard]] Success ParseInternal(
+	[[nodiscard]] Varjus::Success ParseInternal(
 		std::optional<PairMatcher>& m_oEndOfExpression, 
 		CExpressionList* expression = nullptr,
 		EvaluationType evalType = evaluate_everything);

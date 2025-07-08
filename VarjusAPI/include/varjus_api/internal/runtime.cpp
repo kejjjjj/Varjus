@@ -12,6 +12,8 @@
 #include <iostream>
 #include <ranges>
 
+using namespace Varjus;
+
 #define VALUEPOOL_INIT_SIZE size_t(100)
 
 CProgramRuntime::CProgramRuntime(std::unique_ptr<CProgramInformation>&& info, RuntimeModules&& modules)
@@ -31,13 +33,13 @@ template<typename T>
 concept PrintableValue = VariableT<T> || IValueChild<T>;
 
 template<PrintableValue T>
-void PrintLeaks(CProgramRuntime* _this, const VarjusString& name) {
+void PrintLeaks(Varjus::CProgramRuntime* _this, const VarjusString& name) {
 	if(const auto count = _this->GetPool<T>().GetInUseCount())
-		fmt::print(std::cerr, VSL("LEAK -> {}: {}\n"), name, count);
+		Varjus::fmt::print(std::cerr, VSL("LEAK -> {}: {}\n"), name, count);
 }
 
 template<PrintableValue T>
-bool HasLeak(CProgramRuntime* _this) {
+bool HasLeak(Varjus::CProgramRuntime* _this) {
 	if (const auto count = _this->GetPool<T>().GetInUseCount())
 		return true;
 
@@ -45,7 +47,7 @@ bool HasLeak(CProgramRuntime* _this) {
 }
 
 template<PrintableValue T>
-void ClearPool(CProgramRuntime* _this) {
+void ClearPool(Varjus::CProgramRuntime* _this) {
 	_this->GetPool<T>().ResetPool();
 }
 

@@ -4,6 +4,8 @@
 #include "linter/context.hpp"
 #include <cassert>
 
+using namespace Varjus;
+
 void BuiltInMethod_t::AddMethod(const VarjusString& name, Method_t method, std::size_t numArgs)
 {
 	assert(m_pInfo);

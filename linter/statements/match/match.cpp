@@ -12,6 +12,8 @@
 
 #include <cassert>
 
+using namespace Varjus;
+
 CMatchStatementLinter::CMatchStatementLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack)
 	: CStatementLinter(pos, end, scope, stack) {
 
@@ -19,7 +21,7 @@ CMatchStatementLinter::CMatchStatementLinter(LinterIterator& pos, LinterIterator
 }
 CMatchStatementLinter::~CMatchStatementLinter() = default;
 
-Success CMatchStatementLinter::Parse()
+Varjus::Success CMatchStatementLinter::Parse()
 {
 
 	if (!ParseIdentifier(TokenType::tt_match))

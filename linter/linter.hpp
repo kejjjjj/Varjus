@@ -26,29 +26,29 @@ WARNING_POP()
 
 class CBufferLinter final : public CLinter<CToken>
 {
-	NONCOPYABLE(CBufferLinter);
+	VARJUS_NONCOPYABLE(CBufferLinter);
 public:
-	CBufferLinter(CProgramInformation* const program, LinterIterator& start, LinterIterator& end, const VarjusString& filePath=VSL(""));
+	CBufferLinter(Varjus::CProgramInformation* const program, LinterIterator& start, LinterIterator& end, const VarjusString& filePath=VSL(""));
 	~CBufferLinter();
-	[[nodiscard]] static Success LintToken(const CLinterContext& ctx);
-	[[nodiscard]] static Success LintOperator(const CLinterContext& ctx);
-	[[nodiscard]] static Success LintScope(const CLinterContext& ctx);
-	[[nodiscard]] static Success LintFunctionAmbiguity(const CLinterContext& ctx);
+	[[nodiscard]] static Varjus::Success LintToken(const CLinterContext& ctx);
+	[[nodiscard]] static Varjus::Success LintOperator(const CLinterContext& ctx);
+	[[nodiscard]] static Varjus::Success LintScope(const CLinterContext& ctx);
+	[[nodiscard]] static Varjus::Success LintFunctionAmbiguity(const CLinterContext& ctx);
 
-	[[nodiscard]] Success Parse();
+	[[nodiscard]] Varjus::Success Parse();
 
 	constexpr auto& GetModule() const noexcept { return m_pModule; }
 
 private:
-	[[nodiscard]] Success HoistFile();
-	[[nodiscard]] Success LintFile();
+	[[nodiscard]] Varjus::Success HoistFile();
+	[[nodiscard]] Varjus::Success LintFile();
 
 
 	CModule* m_pModule{ nullptr };
 	LinterIterator m_oInitialPosition;
 	std::unique_ptr<CHoister> m_pHoister;
 	VarjusString m_sFilePath;
-	CProgramInformation* const m_pProgram{};
+	Varjus::CProgramInformation* const m_pProgram{};
 };
 
 

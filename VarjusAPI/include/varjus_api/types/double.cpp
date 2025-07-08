@@ -1,7 +1,7 @@
 #include "varjus_api/internal/runtime.hpp"
 #include "double.hpp"
 
-CDoubleValue* CDoubleValue::Construct(CProgramRuntime* const runtime, VarjusDouble v) {
+CDoubleValue* CDoubleValue::Construct(Varjus::CProgramRuntime* const runtime, VarjusDouble v) {
 	return runtime->AcquireNewValue<CDoubleValue>(v);
 }
 

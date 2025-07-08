@@ -13,7 +13,7 @@ public:
 	explicit CUnaryLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack);
 	~CUnaryLinter();
 
-	[[maybe_unused]] Success ParseUnary();
+	[[maybe_unused]] Varjus::Success ParseUnary();
 
 	[[nodiscard]] VectorOf<std::unique_ptr<CUnaryBase>> Move() noexcept;
 private:
@@ -46,7 +46,7 @@ enum EUnaryType{
 
 class CUnaryBase
 {
-	NONCOPYABLE(CUnaryBase);
+	VARJUS_NONCOPYABLE(CUnaryBase);
 public:
 	CUnaryBase() = default;
 	virtual ~CUnaryBase() = default;
@@ -58,7 +58,7 @@ public:
 };
 class CUnaryNegation final : public CUnaryBase
 {
-	NONCOPYABLE(CUnaryNegation);
+	VARJUS_NONCOPYABLE(CUnaryNegation);
 public:
 	CUnaryNegation() = default;
 	[[nodiscard]] constexpr EUnaryType Type() const noexcept override { return un_negation; }
@@ -67,7 +67,7 @@ public:
 };
 class CUnaryIncrement final : public CUnaryBase
 {
-	NONCOPYABLE(CUnaryIncrement);
+	VARJUS_NONCOPYABLE(CUnaryIncrement);
 public:
 	CUnaryIncrement() = default;
 	[[nodiscard]] constexpr EUnaryType Type() const noexcept override { return un_increment; }
@@ -76,7 +76,7 @@ public:
 };
 class CUnaryDecrement final : public CUnaryBase
 {
-	NONCOPYABLE(CUnaryDecrement);
+	VARJUS_NONCOPYABLE(CUnaryDecrement);
 public:
 	CUnaryDecrement() = default;
 	[[nodiscard]] constexpr EUnaryType Type() const noexcept override { return un_decrement; }
@@ -85,7 +85,7 @@ public:
 };
 class CUnaryLogicalNot final : public CUnaryBase
 {
-	NONCOPYABLE(CUnaryLogicalNot);
+	VARJUS_NONCOPYABLE(CUnaryLogicalNot);
 public:
 	CUnaryLogicalNot() = default;
 	[[nodiscard]] constexpr EUnaryType Type() const noexcept override { return un_logical_not; }
@@ -94,7 +94,7 @@ public:
 };
 class CUnaryBitwiseNot final : public CUnaryBase
 {
-	NONCOPYABLE(CUnaryBitwiseNot);
+	VARJUS_NONCOPYABLE(CUnaryBitwiseNot);
 public:
 	CUnaryBitwiseNot() = default;
 	[[nodiscard]] constexpr EUnaryType Type() const noexcept override { return un_bitwise_not; }
@@ -103,7 +103,7 @@ public:
 };
 class CUnaryTypeOf final : public CUnaryBase
 {
-	NONCOPYABLE(CUnaryTypeOf);
+	VARJUS_NONCOPYABLE(CUnaryTypeOf);
 public:
 	CUnaryTypeOf() = default;
 	[[nodiscard]] constexpr EUnaryType Type() const noexcept override { return un_typeof; }
@@ -113,7 +113,7 @@ public:
 
 class CUnaryToString final : public CUnaryBase
 {
-	NONCOPYABLE(CUnaryToString);
+	VARJUS_NONCOPYABLE(CUnaryToString);
 public:
 	CUnaryToString() = default;
 	[[nodiscard]] constexpr EUnaryType Type() const noexcept override { return un_typeof; }

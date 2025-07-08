@@ -11,7 +11,7 @@
 #include "varjus_api/internal/globalDefinitions.hpp"
 
 #include <cassert>
-#include <iostream>
+using namespace Varjus;
 
 CRepeatStatementLinter::CRepeatStatementLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack)
 	: CStatementLinter(pos, end, scope, stack) {
@@ -20,7 +20,7 @@ CRepeatStatementLinter::CRepeatStatementLinter(LinterIterator& pos, LinterIterat
 }
 CRepeatStatementLinter::~CRepeatStatementLinter() = default;
 
-Success CRepeatStatementLinter::Parse()
+Varjus::Success CRepeatStatementLinter::Parse()
 {
 	m_pThisScope->MakeLoopScope();
 

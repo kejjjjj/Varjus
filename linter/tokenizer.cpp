@@ -9,8 +9,9 @@
 #include <cassert>
 #include <filesystem>
 
-#include <iostream>
 #include <unordered_map>
+
+using namespace Varjus;
 
 constexpr bool IsDigit(VarjusChar c) noexcept
 {
@@ -46,7 +47,7 @@ CBufferTokenizer::CBufferTokenizer(CProgramInformation* const program, const STD
 }
 CBufferTokenizer::~CBufferTokenizer() = default;
 
-Success CBufferTokenizer::Tokenize()
+Varjus::Success CBufferTokenizer::Tokenize()
 {
 	while (auto&& token = ReadToken())
 		m_oTokens.emplace_back(std::forward<std::unique_ptr<CToken>&&>(token));
@@ -151,7 +152,7 @@ bool CBufferTokenizer::IsToken(const VarjusString& t) noexcept
 	return punctuation == t;
 }
 
-Success CBufferTokenizer::ReadWhiteSpace() noexcept
+Varjus::Success CBufferTokenizer::ReadWhiteSpace() noexcept
 {
 	if (EndOfBuffer())
 		return failure;
@@ -183,7 +184,7 @@ Success CBufferTokenizer::ReadWhiteSpace() noexcept
 
 	return success;
 }
-Success CBufferTokenizer::ReadSingleLineComment() noexcept
+Varjus::Success CBufferTokenizer::ReadSingleLineComment() noexcept
 {
 	auto& [line, column] = m_oParserPosition;
 
@@ -208,7 +209,7 @@ Success CBufferTokenizer::ReadSingleLineComment() noexcept
 
 }
 
-Success CBufferTokenizer::ReadMultiLineComment()
+Varjus::Success CBufferTokenizer::ReadMultiLineComment()
 {
 	auto& [line, column] = m_oParserPosition;
 
@@ -240,7 +241,7 @@ Success CBufferTokenizer::ReadMultiLineComment()
 
 	return success;
 }
-Success CBufferTokenizer::ReadNumber(CToken& token)
+Varjus::Success CBufferTokenizer::ReadNumber(CToken& token)
 {
 	auto& [_, column] = m_oParserPosition;
 
@@ -308,7 +309,7 @@ Success CBufferTokenizer::ReadNumber(CToken& token)
 	return success;
 
 }
-Success CBufferTokenizer::ReadInteger(CToken& token) noexcept
+Varjus::Success CBufferTokenizer::ReadInteger(CToken& token) noexcept
 {
 	if (EndOfBuffer())
 		return failure;
@@ -330,7 +331,7 @@ Success CBufferTokenizer::ReadInteger(CToken& token) noexcept
 
 	return success;
 }
-Success CBufferTokenizer::ReadHex(CToken& token)
+Varjus::Success CBufferTokenizer::ReadHex(CToken& token)
 {
 	auto& [_, column] = m_oParserPosition;
 
@@ -363,7 +364,7 @@ Success CBufferTokenizer::ReadHex(CToken& token)
 #else
 		auto intValue = std::stoll(hexStr, nullptr, 16);
 #endif
-		token.m_sSource = fmt::to_string(intValue);
+		token.m_sSource = Varjus::fmt::to_string(intValue);
 	}
 	catch ([[maybe_unused]]std::out_of_range& ex) {
 		try {
@@ -374,7 +375,7 @@ Success CBufferTokenizer::ReadHex(CToken& token)
 #else
 			auto uintValue = std::stoull(hexStr, nullptr, 16);
 #endif
-			token.m_sSource = fmt::to_string(uintValue);
+			token.m_sSource = Varjus::fmt::to_string(uintValue);
 		}
 		catch ([[maybe_unused]] std::out_of_range& ex) {
 			m_pProgram->PushError(VSL("constant value is out of range"), m_oParserPosition);
@@ -385,7 +386,7 @@ Success CBufferTokenizer::ReadHex(CToken& token)
 
 	return success;
 }
-Success CBufferTokenizer::ReadString(CToken& token, VarjusChar quote)
+Varjus::Success CBufferTokenizer::ReadString(CToken& token, VarjusChar quote)
 {
 	auto& [line, column] = m_oParserPosition;
 
@@ -430,7 +431,7 @@ Success CBufferTokenizer::ReadString(CToken& token, VarjusChar quote)
 #define FMT_EXPRESSION_END_CHAR '}'
 #define FMT_EXPRESSION_END_CHAR_P p_curlybracket_close
 
-Success CBufferTokenizer::ParseFmtRawText(CFmtStringToken& token)
+Varjus::Success CBufferTokenizer::ParseFmtRawText(CFmtStringToken& token)
 {
 	auto& [line, column] = m_oParserPosition;
 	VarjusString rawText;
@@ -460,7 +461,7 @@ Success CBufferTokenizer::ParseFmtRawText(CFmtStringToken& token)
 
 	return !EndOfBuffer() ? success : failure;
 }
-Success CBufferTokenizer::ParseFmtExpression(CFmtStringToken& token)
+Varjus::Success CBufferTokenizer::ParseFmtExpression(CFmtStringToken& token)
 {
 	auto& [line, column] = m_oParserPosition;
 
@@ -631,7 +632,7 @@ const std::unordered_map<STD_STRING_VIEW, TokenType> reservedKeywords = {
 	{VSL("export"), TokenType::tt_export}
 };
 
-Success CBufferTokenizer::ReadName(CToken& token) noexcept
+Varjus::Success CBufferTokenizer::ReadName(CToken& token) noexcept
 {
 	auto& [_, column] = m_oParserPosition;
 
@@ -707,10 +708,10 @@ std::unique_ptr<CToken> CBufferTokenizer::ReadPunctuation() noexcept
 /***********************************************************************
  > 
 ***********************************************************************/
-std::vector<std::unique_ptr<CToken>> CBufferTokenizer::ParseFileFromFilePath(CProgramInformation* const program, const VarjusString& filePath, EncodingType encoding)
+std::vector<std::unique_ptr<CToken>> CBufferTokenizer::ParseFileFromFilePath(CProgramInformation* const program, const VarjusString& filePath, Varjus::EncodingType encoding)
 {
 	if (!std::filesystem::exists(filePath)) {
-		program->PushError(fmt::format(VSL("the input file \"{}\" doesn't exist"), filePath));
+		program->PushError(Varjus::fmt::format(VSL("the input file \"{}\" doesn't exist"), filePath));
 		return {};
 	}
 
@@ -745,12 +746,12 @@ std::vector<std::unique_ptr<CToken>> CBufferTokenizer::ParseFileFromFilePath(CPr
 	case e_unknown:
 	case e_auto:
 	default:
-		program->PushError(fmt::format(VSL("encoding type not specified for \"{}\""), filePath));
+		program->PushError(Varjus::fmt::format(VSL("encoding type not specified for \"{}\""), filePath));
 		return {};
 	}
 #else
 	if (encoding != e_ansi && encoding != e_utf8) {
-		program->PushError(fmt::format(VSL("the ansi build of Varjus does not support this encoding for the file\n\"{}\""), filePath));
+		program->PushError(Varjus::fmt::format(VSL("the ansi build of Varjus does not support this encoding for the file\n\"{}\""), filePath));
 		return {};
 	}
 #endif

@@ -9,13 +9,13 @@ struct CFunctionBlock;
 
 class CElseStatementLinter final : public CStatementLinter, protected IRuntimeBlock
 {
-	NONCOPYABLE(CElseStatementLinter);
+	VARJUS_NONCOPYABLE(CElseStatementLinter);
 
 public:
 	explicit CElseStatementLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const owner);
 	~CElseStatementLinter();
 
-	[[nodiscard]] Success Parse();
+	[[nodiscard]] Varjus::Success Parse();
 	[[nodiscard]] bool IsInConditionalContext() const;
 
 	[[nodiscard]] RuntimeBlock ToRuntimeObject() const override;

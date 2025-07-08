@@ -18,6 +18,8 @@
 #include <cassert>
 #include <ranges>
 
+using namespace Varjus;
+
 AbstractSyntaxTree::~AbstractSyntaxTree() = default;
 
 
@@ -237,7 +239,7 @@ FunctionASTNode::FunctionASTNode(const CodePosition& pos, CLinterFunction* const
 	: AbstractSyntaxTree(pos),
 	CCrossModuleReference(*func){}
 
-ConstantASTNode::ConstantASTNode(const CodePosition& pos, const VarjusString& data, EValueType datatype)
+ConstantASTNode::ConstantASTNode(const CodePosition& pos, const VarjusString& data, Varjus::EValueType datatype)
 	: AbstractSyntaxTree(pos), m_pConstant(data), m_eDataType(datatype) {
 }
 ConstantASTNode::~ConstantASTNode() = default;

@@ -11,6 +11,8 @@
 #include <stack>
 #include <numeric>
 
+using namespace Varjus;
+
 [[nodiscard]] CArrayValue* GetThisArray(IValue* _this) {
 	return _this->ToArray();
 }
@@ -138,7 +140,7 @@ DEFINE_METHOD(Transform, args)
 	auto& mapFunc = args.front();
 
 	if (!mapFunc->IsCallable())
-		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("array.transform expected \"callable\", but got \"{}\""), mapFunc->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, Varjus::fmt::format(VSL("array.transform expected \"callable\", but got \"{}\""), mapFunc->TypeAsString()));
 
 	auto __this = GetThisArray(_this);
 	auto& vars = __this->Get().GetContent().GetVariables();
@@ -185,7 +187,7 @@ static inline IValue* FindTestValue(CRuntimeContext* const ctx, IValue* const ma
 	}
 
 	if (!thisIteration->IsBooleanConvertible())
-		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("array.find expected a boolean return value"), mapFunc->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, Varjus::fmt::format(VSL("array.find expected a boolean return value"), mapFunc->TypeAsString()));
 
 	if (thisIteration->ToBoolean()) {
 		result = var->GetValue();
@@ -200,7 +202,7 @@ static inline IValue* FindInternal(CArrayValue* _this, CRuntimeContext* const ct
 	auto& mapFunc = args.front();
 
 	if (!mapFunc->IsCallable())
-		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("array.find expected \"callable\", but got \"{}\""), mapFunc->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, Varjus::fmt::format(VSL("array.find expected \"callable\", but got \"{}\""), mapFunc->TypeAsString()));
 
 	auto& vars = _this->Get().GetContent().GetVariables();
 
@@ -254,7 +256,7 @@ static inline IValue* FindTestValueIndex(CRuntimeContext* const ctx, IValue* con
 	}
 
 	if (!thisIteration->IsBooleanConvertible())
-		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("array.find expected a boolean return value"), mapFunc->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, Varjus::fmt::format(VSL("array.find expected a boolean return value"), mapFunc->TypeAsString()));
 
 	if (thisIteration->ToBoolean()) {
 		result = CUIntValue::Construct(ctx->m_pRuntime, i);
@@ -269,7 +271,7 @@ static inline IValue* FindIndexInternal(CArrayValue* _this, CRuntimeContext* con
 	auto& mapFunc = args.front();
 
 	if (!mapFunc->IsCallable())
-		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("array.findindex expected \"callable\", but got \"{}\""), mapFunc->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, Varjus::fmt::format(VSL("array.findindex expected \"callable\", but got \"{}\""), mapFunc->TypeAsString()));
 
 	auto& vars = _this->Get().GetContent().GetVariables();
 
@@ -319,7 +321,7 @@ DEFINE_METHOD(Filter, args)
 	auto& mapFunc = args.front();
 
 	if (!mapFunc->IsCallable())
-		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("array.filter expected \"callable\", but got \"{}\""), mapFunc->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, Varjus::fmt::format(VSL("array.filter expected \"callable\", but got \"{}\""), mapFunc->TypeAsString()));
 
 	auto __this = GetThisArray(_this);
 	auto& vars = __this->Get().GetContent().GetVariables();
@@ -338,7 +340,7 @@ DEFINE_METHOD(Filter, args)
 		}
 
 		if (!thisIteration->IsBooleanConvertible())
-			throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("array.filter expected a boolean return value"), mapFunc->TypeAsString()));
+			throw CRuntimeError(ctx->m_pRuntime, Varjus::fmt::format(VSL("array.filter expected a boolean return value"), mapFunc->TypeAsString()));
 
 		if (thisIteration->ToBoolean())
 			results.push_back(var->GetValue()->Copy());
@@ -418,7 +420,7 @@ DEFINE_METHOD(Join, args)
 {
 	auto& delimiterValue = args.front();
 	if (delimiterValue->Type() != t_string)
-		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("array.join expected a string parameter, but got \"{}\""), delimiterValue->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, Varjus::fmt::format(VSL("array.join expected a string parameter, but got \"{}\""), delimiterValue->TypeAsString()));
 
 	VectorOf<VarjusString> stringValues;
 	auto __this = GetThisArray(_this);
@@ -427,7 +429,7 @@ DEFINE_METHOD(Join, args)
 	for (auto& var : vars) {
 		auto& value = var->GetValue();
 		if (value->Type() != t_string)
-			throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("array.join called on an array that contains \"{}\" instead of \"string\""), 
+			throw CRuntimeError(ctx->m_pRuntime, Varjus::fmt::format(VSL("array.join called on an array that contains \"{}\" instead of \"string\""), 
 				delimiterValue->TypeAsString()));
 
 		stringValues.push_back(value->ToString());
@@ -442,7 +444,7 @@ DEFINE_METHOD(All, args)
 	auto& mapFunc = args.front();
 
 	if (!mapFunc->IsCallable())
-		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("array.all expected \"callable\", but got \"{}\""), mapFunc->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, Varjus::fmt::format(VSL("array.all expected \"callable\", but got \"{}\""), mapFunc->TypeAsString()));
 
 	auto __this = GetThisArray(_this);
 	auto& vars = __this->Get().GetContent().GetVariables();
@@ -462,7 +464,7 @@ DEFINE_METHOD(All, args)
 		}
 
 		if (!thisIteration->IsBooleanConvertible())
-			throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("array.filter expected a boolean return value"), mapFunc->TypeAsString()));
+			throw CRuntimeError(ctx->m_pRuntime, Varjus::fmt::format(VSL("array.filter expected a boolean return value"), mapFunc->TypeAsString()));
 
 		if (!thisIteration->ToBoolean())
 			all = false;
@@ -485,7 +487,7 @@ DEFINE_METHOD(Any, args)
 	auto& mapFunc = args.front();
 
 	if (!mapFunc->IsCallable())
-		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("array.all expected \"callable\", but got \"{}\""), mapFunc->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, Varjus::fmt::format(VSL("array.all expected \"callable\", but got \"{}\""), mapFunc->TypeAsString()));
 
 	auto __this = GetThisArray(_this);
 	auto& vars = __this->Get().GetContent().GetVariables();
@@ -505,7 +507,7 @@ DEFINE_METHOD(Any, args)
 		}
 
 		if (!thisIteration->IsBooleanConvertible())
-			throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("array.filter expected a boolean return value"), mapFunc->TypeAsString()));
+			throw CRuntimeError(ctx->m_pRuntime, Varjus::fmt::format(VSL("array.filter expected a boolean return value"), mapFunc->TypeAsString()));
 
 		if (thisIteration->ToBoolean())
 			any = true;
@@ -533,7 +535,7 @@ DEFINE_METHOD(Slice, args) {
 
 	const auto CheckSanity = [&ctx](const IValue* v) {
 		if (!v->IsIntegral())
-			throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("array.slice expected an integral value, but got \"{}\""), v->TypeAsString()));
+			throw CRuntimeError(ctx->m_pRuntime, Varjus::fmt::format(VSL("array.slice expected an integral value, but got \"{}\""), v->TypeAsString()));
 		};
 
 	CheckSanity(a);
@@ -615,7 +617,7 @@ void IterativeQuickSort(CRuntimeContext* const ctx, IValues& vars, IValue* const
 	}
 
 	if (returnValue->Type() != t_boolean)
-		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("array.sort expected a boolean return value"), returnValue->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, Varjus::fmt::format(VSL("array.sort expected a boolean return value"), returnValue->TypeAsString()));
 
 	const auto rtVal = returnValue->ToBoolean();
 	returnValue->Release(); // nothing meaningful, release it
@@ -629,7 +631,7 @@ DEFINE_METHOD(Sort, args)
 	auto& mapFunc = args.front();
 
 	if (!mapFunc->IsCallable())
-		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("array.sort expected \"callable\", but got \"{}\""), mapFunc->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, Varjus::fmt::format(VSL("array.sort expected \"callable\", but got \"{}\""), mapFunc->TypeAsString()));
 
 	auto __this = GetThisArray(_this);
 	auto& vars = __this->Get().GetContent().GetVariables();
@@ -653,7 +655,7 @@ DEFINE_METHOD(Resize, args)
 	auto& value = args.front();
 
 	if (!value->IsIntegral())
-		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("array.resize expected \"integer\", but got \"{}\""), value->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, Varjus::fmt::format(VSL("array.resize expected \"integer\", but got \"{}\""), value->TypeAsString()));
 
 
 	auto __this = GetThisArray(_this);
@@ -705,7 +707,7 @@ DEFINE_METHOD(ForEach, args)
 	auto& mapFunc = args.front();
 
 	if (!mapFunc->IsCallable())
-		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("array.for_each expected \"callable\", but got \"{}\""), mapFunc->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, Varjus::fmt::format(VSL("array.for_each expected \"callable\", but got \"{}\""), mapFunc->TypeAsString()));
 
 	auto __this = GetThisArray(_this);
 	auto& vars = __this->Get().GetContent().GetVariables();
@@ -740,7 +742,7 @@ DEFINE_METHOD(Accumulate, args)
 	auto& mapFunc = args.front();
 
 	if (!mapFunc->IsCallable())
-		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("array.accumulate 1. expected \"callable\", but got \"{}\""), mapFunc->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, Varjus::fmt::format(VSL("array.accumulate 1. expected \"callable\", but got \"{}\""), mapFunc->TypeAsString()));
 
 
 	auto __this = GetThisArray(_this);

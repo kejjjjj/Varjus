@@ -14,7 +14,9 @@
 #include <cassert>
 #include <stdexcept>
 
-void CAggregate::Setup(CProgramRuntime* const runtime, const std::vector<ElementIndex>& elements){
+using namespace Varjus;
+
+void CAggregate::Setup(Varjus::CProgramRuntime* const runtime, const std::vector<ElementIndex>& elements){
 	m_pAllocator = runtime;
 	for (auto& l : elements) {
 		AddAttribute(l);
@@ -54,7 +56,7 @@ IValue* CAggregate::ElementLookup(GlobalMemberIndex index) const
 {
 	assert(m_pAllMembers);
 	if (!m_oIndexLookup.contains(index)) {
-		throw CRuntimeError(m_pAllocator, fmt::format(VSL("this aggregate doesn't have the attribute \"{}\""),
+		throw CRuntimeError(m_pAllocator, Varjus::fmt::format(VSL("this aggregate doesn't have the attribute \"{}\""),
 			m_pAllMembers->At(index)
 		));
 	}

@@ -13,6 +13,8 @@
 
 #include <cassert>
 
+using namespace Varjus;
+
 CTryCatchStatementLinter::CTryCatchStatementLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack)
 	: CStatementLinter(pos, end, scope, stack) {
 
@@ -20,7 +22,7 @@ CTryCatchStatementLinter::CTryCatchStatementLinter(LinterIterator& pos, LinterIt
 }
 CTryCatchStatementLinter::~CTryCatchStatementLinter() = default;
 
-Success CTryCatchStatementLinter::Parse()
+Varjus::Success CTryCatchStatementLinter::Parse()
 {
 
 	if (!ParseIdentifier(TokenType::tt_try))
@@ -34,7 +36,7 @@ Success CTryCatchStatementLinter::Parse()
 	return ParseCatchStatement();
 }
 
-Success CTryCatchStatementLinter::ParseCatchStatement()
+Varjus::Success CTryCatchStatementLinter::ParseCatchStatement()
 {
 	if (!ParseIdentifier(TokenType::tt_catch))
 		return failure;

@@ -33,8 +33,8 @@ void CModule::SetGlobalVariableCount(std::size_t v) {
 	m_uNumGlobalVariables = v; 
 }
 
-std::unique_ptr<CRuntimeModule> CModule::ToRuntimeModule(){
-	return std::make_unique<CRuntimeModule>(*this);
+std::unique_ptr<Varjus::CRuntimeModule> CModule::ToRuntimeModule(){
+	return std::make_unique<Varjus::CRuntimeModule>(*this);
 }
 void CModule::AddExport(const VarjusString& name, UniqueExportedSymbol&& symbol) {
 	m_oModuleExports[name] = std::move(symbol);
@@ -117,7 +117,7 @@ std::optional<VarjusString> CProjectModules::CheckCircularDependencies(const Var
 
 		VarjusString ss = VSL("circular dependency detected involving the following files:\n");
 		for (const auto& [source, target] : conflictDetails)
-			ss += fmt::format(VSL(" - {} <-> {}\n"), source, target);
+			ss += Varjus::fmt::format(VSL(" - {} <-> {}\n"), source, target);
 		return std::make_optional(ss);
 	}
 
@@ -129,14 +129,14 @@ VarjusString CProjectModules::DependencyGraphToString() noexcept
 	VarjusString ss;
 
 	for (const auto& [sourceFile, dependencies] : m_oDependencyGraph) {
-		ss += fmt::format(VSL("{} imports:\n"), sourceFile);
+		ss += Varjus::fmt::format(VSL("{} imports:\n"), sourceFile);
 
 		if (dependencies.empty()) {
 			ss += VSL(" - None\n"); 
 		}
 		else {
 			for (const auto& dependency : dependencies) {
-				ss += fmt::format(VSL(" - {}\n"), dependency);
+				ss += Varjus::fmt::format(VSL(" - {}\n"), dependency);
 			}
 		}
 	}

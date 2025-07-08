@@ -8,7 +8,7 @@
 #include "varjus_api/types/internal/references.hpp"
 
 
-CCallableValue* CCallableValue::Construct(CProgramRuntime* const runtime, CRuntimeFunctionBase* v)
+CCallableValue* CCallableValue::Construct(Varjus::CProgramRuntime* const runtime, CRuntimeFunctionBase* v)
 {
 	auto ptr = runtime->AcquireNewValue<CCallableValue>();
 	ptr->MakeShared();
@@ -68,10 +68,10 @@ IValue* CCallableValue::Call(CRuntimeContext* const ctx, const IValues& args)
 	return ret;
 }
 VarjusString CCallableValue::ValueAsString() const {
-	return fmt::format(VSL("\"function->({})\""), GetShared()->GetCallable()->GetName());
+	return Varjus::fmt::format(VSL("\"function->({})\""), GetShared()->GetCallable()->GetName());
 }
 VarjusString CCallableValue::ValueAsEscapedString() const {
-	return fmt::format(VSL("function->({})"), GetShared()->GetCallable()->GetName());
+	return Varjus::fmt::format(VSL("function->({})"), GetShared()->GetCallable()->GetName());
 }
 CInternalCallableValue* CCallableValue::Internal() {
 	return GetShared().get();

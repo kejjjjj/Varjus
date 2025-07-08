@@ -13,7 +13,7 @@
 #include <cassert>
 #include <iostream>
 
-
+using namespace Varjus;
 
 CIdentifierLinter::CIdentifierLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack)
 	: CLinterSingle(pos, end), m_pScope(scope), m_pOwner(stack)
@@ -22,7 +22,7 @@ CIdentifierLinter::CIdentifierLinter(LinterIterator& pos, LinterIterator& end, c
 }
 CIdentifierLinter::~CIdentifierLinter() = default;
 
-Success CIdentifierLinter::ParseIdentifier()
+Varjus::Success CIdentifierLinter::ParseIdentifier()
 {
 	auto iterPos = GetIteratorSafe();
 

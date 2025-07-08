@@ -10,11 +10,11 @@ struct CFunctionBlock;
 
 class CReturnStatementLinter final : public CStatementLinter, protected IRuntimeBlock
 {
-	NONCOPYABLE(CReturnStatementLinter);
+	VARJUS_NONCOPYABLE(CReturnStatementLinter);
 public:
 	explicit CReturnStatementLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const owner);
 	~CReturnStatementLinter();
-	[[nodiscard]] Success Parse();
+	[[nodiscard]] Varjus::Success Parse();
 
 	[[nodiscard]] ASTNode ParseExpression() override;
 

@@ -7,7 +7,7 @@ using KeyValue = std::pair<A, B>;
 
 struct CKeyValue
 {
-	NONCOPYABLE(CKeyValue);
+	VARJUS_NONCOPYABLE(CKeyValue);
 
 	CKeyValue(std::size_t k, ASTNode&& ast);
 
@@ -17,7 +17,7 @@ struct CKeyValue
 
 struct CObjectOperand final : public IOperand
 {
-	NONCOPYABLE(CObjectOperand);
+	VARJUS_NONCOPYABLE(CObjectOperand);
 
 	CObjectOperand() = default;
 	CObjectOperand(VectorOf<KeyValue<std::size_t, ASTNode>>&& ptr);

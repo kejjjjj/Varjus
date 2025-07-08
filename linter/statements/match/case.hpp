@@ -10,18 +10,18 @@ struct CFunctionBlock;
 
 class CCaseStatementLinter final : public CStatementLinter, protected IRuntimeBlock
 {
-	NONCOPYABLE(CCaseStatementLinter);
+	VARJUS_NONCOPYABLE(CCaseStatementLinter);
 
 public:
 	explicit CCaseStatementLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const owner);
 	~CCaseStatementLinter();
-	[[nodiscard]] Success Parse();
+	[[nodiscard]] Varjus::Success Parse();
 
 	[[nodiscard]] RuntimeBlock ToRuntimeObject() const override;
 
 private:
-	[[nodiscard]] Success ParseCaseScope();
-	[[nodiscard]] Success ParseDefaultClause();
+	[[nodiscard]] Varjus::Success ParseCaseScope();
+	[[nodiscard]] Varjus::Success ParseDefaultClause();
 
 	[[nodiscard]] bool ContainsDefaultClause() const noexcept;
 

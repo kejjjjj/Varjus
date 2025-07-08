@@ -26,22 +26,22 @@ enum ForLoopType { for_standard, for_ranged };
 
 class CForStatementLinter final : public CStatementLinter, protected IRuntimeBlock
 {
-	NONCOPYABLE(CForStatementLinter);
+	VARJUS_NONCOPYABLE(CForStatementLinter);
 
 public:
 	explicit CForStatementLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const owner);
 	~CForStatementLinter();
-	[[nodiscard]] Success Parse();
+	[[nodiscard]] Varjus::Success Parse();
 
 	[[nodiscard]] RuntimeBlock ToRuntimeObject() const override;
 
 private:
 
-	[[nodiscard]] Success ParseInitializer();
-	[[nodiscard]] Success ParseCondition();
-	[[nodiscard]] Success ParseEndExpression();
+	[[nodiscard]] Varjus::Success ParseInitializer();
+	[[nodiscard]] Varjus::Success ParseCondition();
+	[[nodiscard]] Varjus::Success ParseEndExpression();
 
-	[[nodiscard]] Success ParseRangedForLoop();
+	[[nodiscard]] Varjus::Success ParseRangedForLoop();
 
 	std::variant<StandardForLoop, RangedForLoop> m_oData;
 	ForLoopType m_eType{};

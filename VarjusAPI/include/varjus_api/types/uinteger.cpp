@@ -1,7 +1,7 @@
 #include "varjus_api/internal/runtime.hpp"
 #include "uinteger.hpp"
 
-CUIntValue* CUIntValue::Construct(CProgramRuntime* const runtime, VarjusUInt v) {
+CUIntValue* CUIntValue::Construct(Varjus::CProgramRuntime* const runtime, VarjusUInt v) {
 	return runtime->AcquireNewValue<CUIntValue>(v);
 }
 

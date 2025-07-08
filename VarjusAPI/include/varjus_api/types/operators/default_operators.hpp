@@ -4,12 +4,14 @@
 
 class IValue;
 class CVariable;
-class CProgramRuntime;
 
-using OperatorFunc = IValue*(*)(CProgramRuntime* const, IValue*, IValue*);
+namespace Varjus {
+	class CProgramRuntime;
+}
+using OperatorFunc = IValue*(*)(Varjus::CProgramRuntime* const, IValue*, IValue*);
 
 #define FORWARD_DECLARE_OPERATOR(Name)\
-IValue* Name(CProgramRuntime* const runtime, IValue* lhs, IValue* rhs);
+IValue* Name(Varjus::CProgramRuntime* const runtime, IValue* lhs, IValue* rhs);
 
 FORWARD_DECLARE_OPERATOR(OP_ASSIGNMENT)
 FORWARD_DECLARE_OPERATOR(OP_ADDITION)

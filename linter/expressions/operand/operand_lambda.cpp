@@ -15,6 +15,8 @@
 #include <cassert>
 #include <ranges>
 
+using namespace Varjus;
+
 std::unique_ptr<IOperand> CLinterOperand::ParseLambda()
 {
 	assert(!IsEndOfBuffer() && (*m_iterPos)->Type() == tt_fn);
@@ -78,7 +80,7 @@ CLambdaChecker::CLambdaChecker(LinterIterator& pos, LinterIterator& end, const W
 }
 CLambdaChecker::~CLambdaChecker() = default;
 
-Success CLambdaChecker::Parse(std::optional<PairMatcher>& m_oEndOfExpression, CExpressionList* expression, EvaluationType evalType)
+Varjus::Success CLambdaChecker::Parse(std::optional<PairMatcher>& m_oEndOfExpression, CExpressionList* expression, EvaluationType evalType)
 {
 	LinterIterator initialPos = m_iterPos;
 
@@ -90,7 +92,7 @@ Success CLambdaChecker::Parse(std::optional<PairMatcher>& m_oEndOfExpression, CE
 
 	return success;
 }
-Success CLambdaChecker::ParseInternal(
+Varjus::Success CLambdaChecker::ParseInternal(
 	std::optional<PairMatcher>& m_oEndOfExpression, [[maybe_unused]] CExpressionList* expression, [[maybe_unused]] EvaluationType evalType)
 {
 	//short lambdas must start with () parms
@@ -169,7 +171,7 @@ Success CLambdaChecker::ParseInternal(
 	return success;
 
 }
-Success CLambdaChecker::ParseParameters()
+Varjus::Success CLambdaChecker::ParseParameters()
 {
 
 	if (IsEndOfBuffer() || !CFunctionLinter::IsIdentifier((*m_iterPos))) {

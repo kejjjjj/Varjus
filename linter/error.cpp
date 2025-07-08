@@ -11,7 +11,7 @@ CLinterError::CLinterError(const VarjusString& filePath, const VarjusString& err
     }
 
     auto& [l, c] = *pos;
-    m_oErrorMessageFormatted += fmt::format(VSL(" | near [{}, {}] in \"{}\""), l, c, filePath);
+    m_oErrorMessageFormatted += Varjus::fmt::format(VSL(" | near [{}, {}] in \"{}\""), l, c, filePath);
 }
 
 void CLinterErrors::PushError(const CLinterError& error) {

@@ -16,7 +16,7 @@ using UniqueAST = std::unique_ptr<AbstractSyntaxTree>;
 
 class CLinterOperator final
 {
-	NONCOPYABLE(CLinterOperator);
+	VARJUS_NONCOPYABLE(CLinterOperator);
 public:
 
 	CLinterOperator(OperatorPriority priority, const CPunctuationToken* token) :
@@ -36,20 +36,20 @@ private:
 
 class CLinterOperatorParser final : public CLinterSingle<CPunctuationToken>
 {
-	NONCOPYABLE(CLinterOperatorParser);
+	VARJUS_NONCOPYABLE(CLinterOperatorParser);
 public:
 	CLinterOperatorParser() = delete;
 	explicit CLinterOperatorParser(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack);
 	~CLinterOperatorParser();
 
-	[[maybe_unused]] Success ParseOperator(std::optional<PairMatcher>& eoe, 
+	[[maybe_unused]] Varjus::Success ParseOperator(std::optional<PairMatcher>& eoe, 
 		CExpressionList* expression, EvaluationType evalType);
 	[[nodiscard]] auto GetToken() const { return m_pToken; }
 
 	[[nodiscard]] OperatorPriority GetPriority() const noexcept;
 
 private:
-	[[maybe_unused]] Success ParseSequence(std::optional<PairMatcher>& m_oEndOfExpression, CExpressionList* expression);
+	[[maybe_unused]] Varjus::Success ParseSequence(std::optional<PairMatcher>& m_oEndOfExpression, CExpressionList* expression);
 
 	[[nodiscard]] bool CheckOperator() const;
 	[[nodiscard]] bool IsOperator(const CPunctuationToken& token) const noexcept;

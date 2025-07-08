@@ -13,6 +13,8 @@
 
 #include <cassert>
 
+using namespace Varjus;
+
 CElseStatementLinter::CElseStatementLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack)
 	: CStatementLinter(pos, end, scope, stack) {
 
@@ -26,7 +28,7 @@ CElseStatementLinter::CElseStatementLinter(LinterIterator& pos, LinterIterator& 
 }
 CElseStatementLinter::~CElseStatementLinter() = default;
 
-Success CElseStatementLinter::Parse()
+Varjus::Success CElseStatementLinter::Parse()
 {
 	if (!m_pOwner->IsHoisting() && !IsInConditionalContext()) {
 		m_pOwner->GetModule()->PushError(VSL("an else block must be after an if block"),

@@ -12,17 +12,17 @@ struct CConstEvalLinterVariable;
 class CVariableDeclarationLinter final : public CLinterSingle<CToken>, protected IRuntimeBlock
 {
 	friend class CMemory;
-	NONCOPYABLE(CVariableDeclarationLinter);
+	VARJUS_NONCOPYABLE(CVariableDeclarationLinter);
 
 public:
 	CVariableDeclarationLinter() = delete;
 	CVariableDeclarationLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack);
 	~CVariableDeclarationLinter();
 
-	[[nodiscard]] Success Parse();
+	[[nodiscard]] Varjus::Success Parse();
 
-	[[nodiscard]] Success ParseIdentifier();
-	[[nodiscard]] Success ParseInitializer();
+	[[nodiscard]] Varjus::Success ParseIdentifier();
+	[[nodiscard]] Varjus::Success ParseInitializer();
 
 	[[nodiscard]] RuntimeBlock ToRuntimeObject() const override;
 	[[nodiscard]] ASTNode&& MoveInitializer();

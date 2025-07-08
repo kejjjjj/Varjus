@@ -6,6 +6,7 @@
 
 #include <cassert>
 
+using namespace Varjus;
 
 bool CLinterVariable::IsGlobal() const noexcept {
 	assert(m_pOwner);

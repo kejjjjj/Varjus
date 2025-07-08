@@ -11,15 +11,12 @@ class CInternalArrayValue;
 class CChildVariable;
 class CArrayValue;
 
-template<typename K, typename V>
-using KeyValue = std::pair<K, V>;
-
 using ArrayOwner = std::weak_ptr<CInternalArrayValue>;
 
 struct CArrayContent final
 {
-	[[maybe_unused]] CChildVariable* PushVariable(CProgramRuntime* const runtime, IValue* value);
-	[[maybe_unused]] CChildVariable* PushFrontVariable(CProgramRuntime* const runtime, IValue* value);
+	[[maybe_unused]] CChildVariable* PushVariable(Varjus::CProgramRuntime* const runtime, IValue* value);
+	[[maybe_unused]] CChildVariable* PushFrontVariable(Varjus::CProgramRuntime* const runtime, IValue* value);
 	
 	constexpr auto& GetVariables() noexcept { return m_oVariables; }
 	constexpr auto& GetVariables() const noexcept { return m_oVariables; }
@@ -38,7 +35,7 @@ public:
 
 	void Release();
 
-	void Set(const ArrayOwner& self, CProgramRuntime* const runtime, VectorOf<IValue*>&& v);
+	void Set(const ArrayOwner& self, Varjus::CProgramRuntime* const runtime, VectorOf<IValue*>&& v);
 	constexpr auto& Get() noexcept { return m_oValue; }
 	constexpr auto& Get() const noexcept { return m_oValue; }
 
@@ -51,18 +48,22 @@ protected:
 	CArrayContent m_oValue;
 };
 
-
+namespace Varjus {
+	struct BuiltInMethod_t; 
+	struct BuiltInProperty_t;
+	class CProgramInformation;
+}
 class CArrayValue final : public CValue<CInternalArrayValue>
 {
 public:
 	CArrayValue() = default;
 	~CArrayValue();
 	
-	static CArrayValue* Construct(CProgramRuntime* const runtime, IValues&& values);
-	[[nodiscard]] static std::unique_ptr<struct BuiltInMethod_t> ConstructMethods(class CProgramInformation* const info);
-	[[nodiscard]] static std::unique_ptr<struct BuiltInProperty_t> ConstructProperties(class CProgramInformation* const info);
+	static CArrayValue* Construct(Varjus::CProgramRuntime* const runtime, IValues&& values);
+	[[nodiscard]] static std::unique_ptr<Varjus::BuiltInMethod_t> ConstructMethods(Varjus::CProgramInformation* const info);
+	[[nodiscard]] static std::unique_ptr<Varjus::BuiltInProperty_t> ConstructProperties(Varjus::CProgramInformation* const info);
 
-	[[nodiscard]] EValueType Type() const noexcept override { return t_array; };
+	[[nodiscard]] Varjus::EValueType Type() const noexcept override { return Varjus::t_array; };
 
 	void Release() override;
 
@@ -86,8 +87,8 @@ public:
 		return reinterpret_cast<std::size_t>(GetShared().get()); 
 	}
 
-	[[maybe_unused]] CChildVariable* PushVariable(CProgramRuntime* const runtime, IValue* value);
-	[[maybe_unused]] CChildVariable* PushFrontVariable(CProgramRuntime* const runtime, IValue* value);
+	[[maybe_unused]] CChildVariable* PushVariable(Varjus::CProgramRuntime* const runtime, IValue* value);
+	[[maybe_unused]] CChildVariable* PushFrontVariable(Varjus::CProgramRuntime* const runtime, IValue* value);
 
 	[[nodiscard]] std::size_t GetSharedPointer() const noexcept override { return reinterpret_cast<std::size_t>(GetShared().get()); }
 private:

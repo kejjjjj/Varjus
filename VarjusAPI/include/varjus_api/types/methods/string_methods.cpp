@@ -11,6 +11,8 @@
 #include <algorithm>
 #include <ranges>
 
+using namespace Varjus;
+
 [[nodiscard]] CStringValue* GetThisString(IValue* _this) {
 	return _this->ToCString();
 }
@@ -91,7 +93,7 @@ DEFINE_METHOD(Substring, args)
 
 	const auto CheckSanity = [&ctx](const IValue* v) {
 		if (!v->IsIntegral())
-			throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("string.substring expected an integral value, but got \"{}\""), v->TypeAsString()));
+			throw CRuntimeError(ctx->m_pRuntime, Varjus::fmt::format(VSL("string.substring expected an integral value, but got \"{}\""), v->TypeAsString()));
 	};
 
 	CheckSanity(a);
@@ -134,7 +136,7 @@ DEFINE_METHOD(Split, args) {
 	auto& delimiter = args.front();
 
 	if(delimiter->Type() != t_string)
-		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("string.split expected a \"string\", but got \"{}\""), delimiter->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, Varjus::fmt::format(VSL("string.split expected a \"string\", but got \"{}\""), delimiter->TypeAsString()));
 
 	auto tokens = SplitString(v, delimiter->AsString());
 	IValues tokensAsValues;
@@ -162,7 +164,7 @@ DEFINE_METHOD(Replace, args) {
 
 	const auto CheckSanity = [&ctx](const IValue* v) {
 		if (v->Type() != t_string)
-			throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("string.substring expected a \"string\", but got \"{}\""), v->TypeAsString()));
+			throw CRuntimeError(ctx->m_pRuntime, Varjus::fmt::format(VSL("string.substring expected a \"string\", but got \"{}\""), v->TypeAsString()));
 	};
 
 	auto& a = args[0];
@@ -181,7 +183,7 @@ DEFINE_METHOD(Clone, args) {
 
 	auto& countValue = args[0];
 	if (!countValue->IsIntegral())
-		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("string.clone expected an integral value, but got \"{}\""), countValue->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, Varjus::fmt::format(VSL("string.clone expected an integral value, but got \"{}\""), countValue->TypeAsString()));
 
 	auto count = countValue->ToInt();
 	if (count < 0)
@@ -200,7 +202,7 @@ DEFINE_METHOD(GetCodeAt, args) {
 
 	auto& idx = args[0];
 	if (!idx->IsIntegral())
-		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("string.code_at expected an integral value, but got \"{}\""), idx->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, Varjus::fmt::format(VSL("string.code_at expected an integral value, but got \"{}\""), idx->TypeAsString()));
 
 	const auto index = idx->ToUInt();
 
@@ -219,7 +221,7 @@ DEFINE_METHOD(StringContains, args) {
 	auto& delimiter = args.front();
 
 	if (delimiter->Type() != t_string)
-		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("string.contains expected a \"string\", but got \"{}\""), delimiter->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, Varjus::fmt::format(VSL("string.contains expected a \"string\", but got \"{}\""), delimiter->TypeAsString()));
 
 	return CBooleanValue::Construct(ctx->m_pRuntime, v.find(delimiter->ToString()) != VarjusString::npos);
 }
@@ -232,7 +234,7 @@ DEFINE_METHOD(StringFind, args) {
 	auto& delimiter = args.front();
 
 	if (delimiter->Type() != t_string)
-		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("string.find expected a \"string\", but got \"{}\""), delimiter->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, Varjus::fmt::format(VSL("string.find expected a \"string\", but got \"{}\""), delimiter->TypeAsString()));
 
 	const auto pos = v.find(delimiter->ToString());
 
@@ -249,7 +251,7 @@ DEFINE_METHOD(StringFindLast, args) {
 	auto& delimiter = args.front();
 
 	if (delimiter->Type() != t_string)
-		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("string.find_last expected a \"string\", but got \"{}\""), delimiter->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, Varjus::fmt::format(VSL("string.find_last expected a \"string\", but got \"{}\""), delimiter->TypeAsString()));
 
 	const auto pos = v.rfind(delimiter->ToString());
 

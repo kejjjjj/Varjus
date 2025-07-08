@@ -4,6 +4,8 @@
 #include "varjus_api/internal/structure.hpp"
 #include "varjus_api/internal/variables.hpp"
 
+using namespace Varjus;
+
 CRuntimeForStatement::CRuntimeForStatement(
 	ASTNode&& init,
 	ASTNode&& cond,

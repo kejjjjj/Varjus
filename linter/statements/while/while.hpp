@@ -10,12 +10,12 @@ struct CFunctionBlock;
 
 class CWhileStatementLinter final : public CStatementLinter, protected IRuntimeBlock
 {
-	NONCOPYABLE(CWhileStatementLinter);
+	VARJUS_NONCOPYABLE(CWhileStatementLinter);
 
 public:
 	explicit CWhileStatementLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const owner);
 	~CWhileStatementLinter();
-	[[nodiscard]] Success Parse();
+	[[nodiscard]] Varjus::Success Parse();
 
 	[[nodiscard]] RuntimeBlock ToRuntimeObject() const override;
 

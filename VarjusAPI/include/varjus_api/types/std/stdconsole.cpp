@@ -5,6 +5,8 @@
 
 #include <iostream>
 
+using namespace Varjus;
+
 FORWARD_DECLARE_METHOD(LogConsole);
 FORWARD_DECLARE_METHOD(LogConsoleError);
 
@@ -21,7 +23,7 @@ DEFINE_METHOD(LogConsole, args)
 	for (auto& v : args)
 		p += v->ValueAsEscapedString();
 
-	fmt::print(std::cout, VSL("{}\n"), p);
+	Varjus::fmt::print(std::cout, VSL("{}\n"), p);
 	return IValue::Construct(ctx->m_pRuntime);
 }
 DEFINE_METHOD(LogConsoleError, args)
@@ -31,6 +33,6 @@ DEFINE_METHOD(LogConsoleError, args)
 	for (auto& v : args)
 		p += v->ValueAsEscapedString();
 
-	fmt::print(std::cerr, VSL("{}\n"), p);
+	Varjus::fmt::print(std::cerr, VSL("{}\n"), p);
 	return IValue::Construct(ctx->m_pRuntime);
 }

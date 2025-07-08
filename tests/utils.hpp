@@ -29,14 +29,14 @@ using ASSERT_UNDEFINED = void;
 template<typename T>
 struct AssertObjectValue
 {
-	EValueType m_type;
+	Varjus::EValueType m_type;
 	std::vector<std::pair<VarjusString, T>> m_targetValues;
 };
 
 template<typename T>
 struct AssertArrayValue
 {
-	EValueType m_type;
+	Varjus::EValueType m_type;
 	std::vector<T> m_targetValues;
 };
 

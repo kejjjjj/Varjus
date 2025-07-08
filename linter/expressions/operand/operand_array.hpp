@@ -6,7 +6,7 @@ using ExpressionList = VectorOf<ASTNode>;
 
 struct CArrayOperand final : public IOperand
 {
-	NONCOPYABLE(CArrayOperand);
+	VARJUS_NONCOPYABLE(CArrayOperand);
 
 	CArrayOperand() = default;
 	CArrayOperand(ExpressionList&& ptr);

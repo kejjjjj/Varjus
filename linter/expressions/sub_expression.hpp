@@ -19,7 +19,7 @@ enum OperatorPriority : char;
 ***********************************************************************/
 class CLinterSubExpression final : public CLinterSingle<CToken>
 {
-	NONCOPYABLE(CLinterSubExpression);
+	VARJUS_NONCOPYABLE(CLinterSubExpression);
 	friend class CLinterExpression;
 public:
 
@@ -32,7 +32,7 @@ public:
 	 \return failure when end-of-expression is reached
 	 \return keep calling this until failure is returned
 	 */
-	[[nodiscard]] Success ParseSubExpression(std::optional<PairMatcher>& eoe, CExpressionList* expression, EvaluationType evalType);
+	[[nodiscard]] Varjus::Success ParseSubExpression(std::optional<PairMatcher>& eoe, CExpressionList* expression, EvaluationType evalType);
 
 private:
 

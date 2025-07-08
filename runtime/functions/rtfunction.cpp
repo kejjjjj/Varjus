@@ -12,6 +12,8 @@
 #include <algorithm>
 #include <ranges>
 
+using namespace Varjus;
+
 CRuntimeFunction::CRuntimeFunction(ElementIndex moduleIndex, CFunctionBlock& linterFunction,
 	VectorOf<CCrossModuleReference>&& args,
 	VectorOf<CCrossModuleReference>&& variableIndices) :
@@ -31,7 +33,7 @@ IValue* CRuntimeFunction::Execute(CRuntimeContext* const ctx, [[maybe_unused]] I
 {
 	assert(ctx->m_pRuntime);
 	if (m_uNumArguments != args.size())
-		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("the callable expected {} arguments instead of {}"), m_uNumArguments, args.size()));
+		throw CRuntimeError(ctx->m_pRuntime, Varjus::fmt::format(VSL("the callable expected {} arguments instead of {}"), m_uNumArguments, args.size()));
 
 
 	auto func = CFunction(ctx->m_pRuntime, args, captures, *this);
@@ -54,7 +56,7 @@ IValue* CRuntimeFunction::Execute(CRuntimeContext* const ctx, [[maybe_unused]] I
 			}
 
 			if (isMainFunction && thisContext.m_pRuntime->ExceptionThrown())
-				throw CRuntimeError(thisContext.m_pRuntime, fmt::format(VSL("an uncaught exception: {}"), returnVal->ToPrintableString()));
+				throw CRuntimeError(thisContext.m_pRuntime, Varjus::fmt::format(VSL("an uncaught exception: {}"), returnVal->ToPrintableString()));
 
 			break;
 		}
@@ -99,7 +101,7 @@ IValue* CBuiltInRuntimeMethod::ExecuteFunction( CRuntimeContext* const ctx, IVal
 	assert(m_pMethod);
 
 	if (m_uNumArguments != UNCHECKED_PARAMETER_COUNT && m_uNumArguments != args.size())
-		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("the method expected {} arguments instead of {}"), m_uNumArguments, args.size()));
+		throw CRuntimeError(ctx->m_pRuntime, Varjus::fmt::format(VSL("the method expected {} arguments instead of {}"), m_uNumArguments, args.size()));
 
 	auto returnVal = m_pMethod(ctx, _this, args);
 
@@ -123,12 +125,12 @@ IValue* CBuiltInRuntimeFunction::ExecuteFunction(CRuntimeContext* const ctx, [[m
 	assert(m_pFunction);
 
 	if (m_uNumArguments != UNCHECKED_PARAMETER_COUNT && m_uNumArguments != args.size())
-		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("the callable \"{}\" expected {} arguments instead of {}"), m_sName, m_uNumArguments, args.size()));
+		throw CRuntimeError(ctx->m_pRuntime, Varjus::fmt::format(VSL("the callable \"{}\" expected {} arguments instead of {}"), m_sName, m_uNumArguments, args.size()));
 
 	auto returnVal = m_pFunction(ctx, args);
 
 	if(!returnVal)
-		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("you forgot to return a value from an internal function \"{}\""), m_sName, args.size()));
+		throw CRuntimeError(ctx->m_pRuntime, Varjus::fmt::format(VSL("you forgot to return a value from an internal function \"{}\""), m_sName, args.size()));
 
 	for (auto& val : args)
 		val->Release();
@@ -137,7 +139,7 @@ IValue* CBuiltInRuntimeFunction::ExecuteFunction(CRuntimeContext* const ctx, [[m
 	return returnVal;
 }
 
-CFunction::CFunction(CProgramRuntime* const runtime, VectorOf<IValue*>& args,
+CFunction::CFunction(Varjus::CProgramRuntime* const runtime, VectorOf<IValue*>& args,
 	const VariableCaptures& captures, const CRuntimeFunction& func)
 {
 	//setup parameters
