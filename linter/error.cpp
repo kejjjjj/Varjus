@@ -3,7 +3,7 @@
 
 
 
-CLinterError::CLinterError(const VarjusString& filePath, const VarjusString& error, const CodePosition* pos)
+CLinterError::CLinterError(const VarjusString& filePath, const VarjusString& error, const __CodePosition* pos)
     : m_oErrorMessageFormatted(error) {
 
     if (!pos) {
@@ -19,7 +19,7 @@ void CLinterErrors::PushError(const CLinterError& error) {
     throw errorStack.back();
 
 }
-void CLinterErrors::PushError(const VarjusString& filePath, const VarjusString& error, const CodePosition& position) {
+void CLinterErrors::PushError(const VarjusString& filePath, const VarjusString& error, const __CodePosition& position) {
     errorStack.emplace_back(CLinterError(filePath, error, position));
     throw errorStack.back();
 }

@@ -10,18 +10,18 @@
 #include "varjus_api/internal/globalDefinitions.hpp"
 
 
-using CodePosition = std::tuple<size_t, size_t>;
+using __CodePosition = std::tuple<size_t, size_t>;
 
 class CModule;
 
 class CLinterError final
 {
 public:
-	CLinterError(const VarjusString& filePath, const VarjusString& error, const CodePosition& position)
+	CLinterError(const VarjusString& filePath, const VarjusString& error, const __CodePosition& position)
         : m_oSourcePosition(position) {
 		m_oErrorMessageFormatted = GetStringFormatted(filePath, error);
 	}
-    CLinterError(const VarjusString& filePath, const VarjusString& error, const CodePosition* pos);
+    CLinterError(const VarjusString& filePath, const VarjusString& error, const __CodePosition* pos);
 
     [[nodiscard]] VarjusString what() const noexcept {
 #ifdef UNICODE
@@ -40,7 +40,7 @@ private:
 
     VarjusString m_oErrorMessageFormatted;
     mutable std::string m_oErrorMessageMultibyte;
-	CodePosition m_oSourcePosition;
+	__CodePosition m_oSourcePosition;
 };
 
 class CLinterErrors final {
@@ -49,7 +49,7 @@ public:
 
 
     void PushError(const CLinterError& error);
-    void PushError(const VarjusString& filePath, const VarjusString& error, const CodePosition& position);
+    void PushError(const VarjusString& filePath, const VarjusString& error, const __CodePosition& position);
     void PushError(const VarjusString& filePath, const VarjusString& error);
 
     void ClearErrorStack() { errorStack.clear(); }

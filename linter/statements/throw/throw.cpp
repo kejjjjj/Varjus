@@ -48,7 +48,7 @@ ASTNode CThrowStatementLinter::ParseExpression()
 	return nullptr;
 }
 
-RuntimeBlock CThrowStatementLinter::ToRuntimeObject() const
+__RuntimeBlock CThrowStatementLinter::ToRuntimeObject() const
 {
 	decltype(auto) tempAST = const_cast<ASTNode&&>(std::move(m_pAST));
 	return std::make_unique<CRuntimeThrowStatement>(std::move(tempAST));

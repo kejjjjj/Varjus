@@ -17,7 +17,7 @@ public:
 	~CCaseStatementLinter();
 	[[nodiscard]] Varjus::Success Parse();
 
-	[[nodiscard]] RuntimeBlock ToRuntimeObject() const override;
+	[[nodiscard]] __RuntimeBlock ToRuntimeObject() const override;
 
 private:
 	[[nodiscard]] Varjus::Success ParseCaseScope();
@@ -26,6 +26,6 @@ private:
 	[[nodiscard]] bool ContainsDefaultClause() const noexcept;
 
 	ASTNode m_pExpression;
-	std::unordered_map<ASTNode, RuntimeBlock> m_oCases;
-	RuntimeBlock m_oDefaultCase;
+	std::unordered_map<ASTNode, __RuntimeBlock> m_oCases;
+	__RuntimeBlock m_oDefaultCase;
 };

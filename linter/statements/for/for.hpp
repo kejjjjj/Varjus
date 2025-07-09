@@ -33,7 +33,7 @@ public:
 	~CForStatementLinter();
 	[[nodiscard]] Varjus::Success Parse();
 
-	[[nodiscard]] RuntimeBlock ToRuntimeObject() const override;
+	[[nodiscard]] __RuntimeBlock ToRuntimeObject() const override;
 
 private:
 

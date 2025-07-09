@@ -82,9 +82,9 @@ Varjus::Success CTryCatchStatementLinter::ParseCatchStatement()
 	return success;
 }
 
-RuntimeBlock CTryCatchStatementLinter::ToRuntimeObject() const 
+__RuntimeBlock CTryCatchStatementLinter::ToRuntimeObject() const 
 {
-	using NonConstType = InstructionSequence&&;
+	using NonConstType = __InstructionSequence&&;
 
 	auto&& tryInsn = const_cast<NonConstType>(std::move(m_oTryInstructions));
 	auto&& catchInsn = const_cast<NonConstType>(std::move(m_oCatchInstructions));

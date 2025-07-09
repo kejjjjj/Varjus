@@ -7472,7 +7472,7 @@ namespace Catch {
             mutable std::string m_stringReprCache;
 
             // Counts based on `next` returning true
-            std::size_t m_currentElementIndex = 0;
+            std::size_t m_current__ElementIndex = 0;
 
             /**
              * Attempts to move the generator to the next element
@@ -7506,7 +7506,7 @@ namespace Catch {
              */
             bool countedNext();
 
-            std::size_t currentElementIndex() const { return m_currentElementIndex; }
+            std::size_t current__ElementIndex() const { return m_current__ElementIndex; }
 
             /**
              * Returns generator's current element as user-friendly string.

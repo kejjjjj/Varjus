@@ -118,16 +118,16 @@ bool CScope::VariableExists(const VarjusString& var) const
 	return m_pLowerScope->VariableExists(var);
 }
 
-void CScope::AddInstruction(RuntimeBlock&& block)
+void CScope::AddInstruction(__RuntimeBlock&& block)
 {
 	m_oInstructions.emplace_back(std::move(block));
 }
-void CScope::AddInstructions(VectorOf<RuntimeBlock>&& block){
+void CScope::AddInstructions(VectorOf<__RuntimeBlock>&& block){
 	m_oInstructions.insert(m_oInstructions.end(), 
 		std::make_move_iterator(block.begin()),
 		std::make_move_iterator(block.end()));
 }
-VectorOf<RuntimeBlock>&& CScope::MoveInstructions()
+VectorOf<__RuntimeBlock>&& CScope::MoveInstructions()
 {
 	return std::move(m_oInstructions);
 }

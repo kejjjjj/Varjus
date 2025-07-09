@@ -20,7 +20,7 @@ CRuntimeConditionalStatement* CRuntimeConditionalStatement::SeekLastBlock()
 	return block;
 }
 
-IValue* CRuntimeConditionalStatement::Execute([[maybe_unused]] CRuntimeContext* const ctx)
+IValue* CRuntimeConditionalStatement::Execute([[maybe_unused]] Varjus::CRuntimeContext* const ctx)
 {
 
 	if (!m_pCondition) { // else

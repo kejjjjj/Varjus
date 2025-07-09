@@ -17,7 +17,7 @@ public:
 	~CMatchStatementLinter();
 	[[nodiscard]] Varjus::Success Parse();
 
-	[[nodiscard]] RuntimeBlock ToRuntimeObject() const override;
+	[[nodiscard]] __RuntimeBlock ToRuntimeObject() const override;
 	[[nodiscard]] CRuntimeCaseStatement* GetDefaultCase() const noexcept;
 private:
 	ASTNode m_pExpression;

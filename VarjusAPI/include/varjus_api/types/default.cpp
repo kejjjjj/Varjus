@@ -43,7 +43,7 @@ VarjusString IValue::ToPrintableString() const
 	return Varjus::fmt::format(VSL("{}: {}"), ValueAsString(), TypeAsString());
 }
 
-IValue* IValue::Index([[maybe_unused]] CRuntimeContext* const ctx, [[maybe_unused]] IValue* index)
+IValue* IValue::Index([[maybe_unused]] Varjus::CRuntimeContext* const ctx, [[maybe_unused]] IValue* index)
 {
 	assert(false);
 	return nullptr;

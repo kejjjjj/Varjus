@@ -102,7 +102,7 @@ bool CVariableDeclarationLinter::IsDeclaration(const CToken* token) noexcept{
 bool CVariableDeclarationLinter::IsIdentifier(const CToken* token) const noexcept{
 	return token && token->Type() == tt_name;
 }
-RuntimeBlock CVariableDeclarationLinter::ToRuntimeObject() const
+__RuntimeBlock CVariableDeclarationLinter::ToRuntimeObject() const
 {
 	// yes this is very not at all undefined behavior :pagman:
 	decltype(auto) tempAST = const_cast<ASTNode&&>(std::move(m_pInitializerAST));

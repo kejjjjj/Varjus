@@ -1,7 +1,9 @@
 #include "stdjson.hpp"
+
+#include "runtime/misc/defs.hpp"
+
 #include "varjus_api/types/types.hpp"
 #include "varjus_api/internal/structure.hpp"
-
 #include "varjus_api/internal/exceptions/exception.hpp"
 #include "varjus_api/internal/runtime.hpp"
 
@@ -32,10 +34,10 @@ void CStdJsonValue::Construct(ObjectDeclaration_t& receiver)
 	receiver.AddMethod(VSL("stringify"), StringifyJson, 2);
 }
 
-static CArrayValue* ParseArray(CRuntimeContext* const ctx, const json& arr);
-static CObjectValue* ParseObject(CRuntimeContext* const ctx, const json& obj);
+static CArrayValue* ParseArray(Varjus::CRuntimeContext* const ctx, const json& arr);
+static CObjectValue* ParseObject(Varjus::CRuntimeContext* const ctx, const json& obj);
 
-IValue* ParseJsonRecursively(CRuntimeContext* const ctx, const json& js)
+IValue* ParseJsonRecursively(Varjus::CRuntimeContext* const ctx, const json& js)
 {
 	using value_t = json::value_t;
 	switch (js.type()) {
@@ -70,7 +72,7 @@ IValue* ParseJsonRecursively(CRuntimeContext* const ctx, const json& js)
 
 }
 
-CArrayValue* ParseArray(CRuntimeContext* const ctx, const json& arr)
+CArrayValue* ParseArray(Varjus::CRuntimeContext* const ctx, const json& arr)
 {
 	IValues values;
 
@@ -80,7 +82,7 @@ CArrayValue* ParseArray(CRuntimeContext* const ctx, const json& arr)
 
 	return CArrayValue::Construct(ctx->m_pRuntime, std::move(values));
 }
-CObjectValue* ParseObject(CRuntimeContext* const ctx, const json& obj)
+CObjectValue* ParseObject(Varjus::CRuntimeContext* const ctx, const json& obj)
 {
 	__ObjectValues properties;
 

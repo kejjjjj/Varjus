@@ -30,7 +30,7 @@ Varjus::Success CIfStatementLinter::Parse()
 	return ParseScope();
 }
 
-RuntimeBlock CIfStatementLinter::ToRuntimeObject() const
+__RuntimeBlock CIfStatementLinter::ToRuntimeObject() const
 {
 	decltype(auto) tempAST = const_cast<ASTNode&&>(std::move(m_pCondition));
 	return tempAST ? std::make_unique<CRuntimeConditionalStatement>(std::move(tempAST), m_pThisScope->MoveInstructions()) : nullptr;

@@ -56,7 +56,7 @@ CRuntimeCaseStatement* CMatchStatementLinter::GetDefaultCase() const noexcept {
 	return nullptr;
 
 }
-RuntimeBlock CMatchStatementLinter::ToRuntimeObject() const
+__RuntimeBlock CMatchStatementLinter::ToRuntimeObject() const
 {
 	decltype(auto) tempAST = const_cast<ASTNode&&>(std::move(m_pExpression));
 	return tempAST ? std::make_unique<CRuntimeMatchStatement>(std::move(tempAST), GetDefaultCase(), m_pThisScope->MoveInstructions()) : nullptr;

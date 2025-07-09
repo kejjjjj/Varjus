@@ -64,7 +64,7 @@ void CRuntimeModule::SetupGlobalVariables(Varjus::CProgramRuntime* const runtime
 }
 void CRuntimeModule::EvaluateGlobalExpressions(Varjus::CProgramRuntime* const runtime) {
 
-	CRuntimeContext ctx{
+	Varjus::CRuntimeContext ctx{
 		.m_pRuntime = runtime,
 		.m_pModule = this,
 		.m_pFunction = nullptr

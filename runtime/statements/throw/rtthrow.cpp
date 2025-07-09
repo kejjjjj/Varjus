@@ -8,7 +8,7 @@ CRuntimeThrowStatement::CRuntimeThrowStatement(ASTNode&& condition)
 }
 CRuntimeThrowStatement::~CRuntimeThrowStatement() = default;;
 
-IValue* CRuntimeThrowStatement::Execute(CRuntimeContext* const ctx)
+IValue* CRuntimeThrowStatement::Execute(Varjus::CRuntimeContext* const ctx)
 {
 	assert(m_pAST.get());
 	auto v = CRuntimeExpression::Evaluate(ctx, m_pAST);

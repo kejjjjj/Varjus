@@ -56,7 +56,7 @@ ASTNode CReturnStatementLinter::ParseExpression()
 	return nullptr;
 }
 
-RuntimeBlock CReturnStatementLinter::ToRuntimeObject() const
+__RuntimeBlock CReturnStatementLinter::ToRuntimeObject() const
 {
 
 	decltype(auto) tempAST = const_cast<ASTNode&&>(std::move(m_pAST));

@@ -22,7 +22,7 @@ static IValue* EvaluateBitwiseNot(Varjus::CProgramRuntime* const runtime, IValue
 static IValue* EvaluateTypeOf(Varjus::CProgramRuntime* const runtime, IValue* operand);
 static IValue* EvaluateToString(Varjus::CProgramRuntime* const runtime, IValue* operand);
 
-IValue* CRuntimeExpression::EvaluateUnary(CRuntimeContext* const ctx, UnaryASTNode* node)
+IValue* CRuntimeExpression::EvaluateUnary(Varjus::CRuntimeContext* const ctx, UnaryASTNode* node)
 {
 	auto operand = Evaluate(ctx, node->left);
 	IValue* returnVal{ nullptr };

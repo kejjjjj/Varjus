@@ -16,12 +16,12 @@ public:
 	~CTryCatchStatementLinter();
 	[[nodiscard]] Varjus::Success Parse();
 
-	[[nodiscard]] RuntimeBlock ToRuntimeObject() const override;
+	[[nodiscard]] __RuntimeBlock ToRuntimeObject() const override;
 private:
 
 	Varjus::Success ParseCatchStatement();
 
 	CCrossModuleReference m_uCatchVariable;
-	VectorOf<RuntimeBlock> m_oTryInstructions;
-	VectorOf<RuntimeBlock> m_oCatchInstructions;
+	VectorOf<__RuntimeBlock> m_oTryInstructions;
+	VectorOf<__RuntimeBlock> m_oCatchInstructions;
 };

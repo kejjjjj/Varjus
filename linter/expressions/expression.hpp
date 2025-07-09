@@ -22,7 +22,7 @@ struct CExpressionList
 	~CExpressionList();
 
 	[[nodiscard]] ASTNode ToMergedAST();
-	[[nodiscard]] ExpressionList ToExpressionList();
+	[[nodiscard]] __ExpressionList ToExpressionList();
 
 	ASTNode m_pAST;
 	std::unique_ptr<CExpressionList> m_pNext;
@@ -49,9 +49,9 @@ public:
 
 	// merge all evaluated expressions into one
 	[[nodiscard]] ASTNode ToMergedAST() const;
-	[[nodiscard]] ExpressionList ToExpressionList() const;
+	[[nodiscard]] __ExpressionList ToExpressionList() const;
 
-	[[nodiscard]] RuntimeBlock ToRuntimeObject() const override;
+	[[nodiscard]] __RuntimeBlock ToRuntimeObject() const override;
 
 	//note: doesn't check context
 	[[nodiscard]] static bool CanBeDiscarded(const ASTNode& node) noexcept;

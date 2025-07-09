@@ -27,8 +27,8 @@ namespace Varjus {
 		[[nodiscard]] constexpr CBuiltInObject* ToBuiltInObject() noexcept override { return this; }
 
 		[[nodiscard]] IValue* Copy() override;
-		[[nodiscard]] IValue* Index(CRuntimeContext* const ctx, IValue* index) override;
-		[[nodiscard]] IValue* GetAggregate(CRuntimeContext* const ctx, std::size_t memberIdx) override;
+		[[nodiscard]] IValue* Index(Varjus::CRuntimeContext* const ctx, IValue* index) override;
+		[[nodiscard]] IValue* GetAggregate(Varjus::CRuntimeContext* const ctx, std::size_t memberIdx) override;
 
 		[[nodiscard]] auto GetMethods() const noexcept { return m_oMethods.get(); }
 		[[nodiscard]] auto GetProperties() const noexcept { return m_oProperties.get(); }

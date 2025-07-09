@@ -52,7 +52,7 @@ Varjus::Success CRepeatStatementLinter::Parse()
 	return m_pCondition != nullptr ? success : failure;
 }
 
-RuntimeBlock CRepeatStatementLinter::ToRuntimeObject() const
+__RuntimeBlock CRepeatStatementLinter::ToRuntimeObject() const
 {
 
 	decltype(auto) tempAST = const_cast<ASTNode&&>(std::move(m_pCondition));

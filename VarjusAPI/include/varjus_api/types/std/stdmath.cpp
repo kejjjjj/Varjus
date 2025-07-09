@@ -1,8 +1,9 @@
 #include "stdmath.hpp"
 
+#include "runtime/misc/defs.hpp"
+
 #include "varjus_api/types/types.hpp"
 #include "varjus_api/types/operators/default_operators.hpp"
-
 #include "varjus_api/internal/exceptions/exception.hpp"
 #include "varjus_api/internal/structure.hpp"
 

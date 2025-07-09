@@ -15,7 +15,7 @@ using __KeyValue = std::pair<A, B>;
 
 class CInternalObjectValue;
 
-using ObjectInitializer = VectorOf<__KeyValue<std::size_t, IValue*>>;
+using __ObjectInitializer = VectorOf<__KeyValue<std::size_t, IValue*>>;
 
 class CInternalObjectValue final
 {
@@ -25,7 +25,7 @@ public:
 
 	void Release();
 
-	void Set(ObjectInitializer&& v);
+	void Set(__ObjectInitializer&& v);
 	constexpr auto& Get() noexcept { return m_oValue; }
 	constexpr auto& Get() const noexcept { return m_oValue; }
 
@@ -55,7 +55,7 @@ public:
 	~CObjectValue();
 
 	[[nodiscard]] static CObjectValue* Construct(Varjus::CProgramRuntime* const runtime, __ObjectValues&& values);
-	[[nodiscard]] static CObjectValue* _ConstructInternal(Varjus::CProgramRuntime* const runtime, ObjectInitializer&& values);
+	[[nodiscard]] static CObjectValue* _ConstructInternal(Varjus::CProgramRuntime* const runtime, __ObjectInitializer&& values);
 
 	[[nodiscard]] static std::unique_ptr<Varjus::BuiltInMethod_t> ConstructMethods(Varjus::CProgramInformation* const info);
 	[[nodiscard]] static std::unique_ptr<Varjus::BuiltInProperty_t> ConstructProperties(Varjus::CProgramInformation* const info);
@@ -75,8 +75,8 @@ public:
 	[[nodiscard]] CInternalObjectValue* Internal();
 	[[nodiscard]] CInternalObjectValue* Internal() const;
 
-	[[nodiscard]] virtual IValue* Index(CRuntimeContext* const ctx, IValue* index) override;
-	[[nodiscard]] virtual IValue* GetAggregate(CRuntimeContext* const ctx, std::size_t memberIdx) override;
+	[[nodiscard]] virtual IValue* Index(Varjus::CRuntimeContext* const ctx, IValue* index) override;
+	[[nodiscard]] virtual IValue* GetAggregate(Varjus::CRuntimeContext* const ctx, std::size_t memberIdx) override;
 	void AddAttribute(IValue* const key, IValue* value);
 
 

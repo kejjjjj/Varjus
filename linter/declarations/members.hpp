@@ -5,8 +5,8 @@
 
 #include "varjus_api/internal/globalDefinitions.hpp"
 
-using GlobalMemberIndex = std::size_t;
-using ElementIndex = std::size_t;
+using __GlobalMemberIndex = std::size_t;
+using __ElementIndex = std::size_t;
 
 /***********************************************************************
  > provides quick lookup values for object member names
@@ -17,8 +17,8 @@ public:
 	[[maybe_unused]] std::size_t operator[](const VarjusString& key);
 
 	[[nodiscard]] bool Contains(const VarjusString& key) const;
-	[[nodiscard]] const VarjusString& At(const GlobalMemberIndex key) const;
-	[[nodiscard]] GlobalMemberIndex At(const VarjusString& key) const;
+	[[nodiscard]] const VarjusString& At(const __GlobalMemberIndex key) const;
+	[[nodiscard]] __GlobalMemberIndex At(const VarjusString& key) const;
 	[[maybe_unused]] std::size_t Insert(const VarjusString& key);
 	[[nodiscard]] auto& StringToIntIterator() const noexcept { return m_oStringToId; }
 
@@ -26,8 +26,8 @@ public:
 	void Erase(const VarjusString& key);
 
 private:
-	[[nodiscard]] GlobalMemberIndex GetCurrentIndex() const;
+	[[nodiscard]] __GlobalMemberIndex GetCurrentIndex() const;
 
-	std::unordered_map<VarjusString, GlobalMemberIndex> m_oStringToId;
-	std::unordered_map<GlobalMemberIndex, VarjusString> m_oIdToString;
+	std::unordered_map<VarjusString, __GlobalMemberIndex> m_oStringToId;
+	std::unordered_map<__GlobalMemberIndex, VarjusString> m_oIdToString;
 };

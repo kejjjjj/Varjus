@@ -1,7 +1,7 @@
 #include "varjus_api/internal/structure.hpp"
 #include "varjus_api/types/types.hpp"
 
-VectorOf<IValue*> CRuntimeExpression::EvaluateList(CRuntimeContext* const ctx, ExpressionList& list)
+VectorOf<IValue*> CRuntimeExpression::EvaluateList(Varjus::CRuntimeContext* const ctx, __ExpressionList& list)
 {
 
 	VectorOf<IValue*> args;

@@ -22,9 +22,9 @@ namespace Varjus
 	class CProgramInformation;
 }
 
-using RuntimeFunction = std::unique_ptr<CRuntimeFunctionBase>;
-using CodePosition = std::tuple<size_t, size_t>;
-using RuntimeBlock = std::unique_ptr<IRuntimeStructure>;
+using __RuntimeFunction = std::unique_ptr<CRuntimeFunctionBase>;
+using __CodePosition = std::tuple<size_t, size_t>;
+using __RuntimeBlock = std::unique_ptr<IRuntimeStructure>;
 
 template<typename T>
 concept IValueChild = std::is_base_of_v<IValue, T> || std::is_same_v<CVariable, T> || std::is_same_v<CChildVariable, T>;
@@ -66,8 +66,8 @@ namespace Varjus {
 		[[nodiscard]] IValue* Execute(IValues& args);
 		void Cleanup();
 
-		void SetExecutionPosition(const CodePosition* pos) noexcept;
-		[[nodiscard]] const CodePosition* GetExecutionPosition() noexcept;
+		void SetExecutionPosition(const __CodePosition* pos) noexcept;
+		[[nodiscard]] const __CodePosition* GetExecutionPosition() noexcept;
 
 		inline void ThrowException() noexcept { m_bExceptionThrown = true; }
 		inline void CatchException() noexcept { m_bExceptionThrown = false; }
@@ -195,7 +195,7 @@ namespace Varjus {
 		}
 
 		[[nodiscard]] inline auto GetInformation() const noexcept { return m_pInformation.get(); }
-		[[nodiscard]] VarjusString KeyToString(ElementIndex index) const noexcept;
+		[[nodiscard]] VarjusString KeyToString(__ElementIndex index) const noexcept;
 		[[nodiscard]] std::size_t StringToKey(const VarjusString& key) const noexcept;
 		[[nodiscard]] bool ContainsKey(const VarjusString& key) const noexcept;
 
@@ -207,7 +207,7 @@ namespace Varjus {
 		void FreeAllPools();
 
 		RuntimeModules m_oModules;
-		const CodePosition* m_pCodePosition{};
+		const __CodePosition* m_pCodePosition{};
 		IValue* m_pExceptionValue{};
 		bool m_bExceptionThrown{};
 		std::atomic_bool m_bAbort{};

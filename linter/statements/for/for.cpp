@@ -190,7 +190,7 @@ Varjus::Success CForStatementLinter::ParseRangedForLoop()
 	return success;
 }
 
-RuntimeBlock CForStatementLinter::ToRuntimeObject() const
+__RuntimeBlock CForStatementLinter::ToRuntimeObject() const
 {
 	if (m_eType == for_ranged) {
 

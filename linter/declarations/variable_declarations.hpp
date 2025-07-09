@@ -24,7 +24,7 @@ public:
 	[[nodiscard]] Varjus::Success ParseIdentifier();
 	[[nodiscard]] Varjus::Success ParseInitializer();
 
-	[[nodiscard]] RuntimeBlock ToRuntimeObject() const override;
+	[[nodiscard]] __RuntimeBlock ToRuntimeObject() const override;
 	[[nodiscard]] ASTNode&& MoveInitializer();
 
 	[[nodiscard]] constexpr auto& GetIdentifier() const noexcept { return m_sDeclaredVariable; }

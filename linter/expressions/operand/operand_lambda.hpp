@@ -6,7 +6,7 @@
 #include "varjus_api/internal/structure.hpp"
 
 class CRuntimeFunctionBase;
-using ElementIndex = std::size_t;
+using __ElementIndex = std::size_t;
 
 struct CExpressionList;
 

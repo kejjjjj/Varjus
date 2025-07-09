@@ -22,11 +22,12 @@ class CInternalArrayValue;
 class CArrayValue;
 class CCallableValue;
 class CObjectValue;
-struct CRuntimeContext;
 
 namespace Varjus {
 	class CProgramRuntime;
+	struct CRuntimeContext;
 }
+
 template<typename T>
 using VectorOf = std::vector<T>;
 using IValues = VectorOf<IValue*>;
@@ -49,6 +50,7 @@ protected:
 
 namespace Varjus {
 	class CProgramRuntime;
+	struct CRuntimeContext;
 }
 
 class IValue : protected IValueDestructor, protected IValueCopy
@@ -94,9 +96,9 @@ public:
 	[[nodiscard]] constexpr virtual bool IsBuiltInMemberCallable() const noexcept { return false; }
 	[[nodiscard]] constexpr virtual bool IsIterable() const noexcept { return false; }
 
-	[[nodiscard]] virtual IValue* Index([[maybe_unused]] CRuntimeContext* const ctx, IValue* index);
-	[[nodiscard]] virtual IValue* GetAggregate([[maybe_unused]] struct CRuntimeContext* const ctx, [[maybe_unused]] std::size_t memberIdx) { return nullptr; }
-	[[nodiscard]] virtual IValue* Call([[maybe_unused]] struct CRuntimeContext* const ctx, [[maybe_unused]] const IValues& args) { return nullptr; }
+	[[nodiscard]] virtual IValue* Index([[maybe_unused]] Varjus::CRuntimeContext* const ctx, IValue* index);
+	[[nodiscard]] virtual IValue* GetAggregate([[maybe_unused]] Varjus::CRuntimeContext* const ctx, [[maybe_unused]] std::size_t memberIdx) { return nullptr; }
+	[[nodiscard]] virtual IValue* Call([[maybe_unused]] Varjus::CRuntimeContext* const ctx, [[maybe_unused]] const IValues& args) { return nullptr; }
 	
 	//returns a copy, remember to free!
 	[[nodiscard]] virtual IValues ToIterable() const { return {}; }

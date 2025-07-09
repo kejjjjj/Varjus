@@ -8,12 +8,12 @@
 #include <ranges>
 using namespace Varjus;
 
-CRuntimeWhileStatement::CRuntimeWhileStatement(ASTNode&& condition, InstructionSequence&& insns)
+CRuntimeWhileStatement::CRuntimeWhileStatement(ASTNode&& condition, __InstructionSequence&& insns)
 	: IRuntimeStructureSequence(std::move(insns)), m_pCondition(std::make_unique<CRuntimeExpression>(std::move(condition))) {}
 CRuntimeWhileStatement::~CRuntimeWhileStatement() = default;
 
 
-IValue* CRuntimeWhileStatement::Execute([[maybe_unused]] CRuntimeContext* const ctx)
+IValue* CRuntimeWhileStatement::Execute([[maybe_unused]] Varjus::CRuntimeContext* const ctx)
 {
 
 	while (true) {

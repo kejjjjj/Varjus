@@ -5,6 +5,8 @@
 
 #include "fs/fs_globals.hpp"
 
+#include "runtime/misc/defs.hpp"
+
 #include <fstream>
 #include <filesystem>
 

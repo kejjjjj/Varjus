@@ -14,19 +14,19 @@ CModule::CModule(const VarjusString& filePath) : m_oContext(filePath) {}
 CModule::~CModule() = default;
 
 
-void CModule::AddFunction(RuntimeFunction&& func) {
+void CModule::AddFunction(__RuntimeFunction&& func) {
 	m_oFunctions.emplace_back(std::move(func)); 
 }
 CRuntimeFunctionBase* CModule::FindFunction(const VarjusString& v) const
 {
-	const auto it = std::ranges::find(m_oFunctions, v, [](const RuntimeFunction& v) { return v->GetName(); });
+	const auto it = std::ranges::find(m_oFunctions, v, [](const __RuntimeFunction& v) { return v->GetName(); });
 	return it != m_oFunctions.end() ? it->get() : nullptr;
 }
 size_t CModule::GetFunctionCount() const noexcept {
 	return m_oFunctions.size();
 }
 
-void CModule::AddGlobalInstructions(VectorOf<RuntimeBlock>&& insns) {
+void CModule::AddGlobalInstructions(VectorOf<__RuntimeBlock>&& insns) {
 	m_oGlobalScopeInstructions = std::move(insns);
 }
 void CModule::SetGlobalVariableCount(std::size_t v) { 

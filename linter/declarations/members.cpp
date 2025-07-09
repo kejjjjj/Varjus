@@ -28,10 +28,10 @@ void CStringIntegerHashMap::Erase(const VarjusString& key)
 bool CStringIntegerHashMap::Contains(const VarjusString& key) const{
 	return m_oStringToId.contains(key);
 }
-const VarjusString& CStringIntegerHashMap::At(const GlobalMemberIndex key) const{
+const VarjusString& CStringIntegerHashMap::At(const __GlobalMemberIndex key) const{
 	return m_oIdToString.at(key);
 }
-GlobalMemberIndex CStringIntegerHashMap::At(const VarjusString& key) const{
+__GlobalMemberIndex CStringIntegerHashMap::At(const VarjusString& key) const{
 	return m_oStringToId.at(key);
 }
 std::size_t CStringIntegerHashMap::GetCurrentIndex() const

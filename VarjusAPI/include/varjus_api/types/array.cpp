@@ -1,11 +1,13 @@
 #include "array.hpp"
 
 #include "internal/object_declarations.hpp"
+#include "runtime/misc/defs.hpp"
+
 #include "varjus_api/internal/runtime.hpp"
 #include "varjus_api/internal/variables.hpp"
 #include "varjus_api/internal/structure.hpp"
-
 #include "varjus_api/internal/exceptions/exception.hpp"
+
 #include "linter/context.hpp"
 
 #include <sstream>
@@ -49,7 +51,7 @@ CInternalArrayValue* CArrayValue::Internal() const {
 	return GetShared().get();
 }
 
-IValue* CArrayValue::Index([[maybe_unused]] CRuntimeContext* const ctx, IValue* vIndex)
+IValue* CArrayValue::Index([[maybe_unused]] Varjus::CRuntimeContext* const ctx, IValue* vIndex)
 {
 	if (!vIndex->IsIntegral())
 		throw CRuntimeError(m_pAllocator, Varjus::fmt::format(VSL("array accessor must be integral, but is \"{}\""), vIndex->TypeAsString()));
@@ -63,7 +65,7 @@ IValue* CArrayValue::Index([[maybe_unused]] CRuntimeContext* const ctx, IValue* 
 
 	return vec[index]->GetValue();
 }
-IValue* CArrayValue::GetAggregate(CRuntimeContext* const ctx, std::size_t memberIdx)
+IValue* CArrayValue::GetAggregate(Varjus::CRuntimeContext* const ctx, std::size_t memberIdx)
 {
 
 	auto& obj = m_pAllocator->GetDefaultObject<CArrayValue>();

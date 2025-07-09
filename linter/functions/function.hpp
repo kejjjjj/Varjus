@@ -10,7 +10,7 @@ struct CFunctionBlock;
 struct CParameterData
 {
 	VarjusString m_sName;
-	CodePosition m_oPosition;
+	__CodePosition m_oPosition;
 };
 
 class CFunctionLinter final : public CLinterSingle<CToken>, protected IRuntimeBlock
@@ -28,7 +28,7 @@ public:
 
 	[[nodiscard]] std::unique_ptr<CFunctionBlock> ToFunction() const;
 
-	[[nodiscard]] RuntimeBlock ToRuntimeObject() const override;
+	[[nodiscard]] __RuntimeBlock ToRuntimeObject() const override;
 	[[nodiscard]] std::unique_ptr<CRuntimeFunction> ToRuntimeFunction() const;
 
 	[[nodiscard]] VectorOf<CCrossModuleReference> GetParameterIndices(CStack* stack) const;
@@ -57,13 +57,13 @@ private:
 };
 
 #pragma pack(push)
-WARNING_DISABLE(4623) // default constructor implicitly deleted
-WARNING_DISABLE(5027) // move assignment operator implicitly deleted
+VARJUS_WARNING_DISABLE(4623) // default constructor implicitly deleted
+VARJUS_WARNING_DISABLE(5027) // move assignment operator implicitly deleted
 struct CFunctionBlock final
 {
 	VarjusString m_sName; // function name
 	std::size_t m_uNumParameters; // function paramters
 	CStack* const m_pStack; // the stack
-	VectorOf<RuntimeBlock> m_oInstructions; // sorted list of all function instructions
+	VectorOf<__RuntimeBlock> m_oInstructions; // sorted list of all function instructions
 };
 #pragma pack(pop)

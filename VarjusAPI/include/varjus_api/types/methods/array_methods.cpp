@@ -1,6 +1,7 @@
+#include "runtime/misc/defs.hpp"
+
 #include "varjus_api/types/types.hpp"
 #include "varjus_api/types/operators/default_operators.hpp"
-
 #include "varjus_api/internal/runtime.hpp"
 #include "varjus_api/internal/variables.hpp"
 #include "varjus_api/internal/exceptions/exception.hpp"
@@ -174,7 +175,7 @@ DEFINE_METHOD(Transform, args)
 	
 	return CArrayValue::Construct(ctx->m_pRuntime, std::move(results));
 }
-static inline IValue* FindTestValue(CRuntimeContext* const ctx, IValue* const mapFunc, CVariable* const var)
+static inline IValue* FindTestValue(Varjus::CRuntimeContext* const ctx, IValue* const mapFunc, CVariable* const var)
 {
 	IValues args(1);
 	args[0] = var->GetValue()->Copy();
@@ -196,7 +197,7 @@ static inline IValue* FindTestValue(CRuntimeContext* const ctx, IValue* const ma
 	thisIteration->Release(); // nothing meaningful, release it
 	return result;
 }
-static inline IValue* FindInternal(CArrayValue* _this, CRuntimeContext* const ctx, const IValues& args, bool findFirst)
+static inline IValue* FindInternal(CArrayValue* _this, Varjus::CRuntimeContext* const ctx, const IValues& args, bool findFirst)
 {
 	assert(args.size() == 1);
 	auto& mapFunc = args.front();
@@ -243,7 +244,7 @@ DEFINE_METHOD(FindLast, args) {
 	return FindInternal(__this, ctx, args, false);
 }
 
-static inline IValue* FindTestValueIndex(CRuntimeContext* const ctx, IValue* const mapFunc, CVariable* const var, std::size_t i)
+static inline IValue* FindTestValueIndex(Varjus::CRuntimeContext* const ctx, IValue* const mapFunc, CVariable* const var, std::size_t i)
 {
 	IValues args(1);
 	args[0] = var->GetValue()->Copy();
@@ -265,7 +266,7 @@ static inline IValue* FindTestValueIndex(CRuntimeContext* const ctx, IValue* con
 	thisIteration->Release(); // nothing meaningful, release it
 	return result;
 }
-static inline IValue* FindIndexInternal(CArrayValue* _this, CRuntimeContext* const ctx, const IValues& args, bool findFirst)
+static inline IValue* FindIndexInternal(CArrayValue* _this, Varjus::CRuntimeContext* const ctx, const IValues& args, bool findFirst)
 {
 	assert(args.size() == 1);
 	auto& mapFunc = args.front();
@@ -567,9 +568,9 @@ DEFINE_METHOD(Slice, args) {
 
 	return CArrayValue::Construct(ctx->m_pRuntime, std::move(valuesAsCopy));
 }
-[[nodiscard]] bool doSort(CRuntimeContext* const ctx, IValue*& left, IValue*& right, IValue* const callback);
+[[nodiscard]] bool doSort(Varjus::CRuntimeContext* const ctx, IValue*& left, IValue*& right, IValue* const callback);
 
-void IterativeQuickSort(CRuntimeContext* const ctx, IValues& vars, IValue* const callback)
+void IterativeQuickSort(Varjus::CRuntimeContext* const ctx, IValues& vars, IValue* const callback)
 {
 	if (vars.empty())
 		return;
@@ -606,7 +607,7 @@ void IterativeQuickSort(CRuntimeContext* const ctx, IValues& vars, IValue* const
 	}
 }
 
-[[nodiscard]] bool doSort(CRuntimeContext* const ctx, IValue*& left, IValue*& right, IValue* const callback)
+[[nodiscard]] bool doSort(Varjus::CRuntimeContext* const ctx, IValue*& left, IValue*& right, IValue* const callback)
 {
 
 	IValues args = { left->Copy(), right->Copy() };

@@ -18,14 +18,14 @@ namespace Varjus {
 	class CRuntimeModule;
 }
 
-using VariableCaptures = std::unordered_map<CCrossModuleReference, CVariable*, CCrossModuleReferenceHasher>;
+using __VariableCaptures = std::unordered_map<CCrossModuleReference, CVariable*, CCrossModuleReferenceHasher>;
 
 class CFunction
 {
 	VARJUS_NONCOPYABLE(CFunction);
 	friend class CRuntimeFunction;
 public:
-	CFunction(Varjus::CProgramRuntime* const ctx, VectorOf<IValue*>& args, const VariableCaptures& captures, const CRuntimeFunction& func);
+	CFunction(Varjus::CProgramRuntime* const ctx, VectorOf<IValue*>& args, const __VariableCaptures& captures, const CRuntimeFunction& func);
 
 	[[nodiscard]] CVariable* GetVariableByRef(const CCrossModuleReference& ref) const;
 

@@ -228,18 +228,18 @@ bool AbstractSyntaxTree::IsSelfReferencingCapture(const AbstractSyntaxTree* lhs,
 }
 
 
-VariableASTNode::VariableASTNode(const CodePosition& pos, CLinterVariable* const var)
+VariableASTNode::VariableASTNode(const __CodePosition& pos, CLinterVariable* const var)
 	: AbstractSyntaxTree(pos), CCrossModuleReference(*var),
 	m_bGlobalVariable(var->IsGlobal()),
 	m_bIsConst(var->m_bConst){}
 VariableASTNode::~VariableASTNode() = default;
 
 
-FunctionASTNode::FunctionASTNode(const CodePosition& pos, CLinterFunction* const func) 
+FunctionASTNode::FunctionASTNode(const __CodePosition& pos, CLinterFunction* const func) 
 	: AbstractSyntaxTree(pos),
 	CCrossModuleReference(*func){}
 
-ConstantASTNode::ConstantASTNode(const CodePosition& pos, const VarjusString& data, Varjus::EValueType datatype)
+ConstantASTNode::ConstantASTNode(const __CodePosition& pos, const VarjusString& data, Varjus::EValueType datatype)
 	: AbstractSyntaxTree(pos), m_pConstant(data), m_eDataType(datatype) {
 }
 ConstantASTNode::~ConstantASTNode() = default;
@@ -256,30 +256,30 @@ ASTNode ConstantASTNode::FromIValue(const ConstantASTNode* _this, IValue* const 
 	);
 }
 
-ArrayASTNode::ArrayASTNode(const CodePosition& pos, ExpressionList&& expressions)
+ArrayASTNode::ArrayASTNode(const __CodePosition& pos, __ExpressionList&& expressions)
 	: AbstractSyntaxTree(pos), m_oExpressions(std::move(expressions)) {
 }
 ArrayASTNode::~ArrayASTNode() = default;
 
-ObjectASTNode::ObjectASTNode(const CodePosition& pos, VectorOf<KeyValue<std::size_t, ASTNode>>&& expressions)
+ObjectASTNode::ObjectASTNode(const __CodePosition& pos, VectorOf<KeyValue<std::size_t, ASTNode>>&& expressions)
 	: AbstractSyntaxTree(pos), m_oAttributes(std::move(expressions)) {
 }
 ObjectASTNode::~ObjectASTNode() = default;
 
-TernaryASTNode::TernaryASTNode(const CodePosition& pos, ASTNode& value, ASTNode& m_true, ASTNode& m_false)
+TernaryASTNode::TernaryASTNode(const __CodePosition& pos, ASTNode& value, ASTNode& m_true, ASTNode& m_false)
 	: AbstractSyntaxTree(pos),
 	m_pOperand(std::move(value)),
 	m_pTrue(std::move(m_true)),
 	m_pFalse(std::move(m_false)) {}
 TernaryASTNode::~TernaryASTNode() = default;
 
-LambdaASTNode::LambdaASTNode(const CodePosition& pos, RuntimeFunction&& operand, VectorOf<CCrossModuleReference>&& captures)
+LambdaASTNode::LambdaASTNode(const __CodePosition& pos, __RuntimeFunction&& operand, VectorOf<CCrossModuleReference>&& captures)
 	: AbstractSyntaxTree(pos),
 	m_pLambda(std::move(operand)), m_oVariableCaptures(std::move(captures)) {
 }
 LambdaASTNode::~LambdaASTNode() = default;
 
 
-FmtStringASTNode::FmtStringASTNode(const CodePosition& pos, VectorOf<FmtStringAST>&& nodes)
+FmtStringASTNode::FmtStringASTNode(const __CodePosition& pos, VectorOf<FmtStringAST>&& nodes)
 	: AbstractSyntaxTree(pos), m_oNodes(std::move(nodes)) {}
 FmtStringASTNode::~FmtStringASTNode() = default;

@@ -56,23 +56,25 @@ struct CFunctionBlock;
 namespace Varjus {
 	class CProgramRuntime;
 	class CRuntimeModule;
+
+	struct CRuntimeContext
+	{
+		CProgramRuntime* m_pRuntime;
+		CRuntimeModule* m_pModule;
+		CFunction* m_pFunction;
+	};
 }
 
 template<typename T>
 using VectorOf = std::vector<T>;
-using ArgumentIndex = std::size_t;
-using VariableIndex = std::size_t;
-using VariableCaptures = std::unordered_map<CCrossModuleReference, CVariable*, CCrossModuleReferenceHasher>;
+using __ArgumentIndex = std::size_t;
+using __VariableIndex = std::size_t;
+using __VariableCaptures = std::unordered_map<CCrossModuleReference, CVariable*, CCrossModuleReferenceHasher>;
 
 #pragma pack(push)
-WARNING_DISABLE(4266)
+VARJUS_WARNING_DISABLE(4266)
 
-struct CRuntimeContext
-{
-	Varjus::CProgramRuntime* m_pRuntime;
-	Varjus::CRuntimeModule* m_pModule;
-	CFunction* m_pFunction;
-};
+
 
 class IRuntimeStructure
 {
@@ -84,13 +86,13 @@ public:
 	[[nodiscard]] virtual constexpr EStructureType Type() const noexcept = 0;
 
 	[[nodiscard]] virtual IValue* Execute(
-		[[maybe_unused]] CRuntimeContext* const ctx) { return nullptr; };
+		[[maybe_unused]] Varjus::CRuntimeContext* const ctx) { return nullptr; };
 
 	[[nodiscard]] virtual IValue* Execute(
-		[[maybe_unused]] CRuntimeContext* const ctx,
+		[[maybe_unused]] Varjus::CRuntimeContext* const ctx,
 		[[maybe_unused]] IValue* _this,
 		[[maybe_unused]] VectorOf<IValue*>& args,
-		[[maybe_unused]] const VariableCaptures& captures) { return nullptr; };
+		[[maybe_unused]] const __VariableCaptures& captures) { return nullptr; };
 
 	[[nodiscard]] static EExecutionControl ToControlStatement(const IValue* rv);
 
@@ -102,14 +104,14 @@ protected:
 using UniqueAST = std::unique_ptr<AbstractSyntaxTree>;
 using ASTNode = std::shared_ptr<AbstractSyntaxTree>;
 
-using InstructionSequence = VectorOf<std::unique_ptr<IRuntimeStructure>>;
+using __InstructionSequence = VectorOf<std::unique_ptr<IRuntimeStructure>>;
 
-using RuntimeBlock = std::unique_ptr<IRuntimeStructure>;
-using RuntimeFunction = std::unique_ptr<CRuntimeFunctionBase>;
+using __RuntimeBlock = std::unique_ptr<IRuntimeStructure>;
+using __RuntimeFunction = std::unique_ptr<CRuntimeFunctionBase>;
 
-using FunctionArgument = RuntimeBlock;
-using FunctionArguments = VectorOf<FunctionArgument>;
-using ExpressionList = VectorOf<ASTNode>;
+using __FunctionArgument = __RuntimeBlock;
+using __FunctionArguments = VectorOf<__FunctionArgument>;
+using __ExpressionList = VectorOf<ASTNode>;
 
 template<typename T>
 using VectorOf = std::vector<T>;
@@ -117,9 +119,9 @@ using VectorOf = std::vector<T>;
 template<typename A, typename B>
 using __KeyValue = std::pair<A, B>;
 
-using ElementIndex = std::size_t;
-using ObjectInitializer = VectorOf<__KeyValue<ElementIndex, IValue*>>;
-using ObjectInitializerData = VectorOf<__KeyValue<ElementIndex, ASTNode>>;
+using __ElementIndex = std::size_t;
+using __ObjectInitializer = VectorOf<__KeyValue<__ElementIndex, IValue*>>;
+using __ObjectInitializerData = VectorOf<__KeyValue<__ElementIndex, ASTNode>>;
 
 // contains more than one instruction
 
@@ -127,10 +129,10 @@ class IRuntimeStructureSequence : public IRuntimeStructure
 {
 	VARJUS_NONCOPYABLE(IRuntimeStructureSequence);
 public:
-	IRuntimeStructureSequence(InstructionSequence&& insns);
+	IRuntimeStructureSequence(__InstructionSequence&& insns);
 	~IRuntimeStructureSequence();
 
-	[[nodiscard]] IValue* ExecuteBlock(CRuntimeContext* const ctx);
+	[[nodiscard]] IValue* ExecuteBlock(Varjus::CRuntimeContext* const ctx);
 	
 	[[nodiscard]] auto NumInstructions() const noexcept {
 		return m_oInstructions.size();
@@ -139,7 +141,7 @@ public:
 		return m_oInstructions[idx];
 	}
 protected:
-	InstructionSequence m_oInstructions;
+	__InstructionSequence m_oInstructions;
 };
 
 enum RuntimeFunctionType
@@ -157,8 +159,8 @@ public:
 	virtual ~CRuntimeFunctionBase() = default;
 	[[nodiscard]] constexpr virtual RuntimeFunctionType FunctionType() const noexcept = 0;
 
-	[[maybe_unused]] virtual IValue* ExecuteFunction(CRuntimeContext* const ctx, IValue* _this, VectorOf<IValue*>& args,
-		const VariableCaptures& captures) = 0;
+	[[maybe_unused]] virtual IValue* ExecuteFunction(Varjus::CRuntimeContext* const ctx, IValue* _this, VectorOf<IValue*>& args,
+		const __VariableCaptures& captures) = 0;
 
 	[[nodiscard]] constexpr auto& GetName() const noexcept { return m_sName; }
 
@@ -173,28 +175,28 @@ class CRuntimeFunction final : public CRuntimeFunctionBase, public IRuntimeStruc
 	VARJUS_NONCOPYABLE(CRuntimeFunction);
 
 public:
-	CRuntimeFunction(ElementIndex moduleIndex, CFunctionBlock& linterFunction,
+	CRuntimeFunction(__ElementIndex moduleIndex, CFunctionBlock& linterFunction,
 		VectorOf<CCrossModuleReference>&& args,
 		VectorOf<CCrossModuleReference>&& variableIndices);
 	~CRuntimeFunction();
 
 	[[nodiscard]] constexpr RuntimeFunctionType FunctionType() const noexcept override { return fn_regular; }
 
-	[[maybe_unused]] inline IValue* ExecuteFunction(CRuntimeContext* const ctx, IValue* _this, 
-		VectorOf<IValue*>& args, const VariableCaptures& captures) override {
+	[[maybe_unused]] inline IValue* ExecuteFunction(Varjus::CRuntimeContext* const ctx, IValue* _this, 
+		VectorOf<IValue*>& args, const __VariableCaptures& captures) override {
 
 		return Execute(ctx, _this, args, captures);
 	}
 
 	[[nodiscard]] constexpr auto& GetModuleIndex() const noexcept { return m_uModuleIndex; }
 
-	[[maybe_unused]] IValue* Execute(CRuntimeContext* const ctx, IValue* _this, VectorOf<IValue*>& args,
-		const VariableCaptures& captures) override;
+	[[maybe_unused]] IValue* Execute(Varjus::CRuntimeContext* const ctx, IValue* _this, VectorOf<IValue*>& args,
+		const __VariableCaptures& captures) override;
 protected:
 
 	[[nodiscard]] constexpr EStructureType Type() const noexcept override { return st_function; };
 
-	ElementIndex m_uModuleIndex{ 0u };
+	__ElementIndex m_uModuleIndex{ 0u };
 	std::size_t m_uNumVariables{ 0u };
 	VectorOf<CCrossModuleReference> m_oArgumentIndices;
 	VectorOf<CCrossModuleReference> m_oVariableIndices;
@@ -210,8 +212,8 @@ public:
 
 	[[nodiscard]] constexpr RuntimeFunctionType FunctionType() const noexcept override { return fn_built_in_method; }
 
-	[[maybe_unused]] IValue* ExecuteFunction(CRuntimeContext* const ctx, IValue* _this, VectorOf<IValue*>& args,
-		const VariableCaptures& captures) override;
+	[[maybe_unused]] IValue* ExecuteFunction(Varjus::CRuntimeContext* const ctx, IValue* _this, VectorOf<IValue*>& args,
+		const __VariableCaptures& captures) override;
 
 	Varjus::Method_t m_pMethod;
 };
@@ -226,8 +228,8 @@ public:
 
 	[[nodiscard]] constexpr RuntimeFunctionType FunctionType() const noexcept override { return fn_built_in; }
 
-	[[maybe_unused]] IValue* ExecuteFunction(CRuntimeContext* const ctx, IValue* _this, VectorOf<IValue*>& args,
-		const VariableCaptures& captures) override;
+	[[maybe_unused]] IValue* ExecuteFunction(Varjus::CRuntimeContext* const ctx, IValue* _this, VectorOf<IValue*>& args,
+		const __VariableCaptures& captures) override;
 
 	Varjus::Function_t m_pFunction;
 };
@@ -244,8 +246,8 @@ public:
 	CRuntimeExpression(ASTNode&& ast);
 	~CRuntimeExpression();
 
-	[[maybe_unused]] IValue* Execute(CRuntimeContext* const ctx) override;
-	[[nodiscard]] IValue* Evaluate(CRuntimeContext* const ctx);
+	[[maybe_unused]] IValue* Execute(Varjus::CRuntimeContext* const ctx) override;
+	[[nodiscard]] IValue* Evaluate(Varjus::CRuntimeContext* const ctx);
 	[[nodiscard]] inline bool HasAST() { return !!m_pAST.get(); }
 	[[nodiscard]] inline ASTNode& GetAST() { return m_pAST; }
 
@@ -253,21 +255,21 @@ protected:
 	[[nodiscard]] constexpr EStructureType Type() const noexcept override { return st_expression;};
 
 private:
-	[[nodiscard]] static IValue* Evaluate(CRuntimeContext* const ctx, RuntimeAST& node);
-	[[nodiscard]] static IValue* EvaluateLeaf(CRuntimeContext* const ctx, RuntimeAST& node);
-	[[nodiscard]] static IValue* EvaluatePostfix(CRuntimeContext* const ctx, PostfixASTNode* node);
-	[[nodiscard]] static IValue* EvaluateUnary(CRuntimeContext* const ctx, UnaryASTNode* node);
+	[[nodiscard]] static IValue* Evaluate(Varjus::CRuntimeContext* const ctx, RuntimeAST& node);
+	[[nodiscard]] static IValue* EvaluateLeaf(Varjus::CRuntimeContext* const ctx, RuntimeAST& node);
+	[[nodiscard]] static IValue* EvaluatePostfix(Varjus::CRuntimeContext* const ctx, PostfixASTNode* node);
+	[[nodiscard]] static IValue* EvaluateUnary(Varjus::CRuntimeContext* const ctx, UnaryASTNode* node);
 
-	[[nodiscard]] static IValue* EvaluateSequence(CRuntimeContext* const ctx, RuntimeAST& node);
-	[[nodiscard]] static IValue* EvaluateTernary(CRuntimeContext* const ctx, TernaryASTNode* node);
-	[[nodiscard]] static IValue* EvaluateFmtString(CRuntimeContext* const ctx, FmtStringASTNode* node);
+	[[nodiscard]] static IValue* EvaluateSequence(Varjus::CRuntimeContext* const ctx, RuntimeAST& node);
+	[[nodiscard]] static IValue* EvaluateTernary(Varjus::CRuntimeContext* const ctx, TernaryASTNode* node);
+	[[nodiscard]] static IValue* EvaluateFmtString(Varjus::CRuntimeContext* const ctx, FmtStringASTNode* node);
 
-	[[nodiscard]] static IValue* EvaluateMemberAccess(CRuntimeContext* const ctx, IValue* operand, const MemberAccessASTNode* node);
-	[[nodiscard]] static IValue* EvaluateSubscript(CRuntimeContext* const ctx, IValue* operand, SubscriptASTNode* node);
-	[[nodiscard]] static IValue* EvaluateFunctionCall(CRuntimeContext* const ctx, IValue* operand, FunctionCallASTNode* node);
+	[[nodiscard]] static IValue* EvaluateMemberAccess(Varjus::CRuntimeContext* const ctx, IValue* operand, const MemberAccessASTNode* node);
+	[[nodiscard]] static IValue* EvaluateSubscript(Varjus::CRuntimeContext* const ctx, IValue* operand, SubscriptASTNode* node);
+	[[nodiscard]] static IValue* EvaluateFunctionCall(Varjus::CRuntimeContext* const ctx, IValue* operand, FunctionCallASTNode* node);
 
-	[[nodiscard]] static VectorOf<IValue*> EvaluateList(CRuntimeContext* const ctx, ExpressionList& list);
-	[[nodiscard]] static ObjectInitializer EvaluateObject(CRuntimeContext* const ctx, ObjectInitializerData& obj);
+	[[nodiscard]] static VectorOf<IValue*> EvaluateList(Varjus::CRuntimeContext* const ctx, __ExpressionList& list);
+	[[nodiscard]] static __ObjectInitializer EvaluateObject(Varjus::CRuntimeContext* const ctx, __ObjectInitializerData& obj);
 	ASTNode m_pAST;
 
 };
@@ -277,10 +279,10 @@ class CRuntimeConditionalStatement final : public IRuntimeStructureSequence
 	VARJUS_NONCOPYABLE(CRuntimeConditionalStatement);
 	friend class CElseStatementLinter; // so that it can add the chaining
 public:
-	CRuntimeConditionalStatement(ASTNode&& condition, InstructionSequence&& insns);
+	CRuntimeConditionalStatement(ASTNode&& condition, __InstructionSequence&& insns);
 	~CRuntimeConditionalStatement();
 
-	[[maybe_unused]] IValue* Execute(CRuntimeContext* const ctx) override;
+	[[maybe_unused]] IValue* Execute(Varjus::CRuntimeContext* const ctx) override;
 
 protected:
 	[[nodiscard]] constexpr EStructureType Type() const noexcept override { return st_conditional; };
@@ -301,10 +303,10 @@ public:
 	CRuntimeForStatement(
 		ASTNode&& init,
 		ASTNode&& cond,
-		ASTNode&& endExpr, InstructionSequence&& insns);
+		ASTNode&& endExpr, __InstructionSequence&& insns);
 	~CRuntimeForStatement();
 
-	[[maybe_unused]] IValue* Execute(CRuntimeContext* const ctx) override;
+	[[maybe_unused]] IValue* Execute(Varjus::CRuntimeContext* const ctx) override;
 
 protected:
 	[[nodiscard]] constexpr EStructureType Type() const noexcept override { return st_for; };
@@ -319,10 +321,10 @@ class CRuntimeRangedForStatement final : public IRuntimeStructureSequence
 {
 	VARJUS_NONCOPYABLE(CRuntimeRangedForStatement);
 public:
-	CRuntimeRangedForStatement(std::shared_ptr<VariableASTNode>&& iterator, ASTNode&& iterable, InstructionSequence&& insns);
+	CRuntimeRangedForStatement(std::shared_ptr<VariableASTNode>&& iterator, ASTNode&& iterable, __InstructionSequence&& insns);
 	~CRuntimeRangedForStatement();
 
-	[[maybe_unused]] IValue* Execute(CRuntimeContext* const ctx) override;
+	[[maybe_unused]] IValue* Execute(Varjus::CRuntimeContext* const ctx) override;
 
 protected:
 	[[nodiscard]] constexpr EStructureType Type() const noexcept override { return st_ranged_for; };
@@ -336,10 +338,10 @@ class CRuntimeWhileStatement final : public IRuntimeStructureSequence
 {
 	VARJUS_NONCOPYABLE(CRuntimeWhileStatement);
 public:
-	CRuntimeWhileStatement(ASTNode&& condition, InstructionSequence&& insns);
+	CRuntimeWhileStatement(ASTNode&& condition, __InstructionSequence&& insns);
 	~CRuntimeWhileStatement();
 
-	[[maybe_unused]] IValue* Execute(CRuntimeContext* const ctx) override;
+	[[maybe_unused]] IValue* Execute(Varjus::CRuntimeContext* const ctx) override;
 
 protected:
 	[[nodiscard]] constexpr EStructureType Type() const noexcept override { return st_while; };
@@ -353,10 +355,10 @@ class CRuntimeCaseStatement final : public IRuntimeStructureSequence
 	VARJUS_NONCOPYABLE(CRuntimeCaseStatement);
 	friend class CRuntimeMatchStatement;
 public:
-	CRuntimeCaseStatement(ASTNode&& condition, InstructionSequence&& insns);
+	CRuntimeCaseStatement(ASTNode&& condition, __InstructionSequence&& insns);
 	~CRuntimeCaseStatement();
 
-	[[maybe_unused]] IValue* Execute(CRuntimeContext* const ctx) override;
+	[[maybe_unused]] IValue* Execute(Varjus::CRuntimeContext* const ctx) override;
 	[[nodiscard]] inline bool IsDefaultClause() const noexcept { return !m_pCondition->HasAST(); }
 protected:
 	[[nodiscard]] constexpr EStructureType Type() const noexcept override { return st_case; };
@@ -369,16 +371,16 @@ class CRuntimeMatchStatement final : public IRuntimeStructureSequence
 {
 	VARJUS_NONCOPYABLE(CRuntimeMatchStatement);
 public:
-	CRuntimeMatchStatement(ASTNode&& condition, CRuntimeCaseStatement* const defaultClause, InstructionSequence&& insns);
+	CRuntimeMatchStatement(ASTNode&& condition, CRuntimeCaseStatement* const defaultClause, __InstructionSequence&& insns);
 	~CRuntimeMatchStatement();
 
-	[[maybe_unused]] IValue* Execute(CRuntimeContext* const ctx) override;
+	[[maybe_unused]] IValue* Execute(Varjus::CRuntimeContext* const ctx) override;
 
 protected:
 	[[nodiscard]] constexpr EStructureType Type() const noexcept override { return st_match; };
 
 private:
-	[[nodiscard]] std::size_t GetCaseIndex(CRuntimeContext* const ctx) const noexcept;
+	[[nodiscard]] std::size_t GetCaseIndex(Varjus::CRuntimeContext* const ctx) const noexcept;
 
 	CRuntimeCaseStatement* const m_pDefaultCase;
 	std::unique_ptr<CRuntimeExpression> m_pCondition;
@@ -387,10 +389,10 @@ class CRuntimeRepeatStatement final : public IRuntimeStructureSequence
 {
 	VARJUS_NONCOPYABLE(CRuntimeRepeatStatement);
 public:
-	CRuntimeRepeatStatement(ASTNode&& condition, InstructionSequence&& insns);
+	CRuntimeRepeatStatement(ASTNode&& condition, __InstructionSequence&& insns);
 	~CRuntimeRepeatStatement();
 
-	[[maybe_unused]] IValue* Execute(CRuntimeContext* const ctx) override;
+	[[maybe_unused]] IValue* Execute(Varjus::CRuntimeContext* const ctx) override;
 
 protected:
 	[[nodiscard]] constexpr EStructureType Type() const noexcept override { return st_while; };
@@ -406,7 +408,7 @@ public:
 	CRuntimeReturnStatement(ASTNode&& condition);
 	~CRuntimeReturnStatement();
 
-	[[maybe_unused]] IValue* Execute(CRuntimeContext* const ctx) override;
+	[[maybe_unused]] IValue* Execute(Varjus::CRuntimeContext* const ctx) override;
 
 protected:
 	[[nodiscard]] constexpr EStructureType Type() const noexcept override { return st_return; };
@@ -419,19 +421,19 @@ class CRuntimeTryCatchStatement final : public IRuntimeStructure
 {
 	VARJUS_NONCOPYABLE(CRuntimeTryCatchStatement);
 public:
-	CRuntimeTryCatchStatement(const CCrossModuleReference& catchVariable, InstructionSequence&& tryBlock, InstructionSequence&& catchBlock);
+	CRuntimeTryCatchStatement(const CCrossModuleReference& catchVariable, __InstructionSequence&& tryBlock, __InstructionSequence&& catchBlock);
 	~CRuntimeTryCatchStatement();
 
-	[[maybe_unused]] IValue* Execute(CRuntimeContext* const ctx) override;
+	[[maybe_unused]] IValue* Execute(Varjus::CRuntimeContext* const ctx) override;
 
 protected:
 	[[nodiscard]] constexpr EStructureType Type() const noexcept override { return st_try_catch; };
 private:
-	[[maybe_unused]] IValue* ExecuteCatchBlock(CRuntimeContext* const ctx);
+	[[maybe_unused]] IValue* ExecuteCatchBlock(Varjus::CRuntimeContext* const ctx);
 
 	CCrossModuleReference m_uCatchVariable;
-	InstructionSequence m_oTryInstructions;
-	InstructionSequence m_oCatchInstructions;
+	__InstructionSequence m_oTryInstructions;
+	__InstructionSequence m_oCatchInstructions;
 };
 
 class CRuntimeThrowStatement final : public IRuntimeStructure
@@ -441,7 +443,7 @@ public:
 	CRuntimeThrowStatement(ASTNode&& condition);
 	~CRuntimeThrowStatement();
 
-	[[maybe_unused]] IValue* Execute(CRuntimeContext* const ctx) override;
+	[[maybe_unused]] IValue* Execute(Varjus::CRuntimeContext* const ctx) override;
 
 protected:
 	[[nodiscard]] constexpr EStructureType Type() const noexcept override { return st_throw; };
@@ -456,7 +458,7 @@ class CRuntimeLoopControlStatement final : public IRuntimeStructure {
 public:
 	CRuntimeLoopControlStatement(EExecutionControl c) : m_eCtrl(c){}
 	
-	[[maybe_unused]] IValue* Execute(CRuntimeContext* const ctx) override;
+	[[maybe_unused]] IValue* Execute(Varjus::CRuntimeContext* const ctx) override;
 
 protected:
 	[[nodiscard]] constexpr EStructureType Type() const noexcept override { return st_loop_control; };
@@ -470,6 +472,6 @@ public:
 	virtual ~IRuntimeBlock() = default;
 
 protected:
-	virtual RuntimeBlock ToRuntimeObject() const = 0;
+	virtual __RuntimeBlock ToRuntimeObject() const = 0;
 };
 #pragma pack(pop)

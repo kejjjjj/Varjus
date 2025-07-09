@@ -9,7 +9,7 @@ using namespace Varjus;
 CRuntimeForStatement::CRuntimeForStatement(
 	ASTNode&& init,
 	ASTNode&& cond,
-	ASTNode&& endExpr, InstructionSequence&& insns)
+	ASTNode&& endExpr, __InstructionSequence&& insns)
 	: IRuntimeStructureSequence(std::move(insns)), 
 	m_pInitializer(std::make_unique<CRuntimeExpression>(std::move(init))),
 	m_pCondition(std::make_unique<CRuntimeExpression>(std::move(cond))),
@@ -20,7 +20,7 @@ CRuntimeForStatement::CRuntimeForStatement(
 
 CRuntimeForStatement::~CRuntimeForStatement() = default;
 
-IValue* CRuntimeForStatement::Execute(CRuntimeContext* const ctx)
+IValue* CRuntimeForStatement::Execute(Varjus::CRuntimeContext* const ctx)
 {
 
 	if (m_pInitializer->HasAST()) {

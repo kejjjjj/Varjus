@@ -12,7 +12,7 @@
 
 class AbstractSyntaxTree;
 using ASTNode = std::shared_ptr<AbstractSyntaxTree>;
-using ExpressionList = VectorOf<ASTNode>;
+using __ExpressionList = VectorOf<ASTNode>;
 using UniqueAST = std::unique_ptr<AbstractSyntaxTree>;
 template<typename A, typename B>
 using KeyValue = std::pair<A, B>;
@@ -39,8 +39,8 @@ class IConstEvalValue;
 
 template<typename T>
 concept Pointer = std::is_pointer_v<T> || std::is_reference_v<T>;
-using RuntimeFunction = std::unique_ptr<CRuntimeFunctionBase>;
-using ElementIndex = std::size_t;
+using __RuntimeFunction = std::unique_ptr<CRuntimeFunctionBase>;
+using __ElementIndex = std::size_t;
 
 using Operands = VectorOf<CLinterOperand*>;
 using Operators = VectorOf<CLinterOperator*>;
@@ -49,10 +49,10 @@ class AbstractSyntaxTree : public std::enable_shared_from_this<AbstractSyntaxTre
 {
 public:
 	AbstractSyntaxTree() = default;
-	AbstractSyntaxTree(const CodePosition& pos) : m_oApproximatePosition(pos) {}
+	AbstractSyntaxTree(const __CodePosition& pos) : m_oApproximatePosition(pos) {}
 	virtual ~AbstractSyntaxTree();
 
-	[[nodiscard]] const CodePosition& GetCodePosition() const noexcept { return m_oApproximatePosition; }
+	[[nodiscard]] const __CodePosition& GetCodePosition() const noexcept { return m_oApproximatePosition; }
 
 	[[nodiscard]] virtual constexpr bool IsLeaf() const noexcept { return false; }
 	[[nodiscard]] virtual constexpr bool IsOperator() const noexcept { return false; }
@@ -112,7 +112,7 @@ private:
 
 	[[nodiscard]] bool IsSelfReferencingCapture(const AbstractSyntaxTree* lhs, const AbstractSyntaxTree* rhs);
 
-	CodePosition m_oApproximatePosition;
+	__CodePosition m_oApproximatePosition;
 
 protected:
 	[[nodiscard]] bool IsAssignment() const noexcept;
@@ -127,7 +127,7 @@ class VariableASTNode final : public AbstractSyntaxTree, public CCrossModuleRefe
 	friend class AstToInstructionConverter;
 	VARJUS_NONCOPYABLE(VariableASTNode);
 public:
-	VariableASTNode(const CodePosition& pos, CLinterVariable* const var);
+	VariableASTNode(const __CodePosition& pos, CLinterVariable* const var);
 	~VariableASTNode();
 	[[nodiscard]] constexpr bool IsLeaf() const noexcept override { return true; }
 	[[nodiscard]] constexpr bool IsVariable() const noexcept override { return true; }
@@ -145,7 +145,7 @@ class FunctionASTNode final : public AbstractSyntaxTree, public CCrossModuleRefe
 	friend class AstToInstructionConverter;
 	VARJUS_NONCOPYABLE(FunctionASTNode);
 public:
-	FunctionASTNode(const CodePosition& pos, CLinterFunction* const func);
+	FunctionASTNode(const __CodePosition& pos, CLinterFunction* const func);
 
 	[[nodiscard]] constexpr bool IsLeaf() const noexcept override { return true; }
 	[[nodiscard]] constexpr bool IsFunction() const noexcept override { return true; }
@@ -158,7 +158,7 @@ class ConstantASTNode final : public AbstractSyntaxTree
 
 public:
 	ConstantASTNode(ConstantASTNode&& other) = default;
-	ConstantASTNode(const CodePosition& pos, const VarjusString& data, Varjus::EValueType datatype);
+	ConstantASTNode(const __CodePosition& pos, const VarjusString& data, Varjus::EValueType datatype);
 	~ConstantASTNode();
 
 	[[nodiscard]] constexpr bool IsLeaf() const noexcept override { return true; }
@@ -177,7 +177,7 @@ class ArrayASTNode final : public AbstractSyntaxTree
 
 public:
 
-	ArrayASTNode(const CodePosition& pos, ExpressionList&& expressions);
+	ArrayASTNode(const __CodePosition& pos, __ExpressionList&& expressions);
 	~ArrayASTNode();
 
 	[[nodiscard]] constexpr bool IsLeaf() const noexcept override { return true; }
@@ -186,7 +186,7 @@ public:
 	[[nodiscard]] constexpr const ArrayASTNode* GetArray() const noexcept override { return this; }
 	[[nodiscard]] constexpr ArrayASTNode* GetArray() noexcept override { return this; }
 
-	ExpressionList m_oExpressions;
+	__ExpressionList m_oExpressions;
 };
 
 class ObjectASTNode final : public AbstractSyntaxTree
@@ -195,7 +195,7 @@ class ObjectASTNode final : public AbstractSyntaxTree
 
 public:
 
-	ObjectASTNode(const CodePosition& pos, VectorOf<KeyValue<std::size_t, ASTNode >> && expressions);
+	ObjectASTNode(const __CodePosition& pos, VectorOf<KeyValue<std::size_t, ASTNode >> && expressions);
 	~ObjectASTNode();
 
 	[[nodiscard]] constexpr bool IsLeaf() const noexcept override { return true; }
@@ -213,7 +213,7 @@ class TernaryASTNode final : public AbstractSyntaxTree
 
 public:
 
-	TernaryASTNode(const CodePosition& pos, ASTNode& value, ASTNode& m_true, ASTNode& m_false);
+	TernaryASTNode(const __CodePosition& pos, ASTNode& value, ASTNode& m_true, ASTNode& m_false);
 	~TernaryASTNode();
 
 	[[nodiscard]] constexpr bool IsLeaf() const noexcept override { return true; }
@@ -234,7 +234,7 @@ class LambdaASTNode final : public AbstractSyntaxTree
 
 public:
 
-	LambdaASTNode(const CodePosition& pos, RuntimeFunction&& operand, VectorOf<CCrossModuleReference>&& captures);
+	LambdaASTNode(const __CodePosition& pos, __RuntimeFunction&& operand, VectorOf<CCrossModuleReference>&& captures);
 	~LambdaASTNode();
 
 	[[nodiscard]] constexpr bool IsLeaf() const noexcept override { return true; }
@@ -242,7 +242,7 @@ public:
 
 	[[nodiscard]] constexpr const LambdaASTNode* GetLambda() const noexcept override { return this; }
 
-	RuntimeFunction m_pLambda;
+	__RuntimeFunction m_pLambda;
 	VectorOf<CCrossModuleReference> m_oVariableCaptures;
 };
 
@@ -260,7 +260,7 @@ class FmtStringASTNode final : public AbstractSyntaxTree
 
 public:
 
-	FmtStringASTNode(const CodePosition& pos, VectorOf<FmtStringAST>&& nodes);
+	FmtStringASTNode(const __CodePosition& pos, VectorOf<FmtStringAST>&& nodes);
 	~FmtStringASTNode();
 
 	[[nodiscard]] constexpr bool IsLeaf() const noexcept override { return true; }
@@ -280,8 +280,8 @@ class OperatorASTNode : public AbstractSyntaxTree
 {
 public:
 	OperatorASTNode() = default;
-	OperatorASTNode(const CodePosition& pos) : AbstractSyntaxTree(pos) {}
-	OperatorASTNode(const CodePosition& pos, Punctuation punc) : AbstractSyntaxTree(pos), m_ePunctuation(punc) {}
+	OperatorASTNode(const __CodePosition& pos) : AbstractSyntaxTree(pos) {}
+	OperatorASTNode(const __CodePosition& pos, Punctuation punc) : AbstractSyntaxTree(pos), m_ePunctuation(punc) {}
 	virtual ~OperatorASTNode() = default;
 
 

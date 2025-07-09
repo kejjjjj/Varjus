@@ -10,11 +10,10 @@
 
 class IValue;
 class CVariable;
-class AbstractSyntaxTree;
 class CStringIntegerHashMap;
 
-using GlobalMemberIndex = std::size_t;
-using ElementIndex = std::size_t;
+using __GlobalMemberIndex = std::size_t;
+using __ElementIndex = std::size_t;
 
 namespace Varjus {
 	class CProgramRuntime;
@@ -27,13 +26,13 @@ public:
 
 
 	void Release();
-	void Setup(Varjus::CProgramRuntime* const runtime, const std::vector<ElementIndex>& elements);
+	void Setup(Varjus::CProgramRuntime* const runtime, const std::vector<__ElementIndex>& elements);
 
-	[[maybe_unused]] virtual CVariable* AddAttribute(ElementIndex elem);
-	void AddAttribute(ElementIndex elem, IValue* value);
-	[[nodiscard]] bool RemoveAttribute(ElementIndex elem);
+	[[maybe_unused]] virtual CVariable* AddAttribute(__ElementIndex elem);
+	void AddAttribute(__ElementIndex elem, IValue* value);
+	[[nodiscard]] bool RemoveAttribute(__ElementIndex elem);
 
-	[[nodiscard]] IValue* ElementLookup(GlobalMemberIndex index) const;
+	[[nodiscard]] IValue* ElementLookup(__GlobalMemberIndex index) const;
 	[[nodiscard]] bool Contains(const VarjusString& item) const;
 	[[nodiscard]] IValue* Get(const VarjusString& item) const;
 
@@ -46,12 +45,12 @@ public:
 	[[nodiscard]] constexpr auto& GetRuntimeInformation() const noexcept { return m_pAllMembers; }
 
 #ifdef RUNNING_TESTS
-	[[nodiscard]] IValue* ElementLookupNoExcept(GlobalMemberIndex index) const noexcept;
+	[[nodiscard]] IValue* ElementLookupNoExcept(__GlobalMemberIndex index) const noexcept;
 #endif
 	[[nodiscard]] auto& Iterator() { return m_oIndexLookup; }
 
 protected:
-	std::map<ElementIndex, CVariable*> m_oIndexLookup;
+	std::map<__ElementIndex, CVariable*> m_oIndexLookup;
 	Varjus::CProgramRuntime* m_pAllocator{ nullptr };
 	CStringIntegerHashMap* m_pAllMembers{ nullptr }; // a pointer to a list of all declared members... to save computing power
 };

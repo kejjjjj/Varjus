@@ -54,7 +54,7 @@ public:
 	[[nodiscard]] virtual constexpr EUnaryType Type() const noexcept = 0;
 	[[nodiscard]] virtual std::unique_ptr<AbstractSyntaxTree> ToAST() = 0;
 
-	CodePosition m_oCodePosition;
+	__CodePosition m_oCodePosition;
 };
 class CUnaryNegation final : public CUnaryBase
 {

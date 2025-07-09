@@ -2426,7 +2426,7 @@ namespace Catch {
             auto ret = next();
             if (ret) {
                 m_stringReprCache.clear();
-                ++m_currentElementIndex;
+                ++m_current__ElementIndex;
             }
             return ret;
         }

@@ -40,7 +40,7 @@ namespace Varjus {
 
 
 		[[nodiscard]] inline auto PushError(const VarjusString& err) { m_oErrors.PushError(VSL(""), err); }
-		[[nodiscard]] inline auto PushError(const VarjusString& err, const CodePosition& pos) {
+		[[nodiscard]] inline auto PushError(const VarjusString& err, const __CodePosition& pos) {
 			m_oErrors.PushError(VSL(""), err, pos);
 		}
 

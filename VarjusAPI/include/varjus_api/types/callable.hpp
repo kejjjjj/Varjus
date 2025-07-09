@@ -12,7 +12,7 @@ class CVariable;
 template<typename T>
 using VectorOf = std::vector<T>;
 
-using VariableIndex = std::size_t;
+using __VariableIndex = std::size_t;
 
 class CInternalCallableValue final
 {
@@ -22,7 +22,7 @@ public:
 	CInternalCallableValue() = default;
 	~CInternalCallableValue() = default;
 
-	void SetCaptures(CRuntimeContext* const ctx, const VectorOf<CCrossModuleReference>& captures);
+	void SetCaptures(Varjus::CRuntimeContext* const ctx, const VectorOf<CCrossModuleReference>& captures);
 	[[nodiscard]] auto& GetCaptures() { return m_oCaptures; }
 
 	void Bind(IValue* target) noexcept { m_pBoundTo = target; }
@@ -67,7 +67,7 @@ public:
 	[[nodiscard]] CInternalCallableValue* Internal();
 	[[nodiscard]] CInternalCallableValue* Internal() const;
 
-	[[nodiscard]] IValue* Call(CRuntimeContext* const ctx, const IValues& args) override;
+	[[nodiscard]] IValue* Call(Varjus::CRuntimeContext* const ctx, const IValues& args) override;
 		
 	[[nodiscard]] std::size_t AddressOf() const noexcept override {
 		return reinterpret_cast<std::size_t>(GetShared().get());
