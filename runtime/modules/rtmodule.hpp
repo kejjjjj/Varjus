@@ -11,8 +11,8 @@ class CRuntimeFunctionBase;
 class IRuntimeStructure;
 class CModule;
 
-using RuntimeFunction = std::unique_ptr<CRuntimeFunctionBase>;
-using RuntimeBlock = std::unique_ptr<IRuntimeStructure>;
+using __RuntimeFunction = std::unique_ptr<CRuntimeFunctionBase>;
+using __RuntimeBlock = std::unique_ptr<IRuntimeStructure>;
 
 template<typename T>
 using VectorOf = std::vector<T>;
@@ -37,10 +37,10 @@ namespace Varjus {
 		[[nodiscard]] CFileContext* GetContext() noexcept { return &m_oContext; }
 		[[nodiscard]] constexpr auto GetIndex() const noexcept { return m_uModuleIndex; }
 	private:
-		VectorOf<RuntimeBlock> m_oGlobalScopeInstructions;
+		VectorOf<__RuntimeBlock> m_oGlobalScopeInstructions;
 		std::size_t m_uNumGlobalVariables{};
 
-		VectorOf<RuntimeFunction> m_oFunctions;
+		VectorOf<__RuntimeFunction> m_oFunctions;
 		VectorOf<CVariable*> m_oGlobalVariables;
 
 		CFileContext m_oContext;

@@ -83,7 +83,7 @@ bool CElseStatementLinter::IsInConditionalContext() const
 	return m_pPreviousBlock ? m_pPreviousBlock->Type() == st_conditional : false;
 }
 
-RuntimeBlock CElseStatementLinter::ToRuntimeObject() const
+__RuntimeBlock CElseStatementLinter::ToRuntimeObject() const
 {
 	assert(false);
 	return nullptr;

@@ -1,7 +1,8 @@
-#include "varjus_api/types/types.hpp"
-
 #include "linter/context.hpp"
 
+#include "runtime/misc/defs.hpp"
+
+#include "varjus_api/types/types.hpp"
 #include "varjus_api/internal/variables.hpp"
 #include "varjus_api/internal/exceptions/exception.hpp"
 #include "varjus_api/internal/structure.hpp"

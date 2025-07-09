@@ -106,7 +106,7 @@ bool CCaseStatementLinter::ContainsDefaultClause() const noexcept
 	return false;
 }
 
-RuntimeBlock CCaseStatementLinter::ToRuntimeObject() const
+__RuntimeBlock CCaseStatementLinter::ToRuntimeObject() const
 {
 	decltype(auto) tempAST = const_cast<ASTNode&&>(std::move(m_pExpression));
 	return std::make_unique<CRuntimeCaseStatement>(std::move(tempAST), m_pThisScope->MoveInstructions());

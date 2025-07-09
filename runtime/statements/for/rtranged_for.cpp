@@ -9,7 +9,7 @@
 
 using namespace Varjus;
 
-CRuntimeRangedForStatement::CRuntimeRangedForStatement(std::shared_ptr<VariableASTNode>&& iterator, ASTNode&& iterable, InstructionSequence&& insns)
+CRuntimeRangedForStatement::CRuntimeRangedForStatement(std::shared_ptr<VariableASTNode>&& iterator, ASTNode&& iterable, __InstructionSequence&& insns)
 	: IRuntimeStructureSequence(std::move(insns)), 
 	m_pIterator(std::move(iterator)),
 	m_pIterable(std::make_unique<CRuntimeExpression>(std::move(iterable))) {}
@@ -17,7 +17,7 @@ CRuntimeRangedForStatement::CRuntimeRangedForStatement(std::shared_ptr<VariableA
 
 CRuntimeRangedForStatement::~CRuntimeRangedForStatement() = default;
 
-IValue* CRuntimeRangedForStatement::Execute(CRuntimeContext* const ctx)
+IValue* CRuntimeRangedForStatement::Execute(Varjus::CRuntimeContext* const ctx)
 {
 	assert(m_pIterable && m_pIterable->HasAST());
 	assert(m_pIterator);

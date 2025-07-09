@@ -2,14 +2,14 @@
 
 #include "operand.hpp"
 
-using ExpressionList = VectorOf<ASTNode>;
+using __ExpressionList = VectorOf<ASTNode>;
 
 struct CArrayOperand final : public IOperand
 {
 	VARJUS_NONCOPYABLE(CArrayOperand);
 
 	CArrayOperand() = default;
-	CArrayOperand(ExpressionList&& ptr);
+	CArrayOperand(__ExpressionList&& ptr);
 	~CArrayOperand();
 
 	[[nodiscard]] EOperandBaseType Type() const noexcept override {
@@ -19,5 +19,5 @@ struct CArrayOperand final : public IOperand
 	[[nodiscard]] ASTNode ToAST() override;
 
 
-	ExpressionList m_oExpressions;
+	__ExpressionList m_oExpressions;
 };

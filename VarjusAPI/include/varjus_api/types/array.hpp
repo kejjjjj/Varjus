@@ -79,8 +79,8 @@ public:
 	[[nodiscard]] CInternalArrayValue* Internal();
 	[[nodiscard]] CInternalArrayValue* Internal() const;
 	
-	[[nodiscard]] IValue* Index(CRuntimeContext* const ctx, IValue* index) override;
-	[[nodiscard]] IValue* GetAggregate(CRuntimeContext* const ctx, std::size_t memberIdx) override;
+	[[nodiscard]] IValue* Index(Varjus::CRuntimeContext* const ctx, IValue* index) override;
+	[[nodiscard]] IValue* GetAggregate(Varjus::CRuntimeContext* const ctx, std::size_t memberIdx) override;
 	[[nodiscard]] IValues ToIterable() const override;
 
 	[[nodiscard]] std::size_t AddressOf() const noexcept override { 

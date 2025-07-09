@@ -78,7 +78,7 @@ IValue* CProgramRuntime::BeginExecution(CRuntimeFunction* entryFunc, IValues& ar
 {
 	assert(entryFunc);
 
-	CRuntimeContext ctx{
+	Varjus::CRuntimeContext ctx{
 		.m_pRuntime = this,
 		.m_pModule = GetModuleByIndex(entryFunc->GetModuleIndex()),
 		.m_pFunction = nullptr,
@@ -98,7 +98,7 @@ CRuntimeFunction* CProgramRuntime::FindMainFunction(const RuntimeModules& module
 {
 	for (auto& mod : modules) {
 
-		const auto iMainFunction = std::ranges::find(mod->m_oFunctions, VSL("main"), [](const RuntimeFunction& rf) { return rf->GetName(); });
+		const auto iMainFunction = std::ranges::find(mod->m_oFunctions, VSL("main"), [](const __RuntimeFunction& rf) { return rf->GetName(); });
 
 		if (iMainFunction != mod->m_oFunctions.end() && (*iMainFunction)->FunctionType() == fn_regular) {
 			return dynamic_cast<CRuntimeFunction*>(iMainFunction->get());
@@ -107,10 +107,10 @@ CRuntimeFunction* CProgramRuntime::FindMainFunction(const RuntimeModules& module
 
 	return nullptr;
 }
-void CProgramRuntime::SetExecutionPosition(const CodePosition* pos) noexcept{
+void CProgramRuntime::SetExecutionPosition(const __CodePosition* pos) noexcept{
 	m_pCodePosition = pos;
 }
-const CodePosition* CProgramRuntime::GetExecutionPosition() noexcept{
+const __CodePosition* CProgramRuntime::GetExecutionPosition() noexcept{
 	return m_pCodePosition;
 }
 CRuntimeModule* CProgramRuntime::GetModuleByIndex(std::size_t index) { 
@@ -164,7 +164,7 @@ void CProgramRuntime::FreeAllPools()
 	ClearPool<CChildVariable>(this);
 	ClearPool<CBuiltInObject>(this);
 }
-VarjusString CProgramRuntime::KeyToString(ElementIndex index) const noexcept {
+VarjusString CProgramRuntime::KeyToString(__ElementIndex index) const noexcept {
 	return m_pInformation->m_oAllMembers.At(index);
 }
 bool CProgramRuntime::ContainsKey(const VarjusString& key) const noexcept {

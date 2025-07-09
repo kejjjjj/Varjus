@@ -9,19 +9,19 @@
 IRuntimeStructure::IRuntimeStructure() = default;
 IRuntimeStructure::~IRuntimeStructure() = default;
 
-IRuntimeStructureSequence::IRuntimeStructureSequence(InstructionSequence&& insns) 
+IRuntimeStructureSequence::IRuntimeStructureSequence(__InstructionSequence&& insns) 
 	: m_oInstructions(std::move(insns)) {}
 IRuntimeStructureSequence::~IRuntimeStructureSequence() = default;
 
 
-CRuntimeConditionalStatement::CRuntimeConditionalStatement(ASTNode&& condition, InstructionSequence&& insns)
+CRuntimeConditionalStatement::CRuntimeConditionalStatement(ASTNode&& condition, __InstructionSequence&& insns)
 	: IRuntimeStructureSequence(std::move(insns)), 
 	m_pCondition(condition ? std::make_unique<CRuntimeExpression>(std::move(condition)) : nullptr) {}
 CRuntimeConditionalStatement::~CRuntimeConditionalStatement() = default;
 
 
 
-IValue* IRuntimeStructureSequence::ExecuteBlock(CRuntimeContext* const ctx)
+IValue* IRuntimeStructureSequence::ExecuteBlock(Varjus::CRuntimeContext* const ctx)
 {
 	if (ctx->m_pRuntime->WaitingToAbort())
 		return reinterpret_cast<IValue*>(lc_abort); //yes!

@@ -68,8 +68,8 @@ public:
 	[[nodiscard]] constexpr CInternalStringValue* Internal() { return &Get(); }
 	[[nodiscard]] constexpr const CInternalStringValue* Internal() const { return &Get(); }
 
-	[[nodiscard]] IValue* Index(CRuntimeContext* const ctx, IValue* index) override;
-	[[nodiscard]] IValue* GetAggregate(CRuntimeContext* const ctx, std::size_t memberIdx) override;
+	[[nodiscard]] IValue* Index(Varjus::CRuntimeContext* const ctx, IValue* index) override;
+	[[nodiscard]] IValue* GetAggregate(Varjus::CRuntimeContext* const ctx, std::size_t memberIdx) override;
 	[[nodiscard]] IValues ToIterable() const override;
 
 	[[nodiscard]] constexpr std::size_t SizeOf() const noexcept override { return Get().Length(); }

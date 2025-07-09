@@ -32,5 +32,5 @@ ASTNode CArrayOperand::ToAST() {
 	return std::make_shared<ArrayASTNode>(m_oCodePosition, std::move(m_oExpressions));
 }
 
-CArrayOperand::CArrayOperand(ExpressionList&& ptr) : m_oExpressions(std::move(ptr)) {}
+CArrayOperand::CArrayOperand(__ExpressionList&& ptr) : m_oExpressions(std::move(ptr)) {}
 CArrayOperand::~CArrayOperand() = default;

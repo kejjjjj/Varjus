@@ -9,13 +9,13 @@
 #endif
 
 #if defined(_MSC_VER) 
-#define WARNING_PUSH() __pragma(warning(push))
-#define WARNING_DISABLE(w) __pragma(warning(disable : w))
-#define WARNING_POP() __pragma(warning(pop))
+#define VARJUS_WARNING_PUSH() __pragma(warning(push))
+#define VARJUS_WARNING_DISABLE(w) __pragma(warning(disable : w))
+#define VARJUS_WARNING_POP() __pragma(warning(pop))
 #else
-#define WARNING_PUSH()
-#define WARNING_POP()
-#define WARNING_DISABLE(v)
+#define VARJUS_WARNING_PUSH()
+#define VARJUS_WARNING_POP()
+#define VARJUS_WARNING_DISABLE(v)
 #endif 
 
 #ifdef _WIN32

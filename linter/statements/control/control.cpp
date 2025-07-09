@@ -56,6 +56,6 @@ Varjus::Success CLoopControlStatement::Parse()
 	return success;
 }
 
-RuntimeBlock CLoopControlStatement::ToRuntimeObject() const{
+__RuntimeBlock CLoopControlStatement::ToRuntimeObject() const{
 	return std::make_unique<CRuntimeLoopControlStatement>(m_eType);
 }

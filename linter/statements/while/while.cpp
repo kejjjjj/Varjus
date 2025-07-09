@@ -31,7 +31,7 @@ Varjus::Success CWhileStatementLinter::Parse()
 	return ParseScope();
 }
 
-RuntimeBlock CWhileStatementLinter::ToRuntimeObject() const
+__RuntimeBlock CWhileStatementLinter::ToRuntimeObject() const
 {
 	decltype(auto) tempAST = const_cast<ASTNode&&>(std::move(m_pCondition));
 	return tempAST ? std::make_unique<CRuntimeWhileStatement>(std::move(tempAST), m_pThisScope->MoveInstructions()) : nullptr;

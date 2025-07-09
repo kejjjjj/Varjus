@@ -48,17 +48,17 @@ public:
 	constexpr void MakeMatchScope(bool s = true) noexcept { m_bIsMatchStatement = s; }
 	[[nodiscard]] constexpr bool IsMatchScope() const noexcept { return m_bIsMatchStatement; }
 
-	void AddInstruction(RuntimeBlock&& block);
-	void AddInstructions(VectorOf<RuntimeBlock>&& block);
+	void AddInstruction(__RuntimeBlock&& block);
+	void AddInstructions(VectorOf<__RuntimeBlock>&& block);
 
-	[[nodiscard]] VectorOf<RuntimeBlock>&& MoveInstructions();
+	[[nodiscard]] VectorOf<__RuntimeBlock>&& MoveInstructions();
 	[[nodiscard]] IRuntimeStructure* GetLatestInstruction() const noexcept;
 
 	[[nodiscard]] constexpr auto& GetInstructions() const noexcept { return m_oInstructions; }
 
 private:
 
-	VectorOf<RuntimeBlock> m_oInstructions;
+	VectorOf<__RuntimeBlock> m_oInstructions;
 
 	CMemory* const m_pOwner;
 	CScope* m_pLowerScope{};

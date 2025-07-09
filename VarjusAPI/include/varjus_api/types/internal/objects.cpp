@@ -1,6 +1,7 @@
 #include "linter/context.hpp"
 #include "object_declarations.hpp"
 #include "objects.hpp"
+#include "runtime/misc/defs.hpp"
 #include "varjus_api/internal/exceptions/exception.hpp"
 #include "varjus_api/internal/runtime.hpp"
 #include "varjus_api/internal/structure.hpp"
@@ -45,7 +46,7 @@ IValue* CBuiltInObject::Copy() {
 	ptr->m_oProperties = m_oProperties;
 	return ptr;
 }
-IValue* CBuiltInObject::Index(CRuntimeContext* const ctx, IValue* index) {
+IValue* CBuiltInObject::Index(Varjus::CRuntimeContext* const ctx, IValue* index) {
 	const auto key = index->ValueAsEscapedString();
 
 	if (!m_pAllocator->ContainsKey(key)) {
@@ -66,7 +67,7 @@ IValue* CBuiltInObject::Index(CRuntimeContext* const ctx, IValue* index) {
 
 	return Internal()->GetAggregateValue().ElementLookup(memberIdx);
 }
-IValue* CBuiltInObject::GetAggregate(CRuntimeContext* const ctx, std::size_t memberIdx) {
+IValue* CBuiltInObject::GetAggregate(Varjus::CRuntimeContext* const ctx, std::size_t memberIdx) {
 
 	if (m_oMethods->contains(memberIdx)) {
 		auto v = m_pAllocator->AcquireNewValue<CCallableValue>();

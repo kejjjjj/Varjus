@@ -1,6 +1,9 @@
-#include "stdconsole.hpp"
-#include "varjus_api/types/object.hpp"
 
+#include "stdconsole.hpp"
+
+#include "runtime/misc/defs.hpp"
+
+#include "varjus_api/types/object.hpp"
 #include "varjus_api/internal/structure.hpp"
 
 #include <iostream>

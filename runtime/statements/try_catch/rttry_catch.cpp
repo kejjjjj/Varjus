@@ -5,13 +5,13 @@
 #include "varjus_api/internal/variables.hpp"
 
 CRuntimeTryCatchStatement::CRuntimeTryCatchStatement(const CCrossModuleReference& catchVariable,
-	InstructionSequence&& tryBlock, InstructionSequence&& catchBlock)
+	__InstructionSequence&& tryBlock, __InstructionSequence&& catchBlock)
 	: m_uCatchVariable(catchVariable),
 	m_oTryInstructions(std::move(tryBlock)), m_oCatchInstructions(std::move(catchBlock)){}
 
 CRuntimeTryCatchStatement::~CRuntimeTryCatchStatement() = default;
 
-IValue* CRuntimeTryCatchStatement::Execute(CRuntimeContext* const ctx)
+IValue* CRuntimeTryCatchStatement::Execute(Varjus::CRuntimeContext* const ctx)
 {
 
 	for (auto& insn : m_oTryInstructions) {
@@ -27,7 +27,7 @@ IValue* CRuntimeTryCatchStatement::Execute(CRuntimeContext* const ctx)
 
 	return nullptr;
 }
-IValue* CRuntimeTryCatchStatement::ExecuteCatchBlock(CRuntimeContext* const ctx)
+IValue* CRuntimeTryCatchStatement::ExecuteCatchBlock(Varjus::CRuntimeContext* const ctx)
 {
 
 	ctx->m_pRuntime->CatchException();

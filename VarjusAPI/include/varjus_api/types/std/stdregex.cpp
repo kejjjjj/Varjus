@@ -1,7 +1,9 @@
 #include "stdregex.hpp"
+
+#include "runtime/misc/defs.hpp"
+
 #include "varjus_api/types/types.hpp"
 #include "varjus_api/internal/structure.hpp"
-
 #include "varjus_api/internal/exceptions/exception.hpp"
 
 #include <regex>

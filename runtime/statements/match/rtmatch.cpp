@@ -7,22 +7,22 @@
 #include <algorithm>
 #include <ranges>
 
-CRuntimeCaseStatement::CRuntimeCaseStatement(ASTNode&& condition, InstructionSequence&& insns)
+CRuntimeCaseStatement::CRuntimeCaseStatement(ASTNode&& condition, __InstructionSequence&& insns)
 	: IRuntimeStructureSequence(std::move(insns)), m_pCondition(std::make_unique<CRuntimeExpression>(std::move(condition))) {
 }
 CRuntimeCaseStatement::~CRuntimeCaseStatement() = default;
 
-IValue* CRuntimeCaseStatement::Execute(CRuntimeContext* const ctx) {
+IValue* CRuntimeCaseStatement::Execute(Varjus::CRuntimeContext* const ctx) {
 	return ExecuteBlock(ctx);
 }
 
-CRuntimeMatchStatement::CRuntimeMatchStatement(ASTNode&& condition, CRuntimeCaseStatement* const defaultClause, InstructionSequence&& insns)
+CRuntimeMatchStatement::CRuntimeMatchStatement(ASTNode&& condition, CRuntimeCaseStatement* const defaultClause, __InstructionSequence&& insns)
 	: IRuntimeStructureSequence(std::move(insns)), m_pDefaultCase(defaultClause), 
 	m_pCondition(std::make_unique<CRuntimeExpression>(std::move(condition))) {}
 
 CRuntimeMatchStatement::~CRuntimeMatchStatement() = default;
 
-IValue* CRuntimeMatchStatement::Execute(CRuntimeContext* const ctx) {
+IValue* CRuntimeMatchStatement::Execute(Varjus::CRuntimeContext* const ctx) {
 
 
 	const auto begin = GetCaseIndex(ctx);
@@ -42,7 +42,7 @@ IValue* CRuntimeMatchStatement::Execute(CRuntimeContext* const ctx) {
 	return nullptr;
 }
 
-std::size_t CRuntimeMatchStatement::GetCaseIndex(CRuntimeContext* const ctx) const noexcept
+std::size_t CRuntimeMatchStatement::GetCaseIndex(Varjus::CRuntimeContext* const ctx) const noexcept
 {
 	assert(m_pCondition);
 	const auto expression = m_pCondition->Evaluate(ctx);

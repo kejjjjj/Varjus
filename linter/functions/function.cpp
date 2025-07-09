@@ -198,7 +198,7 @@ std::unique_ptr<CFunctionBlock> CFunctionLinter::ToFunction() const
 		.m_oInstructions={}
 	});
 }
-RuntimeBlock CFunctionLinter::ToRuntimeObject() const{
+__RuntimeBlock CFunctionLinter::ToRuntimeObject() const{
 	return ToRuntimeFunction();
 }
 std::unique_ptr<CRuntimeFunction> CFunctionLinter::ToRuntimeFunction() const

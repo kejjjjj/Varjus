@@ -16,21 +16,21 @@
 
 using namespace Varjus;
 
-void CAggregate::Setup(Varjus::CProgramRuntime* const runtime, const std::vector<ElementIndex>& elements){
+void CAggregate::Setup(Varjus::CProgramRuntime* const runtime, const std::vector<__ElementIndex>& elements){
 	m_pAllocator = runtime;
 	for (auto& l : elements) {
 		AddAttribute(l);
 	}
 }
-CVariable* CAggregate::AddAttribute(ElementIndex elem)
+CVariable* CAggregate::AddAttribute(__ElementIndex elem)
 {
 	assert(m_pAllocator);
 	return m_oIndexLookup[elem] = CVariable::Construct(m_pAllocator, IValue::Construct(m_pAllocator));
 }
-void CAggregate::AddAttribute(ElementIndex elem, IValue* value){
+void CAggregate::AddAttribute(__ElementIndex elem, IValue* value){
 	return AddAttribute(elem)->SetValue(value);
 }
-bool CAggregate::RemoveAttribute(ElementIndex elem)
+bool CAggregate::RemoveAttribute(__ElementIndex elem)
 {
 	if (!m_oIndexLookup.contains(elem))
 		return false;
@@ -52,7 +52,7 @@ void CAggregate::Release()
 		}
 	}
 }
-IValue* CAggregate::ElementLookup(GlobalMemberIndex index) const
+IValue* CAggregate::ElementLookup(__GlobalMemberIndex index) const
 {
 	assert(m_pAllMembers);
 	if (!m_oIndexLookup.contains(index)) {
@@ -89,7 +89,7 @@ IValue* CAggregate::Get(const VarjusString& item) const
 	return m_oIndexLookup.at(key)->GetValue();
 }
 #ifdef RUNNING_TESTS
-IValue* CAggregate::ElementLookupNoExcept(GlobalMemberIndex index) const noexcept {
+IValue* CAggregate::ElementLookupNoExcept(__GlobalMemberIndex index) const noexcept {
 
 	if (!m_oIndexLookup.contains(index))
 		return nullptr;

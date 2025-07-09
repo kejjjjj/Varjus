@@ -22,8 +22,8 @@ ASTNode CImmediateOperand::ToAST(){
 }
 
 #pragma pack(push)
-WARNING_DISABLE(4061)
-WARNING_DISABLE(4062)
+VARJUS_WARNING_DISABLE(4061)
+VARJUS_WARNING_DISABLE(4062)
 Varjus::EValueType CImmediateOperand::GetImmediateType() const noexcept
 {
 	switch (m_pToken->Type()) {

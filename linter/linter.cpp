@@ -38,7 +38,7 @@ CBufferLinter::CBufferLinter(CProgramInformation* const program, LinterIterator&
 	: CLinter(start, end), m_oInitialPosition(start), m_sFilePath(filePath), m_pProgram(program) {}
 CBufferLinter::~CBufferLinter() = default;
 
-static Varjus::Success AddInstruction(RuntimeBlock&& block, const WeakScope& scope)
+static Varjus::Success AddInstruction(__RuntimeBlock&& block, const WeakScope& scope)
 {
 	if (block) { //nullptr when no initializer
 

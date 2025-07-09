@@ -18,7 +18,7 @@ CRuntimeExpression::CRuntimeExpression(ASTNode&& ast) :
 	m_pAST(std::move(ast)) {}
 CRuntimeExpression::~CRuntimeExpression() = default;
 
-IValue* CRuntimeExpression::Execute(CRuntimeContext* const ctx)
+IValue* CRuntimeExpression::Execute(Varjus::CRuntimeContext* const ctx)
 {
 	[[maybe_unused]] const auto result = Evaluate(ctx);
 	
@@ -30,11 +30,11 @@ IValue* CRuntimeExpression::Execute(CRuntimeContext* const ctx)
 
 	return nullptr;
 }
-IValue* CRuntimeExpression::Evaluate(CRuntimeContext* const ctx) {
+IValue* CRuntimeExpression::Evaluate(Varjus::CRuntimeContext* const ctx) {
 	return Evaluate(ctx, m_pAST);
 }
 
-static IValue* ConditionalShortcut(CRuntimeContext* const ctx, IValue* lhs, Punctuation punctuation)
+static IValue* ConditionalShortcut(Varjus::CRuntimeContext* const ctx, IValue* lhs, Punctuation punctuation)
 {
 	if (punctuation == p_logical_or) {
 		//if lhs of || is true, we can exit early
@@ -59,9 +59,9 @@ static IValue* ConditionalShortcut(CRuntimeContext* const ctx, IValue* lhs, Punc
 	return nullptr;
 }
 #pragma pack(push)
-WARNING_DISABLE(4061)
-WARNING_DISABLE(4062)
-IValue* CRuntimeExpression::Evaluate(CRuntimeContext* const ctx, RuntimeAST& node)
+VARJUS_WARNING_DISABLE(4061)
+VARJUS_WARNING_DISABLE(4062)
+IValue* CRuntimeExpression::Evaluate(Varjus::CRuntimeContext* const ctx, RuntimeAST& node)
 {
 	if (ctx->m_pRuntime->ExceptionThrown())
 		return ctx->m_pRuntime->GetExceptionValue();
@@ -109,7 +109,7 @@ IValue* CRuntimeExpression::Evaluate(CRuntimeContext* const ctx, RuntimeAST& nod
 	}
 	assert(node->IsOperator());
 
-	auto& func = m_oOperatorTable[static_cast<std::size_t>(punctuation)];
+	auto& func = varjus_m_oOperatorTable[static_cast<std::size_t>(punctuation)];
 
 	if (!func)
 		throw CRuntimeError(ctx->m_pRuntime, VSL("this operator isn't supported yet"));
@@ -130,7 +130,7 @@ IValue* CRuntimeExpression::Evaluate(CRuntimeContext* const ctx, RuntimeAST& nod
 }
 #pragma pack(pop)
 
-inline IValue* EvaluateVariable(CRuntimeContext* const ctx, const VariableASTNode* const var)
+inline IValue* EvaluateVariable(Varjus::CRuntimeContext* const ctx, const VariableASTNode* const var)
 {
 	CVariable* variable{ nullptr };
 
@@ -157,7 +157,7 @@ inline IValue* EvaluateVariable(CRuntimeContext* const ctx, const VariableASTNod
 
 	return v;
 }
-inline IValue* EvaluateFunction(CRuntimeContext* const ctx, const FunctionASTNode* const var)
+inline IValue* EvaluateFunction(Varjus::CRuntimeContext* const ctx, const FunctionASTNode* const var)
 {
 	auto activeModule = var->m_bBelongsToDifferentModule
 		? ctx->m_pRuntime->GetModuleByIndex(var->m_uModuleIndex)
@@ -171,7 +171,7 @@ inline IValue* EvaluateFunction(CRuntimeContext* const ctx, const FunctionASTNod
 	v->MakeImmutable();
 	return v;
 }
-inline IValue* EvaluateLambda(CRuntimeContext* const ctx, const LambdaASTNode* const var)
+inline IValue* EvaluateLambda(Varjus::CRuntimeContext* const ctx, const LambdaASTNode* const var)
 {
 	auto v = CCallableValue::Construct(ctx->m_pRuntime, var->m_pLambda.get());
 
@@ -180,7 +180,7 @@ inline IValue* EvaluateLambda(CRuntimeContext* const ctx, const LambdaASTNode* c
 
 	return v;
 }
-IValue* CRuntimeExpression::EvaluateLeaf(CRuntimeContext* const ctx, RuntimeAST& node)
+IValue* CRuntimeExpression::EvaluateLeaf(Varjus::CRuntimeContext* const ctx, RuntimeAST& node)
 {
 
 	if (node->IsVariable()) {
@@ -226,7 +226,7 @@ IValue* CRuntimeExpression::EvaluateLeaf(CRuntimeContext* const ctx, RuntimeAST&
 	assert(false);
 	return nullptr;
 }
-IValue* CRuntimeExpression::EvaluateSequence(CRuntimeContext* const ctx, RuntimeAST& node)
+IValue* CRuntimeExpression::EvaluateSequence(Varjus::CRuntimeContext* const ctx, RuntimeAST& node)
 {
 	//discard lhs
 	auto lhs = Evaluate(ctx, node->left);
@@ -237,7 +237,7 @@ IValue* CRuntimeExpression::EvaluateSequence(CRuntimeContext* const ctx, Runtime
 	return Evaluate(ctx, node->right);
 }
 
-IValue* CRuntimeExpression::EvaluateTernary(CRuntimeContext* const ctx, TernaryASTNode* node)
+IValue* CRuntimeExpression::EvaluateTernary(Varjus::CRuntimeContext* const ctx, TernaryASTNode* node)
 {
 	auto operand = Evaluate(ctx, node->m_pOperand);
 
@@ -256,7 +256,7 @@ IValue* CRuntimeExpression::EvaluateTernary(CRuntimeContext* const ctx, TernaryA
 	return Evaluate(ctx, node->m_pFalse);
 
 }
-IValue* CRuntimeExpression::EvaluateFmtString(CRuntimeContext* const ctx, FmtStringASTNode* node)
+IValue* CRuntimeExpression::EvaluateFmtString(Varjus::CRuntimeContext* const ctx, FmtStringASTNode* node)
 {
 	VarjusString fullString;
 	for (auto& [t, v] : node->m_oNodes) {

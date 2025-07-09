@@ -51,7 +51,7 @@ public:
 	[[nodiscard]] virtual constexpr EPostfixType Type() const noexcept = 0;
 	[[nodiscard]] virtual ASTNode ToAST() = 0;
 
-	CodePosition m_oCodePosition;
+	__CodePosition m_oCodePosition;
 };
 
 class CPostfixMemberAccess final : public IPostfixBase
@@ -89,14 +89,14 @@ class CPostfixFunctionCall final : public IPostfixBase
 	VARJUS_NONCOPYABLE(CPostfixFunctionCall);
 public:
 	CPostfixFunctionCall();
-	CPostfixFunctionCall(ExpressionList&& args);
+	CPostfixFunctionCall(__ExpressionList&& args);
 	~CPostfixFunctionCall();
 
 	[[nodiscard]] constexpr EPostfixType Type() const noexcept override { return pf_functioncall; }
 	[[nodiscard]] ASTNode ToAST() override;
 
 private:
-	ExpressionList m_pArgs;
+	__ExpressionList m_pArgs;
 };
 
 class CPostfixIncrement final : public IPostfixBase

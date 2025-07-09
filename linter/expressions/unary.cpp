@@ -19,7 +19,7 @@ CUnaryLinter::CUnaryLinter(LinterIterator& pos, LinterIterator& end, const WeakS
 CUnaryLinter::~CUnaryLinter() = default;
 
 #pragma pack(push)
-WARNING_DISABLE(4061)
+VARJUS_WARNING_DISABLE(4061)
 Varjus::Success CUnaryLinter::ParseUnary()
 {
 

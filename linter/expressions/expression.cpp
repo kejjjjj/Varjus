@@ -39,9 +39,9 @@ ASTNode CExpressionList::ToMergedAST()
 	newRoot->right = m_pNext->ToMergedAST();
 	return newRoot;
 }
-ExpressionList CExpressionList::ToExpressionList()
+__ExpressionList CExpressionList::ToExpressionList()
 {
-	ExpressionList list;
+	__ExpressionList list;
 	auto pos = this;
 	while (pos) {
 		assert(pos->m_pAST);
@@ -144,7 +144,7 @@ ASTNode CLinterExpression::ToMergedAST() const
 	assert(m_pEvaluatedExpressions);
 	return m_pEvaluatedExpressions->ToMergedAST();
 }
-ExpressionList CLinterExpression::ToExpressionList() const
+__ExpressionList CLinterExpression::ToExpressionList() const
 {
 	if (m_pOwner->IsHoisting())
 		return {};
@@ -152,7 +152,7 @@ ExpressionList CLinterExpression::ToExpressionList() const
 	assert(m_pEvaluatedExpressions);
 	return m_pEvaluatedExpressions->ToExpressionList();
 }
-RuntimeBlock CLinterExpression::ToRuntimeObject() const
+__RuntimeBlock CLinterExpression::ToRuntimeObject() const
 {
 	if (m_pOwner->IsHoisting())
 		return nullptr;

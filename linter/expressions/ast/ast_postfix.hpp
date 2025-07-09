@@ -9,8 +9,8 @@ class PostfixASTNode : public OperatorASTNode
 {
 public:
 	PostfixASTNode() = default;
-	PostfixASTNode(const CodePosition& pos) : OperatorASTNode(pos) {}
-	PostfixASTNode(const CodePosition& pos, Punctuation punc) : OperatorASTNode(pos,punc) {}
+	PostfixASTNode(const __CodePosition& pos) : OperatorASTNode(pos) {}
+	PostfixASTNode(const __CodePosition& pos, Punctuation punc) : OperatorASTNode(pos,punc) {}
 	~PostfixASTNode() = default;
 
 	[[nodiscard]] constexpr const PostfixASTNode* GetPostfix() const noexcept override { return this; }
@@ -39,7 +39,7 @@ class MemberAccessASTNode : public PostfixASTNode
 {
 	VARJUS_NONCOPYABLE(MemberAccessASTNode);
 public:
-	MemberAccessASTNode(const CodePosition& pos, std::size_t globalMemberIndex)
+	MemberAccessASTNode(const __CodePosition& pos, std::size_t globalMemberIndex)
 		: PostfixASTNode(pos), m_uGlobalMemberIndex(globalMemberIndex) {
 	}
 
@@ -53,7 +53,7 @@ class SubscriptASTNode : public PostfixASTNode
 {
 	VARJUS_NONCOPYABLE(SubscriptASTNode);
 public:
-	SubscriptASTNode(const CodePosition& pos, ASTNode&& expression)
+	SubscriptASTNode(const __CodePosition& pos, ASTNode&& expression)
 		: PostfixASTNode(pos), m_pAST(std::move(expression)) {
 	}
 	
@@ -68,7 +68,7 @@ class FunctionCallASTNode : public PostfixASTNode
 {
 	VARJUS_NONCOPYABLE(FunctionCallASTNode);
 public:
-	FunctionCallASTNode(const CodePosition& pos, VectorOf<ASTNode>&& args)
+	FunctionCallASTNode(const __CodePosition& pos, VectorOf<ASTNode>&& args)
 		: PostfixASTNode(pos), m_oArguments(std::move(args)) {
 	}
 	[[nodiscard]] constexpr bool IsFunctionCall() const noexcept override { return true; }
@@ -83,7 +83,7 @@ class PostfixIncrementAST : public PostfixASTNode
 {
 	VARJUS_NONCOPYABLE(PostfixIncrementAST);
 public:
-	PostfixIncrementAST(const CodePosition& pos)
+	PostfixIncrementAST(const __CodePosition& pos)
 		: PostfixASTNode(pos) {
 	}
 
@@ -95,7 +95,7 @@ class PostfixDecrementAST : public PostfixASTNode
 {
 	VARJUS_NONCOPYABLE(PostfixDecrementAST);
 public:
-	PostfixDecrementAST(const CodePosition& pos)
+	PostfixDecrementAST(const __CodePosition& pos)
 		: PostfixASTNode(pos) {
 	}
 

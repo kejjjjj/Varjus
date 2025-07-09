@@ -8,7 +8,7 @@ class CVariable;
 namespace Varjus {
 	class CProgramRuntime;
 }
-using OperatorFunc = IValue*(*)(Varjus::CProgramRuntime* const, IValue*, IValue*);
+using __OperatorFunc = IValue*(*)(Varjus::CProgramRuntime* const, IValue*, IValue*);
 
 #define FORWARD_DECLARE_OPERATOR(Name)\
 IValue* Name(Varjus::CProgramRuntime* const runtime, IValue* lhs, IValue* rhs);
@@ -61,7 +61,7 @@ FORWARD_DECLARE_OPERATOR(OP_ASSIGNMENT_SWAP)
 #define NUM_OPERATORS 33ull
 
 //VERY IMPORTANT THAT THESE HAVE THE SAME ORDER AS CPunctuation
-constexpr std::array<OperatorFunc, NUM_OPERATORS> m_oOperatorTable = { {
+constexpr std::array<__OperatorFunc, NUM_OPERATORS> varjus_m_oOperatorTable = { {
 
 	nullptr,          // p_error
 	OP_ADDITION,      // p_add

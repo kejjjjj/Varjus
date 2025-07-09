@@ -26,7 +26,7 @@ CPostfixLinter::CPostfixLinter(LinterIterator& pos, LinterIterator& end, const W
 CPostfixLinter::~CPostfixLinter() = default;
 
 #pragma pack(push)
-WARNING_DISABLE(4061)
+VARJUS_WARNING_DISABLE(4061)
 Varjus::Success CPostfixLinter::ParsePostfix()
 {
 
@@ -169,7 +169,7 @@ CPostfixSubscript::~CPostfixSubscript() = default;
  > 
 ***********************************************************************/
 CPostfixFunctionCall::CPostfixFunctionCall() = default;
-CPostfixFunctionCall::CPostfixFunctionCall(ExpressionList&& args) 
+CPostfixFunctionCall::CPostfixFunctionCall(__ExpressionList&& args) 
 	:  m_pArgs(std::move(args)){}
 CPostfixFunctionCall::~CPostfixFunctionCall() = default;
 

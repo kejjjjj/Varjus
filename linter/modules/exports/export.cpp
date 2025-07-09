@@ -73,7 +73,7 @@ Varjus::Success CExportLinter::ParseFunctionDeclaration()
 	return success;
 
 }
-RuntimeBlock CExportLinter::ToRuntimeObject() const
+__RuntimeBlock CExportLinter::ToRuntimeObject() const
 { 
 	if (m_pVariableLinter) 
 		return m_pVariableLinter->ToRuntimeObject();

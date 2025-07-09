@@ -19,8 +19,8 @@ namespace Varjus {
 	class CRuntimeModule;
 }
 
-using RuntimeBlock = std::unique_ptr<IRuntimeStructure>;
-using RuntimeFunction = std::unique_ptr<CRuntimeFunctionBase>;
+using __RuntimeBlock = std::unique_ptr<IRuntimeStructure>;
+using __RuntimeFunction = std::unique_ptr<CRuntimeFunctionBase>;
 using UniqueExportedSymbol = std::unique_ptr<CExportedSymbol>;
 
 using RuntimeModules = VectorOf<std::unique_ptr<Varjus::CRuntimeModule>>;
@@ -65,8 +65,8 @@ public:
 	[[nodiscard]] CRuntimeFunctionBase* FindFunction(const VarjusString& v) const;
 	[[nodiscard]] size_t GetFunctionCount() const noexcept;
 
-	void AddFunction(RuntimeFunction&& func);
-	void AddGlobalInstructions(VectorOf<RuntimeBlock>&& insns);
+	void AddFunction(__RuntimeFunction&& func);
+	void AddGlobalInstructions(VectorOf<__RuntimeBlock>&& insns);
 	void SetGlobalVariableCount(std::size_t v);
 
 	[[nodiscard]] std::unique_ptr<Varjus::CRuntimeModule> ToRuntimeModule();
@@ -82,15 +82,15 @@ public:
 	[[nodiscard]] constexpr auto& GetExports() const noexcept { return m_oModuleExports; }
 
 	[[nodiscard]] inline auto PushError(const VarjusString& err) { m_oErrors.PushError(GetFilePath(), err); }
-	[[nodiscard]] inline auto PushError(const VarjusString& err, const CodePosition& pos) {
+	[[nodiscard]] inline auto PushError(const VarjusString& err, const __CodePosition& pos) {
 		m_oErrors.PushError(GetFilePath(), err, pos); 
 	}
 
 private:
 
 	std::size_t m_uNumGlobalVariables{};
-	VectorOf<RuntimeBlock> m_oGlobalScopeInstructions;
-	VectorOf<RuntimeFunction> m_oFunctions;
+	VectorOf<__RuntimeBlock> m_oGlobalScopeInstructions;
+	VectorOf<__RuntimeFunction> m_oFunctions;
 	ModuleExports m_oModuleExports;
 	CLinterErrors m_oErrors; //file specific errors
 

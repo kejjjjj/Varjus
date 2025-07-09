@@ -47,7 +47,7 @@ void CCallableValue::Release()
 	
 
 }
-IValue* CCallableValue::Call(CRuntimeContext* const ctx, const IValues& args)
+IValue* CCallableValue::Call(Varjus::CRuntimeContext* const ctx, const IValues& args)
 {
 	if (ctx->m_pRuntime->ExceptionThrown())
 		return ctx->m_pRuntime->GetExceptionValue();
@@ -55,7 +55,7 @@ IValue* CCallableValue::Call(CRuntimeContext* const ctx, const IValues& args)
 	auto internal = Internal();
 	auto callable = internal->GetCallable();
 
-	CRuntimeContext newContext = {
+	Varjus::CRuntimeContext newContext = {
 		.m_pRuntime = ctx->m_pRuntime,
 		.m_pModule = internal->m_bRequiresModuleChange
 			? ctx->m_pRuntime->GetModuleByIndex(internal->m_uModule)
@@ -79,7 +79,7 @@ CInternalCallableValue* CCallableValue::Internal() {
 CInternalCallableValue* CCallableValue::Internal() const {
 	return GetShared().get();
 }
-void CInternalCallableValue::SetCaptures(CRuntimeContext* const ctx, const VectorOf<CCrossModuleReference>& captures)
+void CInternalCallableValue::SetCaptures(Varjus::CRuntimeContext* const ctx, const VectorOf<CCrossModuleReference>& captures)
 {
 
 	for (auto& var : captures) {

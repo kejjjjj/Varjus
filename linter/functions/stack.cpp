@@ -39,10 +39,10 @@ CStack::CStack(CProgramInformation* const program, CMemory* globalMemory, std::u
 
 CStack::~CStack() = default;
 
-void CStack::AddFunctionInstruction(RuntimeBlock&& block) const{
+void CStack::AddFunctionInstruction(__RuntimeBlock&& block) const{
 	m_pFunction->m_oInstructions.emplace_back(std::move(block));
 }
-const VectorOf<RuntimeBlock>& CStack::GetInstructions() const noexcept
+const VectorOf<__RuntimeBlock>& CStack::GetInstructions() const noexcept
 {
 	assert(m_pFunction);
 	return m_pFunction->m_oInstructions;

@@ -23,7 +23,7 @@ struct CFileContext;
 
 template<typename T>
 using VectorOf = std::vector<T>;
-using RuntimeBlock = std::unique_ptr<IRuntimeStructure>;
+using __RuntimeBlock = std::unique_ptr<IRuntimeStructure>;
 
 template<typename T>
 using VarManager = std::unique_ptr<CVariableManager<T>>;
@@ -63,7 +63,7 @@ public:
 	[[nodiscard]] bool HasHoistedData() const noexcept { return !!m_pGlobal->m_pHoister; }
 	[[nodiscard]] auto& GetHoister() const noexcept { return m_pGlobal->m_pHoister; }
 
-	[[nodiscard]] virtual const VectorOf<RuntimeBlock>& GetInstructions() const noexcept { return m_oInstructions; }
+	[[nodiscard]] virtual const VectorOf<__RuntimeBlock>& GetInstructions() const noexcept { return m_oInstructions; }
 
 	VarManager<CLinterVariable> m_VariableManager;
 	std::unique_ptr<CFunctionManager> m_FunctionManager;
@@ -75,11 +75,11 @@ protected:
 	CMemory* m_pLowerRegion{ nullptr };
 	Varjus::CProgramInformation* const m_pProgram{};
 private:
-	VectorOf<RuntimeBlock> m_oInstructions;
+	VectorOf<__RuntimeBlock> m_oInstructions;
 	CHoister* m_pHoister{ nullptr };
 };
 
-using RuntimeBlock = std::unique_ptr<IRuntimeStructure>;
+using __RuntimeBlock = std::unique_ptr<IRuntimeStructure>;
 
 
 
@@ -98,8 +98,8 @@ public:
 	[[nodiscard]] CStack* GetGlobalFunction();
 	[[nodiscard]] constexpr bool IsLocalFunction() const noexcept override { return !!m_pLowerFunction; };
 
-	void AddFunctionInstruction(RuntimeBlock&& block) const;
-	[[nodiscard]] const VectorOf<RuntimeBlock>& GetInstructions() const noexcept override;
+	void AddFunctionInstruction(__RuntimeBlock&& block) const;
+	[[nodiscard]] const VectorOf<__RuntimeBlock>& GetInstructions() const noexcept override;
 
 	std::unique_ptr<CFunctionBlock> m_pFunction;
 	CStack* m_pLowerFunction{ nullptr };

@@ -8,11 +8,11 @@ class IRuntimeStructure;
 class CModule;
 class CHoister;
 
-using RuntimeBlock = std::unique_ptr<IRuntimeStructure>;
+using __RuntimeBlock = std::unique_ptr<IRuntimeStructure>;
 
-WARNING_PUSH()
-WARNING_DISABLE(5027)
-WARNING_DISABLE(4623)
+VARJUS_WARNING_PUSH()
+VARJUS_WARNING_DISABLE(5027)
+VARJUS_WARNING_DISABLE(4623)
 struct CLinterContext
 {
 	LinterIterator& m_iterPos;
@@ -22,7 +22,7 @@ struct CLinterContext
 	CModule* const m_pModule;
 	bool m_bAddInstructions{ true };
 };
-WARNING_POP()
+VARJUS_WARNING_POP()
 
 class CBufferLinter final : public CLinter<CToken>
 {

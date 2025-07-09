@@ -9,11 +9,11 @@
 
 using namespace Varjus;
 
-CRuntimeRepeatStatement::CRuntimeRepeatStatement(ASTNode&& condition, InstructionSequence&& insns)
+CRuntimeRepeatStatement::CRuntimeRepeatStatement(ASTNode&& condition, __InstructionSequence&& insns)
 	: IRuntimeStructureSequence(std::move(insns)), m_pCondition(std::make_unique<CRuntimeExpression>(std::move(condition))) {}
 CRuntimeRepeatStatement::~CRuntimeRepeatStatement() = default;
 
-static bool EvaluateCondition(CRuntimeContext* const ctx, std::unique_ptr<CRuntimeExpression>& m_pCondition)
+static bool EvaluateCondition(Varjus::CRuntimeContext* const ctx, std::unique_ptr<CRuntimeExpression>& m_pCondition)
 {
 	auto condition = m_pCondition->Evaluate(ctx);
 
@@ -28,7 +28,7 @@ static bool EvaluateCondition(CRuntimeContext* const ctx, std::unique_ptr<CRunti
 	return boolValue;
 }
 
-IValue* CRuntimeRepeatStatement::Execute([[maybe_unused]] CRuntimeContext* const ctx)
+IValue* CRuntimeRepeatStatement::Execute([[maybe_unused]] Varjus::CRuntimeContext* const ctx)
 {
 
 	const auto hasAST = m_pCondition->HasAST();

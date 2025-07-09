@@ -2,10 +2,11 @@
 
 #include "internal/object_declarations.hpp"
 
+#include "runtime/misc/defs.hpp"
+
 #include "varjus_api/internal/runtime.hpp"
 #include "varjus_api/internal/variables.hpp"
 #include "varjus_api/internal/structure.hpp"
-
 #include "varjus_api/internal/exceptions/exception.hpp"
 #include "linter/context.hpp"
 
@@ -44,7 +45,7 @@ CObjectValue* CObjectValue::Construct(Varjus::CProgramRuntime* const runtime, __
 	return ptr;
 }
 
-CObjectValue* CObjectValue::_ConstructInternal(Varjus::CProgramRuntime* const runtime, ObjectInitializer&& values)
+CObjectValue* CObjectValue::_ConstructInternal(Varjus::CProgramRuntime* const runtime, __ObjectInitializer&& values)
 {
 	auto ptr = runtime->AcquireNewValue<CObjectValue>();
 	ptr->MakeShared();
@@ -79,7 +80,7 @@ CInternalObjectValue* CObjectValue::Internal() {
 CInternalObjectValue* CObjectValue::Internal() const {
 	return GetShared().get();
 }
-IValue* CObjectValue::Index([[maybe_unused]] CRuntimeContext* const ctx, IValue* index) {
+IValue* CObjectValue::Index([[maybe_unused]] Varjus::CRuntimeContext* const ctx, IValue* index) {
 	const auto key = index->ValueAsEscapedString();
 
 	if (!m_pAllocator->ContainsKey(key)) {
@@ -88,7 +89,7 @@ IValue* CObjectValue::Index([[maybe_unused]] CRuntimeContext* const ctx, IValue*
 
 	return Internal()->GetAggregateValue().ElementLookup(m_pAllocator->StringToKey(key));
 }
-IValue* CObjectValue::GetAggregate(CRuntimeContext* const ctx, std::size_t memberIdx) {
+IValue* CObjectValue::GetAggregate(Varjus::CRuntimeContext* const ctx, std::size_t memberIdx) {
 
 	auto& obj = m_pAllocator->GetDefaultObject<CObjectValue>();
 	auto methods = obj.GetMethods();
@@ -133,7 +134,7 @@ void CInternalObjectValue::Release()
 {
 	GetAggregateValue().Release();
 }
-void CInternalObjectValue::Set(ObjectInitializer&& v) {
+void CInternalObjectValue::Set(__ObjectInitializer&& v) {
 
 	for (auto& [key, value] : v) {
 		m_oValue.AddAttribute(key, value);

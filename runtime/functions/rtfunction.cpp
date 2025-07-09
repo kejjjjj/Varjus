@@ -14,7 +14,7 @@
 
 using namespace Varjus;
 
-CRuntimeFunction::CRuntimeFunction(ElementIndex moduleIndex, CFunctionBlock& linterFunction,
+CRuntimeFunction::CRuntimeFunction(__ElementIndex moduleIndex, CFunctionBlock& linterFunction,
 	VectorOf<CCrossModuleReference>&& args,
 	VectorOf<CCrossModuleReference>&& variableIndices) :
 	CRuntimeFunctionBase(linterFunction.m_sName, linterFunction.m_uNumParameters),
@@ -28,8 +28,8 @@ CRuntimeFunction::CRuntimeFunction(ElementIndex moduleIndex, CFunctionBlock& lin
 }
 CRuntimeFunction::~CRuntimeFunction() = default;
 
-IValue* CRuntimeFunction::Execute(CRuntimeContext* const ctx, [[maybe_unused]] IValue* _this,
-	VectorOf<IValue*>& args, const VariableCaptures& captures)
+IValue* CRuntimeFunction::Execute(Varjus::CRuntimeContext* const ctx, [[maybe_unused]] IValue* _this,
+	VectorOf<IValue*>& args, const __VariableCaptures& captures)
 {
 	assert(ctx->m_pRuntime);
 	if (m_uNumArguments != args.size())
@@ -39,7 +39,7 @@ IValue* CRuntimeFunction::Execute(CRuntimeContext* const ctx, [[maybe_unused]] I
 	auto func = CFunction(ctx->m_pRuntime, args, captures, *this);
 	const auto isMainFunction = ctx->m_pFunction == nullptr;
 
-	CRuntimeContext thisContext{
+	Varjus::CRuntimeContext thisContext{
 		.m_pRuntime = ctx->m_pRuntime,
 		.m_pModule = ctx->m_pModule,
 		.m_pFunction = &func
@@ -94,8 +94,8 @@ CBuiltInRuntimeMethod::CBuiltInRuntimeMethod(Method_t method, std::size_t numArg
 
 CBuiltInRuntimeMethod::~CBuiltInRuntimeMethod() = default;
 
-IValue* CBuiltInRuntimeMethod::ExecuteFunction( CRuntimeContext* const ctx, IValue* _this,
-	VectorOf<IValue*>& args, [[maybe_unused]] const VariableCaptures& captures)
+IValue* CBuiltInRuntimeMethod::ExecuteFunction( Varjus::CRuntimeContext* const ctx, IValue* _this,
+	VectorOf<IValue*>& args, [[maybe_unused]] const __VariableCaptures& captures)
 {
 
 	assert(m_pMethod);
@@ -118,8 +118,8 @@ CBuiltInRuntimeFunction::CBuiltInRuntimeFunction(const VarjusString& name, Funct
 
 CBuiltInRuntimeFunction::~CBuiltInRuntimeFunction() = default;
 
-IValue* CBuiltInRuntimeFunction::ExecuteFunction(CRuntimeContext* const ctx, [[maybe_unused]] IValue* _this,
-	VectorOf<IValue*>& args, [[maybe_unused]] const VariableCaptures& captures)
+IValue* CBuiltInRuntimeFunction::ExecuteFunction(Varjus::CRuntimeContext* const ctx, [[maybe_unused]] IValue* _this,
+	VectorOf<IValue*>& args, [[maybe_unused]] const __VariableCaptures& captures)
 {
 
 	assert(m_pFunction);
@@ -140,7 +140,7 @@ IValue* CBuiltInRuntimeFunction::ExecuteFunction(CRuntimeContext* const ctx, [[m
 }
 
 CFunction::CFunction(Varjus::CProgramRuntime* const runtime, VectorOf<IValue*>& args,
-	const VariableCaptures& captures, const CRuntimeFunction& func)
+	const __VariableCaptures& captures, const CRuntimeFunction& func)
 {
 	//setup parameters
 	for (auto i = std::size_t(0); auto& arg : func.m_oArgumentIndices) {

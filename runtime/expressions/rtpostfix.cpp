@@ -16,7 +16,7 @@ using namespace Varjus;
 static IValue* EvaluateIncrement(Varjus::CProgramRuntime* const runtime, IValue* operand);
 static IValue* EvaluateDecrement(Varjus::CProgramRuntime* const runtime, IValue* operand);
 
-IValue* CRuntimeExpression::EvaluatePostfix(CRuntimeContext* const ctx, PostfixASTNode* node)
+IValue* CRuntimeExpression::EvaluatePostfix(Varjus::CRuntimeContext* const ctx, PostfixASTNode* node)
 {
 	auto operand = Evaluate(ctx, node->left);
 
@@ -55,7 +55,7 @@ IValue* CRuntimeExpression::EvaluatePostfix(CRuntimeContext* const ctx, PostfixA
 	assert(returnVal);
 	return returnVal;
 }
-IValue* CRuntimeExpression::EvaluateMemberAccess(CRuntimeContext* const ctx, IValue* operand, const MemberAccessASTNode* node)
+IValue* CRuntimeExpression::EvaluateMemberAccess(Varjus::CRuntimeContext* const ctx, IValue* operand, const MemberAccessASTNode* node)
 {
 
 	if(!operand->IsAggregate())
@@ -64,7 +64,7 @@ IValue* CRuntimeExpression::EvaluateMemberAccess(CRuntimeContext* const ctx, IVa
 	return operand->GetAggregate(ctx, node->m_uGlobalMemberIndex);
 
 }
-IValue* CRuntimeExpression::EvaluateSubscript(CRuntimeContext* const ctx, IValue* operand, SubscriptASTNode* node)
+IValue* CRuntimeExpression::EvaluateSubscript(Varjus::CRuntimeContext* const ctx, IValue* operand, SubscriptASTNode* node)
 {
 	if (!operand->IsIndexable())
 		throw CRuntimeError(ctx->m_pRuntime, Varjus::fmt::format(VSL("a value of type \"{}\" cannot be indexed"), operand->TypeAsString()));
@@ -80,7 +80,7 @@ IValue* CRuntimeExpression::EvaluateSubscript(CRuntimeContext* const ctx, IValue
 
 	return index;
 }
-IValue* CRuntimeExpression::EvaluateFunctionCall(CRuntimeContext* const ctx, IValue* operand, FunctionCallASTNode* node)
+IValue* CRuntimeExpression::EvaluateFunctionCall(Varjus::CRuntimeContext* const ctx, IValue* operand, FunctionCallASTNode* node)
 {
 
 	if (!operand->IsCallable())

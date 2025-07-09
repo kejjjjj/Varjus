@@ -5,8 +5,8 @@ class UnaryASTNode : public OperatorASTNode
 {
 public:
 	UnaryASTNode() = default;
-	UnaryASTNode(const CodePosition& pos) : OperatorASTNode(pos) {}
-	UnaryASTNode(const CodePosition& pos, Punctuation punc) : OperatorASTNode(pos, punc) {}
+	UnaryASTNode(const __CodePosition& pos) : OperatorASTNode(pos) {}
+	UnaryASTNode(const __CodePosition& pos, Punctuation punc) : OperatorASTNode(pos, punc) {}
 	~UnaryASTNode() = default;
 
 	[[nodiscard]] constexpr const UnaryASTNode* GetUnary() const noexcept override { return this; }
@@ -29,7 +29,7 @@ class UnaryNegationAST : public UnaryASTNode
 {
 	VARJUS_NONCOPYABLE(UnaryNegationAST);
 public:
-	UnaryNegationAST(const CodePosition& pos)
+	UnaryNegationAST(const __CodePosition& pos)
 		: UnaryASTNode(pos) {
 	}
 
@@ -40,7 +40,7 @@ class UnaryIncrementAST : public UnaryASTNode
 {
 	VARJUS_NONCOPYABLE(UnaryIncrementAST);
 public:
-	UnaryIncrementAST(const CodePosition& pos)
+	UnaryIncrementAST(const __CodePosition& pos)
 		: UnaryASTNode(pos) {
 	}
 
@@ -52,7 +52,7 @@ class UnaryDecrementAST : public UnaryASTNode
 {
 	VARJUS_NONCOPYABLE(UnaryDecrementAST);
 public:
-	UnaryDecrementAST(const CodePosition& pos)
+	UnaryDecrementAST(const __CodePosition& pos)
 		: UnaryASTNode(pos) {
 	}
 
@@ -64,7 +64,7 @@ class UnaryLogicalNotAST : public UnaryASTNode
 {
 	VARJUS_NONCOPYABLE(UnaryLogicalNotAST);
 public:
-	UnaryLogicalNotAST(const CodePosition& pos)
+	UnaryLogicalNotAST(const __CodePosition& pos)
 		: UnaryASTNode(pos) {
 	}
 
@@ -74,7 +74,7 @@ class UnaryBitwiseNotAST : public UnaryASTNode
 {
 	VARJUS_NONCOPYABLE(UnaryBitwiseNotAST);
 public:
-	UnaryBitwiseNotAST(const CodePosition& pos)
+	UnaryBitwiseNotAST(const __CodePosition& pos)
 		: UnaryASTNode(pos) {
 	}
 
@@ -85,7 +85,7 @@ class UnaryTypeOfAST : public UnaryASTNode
 {
 	VARJUS_NONCOPYABLE(UnaryTypeOfAST);
 public:
-	UnaryTypeOfAST(const CodePosition& pos)
+	UnaryTypeOfAST(const __CodePosition& pos)
 		: UnaryASTNode(pos) {
 	}
 
@@ -96,7 +96,7 @@ class UnaryToStringAST : public UnaryASTNode
 {
 	VARJUS_NONCOPYABLE(UnaryToStringAST);
 public:
-	UnaryToStringAST(const CodePosition& pos)
+	UnaryToStringAST(const __CodePosition& pos)
 		: UnaryASTNode(pos) {
 	}
 
