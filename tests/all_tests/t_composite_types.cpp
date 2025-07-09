@@ -5,7 +5,7 @@
 #include "varjus_api/internal/runtime.hpp"
 
 #define PATH_PREFIX VSL("composite_types")
-#define JP(x) (VarjusString(PATH_PREFIX) + DIRECTORY_SEPARATOR + x)
+#define JP(x) (VarjusString(PATH_PREFIX) + VARJUS_DIRECTORY_SEPARATOR + x)
 
 TEST_CASE(("returns an array [ 0, 1, 2 ]")) {
 

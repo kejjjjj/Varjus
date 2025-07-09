@@ -2,7 +2,7 @@
 #include "tests/utils.hpp"
 
 #define PATH_PREFIX VSL("statements")
-#define JP(x) (VarjusString(PATH_PREFIX) + DIRECTORY_SEPARATOR + x)
+#define JP(x) (VarjusString(PATH_PREFIX) + VARJUS_DIRECTORY_SEPARATOR + x)
 
 TEST_CASE(("if statement is true v === 50")) {
 
@@ -185,7 +185,7 @@ TEST_CASE(("ranged for loop iterates variable \"hello\"")) {
 
 TEST_CASE(("match without default")) {
 
-	auto retVal = TEST_ExecuteFile(JP(VSL("match") + DIRECTORY_SEPARATOR + VSL("match_no_default.var")));
+	auto retVal = TEST_ExecuteFile(JP(VSL("match") + VARJUS_DIRECTORY_SEPARATOR + VSL("match_no_default.var")));
 
 	AssertArray(retVal, AssertArrayValue<ASSERT_STRING>{t_string, { 
 		VSL("case 0"), 
@@ -198,7 +198,7 @@ TEST_CASE(("match without default")) {
 }
 TEST_CASE(("match with default")) {
 
-	auto retVal = TEST_ExecuteFile(JP(VSL("match") + DIRECTORY_SEPARATOR + VSL("match_default.var")));
+	auto retVal = TEST_ExecuteFile(JP(VSL("match") + VARJUS_DIRECTORY_SEPARATOR + VSL("match_default.var")));
 
 	AssertArray(retVal, AssertArrayValue<ASSERT_STRING>{t_string, {
 		VSL("case 0"),
@@ -211,7 +211,7 @@ TEST_CASE(("match with default")) {
 }
 TEST_CASE(("match only default")) {
 
-	auto retVal = TEST_ExecuteFile(JP(VSL("match") + DIRECTORY_SEPARATOR + VSL("match_only_default.var")));
+	auto retVal = TEST_ExecuteFile(JP(VSL("match") + VARJUS_DIRECTORY_SEPARATOR + VSL("match_only_default.var")));
 
 	AssertArray(retVal, AssertArrayValue<ASSERT_STRING>{t_string, {
 		VSL("other"),
@@ -224,7 +224,7 @@ TEST_CASE(("match only default")) {
 }
 TEST_CASE(("nested match")) {
 
-	auto retVal = TEST_ExecuteFile(JP(VSL("match") + DIRECTORY_SEPARATOR + VSL("match_nested.var")));
+	auto retVal = TEST_ExecuteFile(JP(VSL("match") + VARJUS_DIRECTORY_SEPARATOR + VSL("match_nested.var")));
 
 	AssertArray(retVal, AssertArrayValue<ASSERT_STRING>{t_string, {
 		VSL("val2: 0"),

@@ -2,8 +2,8 @@
 #include "tests/utils.hpp"
 
 
-#define PATH_PREFIX VarjusString(VSL("std")) + DIRECTORY_SEPARATOR + VSL("regex")
-#define JP(x) (VarjusString(PATH_PREFIX) + DIRECTORY_SEPARATOR + x)
+#define PATH_PREFIX VarjusString(VSL("std")) + VARJUS_DIRECTORY_SEPARATOR + VSL("regex")
+#define JP(x) (VarjusString(PATH_PREFIX) + VARJUS_DIRECTORY_SEPARATOR + x)
 
 TEST_CASE(("regexsearch()")) {
 

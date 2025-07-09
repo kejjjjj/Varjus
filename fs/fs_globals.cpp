@@ -36,7 +36,7 @@ VarjusString fs::get_extension(const VarjusString& file)
 }
 VarjusString fs::previous_directory(const VarjusString& directory)
 {
-	size_t pos = directory.find_last_of(DIRECTORY_SEPARATOR_CHAR);
+	size_t pos = directory.find_last_of(VARJUS_DIRECTORY_SEPARATOR_CHAR);
 	if (pos < 1 || pos == VarjusString::npos)
 		return directory;
 
@@ -44,7 +44,7 @@ VarjusString fs::previous_directory(const VarjusString& directory)
 }
 VarjusString fs::get_file_name(const VarjusString& fullpath)
 {
-	size_t pos = fullpath.find_last_of(DIRECTORY_SEPARATOR_CHAR);
+	size_t pos = fullpath.find_last_of(VARJUS_DIRECTORY_SEPARATOR_CHAR);
 
 	if (pos < 1 || pos == VarjusString::npos)
 		return fullpath;

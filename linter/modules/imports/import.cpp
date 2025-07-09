@@ -91,13 +91,13 @@ static VarjusString FixRelativePath(const VarjusString& wd, const VarjusString& 
 	const auto nextPrevious = relative.find(VSL("../"));
 
 	if (nextDir == VarjusString::npos && nextPrevious == VarjusString::npos)
-		return wd + DIRECTORY_SEPARATOR_CHAR + relative;
+		return wd + VARJUS_DIRECTORY_SEPARATOR_CHAR + relative;
 
 	// / comes before ../
 	if (nextDir < nextPrevious) {
 		const auto substr = relative.substr(0, nextDir);
 		const auto remaining = relative.substr(nextDir + 1);
-		return FixRelativePath(wd + DIRECTORY_SEPARATOR_CHAR + substr, remaining);
+		return FixRelativePath(wd + VARJUS_DIRECTORY_SEPARATOR_CHAR + substr, remaining);
 	}
 
 	// ../

@@ -2,7 +2,7 @@
 #include "tests/utils.hpp"
 
 #define PATH_PREFIX VSL("coercion")
-#define JP(x) (VarjusString(PATH_PREFIX) + DIRECTORY_SEPARATOR + x)
+#define JP(x) (VarjusString(PATH_PREFIX) + VARJUS_DIRECTORY_SEPARATOR + x)
 
 TEST_CASE(("Boolean gets coerced to int")) {
 

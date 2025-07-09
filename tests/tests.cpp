@@ -25,7 +25,7 @@ IValue* TEST_ExecuteFile(const VarjusString& srcFile)
         if (!state->UseStdLibrary())
             return nullptr;
 
-        const auto reader = VarjusIOReader(VarjusString(DIRECTORY_SEPARATOR) + VarjusString(VSL("scripts")) + DIRECTORY_SEPARATOR + srcFile);
+        const auto reader = VarjusIOReader(VarjusString(VARJUS_DIRECTORY_SEPARATOR) + VarjusString(VSL("scripts")) + VARJUS_DIRECTORY_SEPARATOR + srcFile);
         Varjus::fmt::print(std::cout, VSL("{}\n"), reader.GetFilePath());
 
         const auto GetError = [](const std::optional<VarjusString>& errorMsg) {

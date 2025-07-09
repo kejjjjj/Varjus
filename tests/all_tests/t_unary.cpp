@@ -3,7 +3,7 @@
 
 
 #define PATH_PREFIX VSL("unary")
-#define JP(x) (VarjusString(PATH_PREFIX) + DIRECTORY_SEPARATOR + x)
+#define JP(x) (VarjusString(PATH_PREFIX) + VARJUS_DIRECTORY_SEPARATOR + x)
 
 TEST_CASE(("Unary negation")) {
 

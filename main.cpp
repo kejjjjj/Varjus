@@ -98,7 +98,8 @@ int main(int argc, char** argv)
         return errorMsg ? *errorMsg : VSL("unknown error!");
         };
 
-    if (!state.UseStdLibrary()) {
+    VectorOf<VarjusString> ignore = { VSL("fs")};
+    if (!state.UseStdLibrary(ignore)) {
         Varjus::fmt::print(std::cerr, VSL("state error: {}\n"), GetError(state.GetErrorMessage()));
         return 1;
     }

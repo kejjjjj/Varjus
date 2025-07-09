@@ -4,7 +4,7 @@
 #include "varjus_api/internal/runtime.hpp"
 
 #define PATH_PREFIX VSL("shared_ownership")
-#define JP(x) (VarjusString(PATH_PREFIX) + DIRECTORY_SEPARATOR + x)
+#define JP(x) (VarjusString(PATH_PREFIX) + VARJUS_DIRECTORY_SEPARATOR + x)
 
 TEST_CASE(("Array [0, 1] gets copied and then the copy gets a value 50 assigned to [0]")) {
 
