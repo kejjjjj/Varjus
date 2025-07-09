@@ -14,9 +14,9 @@
 #include <vector>
 
 #ifdef __linux__
-#define DIRECTORY_SEPARATOR VSL("/")
+#define VARJUS_DIRECTORY_SEPARATOR VSL("/")
 #else
-#define DIRECTORY_SEPARATOR VSL("\\")
+#define VARJUS_DIRECTORY_SEPARATOR VSL("\\")
 #endif
 
 using ASSERT_BOOL = bool;

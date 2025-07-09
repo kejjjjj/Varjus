@@ -3,7 +3,7 @@
 
 
 #define PATH_PREFIX VSL("primitive_types_as_variables")
-#define JP(x) (VarjusString(PATH_PREFIX) + DIRECTORY_SEPARATOR + x)
+#define JP(x) (VarjusString(PATH_PREFIX) + VARJUS_DIRECTORY_SEPARATOR + x)
 
 TEST_CASE(("Returns an undefined in variable context")) {
 

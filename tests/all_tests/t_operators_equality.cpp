@@ -2,8 +2,8 @@
 #include "tests/utils.hpp"
 
 
-#define PATH_PREFIX VarjusString(VSL("operators")) + DIRECTORY_SEPARATOR + VSL("equality")
-#define JP(x) (VarjusString(PATH_PREFIX) + DIRECTORY_SEPARATOR + x)
+#define PATH_PREFIX VarjusString(VSL("operators")) + VARJUS_DIRECTORY_SEPARATOR + VSL("equality")
+#define JP(x) (VarjusString(PATH_PREFIX) + VARJUS_DIRECTORY_SEPARATOR + x)
 
 TEST_CASE(("equality operations")) {
 
