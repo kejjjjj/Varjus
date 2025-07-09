@@ -12,12 +12,14 @@
 
 #include <cassert>
 
+using namespace Varjus;
+
 CScopeLinter::CScopeLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const owner)
 	: CLinterSingle(pos, end), m_pScope(scope), m_pOwner(owner) {
 
 	assert(!IsEndOfBuffer());
 }
-Success CScopeLinter::ParseUntil(bool(*test)(LinterIterator& iter))
+Varjus::Success CScopeLinter::ParseUntil(bool(*test)(LinterIterator& iter))
 {
 	CLinterContext ctx{
 		.m_iterPos = m_iterPos,
@@ -43,7 +45,7 @@ Success CScopeLinter::ParseUntil(bool(*test)(LinterIterator& iter))
 
 	return success;
 }
-Success CScopeLinter::Parse()
+Varjus::Success CScopeLinter::Parse()
 {
 	assert(!IsEndOfBuffer() && (*m_iterPos)->IsOperator(p_curlybracket_open));
 	std::advance(m_iterPos, 1);
@@ -95,7 +97,7 @@ CScope* CScope::DeleteScope(CScope* scope)
 	return temp;
 }
 
-Success CScope::DeclareVariable(const VarjusString& var)
+Varjus::Success CScope::DeclareVariable(const VarjusString& var)
 {
 	if (VariableExists(var))
 		return failure;

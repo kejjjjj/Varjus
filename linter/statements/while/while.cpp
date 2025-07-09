@@ -11,6 +11,8 @@
 
 #include <cassert>
 
+using namespace Varjus;
+
 CWhileStatementLinter::CWhileStatementLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack)
 	: CStatementLinter(pos, end, scope, stack) {
 
@@ -18,7 +20,7 @@ CWhileStatementLinter::CWhileStatementLinter(LinterIterator& pos, LinterIterator
 }
 CWhileStatementLinter::~CWhileStatementLinter() = default;
 
-Success CWhileStatementLinter::Parse()
+Varjus::Success CWhileStatementLinter::Parse()
 {
 	m_pThisScope->MakeLoopScope();
 

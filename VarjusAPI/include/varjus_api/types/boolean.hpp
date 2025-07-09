@@ -6,9 +6,9 @@ class CBooleanValue final : public CValue<bool>
 public:
 
 	CBooleanValue() = default;
-	[[nodiscard]] EValueType Type() const noexcept override { return t_boolean; };
+	[[nodiscard]] Varjus::EValueType Type() const noexcept override { return Varjus::t_boolean; };
 
-	[[nodiscard]] static CBooleanValue* Construct(CProgramRuntime* const runtime, bool v);
+	[[nodiscard]] static CBooleanValue* Construct(Varjus::CProgramRuntime* const runtime, bool v);
 
 	[[nodiscard]] IValue* Copy() override;
 

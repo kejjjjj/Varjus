@@ -6,6 +6,8 @@
 
 #include <chrono>
 
+using namespace Varjus;
+
 FORWARD_DECLARE_METHOD(DateNow);
 
 void CStdDateValue::Construct(ObjectDeclaration_t& receiver)

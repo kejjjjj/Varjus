@@ -7,8 +7,9 @@
 
 #include <cassert>
 
+using namespace Varjus;
 
-std::tuple<IValue*, IValue*, IValue*> Coerce(CProgramRuntime* const runtime, IValue* lhs, IValue* rhs)
+std::tuple<IValue*, IValue*, IValue*> Coerce(Varjus::CProgramRuntime* const runtime, IValue* lhs, IValue* rhs)
 {
 	if (lhs->Type() == rhs->Type()) {
 		return { lhs, rhs, nullptr };
@@ -22,12 +23,12 @@ std::tuple<IValue*, IValue*, IValue*> Coerce(CProgramRuntime* const runtime, IVa
 	auto data = CoerceInternal(runtime, rhs, lhs, false);
 	return { data.GetLHS(), data.GetRHS(), data.allocated };
 }
-CCoercionOperands CoerceInternal(CProgramRuntime* const runtime, IValue* weaker, IValue* stronger, bool lhsIsWeak)
+CCoercionOperands CoerceInternal(Varjus::CProgramRuntime* const runtime, IValue* weaker, IValue* stronger, bool lhsIsWeak)
 {
 	assert(weaker->Type() != stronger->Type());
 
 	if (!weaker->IsCoerceable() || !stronger->IsCoerceable())
-		throw CRuntimeError(runtime, fmt::format(VSL("cannot coerce from \"{}\" to \"{}\""), weaker->TypeAsString(), stronger->TypeAsString()));
+		throw CRuntimeError(runtime, Varjus::fmt::format(VSL("cannot coerce from \"{}\" to \"{}\""), weaker->TypeAsString(), stronger->TypeAsString()));
 
 	auto [lhs, rhs] = lhsIsWeak ? std::tie(weaker, stronger) : std::tie(stronger, weaker);
 

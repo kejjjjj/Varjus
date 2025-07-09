@@ -15,6 +15,8 @@
 
 #include <cassert>
 
+using namespace Varjus;
+
 CLinterSubExpression::CLinterSubExpression(LinterIterator& pos, LinterIterator& end, const WeakScope& scope,
 	CMemory* const stack, std::optional<PairMatcher>& eoe)
 	: CLinterSingle(pos, end), m_pScope(scope), m_pOwner(stack), m_oEndOfExpression(eoe) {
@@ -23,7 +25,7 @@ CLinterSubExpression::CLinterSubExpression(LinterIterator& pos, LinterIterator& 
 }
 CLinterSubExpression::~CLinterSubExpression() = default;
 
-Success CLinterSubExpression::ParseSubExpression(std::optional<PairMatcher>& eoe,
+Varjus::Success CLinterSubExpression::ParseSubExpression(std::optional<PairMatcher>& eoe,
 	CExpressionList* expression, EvaluationType evalType)
 {
 	//empty subexpression

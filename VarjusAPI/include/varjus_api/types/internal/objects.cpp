@@ -1,17 +1,18 @@
-#include "objects.hpp"
+#include "linter/context.hpp"
 #include "object_declarations.hpp"
+#include "objects.hpp"
+#include "varjus_api/internal/exceptions/exception.hpp"
 #include "varjus_api/internal/runtime.hpp"
 #include "varjus_api/internal/structure.hpp"
 
-
-#include "linter/context.hpp"
 #include <iostream>
-#include <varjus_api/internal/exceptions/exception.hpp>
+
+using namespace Varjus;
 
 CBuiltInObject::CBuiltInObject() : CObjectValue() {}
 CBuiltInObject::~CBuiltInObject() = default;
 
-CBuiltInObject* CBuiltInObject::Construct(CProgramRuntime* const runtime, BuiltInMethod_t&& methods, BuiltInProperty_t&& properties)
+CBuiltInObject* CBuiltInObject::Construct(Varjus::CProgramRuntime* const runtime, BuiltInMethod_t&& methods, BuiltInProperty_t&& properties)
 {
 	auto ptr = runtime->AcquireNewValue<CBuiltInObject>();
 	ptr->MakeShared();
@@ -48,14 +49,14 @@ IValue* CBuiltInObject::Index(CRuntimeContext* const ctx, IValue* index) {
 	const auto key = index->ValueAsEscapedString();
 
 	if (!m_pAllocator->ContainsKey(key)) {
-		throw CRuntimeError(m_pAllocator, fmt::format(VSL("this aggregate doesn't have the attribute \"{}\""), key));
+		throw CRuntimeError(m_pAllocator, Varjus::fmt::format(VSL("this aggregate doesn't have the attribute \"{}\""), key));
 	}
 
 	const auto memberIdx = m_pAllocator->StringToKey(key);
 
 	if (m_oMethods->contains(memberIdx)) {
 		auto v = m_pAllocator->AcquireNewValue<CCallableValue>();
-		METHOD_BIND(v, m_oMethods, this->Copy());
+		VARJUS_METHOD_BIND(v, m_oMethods, this->Copy());
 		return v;
 	}
 
@@ -63,13 +64,13 @@ IValue* CBuiltInObject::Index(CRuntimeContext* const ctx, IValue* index) {
 		return m_oProperties->at(memberIdx)(ctx, this);
 	}
 
-	return Internal()->GetAggregateValue().ElementLookup(m_pAllocator->StringToKey(key));
+	return Internal()->GetAggregateValue().ElementLookup(memberIdx);
 }
 IValue* CBuiltInObject::GetAggregate(CRuntimeContext* const ctx, std::size_t memberIdx) {
 
 	if (m_oMethods->contains(memberIdx)) {
 		auto v = m_pAllocator->AcquireNewValue<CCallableValue>();
-		METHOD_BIND(v, m_oMethods, this->Copy());
+		VARJUS_METHOD_BIND(v, m_oMethods, this->Copy());
 		return v;
 	}
 
@@ -87,10 +88,10 @@ VarjusString CBuiltInObject::ValueAsString() const
 
 	VarjusString ss;
 	for (auto& [id, _] : *m_oMethods) {
-		ss += fmt::format(VSL("\"{}\":\"method\","), m_oMethods->m_pInfo->m_oAllMembers.At(id));
+		ss += Varjus::fmt::format(VSL("\"{}\":\"method\","), m_oMethods->m_pInfo->m_oAllMembers.At(id));
 	}
 	for (auto& [id, _] : *m_oProperties) {
-		ss += fmt::format(VSL("\"{}\":\"property\","), m_oProperties->m_pInfo->m_oAllMembers.At(id));
+		ss += Varjus::fmt::format(VSL("\"{}\":\"property\","), m_oProperties->m_pInfo->m_oAllMembers.At(id));
 	}
 	if (ss.empty())
 		return VSL("{}");

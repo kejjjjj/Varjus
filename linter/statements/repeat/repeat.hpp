@@ -10,12 +10,12 @@ struct CFunctionBlock;
 
 class CRepeatStatementLinter final : public CStatementLinter, protected IRuntimeBlock
 {
-	NONCOPYABLE(CRepeatStatementLinter);
+	VARJUS_NONCOPYABLE(CRepeatStatementLinter);
 
 public:
 	explicit CRepeatStatementLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const owner);
 	~CRepeatStatementLinter();
-	[[nodiscard]] Success Parse();
+	[[nodiscard]] Varjus::Success Parse();
 
 	[[nodiscard]] RuntimeBlock ToRuntimeObject() const override;
 

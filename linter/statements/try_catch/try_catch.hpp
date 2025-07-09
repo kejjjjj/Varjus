@@ -9,17 +9,17 @@ struct CFunctionBlock;
 
 class CTryCatchStatementLinter final : public CStatementLinter, protected IRuntimeBlock
 {
-	NONCOPYABLE(CTryCatchStatementLinter);
+	VARJUS_NONCOPYABLE(CTryCatchStatementLinter);
 
 public:
 	explicit CTryCatchStatementLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const owner);
 	~CTryCatchStatementLinter();
-	[[nodiscard]] Success Parse();
+	[[nodiscard]] Varjus::Success Parse();
 
 	[[nodiscard]] RuntimeBlock ToRuntimeObject() const override;
 private:
 
-	Success ParseCatchStatement();
+	Varjus::Success ParseCatchStatement();
 
 	CCrossModuleReference m_uCatchVariable;
 	VectorOf<RuntimeBlock> m_oTryInstructions;

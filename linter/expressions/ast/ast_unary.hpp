@@ -27,7 +27,7 @@ public:
 };
 class UnaryNegationAST : public UnaryASTNode
 {
-	NONCOPYABLE(UnaryNegationAST);
+	VARJUS_NONCOPYABLE(UnaryNegationAST);
 public:
 	UnaryNegationAST(const CodePosition& pos)
 		: UnaryASTNode(pos) {
@@ -38,7 +38,7 @@ public:
 
 class UnaryIncrementAST : public UnaryASTNode
 {
-	NONCOPYABLE(UnaryIncrementAST);
+	VARJUS_NONCOPYABLE(UnaryIncrementAST);
 public:
 	UnaryIncrementAST(const CodePosition& pos)
 		: UnaryASTNode(pos) {
@@ -50,7 +50,7 @@ public:
 };
 class UnaryDecrementAST : public UnaryASTNode
 {
-	NONCOPYABLE(UnaryDecrementAST);
+	VARJUS_NONCOPYABLE(UnaryDecrementAST);
 public:
 	UnaryDecrementAST(const CodePosition& pos)
 		: UnaryASTNode(pos) {
@@ -62,7 +62,7 @@ public:
 };
 class UnaryLogicalNotAST : public UnaryASTNode
 {
-	NONCOPYABLE(UnaryLogicalNotAST);
+	VARJUS_NONCOPYABLE(UnaryLogicalNotAST);
 public:
 	UnaryLogicalNotAST(const CodePosition& pos)
 		: UnaryASTNode(pos) {
@@ -72,7 +72,7 @@ public:
 };
 class UnaryBitwiseNotAST : public UnaryASTNode
 {
-	NONCOPYABLE(UnaryBitwiseNotAST);
+	VARJUS_NONCOPYABLE(UnaryBitwiseNotAST);
 public:
 	UnaryBitwiseNotAST(const CodePosition& pos)
 		: UnaryASTNode(pos) {
@@ -83,7 +83,7 @@ public:
 
 class UnaryTypeOfAST : public UnaryASTNode
 {
-	NONCOPYABLE(UnaryTypeOfAST);
+	VARJUS_NONCOPYABLE(UnaryTypeOfAST);
 public:
 	UnaryTypeOfAST(const CodePosition& pos)
 		: UnaryASTNode(pos) {
@@ -94,7 +94,7 @@ public:
 
 class UnaryToStringAST : public UnaryASTNode
 {
-	NONCOPYABLE(UnaryToStringAST);
+	VARJUS_NONCOPYABLE(UnaryToStringAST);
 public:
 	UnaryToStringAST(const CodePosition& pos)
 		: UnaryASTNode(pos) {

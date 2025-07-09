@@ -11,11 +11,11 @@ template<typename T>
 using VectorOf = std::vector<T>;
 
 template<typename A, typename B>
-using KeyValue = std::pair<A, B>;
+using __KeyValue = std::pair<A, B>;
 
 class CInternalObjectValue;
 
-using ObjectInitializer = VectorOf<KeyValue<std::size_t, IValue*>>;
+using ObjectInitializer = VectorOf<__KeyValue<std::size_t, IValue*>>;
 
 class CInternalObjectValue final
 {
@@ -39,7 +39,14 @@ protected:
 	CAggregate m_oValue;
 };
 
-using ObjectValues = VectorOf<std::pair<IValue*, IValue*>>;
+using __ObjectValues = VectorOf<std::pair<IValue*, IValue*>>;
+
+namespace Varjus {
+	struct BuiltInMethod_t;
+	struct BuiltInProperty_t;
+	class CBuiltInObject;
+	class CProgramInformation;
+}
 
 class CObjectValue : public CValue<CInternalObjectValue>
 {
@@ -47,22 +54,22 @@ public:
 	CObjectValue() = default;
 	~CObjectValue();
 
-	[[nodiscard]] static CObjectValue* Construct(CProgramRuntime* const runtime, ObjectValues&& values);
-	[[nodiscard]] static CObjectValue* _ConstructInternal(CProgramRuntime* const runtime, ObjectInitializer&& values);
+	[[nodiscard]] static CObjectValue* Construct(Varjus::CProgramRuntime* const runtime, __ObjectValues&& values);
+	[[nodiscard]] static CObjectValue* _ConstructInternal(Varjus::CProgramRuntime* const runtime, ObjectInitializer&& values);
 
-	[[nodiscard]] static std::unique_ptr<struct BuiltInMethod_t> ConstructMethods(class CProgramInformation* const info);
-	[[nodiscard]] static std::unique_ptr<struct BuiltInProperty_t> ConstructProperties(class CProgramInformation* const info); 
+	[[nodiscard]] static std::unique_ptr<Varjus::BuiltInMethod_t> ConstructMethods(Varjus::CProgramInformation* const info);
+	[[nodiscard]] static std::unique_ptr<Varjus::BuiltInProperty_t> ConstructProperties(Varjus::CProgramInformation* const info);
 
 	//copy constructor
-	[[nodiscard]] EValueType Type() const noexcept override { return t_object; };
+	[[nodiscard]] Varjus::EValueType Type() const noexcept override { return Varjus::t_object; };
 
 	virtual void Release() override;
 
 	[[nodiscard]] constexpr bool IsAggregate() const noexcept override { return true; }
 	[[nodiscard]] constexpr bool IsBooleanConvertible() const noexcept override { return false; }
 	[[nodiscard]] constexpr bool IsIndexable() const noexcept override { return true; }
-	[[nodiscard]] virtual const constexpr class CBuiltInObject* ToBuiltInObject() const noexcept { return nullptr; }
-	[[nodiscard]] virtual constexpr class CBuiltInObject* ToBuiltInObject() noexcept { return nullptr; }
+	[[nodiscard]] virtual const constexpr Varjus::CBuiltInObject* ToBuiltInObject() const noexcept { return nullptr; }
+	[[nodiscard]] virtual constexpr Varjus::CBuiltInObject* ToBuiltInObject() noexcept { return nullptr; }
 
 	[[nodiscard]] virtual IValue* Copy() override;
 	[[nodiscard]] CInternalObjectValue* Internal();

@@ -8,6 +8,8 @@
 #include <fstream>
 #include <filesystem>
 
+using namespace Varjus;
+
 FORWARD_DECLARE_METHOD(FsRead);
 FORWARD_DECLARE_METHOD(FsWrite);
 FORWARD_DECLARE_METHOD(FsAppend);
@@ -31,7 +33,7 @@ DEFINE_METHOD(FsRead, args)
 	const auto path = args[0];
 
 	if (path->Type() != t_string) {
-		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("fs.read expected a string, but got \"{}\""), path->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, Varjus::fmt::format(VSL("fs.read expected a string, but got \"{}\""), path->TypeAsString()));
 	}
 
 	//doesn't exist, return undefined
@@ -54,10 +56,10 @@ DEFINE_METHOD(FsWrite, args)
 	const auto data = args[1];
 
 	if (path->Type() != t_string) {
-		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("fs.write 1. expected a string, but got \"{}\""), path->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, Varjus::fmt::format(VSL("fs.write 1. expected a string, but got \"{}\""), path->TypeAsString()));
 	}
 	if (data->Type() != t_string) {
-		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("fs.write 2. expected a string, but got \"{}\""), data->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, Varjus::fmt::format(VSL("fs.write 2. expected a string, but got \"{}\""), data->TypeAsString()));
 	}
 
 #ifdef UNICODE
@@ -77,10 +79,10 @@ DEFINE_METHOD(FsAppend, args)
 	const auto data = args[1];
 
 	if (path->Type() != t_string) {
-		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("fs.append 1. expected a string, but got \"{}\""), path->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, Varjus::fmt::format(VSL("fs.append 1. expected a string, but got \"{}\""), path->TypeAsString()));
 	}
 	if (data->Type() != t_string) {
-		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("fs.append 2. expected a string, but got \"{}\""), data->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, Varjus::fmt::format(VSL("fs.append 2. expected a string, but got \"{}\""), data->TypeAsString()));
 	}
 
 #ifdef UNICODE
@@ -101,7 +103,7 @@ DEFINE_METHOD(FsExists, args)
 	const auto path = args[0];
 
 	if (path->Type() != t_string) {
-		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("fs.exists expected a string, but got \"{}\""), path->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, Varjus::fmt::format(VSL("fs.exists expected a string, but got \"{}\""), path->TypeAsString()));
 	}
 
 	return CBooleanValue::Construct(ctx->m_pRuntime, fs::file_exists(path->ToString()));
@@ -112,7 +114,7 @@ DEFINE_METHOD(FsDelete, args)
 	const auto path = args[0];
 
 	if (path->Type() != t_string) {
-		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("fs.delete expected a string, but got \"{}\""), path->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, Varjus::fmt::format(VSL("fs.delete expected a string, but got \"{}\""), path->TypeAsString()));
 	}
 
 	return CBooleanValue::Construct(ctx->m_pRuntime, std::filesystem::remove(path->ToString()));
@@ -123,7 +125,7 @@ DEFINE_METHOD(FsListDirectory, args)
 	const auto path = args[0];
 
 	if (path->Type() != t_string) {
-		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("fs.list_directory expected a string, but got \"{}\""), path->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, Varjus::fmt::format(VSL("fs.list_directory expected a string, but got \"{}\""), path->TypeAsString()));
 	}
 
 	IValues arrValues;
@@ -138,7 +140,7 @@ DEFINE_METHOD(FsListDirectory, args)
 		const auto typeStr = entry.is_directory() ? VSL("d") : VSL("f");
 		const auto type = CStringValue::Construct(ctx->m_pRuntime, typeStr);
 
-		ObjectValues properties;
+		__ObjectValues properties;
 		properties.push_back({ CStringValue::Construct(ctx->m_pRuntime, VSL("path")), _path });
 		properties.push_back({ CStringValue::Construct(ctx->m_pRuntime, VSL("type")), type });
 

@@ -4,7 +4,7 @@
 
 struct CASTOperand final : public IOperand
 {
-	NONCOPYABLE(CASTOperand);
+	VARJUS_NONCOPYABLE(CASTOperand);
 	CASTOperand(ASTNode&& ptr);
 	~CASTOperand();
 

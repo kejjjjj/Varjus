@@ -15,6 +15,8 @@
 
 #include <cassert>
 
+using namespace Varjus;
+
 CForStatementLinter::CForStatementLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack)
 	: CStatementLinter(pos, end, scope, stack) {
 
@@ -22,7 +24,7 @@ CForStatementLinter::CForStatementLinter(LinterIterator& pos, LinterIterator& en
 }
 CForStatementLinter::~CForStatementLinter() = default;
 
-Success CForStatementLinter::Parse()
+Varjus::Success CForStatementLinter::Parse()
 {
 	m_pThisScope->MakeLoopScope();
 
@@ -56,7 +58,7 @@ Success CForStatementLinter::Parse()
 
 
 
-Success CForStatementLinter::ParseInitializer() {
+Varjus::Success CForStatementLinter::ParseInitializer() {
 
 	if (IsEndOfBuffer()) {
 		m_pOwner->GetModule()->PushError(VSL("expected an expression"), GetIteratorSafe()->m_oSourcePosition);
@@ -105,7 +107,7 @@ Success CForStatementLinter::ParseInitializer() {
 	std::advance(m_iterPos, 1);
 	return success;
 }
-Success CForStatementLinter::ParseCondition() {
+Varjus::Success CForStatementLinter::ParseCondition() {
 
 	if (IsEndOfBuffer()) {
 		m_pOwner->GetModule()->PushError(VSL("expected an expression"), GetIteratorSafe()->m_oSourcePosition);
@@ -124,7 +126,7 @@ Success CForStatementLinter::ParseCondition() {
 	std::advance(m_iterPos, 1);
 	return success;
 }
-Success CForStatementLinter::ParseEndExpression() {
+Varjus::Success CForStatementLinter::ParseEndExpression() {
 	if (IsEndOfBuffer()) {
 		m_pOwner->GetModule()->PushError(VSL("expected an expression"), GetIteratorSafe()->m_oSourcePosition);
 		return failure;
@@ -143,7 +145,7 @@ Success CForStatementLinter::ParseEndExpression() {
 	return success;
 }
 
-Success CForStatementLinter::ParseRangedForLoop()
+Varjus::Success CForStatementLinter::ParseRangedForLoop()
 {
 	std::advance(m_iterPos, -1); //go back to the initializer
 	

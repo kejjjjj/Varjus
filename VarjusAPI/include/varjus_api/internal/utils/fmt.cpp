@@ -17,6 +17,7 @@
 #include <Windows.h>
 #endif
 
+using namespace Varjus;
 
 std::u16string LocaleConverter::utf8_to_u16string(const std::string& utf8_str) {
     std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> converter;

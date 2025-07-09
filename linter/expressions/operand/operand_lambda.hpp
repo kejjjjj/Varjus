@@ -12,7 +12,7 @@ struct CExpressionList;
 
 struct CLambdaOperand final : public IOperand
 {
-	NONCOPYABLE(CLambdaOperand);
+	VARJUS_NONCOPYABLE(CLambdaOperand);
 
 	CLambdaOperand() = default;
 	CLambdaOperand(std::unique_ptr<CRuntimeFunctionBase>&& ptr, VectorOf<CCrossModuleReference>&& captures);
@@ -34,13 +34,13 @@ struct CLambdaOperand final : public IOperand
 //(args) => {}
 class CLambdaChecker final : public CLinterSingle<CToken>
 {
-	NONCOPYABLE(CLambdaChecker);
+	VARJUS_NONCOPYABLE(CLambdaChecker);
 public:
 	CLambdaChecker() = delete;
 	explicit CLambdaChecker(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack);
 	~CLambdaChecker();
 
-	[[nodiscard]] Success Parse(
+	[[nodiscard]] Varjus::Success Parse(
 		std::optional<PairMatcher>& m_oEndOfExpression,
 		CExpressionList* expression = nullptr,
 		EvaluationType evalType = evaluate_everything);
@@ -49,10 +49,10 @@ public:
 
 private:
 
-	[[nodiscard]] Success ParseInternal(
+	[[nodiscard]] Varjus::Success ParseInternal(
 		std::optional<PairMatcher>& m_oEndOfExpression, CExpressionList* expression, EvaluationType evalType);
 
-	[[nodiscard]] Success ParseParameters();
+	[[nodiscard]] Varjus::Success ParseParameters();
 
 	[[nodiscard]] bool EndOfExpression(const std::optional<PairMatcher>& eoe) const noexcept;
 

@@ -12,6 +12,9 @@
 
 #include <cassert>
 
+using namespace Varjus;
+
+
 CThrowStatementLinter::CThrowStatementLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack)
 	: CStatementLinter(pos, end, scope, stack) {
 
@@ -19,7 +22,7 @@ CThrowStatementLinter::CThrowStatementLinter(LinterIterator& pos, LinterIterator
 }
 CThrowStatementLinter::~CThrowStatementLinter() = default;
 
-Success CThrowStatementLinter::Parse()
+Varjus::Success CThrowStatementLinter::Parse()
 {
 	if (!ParseIdentifier(TokenType::tt_throw))
 		return failure;

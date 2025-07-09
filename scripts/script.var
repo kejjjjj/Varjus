@@ -1,7 +1,20 @@
 
+fn createActions()
+{
+    let actions = [];
+    for(let i = 0; i < 3; i++){
+        actions.push(() => console.log(`value: ${i}`));
+    }
+
+    return actions;
+}
 
 fn main()
 {
-    const thing = json.parse( tostring json );
-    return thing.parse;
+
+    for(const action : createActions()){
+        action();
+    }
+
+    return 1;
 }

@@ -37,7 +37,7 @@ public:
 
 class MemberAccessASTNode : public PostfixASTNode
 {
-	NONCOPYABLE(MemberAccessASTNode);
+	VARJUS_NONCOPYABLE(MemberAccessASTNode);
 public:
 	MemberAccessASTNode(const CodePosition& pos, std::size_t globalMemberIndex)
 		: PostfixASTNode(pos), m_uGlobalMemberIndex(globalMemberIndex) {
@@ -51,7 +51,7 @@ public:
 
 class SubscriptASTNode : public PostfixASTNode
 {
-	NONCOPYABLE(SubscriptASTNode);
+	VARJUS_NONCOPYABLE(SubscriptASTNode);
 public:
 	SubscriptASTNode(const CodePosition& pos, ASTNode&& expression)
 		: PostfixASTNode(pos), m_pAST(std::move(expression)) {
@@ -66,7 +66,7 @@ public:
 
 class FunctionCallASTNode : public PostfixASTNode
 {
-	NONCOPYABLE(FunctionCallASTNode);
+	VARJUS_NONCOPYABLE(FunctionCallASTNode);
 public:
 	FunctionCallASTNode(const CodePosition& pos, VectorOf<ASTNode>&& args)
 		: PostfixASTNode(pos), m_oArguments(std::move(args)) {
@@ -81,7 +81,7 @@ public:
 
 class PostfixIncrementAST : public PostfixASTNode
 {
-	NONCOPYABLE(PostfixIncrementAST);
+	VARJUS_NONCOPYABLE(PostfixIncrementAST);
 public:
 	PostfixIncrementAST(const CodePosition& pos)
 		: PostfixASTNode(pos) {
@@ -93,7 +93,7 @@ public:
 };
 class PostfixDecrementAST : public PostfixASTNode
 {
-	NONCOPYABLE(PostfixDecrementAST);
+	VARJUS_NONCOPYABLE(PostfixDecrementAST);
 public:
 	PostfixDecrementAST(const CodePosition& pos)
 		: PostfixASTNode(pos) {

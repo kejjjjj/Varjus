@@ -7,9 +7,9 @@ class CDoubleValue final : public CValue<VarjusDouble>
 public:
 	CDoubleValue() = default;
 	
-	[[nodiscard]] static CDoubleValue* Construct(CProgramRuntime* const runtime, VarjusDouble v);
+	[[nodiscard]] static CDoubleValue* Construct(Varjus::CProgramRuntime* const runtime, VarjusDouble v);
 
-	[[nodiscard]] EValueType Type() const noexcept override { return t_double; };
+	[[nodiscard]] Varjus::EValueType Type() const noexcept override { return Varjus::t_double; };
 	
 	[[nodiscard]] IValue* Copy() override;
 
@@ -28,7 +28,7 @@ public:
 
 private:
 	[[nodiscard]] VarjusString TypeAsString() const override { return VSL("double"); }
-	[[nodiscard]] VarjusString ValueAsString() const override { return fmt::to_string(Get()); }
+	[[nodiscard]] VarjusString ValueAsString() const override { return Varjus::fmt::to_string(Get()); }
 	[[nodiscard]] VarjusString ValueAsEscapedString() const override { return ValueAsString(); }
 
 };

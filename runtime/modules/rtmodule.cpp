@@ -10,6 +10,8 @@
 
 #include <ranges>
 
+using namespace Varjus;
+
 CRuntimeModule::CRuntimeModule(CModule& ctx) :
 	m_oGlobalScopeInstructions(std::move(ctx.m_oGlobalScopeInstructions)),
 	m_uNumGlobalVariables(ctx.m_uNumGlobalVariables), 
@@ -20,7 +22,7 @@ CRuntimeModule::CRuntimeModule(CModule& ctx) :
 CRuntimeModule::~CRuntimeModule() = default;
 
 
-void CRuntimeModule::SetupGlobalVariables(CProgramRuntime* const runtime) {
+void CRuntimeModule::SetupGlobalVariables(Varjus::CProgramRuntime* const runtime) {
 
 	if (!runtime->m_pInformation || !runtime->m_pInformation->m_oBuiltInObjects) {
 		throw CRuntimeError(runtime, VSL("no runtime context!"));
@@ -60,7 +62,7 @@ void CRuntimeModule::SetupGlobalVariables(CProgramRuntime* const runtime) {
 		var->SetValue(IValue::Construct(runtime));
 	}
 }
-void CRuntimeModule::EvaluateGlobalExpressions(CProgramRuntime* const runtime) {
+void CRuntimeModule::EvaluateGlobalExpressions(Varjus::CProgramRuntime* const runtime) {
 
 	CRuntimeContext ctx{
 		.m_pRuntime = runtime,

@@ -11,7 +11,7 @@ class AbstractSyntaxTree;
 
 class CStatementLinter : public CLinterSingle<CToken>
 {
-	NONCOPYABLE(CStatementLinter);
+	VARJUS_NONCOPYABLE(CStatementLinter);
 
 public:
 	explicit CStatementLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const owner);
@@ -19,9 +19,9 @@ public:
 protected:
 	void CreateThisScope();
 
-	[[nodiscard]] Success ParseIdentifier(TokenType tt);
+	[[nodiscard]] Varjus::Success ParseIdentifier(TokenType tt);
 	[[nodiscard]] virtual ASTNode ParseExpression();
-	[[nodiscard]] virtual Success ParseScope();
+	[[nodiscard]] virtual Varjus::Success ParseScope();
 
 	WeakScope m_pScope;
 	CMemory* const m_pOwner;

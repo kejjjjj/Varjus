@@ -12,6 +12,8 @@
 
 #include <cassert>
 
+using namespace Varjus;
+
 
 CLoopControlStatement::CLoopControlStatement(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack)
 	: CStatementLinter(pos, end, scope, stack) {
@@ -20,7 +22,7 @@ CLoopControlStatement::CLoopControlStatement(LinterIterator& pos, LinterIterator
 }
 CLoopControlStatement::~CLoopControlStatement() = default;
 
-Success CLoopControlStatement::Parse()
+Varjus::Success CLoopControlStatement::Parse()
 {
 
 	assert(!IsEndOfBuffer());
@@ -39,7 +41,7 @@ Success CLoopControlStatement::Parse()
 	if (const auto scope = m_pScope.lock()) {
 		if (!scope->IsLoopScope()) {
 			m_pOwner->GetModule()->PushError(
-				fmt::format(VSL("the \"{}\" statement can only be used in a loop context"), quick_lookup[(std::size_t)m_eType]),
+				Varjus::fmt::format(VSL("the \"{}\" statement can only be used in a loop context"), quick_lookup[(std::size_t)m_eType]),
 				GetIteratorSafe()->m_oSourcePosition);
 			return failure;
 		}

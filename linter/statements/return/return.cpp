@@ -12,6 +12,8 @@
 
 #include <cassert>
 
+using namespace Varjus;
+
 CReturnStatementLinter::CReturnStatementLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack)
 	: CStatementLinter(pos, end, scope, stack) {
 
@@ -19,7 +21,7 @@ CReturnStatementLinter::CReturnStatementLinter(LinterIterator& pos, LinterIterat
 }
 CReturnStatementLinter::~CReturnStatementLinter() = default;
 
-Success CReturnStatementLinter::Parse()
+Varjus::Success CReturnStatementLinter::Parse()
 {
 
 	if (const auto scope = m_pScope.lock()) {

@@ -10,6 +10,8 @@
 
 #include <cassert>
 
+using namespace Varjus;
+
 CVariableDeclarationLinter::CVariableDeclarationLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack) :
 	CLinterSingle(pos, end), m_pScope(scope), m_pOwner(stack)
 {
@@ -17,11 +19,11 @@ CVariableDeclarationLinter::CVariableDeclarationLinter(LinterIterator& pos, Lint
 }
 CVariableDeclarationLinter::~CVariableDeclarationLinter() = default;
 
-Success CVariableDeclarationLinter::Parse(){
+Varjus::Success CVariableDeclarationLinter::Parse(){
 	return ParseIdentifier() && ParseInitializer() ? success : failure;
 }
 
-Success CVariableDeclarationLinter::ParseIdentifier()
+Varjus::Success CVariableDeclarationLinter::ParseIdentifier()
 {
 	if (IsEndOfBuffer() || !IsDeclaration(*m_iterPos)) {
 		m_pOwner->GetModule()->PushError(VSL("expected \"let\" or \"const\""), GetIteratorSafe()->m_oSourcePosition);
@@ -34,7 +36,7 @@ Success CVariableDeclarationLinter::ParseIdentifier()
 
 
 	if (IsEndOfBuffer() || !IsIdentifier(*m_iterPos)) {
-		m_pOwner->GetModule()->PushError(fmt::format(VSL("expected variable name, but found \"{}\""), GetIteratorSafe()->Source()),
+		m_pOwner->GetModule()->PushError(Varjus::fmt::format(VSL("expected variable name, but found \"{}\""), GetIteratorSafe()->Source()),
 			GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
@@ -46,7 +48,7 @@ Success CVariableDeclarationLinter::ParseIdentifier()
 		const auto containsFunc = m_pOwner->GetGlobalMemory()->m_FunctionManager->ContainsFunction(varName);
 
 		if (containsFunc || !scope->DeclareVariable((*m_iterPos)->Source())) {
-			m_pOwner->GetModule()->PushError(fmt::format(VSL("\"{}\" already declared"), (*m_iterPos)->Source()), (*m_iterPos)->m_oSourcePosition);
+			m_pOwner->GetModule()->PushError(Varjus::fmt::format(VSL("\"{}\" already declared"), (*m_iterPos)->Source()), (*m_iterPos)->m_oSourcePosition);
 			return failure;
 		}
 
@@ -62,7 +64,7 @@ Success CVariableDeclarationLinter::ParseIdentifier()
 	return success;
 }
 
-Success CVariableDeclarationLinter::ParseInitializer()
+Varjus::Success CVariableDeclarationLinter::ParseInitializer()
 {
 
 	if (IsEndOfBuffer()) {

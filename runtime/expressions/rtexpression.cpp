@@ -12,6 +12,8 @@
 
 #include <cassert>
 
+using namespace Varjus;
+
 CRuntimeExpression::CRuntimeExpression(ASTNode&& ast) :
 	m_pAST(std::move(ast)) {}
 CRuntimeExpression::~CRuntimeExpression() = default;

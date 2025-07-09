@@ -15,22 +15,22 @@ struct IOItem
     virtual ~IOItem() = default;
 
     [[nodiscard]] constexpr VarjusString GetFilePath() const noexcept { return m_sFileName; }
-    [[nodiscard]] constexpr EncodingType GetEncoding() const noexcept { return m_eEncodingType; }
+    [[nodiscard]] constexpr Varjus::EncodingType GetEncoding() const noexcept { return m_eEncodingType; }
 protected:
     bool m_bBinary = false;
     bool m_bErrorOccurred = false;
     VarjusString m_sFileName;
-    mutable EncodingType m_eEncodingType{};
+    mutable Varjus::EncodingType m_eEncodingType{};
 };
 
 struct IOReader : public IOItem
 {
     IOReader(const VarjusString& filename, bool in_binary_mode) : IOItem(filename, in_binary_mode) {}
 
-    [[nodiscard]] virtual std::optional<VarjusString> IO_Read(EncodingType type = e_unknown) const;
+    [[nodiscard]] virtual std::optional<VarjusString> IO_Read(Varjus::EncodingType type = Varjus::EncodingType::e_unknown) const;
 
 private:
-    [[nodiscard]] VarjusString IO_ReadStream(std::ifstream& stream, EncodingType type=e_unknown) const;
+    [[nodiscard]] VarjusString IO_ReadStream(std::ifstream& stream, Varjus::EncodingType type= Varjus::EncodingType::e_unknown) const;
 
 };
 

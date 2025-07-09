@@ -4,7 +4,7 @@
 
 struct CImmediateOperand final : public IOperand
 {
-	NONCOPYABLE(CImmediateOperand);
+	VARJUS_NONCOPYABLE(CImmediateOperand);
 	CImmediateOperand(const CToken* token) : m_pToken(token) {}
 	~CImmediateOperand() = default;
 
@@ -15,7 +15,7 @@ struct CImmediateOperand final : public IOperand
 	[[nodiscard]] ASTNode ToAST() override;
 
 private:
-	[[nodiscard]] EValueType GetImmediateType() const noexcept;
+	[[nodiscard]] Varjus::EValueType GetImmediateType() const noexcept;
 	[[nodiscard]] std::size_t GetImmediateSize() const noexcept;
 	[[nodiscard]] VarjusString ToData() const noexcept;
 

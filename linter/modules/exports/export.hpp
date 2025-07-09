@@ -9,17 +9,17 @@ class CVariableDeclarationLinter;
 
 class CExportLinter final : public CLinterSingle<CToken>, protected IRuntimeBlock
 {
-	NONCOPYABLE(CExportLinter);
+	VARJUS_NONCOPYABLE(CExportLinter);
 public:
 	explicit CExportLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const owner);
 	~CExportLinter();
 
-	[[nodiscard]] Success Parse();
+	[[nodiscard]] Varjus::Success Parse();
 	[[nodiscard]] RuntimeBlock ToRuntimeObject() const override;
 
 private:
-	[[nodiscard]] Success ParseVariableDeclaration();
-	[[nodiscard]] Success ParseFunctionDeclaration();
+	[[nodiscard]] Varjus::Success ParseVariableDeclaration();
+	[[nodiscard]] Varjus::Success ParseFunctionDeclaration();
 
 
 	WeakScope m_pScope;
@@ -37,7 +37,7 @@ enum EExportedSymbol
 
 class CExportedSymbol
 {
-	NONCOPYABLE(CExportedSymbol);
+	VARJUS_NONCOPYABLE(CExportedSymbol);
 public:
 	CExportedSymbol(std::size_t i) : m_uIndex(i) {}
 	virtual ~CExportedSymbol() = default;
@@ -49,14 +49,14 @@ protected:
 };
 class CExportedVariable : public CExportedSymbol
 {
-	NONCOPYABLE(CExportedVariable);
+	VARJUS_NONCOPYABLE(CExportedVariable);
 public:
 	CExportedVariable(std::size_t i) : CExportedSymbol(i){}
 	[[nodiscard]] constexpr EExportedSymbol Type() const noexcept override { return es_variable; }
 };
 class CExportedFunction : public CExportedSymbol
 {
-	NONCOPYABLE(CExportedFunction);
+	VARJUS_NONCOPYABLE(CExportedFunction);
 public:
 	CExportedFunction(std::size_t i) : CExportedSymbol(i) {}
 	[[nodiscard]] constexpr EExportedSymbol Type() const noexcept override { return es_function; }

@@ -15,6 +15,8 @@
 #include <ranges>
 #include <algorithm>
 
+using namespace Varjus;
+
 
 CPostfixLinter::CPostfixLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack) 
 	: CVectorLinter(pos, end), m_pScope(scope), m_pOwner(stack)
@@ -25,7 +27,7 @@ CPostfixLinter::~CPostfixLinter() = default;
 
 #pragma pack(push)
 WARNING_DISABLE(4061)
-Success CPostfixLinter::ParsePostfix()
+Varjus::Success CPostfixLinter::ParsePostfix()
 {
 
 	while (!IsEndOfBuffer() && (*m_iterPos)->IsOperator()) {
@@ -78,7 +80,7 @@ std::unique_ptr<IPostfixBase> CPostfixLinter::ParseMemberAccess()
 	std::advance(m_iterPos, 1); // skip .
 
 	if (IsEndOfBuffer() || (*m_iterPos)->Type() != tt_name) {
-		m_pOwner->GetModule()->PushError(fmt::format(VSL("expected a member name instead of \"{}\""), GetIteratorSafe()->Source()),
+		m_pOwner->GetModule()->PushError(Varjus::fmt::format(VSL("expected a member name instead of \"{}\""), GetIteratorSafe()->Source()),
 			GetIteratorSafe()->m_oSourcePosition);
 		return nullptr;
 	}

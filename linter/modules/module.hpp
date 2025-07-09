@@ -12,21 +12,24 @@
 
 class IRuntimeStructure;
 class CRuntimeFunctionBase;
-class CRuntimeModule;
 class CExportedSymbol;
 class CModule;
+
+namespace Varjus {
+	class CRuntimeModule;
+}
 
 using RuntimeBlock = std::unique_ptr<IRuntimeStructure>;
 using RuntimeFunction = std::unique_ptr<CRuntimeFunctionBase>;
 using UniqueExportedSymbol = std::unique_ptr<CExportedSymbol>;
 
-using RuntimeModules = VectorOf<std::unique_ptr<CRuntimeModule>>;
+using RuntimeModules = VectorOf<std::unique_ptr<Varjus::CRuntimeModule>>;
 using ModuleExports = std::unordered_map<VarjusString, UniqueExportedSymbol>;
 using DependencyGraph = std::unordered_map<VarjusString, VectorOf<VarjusString>>;
 
 class CProjectModules
 {
-	NONCOPYABLE(CProjectModules);
+	VARJUS_NONCOPYABLE(CProjectModules);
 public:
 	CProjectModules();
 	~CProjectModules();
@@ -48,10 +51,10 @@ private:
 
 class CModule final
 {
-	NONCOPYABLE(CModule);
+	VARJUS_NONCOPYABLE(CModule);
 
 	friend class CBufferLinter;
-	friend class CRuntimeModule;
+	friend class Varjus::CRuntimeModule;
 
 public:
 
@@ -66,7 +69,7 @@ public:
 	void AddGlobalInstructions(VectorOf<RuntimeBlock>&& insns);
 	void SetGlobalVariableCount(std::size_t v);
 
-	[[nodiscard]] std::unique_ptr<CRuntimeModule> ToRuntimeModule();
+	[[nodiscard]] std::unique_ptr<Varjus::CRuntimeModule> ToRuntimeModule();
 	[[nodiscard]] CFileContext* GetContext() noexcept { return &m_oContext; }
 
 	[[nodiscard]] constexpr auto GetIndex() const noexcept { return m_uIndex; }

@@ -6,6 +6,7 @@
 #include "varjus_api/internal/exceptions/exception.hpp"
 #include "varjus_api/internal/structure.hpp"
 
+using namespace Varjus;
 
 [[nodiscard]] CObjectValue* GetThisObject(IValue* _this) {
 	return _this->ToObject();

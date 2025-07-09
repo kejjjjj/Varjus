@@ -34,7 +34,7 @@ public:
 private:
     VarjusString GetStringFormatted(const VarjusString& filePath, const VarjusString& err) const noexcept {
         
-        return fmt::format(VSL("{}\nAt: {}:{} in \"{}\""), err, std::get<0>(m_oSourcePosition), 
+        return Varjus::fmt::format(VSL("{}\nAt: {}:{} in \"{}\""), err, std::get<0>(m_oSourcePosition), 
             std::get<1>(m_oSourcePosition), filePath);
     }
 

@@ -8,6 +8,9 @@
 #include "varjus_api/internal/globalEnums.hpp"
 
 #include <cassert>
+
+using namespace Varjus;
+
 CUnaryLinter::CUnaryLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack) 
 	: CVectorLinter(pos, end), m_pScope(scope), m_pOwner(stack)
 {
@@ -17,7 +20,7 @@ CUnaryLinter::~CUnaryLinter() = default;
 
 #pragma pack(push)
 WARNING_DISABLE(4061)
-Success CUnaryLinter::ParseUnary()
+Varjus::Success CUnaryLinter::ParseUnary()
 {
 
 	while(!IsEndOfBuffer() && ((*m_iterPos)->IsOperator() 

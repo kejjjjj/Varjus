@@ -17,7 +17,7 @@ public:
 	explicit CIdentifierLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack);
 	~CIdentifierLinter();
 
-	[[nodiscard]] Success ParseIdentifier();
+	[[nodiscard]] Varjus::Success ParseIdentifier();
 
 private:
 	[[nodiscard]] bool CheckIdentifier(const CToken* token) const noexcept;

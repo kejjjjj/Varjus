@@ -10,7 +10,9 @@
 
 #include <sstream>
 
-CArrayValue* CArrayValue::Construct(CProgramRuntime* const runtime, IValues&& values)
+using namespace Varjus;
+
+CArrayValue* CArrayValue::Construct(Varjus::CProgramRuntime* const runtime, IValues&& values)
 {
 	auto ptr = runtime->AcquireNewValue<CArrayValue>();
 	ptr->MakeShared();
@@ -50,14 +52,14 @@ CInternalArrayValue* CArrayValue::Internal() const {
 IValue* CArrayValue::Index([[maybe_unused]] CRuntimeContext* const ctx, IValue* vIndex)
 {
 	if (!vIndex->IsIntegral())
-		throw CRuntimeError(m_pAllocator, fmt::format(VSL("array accessor must be integral, but is \"{}\""), vIndex->TypeAsString()));
+		throw CRuntimeError(m_pAllocator, Varjus::fmt::format(VSL("array accessor must be integral, but is \"{}\""), vIndex->TypeAsString()));
 
 	auto index = vIndex->ToUInt();
 
 	auto& vec = GetShared()->GetContent().GetVariables();
 
 	if (index >= vec.size())
-		throw CRuntimeError(m_pAllocator, fmt::format(VSL("array index {} out of bounds (len: {})"), index, Internal()->Length()));
+		throw CRuntimeError(m_pAllocator, Varjus::fmt::format(VSL("array index {} out of bounds (len: {})"), index, Internal()->Length()));
 
 	return vec[index]->GetValue();
 }
@@ -69,7 +71,7 @@ IValue* CArrayValue::GetAggregate(CRuntimeContext* const ctx, std::size_t member
 	assert(methods);
 	if (methods->contains(memberIdx)) {
 		auto v = m_pAllocator->AcquireNewValue<CCallableValue>();
-		METHOD_BIND(v, methods, this->Copy());
+		VARJUS_METHOD_BIND(v, methods, this->Copy());
 		return v;
 	}
 
@@ -80,7 +82,7 @@ IValue* CArrayValue::GetAggregate(CRuntimeContext* const ctx, std::size_t member
 	}
 
 	if (auto info = m_pAllocator->GetInformation()) {
-		throw CRuntimeError(m_pAllocator, fmt::format(VSL("this aggregate doesn't have the attribute \"{}\""), info->m_oAllMembers.At(memberIdx)));
+		throw CRuntimeError(m_pAllocator, Varjus::fmt::format(VSL("this aggregate doesn't have the attribute \"{}\""), info->m_oAllMembers.At(memberIdx)));
 	}
 
 	assert(false);
@@ -101,14 +103,14 @@ IValues CArrayValue::ToIterable() const
 	return results;
 }
 
-CChildVariable* CArrayValue::PushVariable(CProgramRuntime* const runtime, IValue* var) {
+CChildVariable* CArrayValue::PushVariable(Varjus::CProgramRuntime* const runtime, IValue* var) {
 	return GetShared()->GetContent().PushVariable(runtime, var);
 }
-CChildVariable* CArrayValue::PushFrontVariable(CProgramRuntime* const runtime, IValue* var){
+CChildVariable* CArrayValue::PushFrontVariable(Varjus::CProgramRuntime* const runtime, IValue* var){
 	return GetShared()->GetContent().PushFrontVariable(runtime, var);
 }
 
-//static bool SelfRef(CProgramRuntime* const runtime, IValue* var, const ArrayOwner& owner)
+//static bool SelfRef(Varjus::CProgramRuntime* const runtime, IValue* var, const ArrayOwner& owner)
 //{
 //	if (auto arr = var->ToArray()) {
 //		if (auto arrayPtr = owner.lock()) {
@@ -122,7 +124,7 @@ CChildVariable* CArrayValue::PushFrontVariable(CProgramRuntime* const runtime, I
 //	return false;
 //}
 
-CChildVariable* CArrayContent::PushVariable(CProgramRuntime* const runtime, IValue* var)
+CChildVariable* CArrayContent::PushVariable(Varjus::CProgramRuntime* const runtime, IValue* var)
 {
 	//const auto isRef = SelfRef(runtime, var, m_pArrayOwner);
 	auto ret =  m_oVariables.emplace_back(CChildVariable::Construct(runtime, var, m_pArrayOwner));
@@ -131,7 +133,7 @@ CChildVariable* CArrayContent::PushVariable(CProgramRuntime* const runtime, IVal
 
 	return ret;
 }
-CChildVariable* CArrayContent::PushFrontVariable(CProgramRuntime* const runtime, IValue* var)
+CChildVariable* CArrayContent::PushFrontVariable(Varjus::CProgramRuntime* const runtime, IValue* var)
 {
 	//SelfRef(runtime, var, m_pArrayOwner);
 	return *m_oVariables.insert(m_oVariables.begin(), CChildVariable::Construct(runtime, var, m_pArrayOwner));
@@ -172,7 +174,7 @@ VarjusString CArrayValue::ValueAsString() const
 
 	for (const auto& v : vec) {
 		const auto ptr = v->GetValue();
-		ss += fmt::format(VSL("{}, "), ptr->GetSharedPointer() == this->GetSharedPointer() ? VSL("...") : ptr->ValueAsString());
+		ss += Varjus::fmt::format(VSL("{}, "), ptr->GetSharedPointer() == this->GetSharedPointer() ? VSL("...") : ptr->ValueAsString());
 	}
 	ss.erase(ss.size() - 2, 2);
 

@@ -51,9 +51,9 @@ class CCallableValue final : public CValue<CInternalCallableValue>
 public:
 	CCallableValue() = default;
 
-	[[nodiscard]] static CCallableValue* Construct(CProgramRuntime* const runtime, CRuntimeFunctionBase* v);
+	[[nodiscard]] static CCallableValue* Construct(Varjus::CProgramRuntime* const runtime, CRuntimeFunctionBase* v);
 
-	[[nodiscard]] EValueType Type() const noexcept override { return t_callable; };
+	[[nodiscard]] Varjus::EValueType Type() const noexcept override { return Varjus::t_callable; };
 
 	[[nodiscard]] IValue* Copy() override;
 

@@ -8,7 +8,7 @@ class CConstEvalVariable;
 
 struct CLinterVariable : public CMemoryIdentifier
 {
-	NONCOPYABLE(CLinterVariable);
+	VARJUS_NONCOPYABLE(CLinterVariable);
 
 	CLinterVariable(const CMemory* owner, const VarjusString& name, const CCrossModuleReference& ref);
 	virtual ~CLinterVariable();
@@ -28,7 +28,7 @@ struct CLinterVariable : public CMemoryIdentifier
 template <typename T1, typename T2 = void>
 class CVariableManager
 {
-	NONCOPYABLE(CVariableManager);
+	VARJUS_NONCOPYABLE(CVariableManager);
 	friend class CMemory;
 public:
 	CVariableManager(CMemory* const m_pOwner);

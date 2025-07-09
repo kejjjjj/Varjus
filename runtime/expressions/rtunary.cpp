@@ -11,14 +11,16 @@
 
 #include <cassert>
 
-static IValue* EvaluateNegation(CProgramRuntime* const runtime, IValue* operand);
+using namespace Varjus;
+
+static IValue* EvaluateNegation(Varjus::CProgramRuntime* const runtime, IValue* operand);
 static IValue* EvaluateIncrement(IValue* operand);
 static IValue* EvaluateDecrement(IValue* operand);
-static IValue* EvaluateLogicalNot(CProgramRuntime* const runtime, IValue* operand);
-static IValue* EvaluateBitwiseNot(CProgramRuntime* const runtime, IValue* operand);
+static IValue* EvaluateLogicalNot(Varjus::CProgramRuntime* const runtime, IValue* operand);
+static IValue* EvaluateBitwiseNot(Varjus::CProgramRuntime* const runtime, IValue* operand);
 
-static IValue* EvaluateTypeOf(CProgramRuntime* const runtime, IValue* operand);
-static IValue* EvaluateToString(CProgramRuntime* const runtime, IValue* operand);
+static IValue* EvaluateTypeOf(Varjus::CProgramRuntime* const runtime, IValue* operand);
+static IValue* EvaluateToString(Varjus::CProgramRuntime* const runtime, IValue* operand);
 
 IValue* CRuntimeExpression::EvaluateUnary(CRuntimeContext* const ctx, UnaryASTNode* node)
 {
@@ -48,7 +50,7 @@ IValue* CRuntimeExpression::EvaluateUnary(CRuntimeContext* const ctx, UnaryASTNo
 
 	return returnVal;
 }
-IValue* EvaluateNegation(CProgramRuntime* const runtime, IValue* operand)
+IValue* EvaluateNegation(Varjus::CProgramRuntime* const runtime, IValue* operand)
 {
 	if (operand->Type() == t_int) {
 		return CIntValue::Construct(runtime, -operand->AsInt());
@@ -58,13 +60,13 @@ IValue* EvaluateNegation(CProgramRuntime* const runtime, IValue* operand)
 		return CDoubleValue::Construct(runtime, -operand->AsDouble());
 	}
 
-	throw CRuntimeError(runtime, fmt::format(VSL("cannot negate a value of type \"{}\""), operand->TypeAsString()));
+	throw CRuntimeError(runtime, Varjus::fmt::format(VSL("cannot negate a value of type \"{}\""), operand->TypeAsString()));
 }
 IValue* EvaluateIncrement(IValue* operand)
 {
 
 	if (operand->Type() != t_int && operand->Type() != t_uint)
-		throw CRuntimeError(operand->GetAllocator(), fmt::format(VSL("the increment operand must have an (u)int type, but is \"{}\""), operand->TypeAsString()));
+		throw CRuntimeError(operand->GetAllocator(), Varjus::fmt::format(VSL("the increment operand must have an (u)int type, but is \"{}\""), operand->TypeAsString()));
 	
 	if (!operand->HasOwner())
 		throw CRuntimeError(operand->GetAllocator(), VSL("cannot increment a temporary value"));
@@ -83,7 +85,7 @@ IValue* EvaluateDecrement(IValue* operand)
 {
 
 	if (operand->Type() != t_int && operand->Type() != t_uint)
-		throw CRuntimeError(operand->GetAllocator(), fmt::format(VSL("the decrement operand must have an (u)int type, but is \"{}\""), operand->TypeAsString()));
+		throw CRuntimeError(operand->GetAllocator(), Varjus::fmt::format(VSL("the decrement operand must have an (u)int type, but is \"{}\""), operand->TypeAsString()));
 	
 	if (!operand->HasOwner())
 		throw CRuntimeError(operand->GetAllocator(), VSL("cannot decrement a temporary value"));
@@ -98,28 +100,28 @@ IValue* EvaluateDecrement(IValue* operand)
 
 	return operand;
 }
-IValue* EvaluateLogicalNot(CProgramRuntime* const runtime, IValue* operand)
+IValue* EvaluateLogicalNot(Varjus::CProgramRuntime* const runtime, IValue* operand)
 {
 	if (!operand->IsBooleanConvertible())
-		throw CRuntimeError(runtime, fmt::format(VSL("a value of type \"{}\" is not convertible to a boolean"), operand->TypeAsString()));
+		throw CRuntimeError(runtime, Varjus::fmt::format(VSL("a value of type \"{}\" is not convertible to a boolean"), operand->TypeAsString()));
 
 	return CBooleanValue::Construct(runtime, !operand->ToBoolean());
 }
-IValue* EvaluateBitwiseNot(CProgramRuntime* const runtime, IValue* operand)
+IValue* EvaluateBitwiseNot(Varjus::CProgramRuntime* const runtime, IValue* operand)
 {
 
 	if (operand->Type() != t_int && operand->Type() != t_uint)
-		throw CRuntimeError(runtime, fmt::format(VSL("the bitwise-not operand must have an (u)int type, but is \"{}\""), operand->TypeAsString()));
+		throw CRuntimeError(runtime, Varjus::fmt::format(VSL("the bitwise-not operand must have an (u)int type, but is \"{}\""), operand->TypeAsString()));
 
 	if (operand->Type() == t_int)
 		return CIntValue::Construct(runtime, ~operand->AsInt());
 
 	return CUIntValue::Construct(runtime, ~operand->AsUInt());
 }
-IValue* EvaluateTypeOf(CProgramRuntime* const runtime, IValue* operand){
+IValue* EvaluateTypeOf(Varjus::CProgramRuntime* const runtime, IValue* operand){
 	return CStringValue::Construct(runtime, operand->TypeAsString());
 }
 
-IValue* EvaluateToString(CProgramRuntime* const runtime, IValue* operand) {
+IValue* EvaluateToString(Varjus::CProgramRuntime* const runtime, IValue* operand) {
 	return CStringValue::Construct(runtime, operand->ValueAsEscapedString());
 }

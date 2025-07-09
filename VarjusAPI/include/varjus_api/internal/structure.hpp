@@ -49,11 +49,14 @@ class FunctionCallASTNode;
 class TernaryASTNode;
 class FmtStringASTNode;
 class CVariable;
-class CProgramRuntime;
-class CRuntimeModule;
 class CRuntimeCaseStatement;
 
 struct CFunctionBlock;
+
+namespace Varjus {
+	class CProgramRuntime;
+	class CRuntimeModule;
+}
 
 template<typename T>
 using VectorOf = std::vector<T>;
@@ -66,14 +69,14 @@ WARNING_DISABLE(4266)
 
 struct CRuntimeContext
 {
-	CProgramRuntime* m_pRuntime;
-	CRuntimeModule* m_pModule;
+	Varjus::CProgramRuntime* m_pRuntime;
+	Varjus::CRuntimeModule* m_pModule;
 	CFunction* m_pFunction;
 };
 
 class IRuntimeStructure
 {
-	NONCOPYABLE(IRuntimeStructure);
+	VARJUS_NONCOPYABLE(IRuntimeStructure);
 public:
 	IRuntimeStructure();
 	virtual ~IRuntimeStructure();
@@ -112,17 +115,17 @@ template<typename T>
 using VectorOf = std::vector<T>;
 
 template<typename A, typename B>
-using KeyValue = std::pair<A, B>;
+using __KeyValue = std::pair<A, B>;
 
 using ElementIndex = std::size_t;
-using ObjectInitializer = VectorOf<KeyValue<ElementIndex, IValue*>>;
-using ObjectInitializerData = VectorOf<KeyValue<ElementIndex, ASTNode>>;
+using ObjectInitializer = VectorOf<__KeyValue<ElementIndex, IValue*>>;
+using ObjectInitializerData = VectorOf<__KeyValue<ElementIndex, ASTNode>>;
 
 // contains more than one instruction
 
 class IRuntimeStructureSequence : public IRuntimeStructure
 {
-	NONCOPYABLE(IRuntimeStructureSequence);
+	VARJUS_NONCOPYABLE(IRuntimeStructureSequence);
 public:
 	IRuntimeStructureSequence(InstructionSequence&& insns);
 	~IRuntimeStructureSequence();
@@ -148,7 +151,7 @@ enum RuntimeFunctionType
 
 class CRuntimeFunctionBase
 {
-	NONCOPYABLE(CRuntimeFunctionBase);
+	VARJUS_NONCOPYABLE(CRuntimeFunctionBase);
 public:
 	CRuntimeFunctionBase(const VarjusString& name, std::size_t numArgs) : m_sName(name), m_uNumArguments(numArgs) {}
 	virtual ~CRuntimeFunctionBase() = default;
@@ -167,7 +170,7 @@ protected:
 class CRuntimeFunction final : public CRuntimeFunctionBase, public IRuntimeStructureSequence
 {
 	friend class CFunction;
-	NONCOPYABLE(CRuntimeFunction);
+	VARJUS_NONCOPYABLE(CRuntimeFunction);
 
 public:
 	CRuntimeFunction(ElementIndex moduleIndex, CFunctionBlock& linterFunction,
@@ -199,10 +202,10 @@ protected:
 
 class CBuiltInRuntimeMethod : public CRuntimeFunctionBase
 {
-	NONCOPYABLE(CBuiltInRuntimeMethod);
+	VARJUS_NONCOPYABLE(CBuiltInRuntimeMethod);
 
 public:
-	CBuiltInRuntimeMethod(Method_t method, std::size_t numArgs );
+	CBuiltInRuntimeMethod(Varjus::Method_t method, std::size_t numArgs);
 	~CBuiltInRuntimeMethod();
 
 	[[nodiscard]] constexpr RuntimeFunctionType FunctionType() const noexcept override { return fn_built_in_method; }
@@ -210,15 +213,15 @@ public:
 	[[maybe_unused]] IValue* ExecuteFunction(CRuntimeContext* const ctx, IValue* _this, VectorOf<IValue*>& args,
 		const VariableCaptures& captures) override;
 
-	Method_t m_pMethod;
+	Varjus::Method_t m_pMethod;
 };
 
 class CBuiltInRuntimeFunction : public CRuntimeFunctionBase
 {
-	NONCOPYABLE(CBuiltInRuntimeFunction);
+	VARJUS_NONCOPYABLE(CBuiltInRuntimeFunction);
 
 public:
-	CBuiltInRuntimeFunction(const VarjusString& name, Function_t function, std::size_t numArgs);
+	CBuiltInRuntimeFunction(const VarjusString& name, Varjus::Function_t function, std::size_t numArgs);
 	~CBuiltInRuntimeFunction();
 
 	[[nodiscard]] constexpr RuntimeFunctionType FunctionType() const noexcept override { return fn_built_in; }
@@ -226,14 +229,14 @@ public:
 	[[maybe_unused]] IValue* ExecuteFunction(CRuntimeContext* const ctx, IValue* _this, VectorOf<IValue*>& args,
 		const VariableCaptures& captures) override;
 
-	Function_t m_pFunction;
+	Varjus::Function_t m_pFunction;
 };
 
 using RuntimeAST = ASTNode;
 
 class CRuntimeExpression final : public IRuntimeStructure
 {
-	NONCOPYABLE(CRuntimeExpression);
+	VARJUS_NONCOPYABLE(CRuntimeExpression);
 	friend class CRuntimeReturnStatement;
 	friend class CRuntimeThrowStatement;
 
@@ -271,7 +274,7 @@ private:
 
 class CRuntimeConditionalStatement final : public IRuntimeStructureSequence
 {
-	NONCOPYABLE(CRuntimeConditionalStatement);
+	VARJUS_NONCOPYABLE(CRuntimeConditionalStatement);
 	friend class CElseStatementLinter; // so that it can add the chaining
 public:
 	CRuntimeConditionalStatement(ASTNode&& condition, InstructionSequence&& insns);
@@ -293,7 +296,7 @@ private:
 
 class CRuntimeForStatement final : public IRuntimeStructureSequence
 {
-	NONCOPYABLE(CRuntimeForStatement);
+	VARJUS_NONCOPYABLE(CRuntimeForStatement);
 public:
 	CRuntimeForStatement(
 		ASTNode&& init,
@@ -314,7 +317,7 @@ private:
 class VariableASTNode;
 class CRuntimeRangedForStatement final : public IRuntimeStructureSequence
 {
-	NONCOPYABLE(CRuntimeRangedForStatement);
+	VARJUS_NONCOPYABLE(CRuntimeRangedForStatement);
 public:
 	CRuntimeRangedForStatement(std::shared_ptr<VariableASTNode>&& iterator, ASTNode&& iterable, InstructionSequence&& insns);
 	~CRuntimeRangedForStatement();
@@ -331,7 +334,7 @@ private:
 
 class CRuntimeWhileStatement final : public IRuntimeStructureSequence
 {
-	NONCOPYABLE(CRuntimeWhileStatement);
+	VARJUS_NONCOPYABLE(CRuntimeWhileStatement);
 public:
 	CRuntimeWhileStatement(ASTNode&& condition, InstructionSequence&& insns);
 	~CRuntimeWhileStatement();
@@ -347,7 +350,7 @@ private:
 
 class CRuntimeCaseStatement final : public IRuntimeStructureSequence
 {
-	NONCOPYABLE(CRuntimeCaseStatement);
+	VARJUS_NONCOPYABLE(CRuntimeCaseStatement);
 	friend class CRuntimeMatchStatement;
 public:
 	CRuntimeCaseStatement(ASTNode&& condition, InstructionSequence&& insns);
@@ -364,7 +367,7 @@ private:
 };
 class CRuntimeMatchStatement final : public IRuntimeStructureSequence
 {
-	NONCOPYABLE(CRuntimeMatchStatement);
+	VARJUS_NONCOPYABLE(CRuntimeMatchStatement);
 public:
 	CRuntimeMatchStatement(ASTNode&& condition, CRuntimeCaseStatement* const defaultClause, InstructionSequence&& insns);
 	~CRuntimeMatchStatement();
@@ -382,7 +385,7 @@ private:
 };
 class CRuntimeRepeatStatement final : public IRuntimeStructureSequence
 {
-	NONCOPYABLE(CRuntimeRepeatStatement);
+	VARJUS_NONCOPYABLE(CRuntimeRepeatStatement);
 public:
 	CRuntimeRepeatStatement(ASTNode&& condition, InstructionSequence&& insns);
 	~CRuntimeRepeatStatement();
@@ -398,7 +401,7 @@ private:
 
 class CRuntimeReturnStatement final : public IRuntimeStructure
 {
-	NONCOPYABLE(CRuntimeReturnStatement);
+	VARJUS_NONCOPYABLE(CRuntimeReturnStatement);
 public:
 	CRuntimeReturnStatement(ASTNode&& condition);
 	~CRuntimeReturnStatement();
@@ -414,7 +417,7 @@ private:
 
 class CRuntimeTryCatchStatement final : public IRuntimeStructure
 {
-	NONCOPYABLE(CRuntimeTryCatchStatement);
+	VARJUS_NONCOPYABLE(CRuntimeTryCatchStatement);
 public:
 	CRuntimeTryCatchStatement(const CCrossModuleReference& catchVariable, InstructionSequence&& tryBlock, InstructionSequence&& catchBlock);
 	~CRuntimeTryCatchStatement();
@@ -433,7 +436,7 @@ private:
 
 class CRuntimeThrowStatement final : public IRuntimeStructure
 {
-	NONCOPYABLE(CRuntimeThrowStatement);
+	VARJUS_NONCOPYABLE(CRuntimeThrowStatement);
 public:
 	CRuntimeThrowStatement(ASTNode&& condition);
 	~CRuntimeThrowStatement();
@@ -449,7 +452,7 @@ private:
 
 //continue and break
 class CRuntimeLoopControlStatement final : public IRuntimeStructure {
-	NONCOPYABLE(CRuntimeLoopControlStatement);
+	VARJUS_NONCOPYABLE(CRuntimeLoopControlStatement);
 public:
 	CRuntimeLoopControlStatement(EExecutionControl c) : m_eCtrl(c){}
 	

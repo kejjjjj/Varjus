@@ -5,6 +5,8 @@
 #include "fs_globals.hpp"
 #include "fs_io.hpp"
 
+using namespace Varjus;
+
 namespace _fs = std::filesystem;
 
 VarjusString fs::exe_file_name()

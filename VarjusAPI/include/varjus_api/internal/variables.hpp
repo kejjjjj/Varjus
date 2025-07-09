@@ -7,22 +7,24 @@
 #include "varjus_api/internal/globalDefinitions.hpp"
 
 class IValue;
-class CProgramRuntime;
 class CInternalArrayValue;
 
 using ArrayOwner = std::weak_ptr<CInternalArrayValue>;
 
+namespace Varjus {
+	class CProgramRuntime;
+}
 
 class CVariable
 {
-	NONCOPYABLE(CVariable);
-	friend class CProgramRuntime;
+	VARJUS_NONCOPYABLE(CVariable);
+	friend class Varjus::CProgramRuntime;
 public:
 	CVariable() = default;
 	virtual ~CVariable() = default;
 
-	[[nodiscard]] static CVariable* Construct(CProgramRuntime* const runtime);
-	[[nodiscard]] static CVariable* Construct(CProgramRuntime* const runtime, IValue* v);
+	[[nodiscard]] static CVariable* Construct(Varjus::CProgramRuntime* const runtime);
+	[[nodiscard]] static CVariable* Construct(Varjus::CProgramRuntime* const runtime, IValue* v);
 
 	void SetValue(IValue* v);
 	[[maybe_unused]] virtual bool Release();
@@ -39,13 +41,13 @@ public:
 protected:
 	IValue* m_pValue{};
 	std::size_t m_uRefCount{std::size_t(1)};
-	CProgramRuntime* m_pAllocator{ nullptr };
+	Varjus::CProgramRuntime* m_pAllocator{ nullptr };
 };
 
 //for array members and object properties
 class CChildVariable final : public CVariable
 {
-	NONCOPYABLE(CChildVariable);
+	VARJUS_NONCOPYABLE(CChildVariable);
 
 public:
 
@@ -55,8 +57,8 @@ public:
 	[[maybe_unused]] bool Release() override;
 
 
-	[[nodiscard]] static CChildVariable* Construct(CProgramRuntime* const runtime, const ArrayOwner& parent);
-	[[nodiscard]] static CChildVariable* Construct(CProgramRuntime* const runtime, IValue* v, const ArrayOwner& parent);
+	[[nodiscard]] static CChildVariable* Construct(Varjus::CProgramRuntime* const runtime, const ArrayOwner& parent);
+	[[nodiscard]] static CChildVariable* Construct(Varjus::CProgramRuntime* const runtime, IValue* v, const ArrayOwner& parent);
 
 	[[nodiscard]] constexpr CVariable* Copy() noexcept override { m_uRefCount++; return this; }
 

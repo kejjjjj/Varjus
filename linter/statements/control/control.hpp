@@ -11,12 +11,12 @@ struct CFunctionBlock;
 
 class CLoopControlStatement : public CStatementLinter, protected IRuntimeBlock 
 {
-	NONCOPYABLE(CLoopControlStatement);
+	VARJUS_NONCOPYABLE(CLoopControlStatement);
 public:
 	explicit CLoopControlStatement(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const owner);
 	~CLoopControlStatement();
 
-	[[nodiscard]] Success Parse();
+	[[nodiscard]] Varjus::Success Parse();
 
 	[[nodiscard]] RuntimeBlock ToRuntimeObject() const override;
 private:

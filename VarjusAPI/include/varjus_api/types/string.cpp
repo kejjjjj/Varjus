@@ -8,8 +8,9 @@
 
 #include "linter/context.hpp"
 
+using namespace Varjus;
 
-CStringValue* CStringValue::Construct(CProgramRuntime* const runtime, const VarjusString& v)
+CStringValue* CStringValue::Construct(Varjus::CProgramRuntime* const runtime, const VarjusString& v)
 {
 
 	auto str = runtime->AcquireNewValue<CStringValue>();
@@ -35,12 +36,12 @@ void CStringValue::Release()
 IValue* CStringValue::Index([[maybe_unused]] CRuntimeContext* const ctx, IValue* vIndex)
 {
 	if (!vIndex->IsIntegral())
-		throw CRuntimeError(m_pAllocator, fmt::format(VSL("array accessor must be integral, but is \"{}\""), vIndex->TypeAsString()));
+		throw CRuntimeError(m_pAllocator, Varjus::fmt::format(VSL("array accessor must be integral, but is \"{}\""), vIndex->TypeAsString()));
 
 	auto index = vIndex->ToUInt();
 
 	if (index >= Internal()->Length())
-		throw CRuntimeError(m_pAllocator, fmt::format(VSL("string index {} out of bounds (len: {})"), index, Internal()->Length()));
+		throw CRuntimeError(m_pAllocator, Varjus::fmt::format(VSL("string index {} out of bounds (len: {})"), index, Internal()->Length()));
 
 	auto newStr = VarjusString(size_t(1), Internal()->GetString()[index]);
 	auto v = Construct(m_pAllocator, newStr);
@@ -54,7 +55,7 @@ IValue* CStringValue::GetAggregate(CRuntimeContext* const ctx, std::size_t membe
 	assert(methods);
 	if (methods->contains(memberIdx)) {
 		auto v = m_pAllocator->AcquireNewValue<CCallableValue>();
-		METHOD_BIND(v, methods, this->Copy());
+		VARJUS_METHOD_BIND(v, methods, this->Copy());
 		return v;
 	}
 
@@ -65,7 +66,7 @@ IValue* CStringValue::GetAggregate(CRuntimeContext* const ctx, std::size_t membe
 	}
 
 	if (auto info = m_pAllocator->GetInformation()) {
-		throw CRuntimeError(m_pAllocator, fmt::format(VSL("this aggregate doesn't have the attribute \"{}\""), info->m_oAllMembers.At(memberIdx)));
+		throw CRuntimeError(m_pAllocator, Varjus::fmt::format(VSL("this aggregate doesn't have the attribute \"{}\""), info->m_oAllMembers.At(memberIdx)));
 	}
 
 	assert(false);

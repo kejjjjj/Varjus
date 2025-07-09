@@ -32,16 +32,22 @@ protected:
 	CStringContent m_oValue;
 };
 
+namespace Varjus {
+	struct BuiltInMethod_t;
+	struct BuiltInProperty_t;
+	class CProgramInformation;
+}
+
 class CStringValue final : public CValue<CInternalStringValue>
 {
 public:
 	CStringValue() = default;
 
-	[[nodiscard]] static CStringValue* Construct(CProgramRuntime* const runtime, const VarjusString& v);
-	[[nodiscard]] static std::unique_ptr<struct BuiltInMethod_t> ConstructMethods(class CProgramInformation* const info);
-	[[nodiscard]] static std::unique_ptr<struct BuiltInProperty_t> ConstructProperties(class CProgramInformation* const info);
+	[[nodiscard]] static CStringValue* Construct(Varjus::CProgramRuntime* const runtime, const VarjusString& v);
+	[[nodiscard]] static std::unique_ptr<Varjus::BuiltInMethod_t> ConstructMethods(Varjus::CProgramInformation* const info);
+	[[nodiscard]] static std::unique_ptr<Varjus::BuiltInProperty_t> ConstructProperties(Varjus::CProgramInformation* const info);
 
-	[[nodiscard]] EValueType Type() const noexcept override { return t_string; };
+	[[nodiscard]] Varjus::EValueType Type() const noexcept override { return Varjus::t_string; };
 	[[nodiscard]] IValue* Copy() override;
 
 	virtual void Release() override;

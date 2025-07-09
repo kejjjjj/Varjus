@@ -30,5 +30,5 @@ private:
 	bool allocatedIsLHS = false;
 };
 
-[[nodiscard]] std::tuple<IValue*, IValue*, IValue*> Coerce(CProgramRuntime* const runtime, IValue* lhs, IValue* rhs);
-[[nodiscard]] CCoercionOperands CoerceInternal(CProgramRuntime* const runtime, IValue* lhs, IValue* rhs, bool lhsIsWeak);
+[[nodiscard]] std::tuple<IValue*, IValue*, IValue*> Coerce(Varjus::CProgramRuntime* const runtime, IValue* lhs, IValue* rhs);
+[[nodiscard]] CCoercionOperands CoerceInternal(Varjus::CProgramRuntime* const runtime, IValue* lhs, IValue* rhs, bool lhsIsWeak);

@@ -6,9 +6,9 @@ class CIntValue final : public CValue<VarjusInt>
 public:
 	CIntValue() = default;
 
-	[[nodiscard]] static CIntValue* Construct(CProgramRuntime* const runtime, VarjusInt v);
+	[[nodiscard]] static CIntValue* Construct(Varjus::CProgramRuntime* const runtime, VarjusInt v);
 
-	[[nodiscard]] EValueType Type() const noexcept override { return t_int; };
+	[[nodiscard]] Varjus::EValueType Type() const noexcept override { return Varjus::t_int; };
 
 	[[nodiscard]] IValue* Copy() override;
 
@@ -28,7 +28,7 @@ public:
 
 private:
 	[[nodiscard]] VarjusString TypeAsString() const override { return VSL("int"); }
-	[[nodiscard]] VarjusString ValueAsString() const override { return fmt::to_string(Get()); }
+	[[nodiscard]] VarjusString ValueAsString() const override { return Varjus::fmt::to_string(Get()); }
 	[[nodiscard]] VarjusString ValueAsEscapedString() const override { return ValueAsString(); }
 
 };

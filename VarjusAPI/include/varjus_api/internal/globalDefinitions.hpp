@@ -2,9 +2,11 @@
 
 #include "globalEnums.hpp"
 
-#define NONCOPYABLE(className) \
+#ifndef VARJUS_NONCOPYABLE
+#define VARJUS_NONCOPYABLE(className) \
         className(const className&) = delete; \
         className& operator=(const className&) = delete
+#endif
 
 #if defined(_MSC_VER) 
 #define WARNING_PUSH() __pragma(warning(push))

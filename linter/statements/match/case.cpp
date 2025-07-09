@@ -12,6 +12,8 @@
 
 #include <cassert>
 
+using namespace Varjus;
+
 CCaseStatementLinter::CCaseStatementLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack)
 	: CStatementLinter(pos, end, scope, stack) {
 
@@ -19,12 +21,12 @@ CCaseStatementLinter::CCaseStatementLinter(LinterIterator& pos, LinterIterator& 
 }
 CCaseStatementLinter::~CCaseStatementLinter() = default;
 
-Success CCaseStatementLinter::Parse()
+Varjus::Success CCaseStatementLinter::Parse()
 {
 	//m_pThisScope->MakeLoopScope();
 
 	if (IsEndOfBuffer() || ((*m_iterPos)->Type() != TokenType::tt_case && (*m_iterPos)->Type() != TokenType::tt_default)) {
-		m_pOwner->GetModule()->PushError(fmt::format(VSL("expected \"case\" or \"default\"")), GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError(Varjus::fmt::format(VSL("expected \"case\" or \"default\"")), GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 
@@ -43,7 +45,7 @@ Success CCaseStatementLinter::Parse()
 	return ParseCaseScope();
 
 }
-Success CCaseStatementLinter::ParseCaseScope()
+Varjus::Success CCaseStatementLinter::ParseCaseScope()
 {
 	CScopeLinter sc(m_iterPos, m_iterEnd, m_pThisScope, m_pOwner);
 
@@ -58,18 +60,18 @@ Success CCaseStatementLinter::ParseCaseScope()
 	return success;
 
 }
-Success CCaseStatementLinter::ParseDefaultClause()
+Varjus::Success CCaseStatementLinter::ParseDefaultClause()
 {
 
 	if (ContainsDefaultClause()) {
-		m_pOwner->GetModule()->PushError(fmt::format(VSL("\"default\" clause already defined")), GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError(Varjus::fmt::format(VSL("\"default\" clause already defined")), GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 
 	std::advance(m_iterPos, 1);
 
 	if (IsEndOfBuffer() || !(*m_iterPos)->IsOperator(p_colon)) {
-		m_pOwner->GetModule()->PushError(fmt::format(VSL("expected \":\"")), GetIteratorSafe()->m_oSourcePosition);
+		m_pOwner->GetModule()->PushError(Varjus::fmt::format(VSL("expected \":\"")), GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 

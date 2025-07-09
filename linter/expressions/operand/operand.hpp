@@ -30,7 +30,7 @@ enum EOperandBaseType : char {
 
 struct IOperand
 {
-	NONCOPYABLE(IOperand);
+	VARJUS_NONCOPYABLE(IOperand);
 
 	IOperand() = default;
 	virtual ~IOperand() = default;
@@ -43,7 +43,7 @@ struct IOperand
 
 class CLinterOperand final : public CLinterSingle<CToken>
 {
-	NONCOPYABLE(CLinterOperand);
+	VARJUS_NONCOPYABLE(CLinterOperand);
 	friend class CForStatementLinter; //for ParseIdentifier
 public:
 
@@ -51,7 +51,7 @@ public:
 	explicit CLinterOperand(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack);
 	~CLinterOperand();
 
-	[[nodiscard]] Success ParseOperand(std::optional<PairMatcher>& eoe);
+	[[nodiscard]] Varjus::Success ParseOperand(std::optional<PairMatcher>& eoe);
 	[[nodiscard]] ASTNode ToAST();
 
 private:

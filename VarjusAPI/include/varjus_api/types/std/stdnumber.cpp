@@ -14,6 +14,8 @@ FORWARD_DECLARE_METHOD(Stou);
 FORWARD_DECLARE_METHOD(Stod);
 FORWARD_DECLARE_METHOD(SetPrecision);
 
+using namespace Varjus;
+
 void CStdNumberValue::Construct(ObjectDeclaration_t& receiver)
 {
 	receiver.AddMethod(VSL("stoi"),         Stoi,         2);
@@ -43,10 +45,10 @@ DEFINE_METHOD(Stoi, args)
 	const auto _base = args[1];
 
 	if (v->Type() != t_string) {
-		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("number.stoi expected a string, but got \"{}\""), v->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, Varjus::fmt::format(VSL("number.stoi expected a string, but got \"{}\""), v->TypeAsString()));
 	}
 	if (!_base->IsIntegral()) {
-		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("number.stoi 2. expected an integral type, but got \"{}\""), _base->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, Varjus::fmt::format(VSL("number.stoi 2. expected an integral type, but got \"{}\""), _base->TypeAsString()));
 	}
 
 #ifdef UNICODE
@@ -73,10 +75,10 @@ DEFINE_METHOD(Stou, args)
 	const auto _base = args[1];
 
 	if (v->Type() != t_string) {
-		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("number.stou expected a string, but got \"{}\""), v->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, Varjus::fmt::format(VSL("number.stou expected a string, but got \"{}\""), v->TypeAsString()));
 	}
 	if (!_base->IsIntegral()) {
-		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("number.stou 2. expected an integral type, but got \"{}\""), _base->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, Varjus::fmt::format(VSL("number.stou 2. expected an integral type, but got \"{}\""), _base->TypeAsString()));
 	}
 
 #ifdef UNICODE
@@ -110,7 +112,7 @@ DEFINE_METHOD(Stod, args)
 	const auto v = args[0];
 
 	if (v->Type() != t_string) {
-		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("number.stod expected a string, but got \"{}\""), v->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, Varjus::fmt::format(VSL("number.stod expected a string, but got \"{}\""), v->TypeAsString()));
 	}
 
 #ifdef UNICODE
@@ -155,11 +157,11 @@ DEFINE_METHOD(SetPrecision, args)
 	const auto precision = args[1];
 
 	if (v->Type() != t_double) {
-		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("number.setprecision expected a double, but got \"{}\""), v->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, Varjus::fmt::format(VSL("number.setprecision expected a double, but got \"{}\""), v->TypeAsString()));
 	}
 
 	if (!precision->IsIntegral()) {
-		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("number.setprecision expected an integral type, but got \"{}\""), v->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, Varjus::fmt::format(VSL("number.setprecision expected an integral type, but got \"{}\""), v->TypeAsString()));
 	}
 
 	if (const auto str = _SetPrecision(v->ToDouble(), precision->ToInt()))

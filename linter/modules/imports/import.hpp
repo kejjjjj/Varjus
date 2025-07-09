@@ -10,22 +10,22 @@ class CScope;
 
 class CImportLinter final : public CLinterSingle<CToken>
 {
-	NONCOPYABLE(CImportLinter);
+	VARJUS_NONCOPYABLE(CImportLinter);
 public:
 	explicit CImportLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const owner);
 
-	[[nodiscard]] Success Parse();
+	[[nodiscard]] Varjus::Success Parse();
 
 private:
 
-	[[nodiscard]] Success ParseIdentifierRecursively();
-	[[nodiscard]] Success ParseFilePath();
+	[[nodiscard]] Varjus::Success ParseIdentifierRecursively();
+	[[nodiscard]] Varjus::Success ParseFilePath();
 
-	[[nodiscard]] Success ParseFile();
+	[[nodiscard]] Varjus::Success ParseFile();
 	[[nodiscard]] CModule* GetFileModule() const;
 
-	[[nodiscard]] Success DeclareVariable(const VarjusString& symbolName, CExportedSymbol* const s, std::size_t moduleIndex);
-	[[nodiscard]] Success DeclareFunction(const VarjusString& symbolName, CExportedSymbol* const s, std::size_t moduleIndex);
+	[[nodiscard]] Varjus::Success DeclareVariable(const VarjusString& symbolName, CExportedSymbol* const s, std::size_t moduleIndex);
+	[[nodiscard]] Varjus::Success DeclareFunction(const VarjusString& symbolName, CExportedSymbol* const s, std::size_t moduleIndex);
 
 	WeakScope m_pScope;
 	CMemory* const m_pOwner;

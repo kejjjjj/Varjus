@@ -1,7 +1,7 @@
 #include "varjus_api/internal/runtime.hpp"
 #include "boolean.hpp"
 
-CBooleanValue* CBooleanValue::Construct(CProgramRuntime* const runtime, bool v) {
+CBooleanValue* CBooleanValue::Construct(Varjus::CProgramRuntime* const runtime, bool v) {
 	return runtime->AcquireNewValue<CBooleanValue>(v);
 }
 

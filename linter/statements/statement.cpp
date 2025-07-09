@@ -10,7 +10,7 @@
 
 #include <cassert>
 
-
+using namespace Varjus;
 
 CStatementLinter::CStatementLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack)
 	: CLinterSingle(pos, end), m_pScope(scope), m_pOwner(stack) {
@@ -27,10 +27,10 @@ void CStatementLinter::CreateThisScope()
 		return;
 	}
 }
-Success CStatementLinter::ParseIdentifier(TokenType tt)
+Varjus::Success CStatementLinter::ParseIdentifier(TokenType tt)
 {
 	if (IsEndOfBuffer() || (*m_iterPos)->Type() != tt) {
-		m_pOwner->GetModule()->PushError(fmt::format(VSL("expected \"{}\""), tokenTypeStrings[tt]),
+		m_pOwner->GetModule()->PushError(Varjus::fmt::format(VSL("expected \"{}\""), tokenTypeStrings[tt]),
 			GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
@@ -61,7 +61,7 @@ ASTNode CStatementLinter::ParseExpression()
 }
 
 
-Success CStatementLinter::ParseScope()
+Varjus::Success CStatementLinter::ParseScope()
 {
 
 	if (IsEndOfBuffer()) {

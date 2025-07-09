@@ -17,7 +17,7 @@ struct CLinterFunction final : public CMemoryIdentifier
 
 class CFunctionManager
 {
-    NONCOPYABLE(CFunctionManager);
+    VARJUS_NONCOPYABLE(CFunctionManager);
     friend class CMemory;
 
 public:

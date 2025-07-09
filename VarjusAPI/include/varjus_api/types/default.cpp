@@ -3,8 +3,9 @@
 #include "varjus_api/types/internal/object_declarations.hpp"
 #include "linter/context.hpp"
 
+using namespace Varjus;
 
-IValue* IValue::Construct(CProgramRuntime* const runtime) {
+IValue* IValue::Construct(Varjus::CProgramRuntime* const runtime) {
 	return runtime->AcquireNewValue<IValue>();
 }
 void IValue::ReleaseInternal()
@@ -39,7 +40,7 @@ VarjusString& IValue::AsString(){
 
 VarjusString IValue::ToPrintableString() const
 {
-	return fmt::format(VSL("{}: {}"), ValueAsString(), TypeAsString());
+	return Varjus::fmt::format(VSL("{}: {}"), ValueAsString(), TypeAsString());
 }
 
 IValue* IValue::Index([[maybe_unused]] CRuntimeContext* const ctx, [[maybe_unused]] IValue* index)
@@ -50,6 +51,7 @@ IValue* IValue::Index([[maybe_unused]] CRuntimeContext* const ctx, [[maybe_unuse
 
 static VarjusString DumpArray(VarjusUInt indent, VarjusChar indentChar, const CArrayValue* arr);
 static VarjusString DumpObject(VarjusUInt indent, VarjusChar indentChar, const CObjectValue* obj);
+static VarjusString DumpBuiltInObject(VarjusUInt indent, VarjusChar indentChar, const CBuiltInObject* obj);
 
 VarjusString IValue::Dump(VarjusUInt indent, VarjusChar indentChar) const
 {
@@ -142,24 +144,27 @@ VarjusString DumpBuiltInObject(VarjusUInt indent, VarjusChar indentChar, const C
 
 	VarjusString indent_string(indent, indentChar);
 
-	if (obj->m_oMethods->empty() && obj->m_oProperties->empty()) {
+	const auto methods = obj->GetMethods();
+	const auto properties = obj->GetProperties();
+
+	if (methods->empty() && properties->empty()) {
 		write(VSL("{}"));
 		return ss;
 	}
 
 	write(VSL("{\n"));
 
-	const auto& methodInfo = obj->m_oMethods->m_pInfo;
+	const auto& methodInfo = methods->m_pInfo;
 
-	for (const auto& [id, _] : *obj->m_oMethods) {
+	for (const auto& [id, _] : *methods) {
 		write(indent_string);
 		write(VSL("\"") + methodInfo->m_oAllMembers.At(id) + VSL("\""));
 		write(VSL(": \"method\",\n"));
 	}
 
-	const auto& propertyInfo = obj->m_oProperties->m_pInfo;
+	const auto& propertyInfo = properties->m_pInfo;
 
-	for (const auto& [id, _] : *obj->m_oMethods) {
+	for (const auto& [id, _] : *methods) {
 		write(indent_string);
 		write(VSL("\"") + propertyInfo->m_oAllMembers.At(id) + VSL("\""));
 		write(VSL(": \"property\",\n"));

@@ -10,7 +10,6 @@ class CVariable;
 class CRuntimeFunctionBase;
 class IRuntimeStructure;
 class CModule;
-class CProgramRuntime;
 
 using RuntimeFunction = std::unique_ptr<CRuntimeFunctionBase>;
 using RuntimeBlock = std::unique_ptr<IRuntimeStructure>;
@@ -18,35 +17,36 @@ using RuntimeBlock = std::unique_ptr<IRuntimeStructure>;
 template<typename T>
 using VectorOf = std::vector<T>;
 
-class CRuntimeModule
-{
-	NONCOPYABLE(CRuntimeModule);
+namespace Varjus {
+	class CProgramRuntime;
+	class CRuntimeModule
+	{
+		VARJUS_NONCOPYABLE(CRuntimeModule);
+		friend class CProgramRuntime;
+	public:
+		explicit CRuntimeModule(CModule& ctx);
+		~CRuntimeModule();
 
-	friend class CProgramRuntime;
+		[[nodiscard]] CRuntimeFunctionBase* GetFunctionByIndex(std::size_t index);
+		[[nodiscard]] CVariable* GetGlobalVariableByIndex(std::size_t index);
 
-public:
-	explicit CRuntimeModule(CModule& ctx);
-	~CRuntimeModule();
+		void SetupGlobalVariables(Varjus::CProgramRuntime* const runtime);
+		void EvaluateGlobalExpressions(Varjus::CProgramRuntime* const runtime);
+		void FreeGlobalVariables();
 
-	[[nodiscard]] CRuntimeFunctionBase* GetFunctionByIndex(std::size_t index);
-	[[nodiscard]] CVariable* GetGlobalVariableByIndex(std::size_t index);
+		[[nodiscard]] CFileContext* GetContext() noexcept { return &m_oContext; }
+		[[nodiscard]] constexpr auto GetIndex() const noexcept { return m_uModuleIndex; }
+	private:
+		VectorOf<RuntimeBlock> m_oGlobalScopeInstructions;
+		std::size_t m_uNumGlobalVariables{};
 
-	void SetupGlobalVariables(CProgramRuntime* const runtime);
-	void EvaluateGlobalExpressions(CProgramRuntime* const runtime);
-	void FreeGlobalVariables();
+		VectorOf<RuntimeFunction> m_oFunctions;
+		VectorOf<CVariable*> m_oGlobalVariables;
 
-	[[nodiscard]] CFileContext* GetContext() noexcept { return &m_oContext; }
-	[[nodiscard]] constexpr auto GetIndex() const noexcept { return m_uModuleIndex; }
-private:
-	VectorOf<RuntimeBlock> m_oGlobalScopeInstructions;
-	std::size_t m_uNumGlobalVariables{};
-
-	VectorOf<RuntimeFunction> m_oFunctions;
-	VectorOf<CVariable*> m_oGlobalVariables;
-
-	CFileContext m_oContext;
-	std::size_t m_uModuleIndex{};
+		CFileContext m_oContext;
+		std::size_t m_uModuleIndex{};
 
 
-};
+	};
 
+}

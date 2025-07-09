@@ -1,7 +1,7 @@
 #include "varjus_api/internal/runtime.hpp"
 #include "integer.hpp"
 
-CIntValue* CIntValue::Construct(CProgramRuntime* const runtime, VarjusInt v) {
+CIntValue* CIntValue::Construct(Varjus::CProgramRuntime* const runtime, VarjusInt v) {
 	return runtime->AcquireNewValue<CIntValue>(v);
 }
 

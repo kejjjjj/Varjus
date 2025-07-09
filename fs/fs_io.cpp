@@ -13,9 +13,9 @@
 /***********************************************************************
  >                             IOReader
 ***********************************************************************/
+using namespace Varjus;
 
-
-std::optional<VarjusString> IOReader::IO_Read(EncodingType type) const {
+std::optional<VarjusString> IOReader::IO_Read(Varjus::EncodingType type) const {
 
     if (m_bErrorOccurred)
         return {};
@@ -33,7 +33,7 @@ std::optional<VarjusString> IOReader::IO_Read(EncodingType type) const {
     return content.length() ? std::make_optional(content) : std::nullopt;
 }
 
-VarjusString IOReader::IO_ReadStream(std::ifstream& stream, EncodingType type) const {
+VarjusString IOReader::IO_ReadStream(std::ifstream& stream, Varjus::EncodingType type) const {
 
     using LC = LocaleConverter;
     std::istreambuf_iterator<char> begin(stream), end;

@@ -19,6 +19,8 @@
 #pragma GCC diagnostic pop
 #endif
 
+using namespace Varjus;
+
 using json = nlohmann::json;
 
 FORWARD_DECLARE_METHOD(ParseJson);
@@ -80,7 +82,7 @@ CArrayValue* ParseArray(CRuntimeContext* const ctx, const json& arr)
 }
 CObjectValue* ParseObject(CRuntimeContext* const ctx, const json& obj)
 {
-	ObjectValues properties;
+	__ObjectValues properties;
 
 	for (const auto& [k, v] : obj.items()) {
 #ifdef UNICODE
@@ -102,7 +104,7 @@ DEFINE_METHOD(ParseJson, args)
 	const auto str = args[0];
 
 	if (str->Type() != t_string) {
-		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("json.parse expected a string, but got \"{}\""), str->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, Varjus::fmt::format(VSL("json.parse expected a string, but got \"{}\""), str->TypeAsString()));
 	}
 
 	try {
@@ -111,7 +113,7 @@ DEFINE_METHOD(ParseJson, args)
 	}
 	catch (json::parse_error& err) {
 		//let the user catch it
-		ctx->m_pRuntime->GetExceptionValue() = CStringValue::Construct(ctx->m_pRuntime, fmt::format(VSL("{}"), err.what()));
+		ctx->m_pRuntime->GetExceptionValue() = CStringValue::Construct(ctx->m_pRuntime, Varjus::fmt::format(VSL("{}"), err.what()));
 		ctx->m_pRuntime->ThrowException();
 		return ctx->m_pRuntime->GetExceptionValue();
 	}
@@ -124,10 +126,10 @@ DEFINE_METHOD(StringifyJson, args)
 	const auto pretty = args[1];
 
 	if (obj->Type() != t_object) {
-		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("json.stringify expected an object, but got \"{}\""), obj->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, Varjus::fmt::format(VSL("json.stringify expected an object, but got \"{}\""), obj->TypeAsString()));
 	}
 	if (!pretty->IsBooleanConvertible()) {
-		throw CRuntimeError(ctx->m_pRuntime, fmt::format(VSL("json.stringify 2. expected a boolean, but got \"{}\""), pretty->TypeAsString()));
+		throw CRuntimeError(ctx->m_pRuntime, Varjus::fmt::format(VSL("json.stringify 2. expected a boolean, but got \"{}\""), pretty->TypeAsString()));
 	}
 
 	if(pretty->ToBoolean())

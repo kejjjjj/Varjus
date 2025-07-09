@@ -7,53 +7,56 @@
 #include <functional>
 #include <optional>
 
-struct BuiltInMethod_t;
-struct BuiltInProperty_t;
-struct ObjectDeclaration_t;
+namespace Varjus {
+	struct BuiltInMethod_t;
+	struct BuiltInProperty_t;
+	struct ObjectDeclaration_t;
 
-class CBuiltInObject final : public CObjectValue
-{
-	NONCOPYABLE(CBuiltInObject);
+	class CBuiltInObject final : public CObjectValue
+	{
+		VARJUS_NONCOPYABLE(CBuiltInObject);
 
-public:
-	CBuiltInObject();
-	~CBuiltInObject();
-	static CBuiltInObject* Construct(CProgramRuntime* const runtime, BuiltInMethod_t&& methods, BuiltInProperty_t&& properties);
+	public:
+		CBuiltInObject();
+		~CBuiltInObject();
+		static CBuiltInObject* Construct(Varjus::CProgramRuntime* const runtime, Varjus::BuiltInMethod_t&& methods, Varjus::BuiltInProperty_t&& properties);
 
-	void Release() override;
+		void Release() override;
 
-	[[nodiscard]] virtual const constexpr CBuiltInObject* ToBuiltInObject() const noexcept { return this; }
-	[[nodiscard]] virtual constexpr CBuiltInObject* ToBuiltInObject() noexcept { return this; }
+		[[nodiscard]] const constexpr CBuiltInObject* ToBuiltInObject() const noexcept override { return this; }
+		[[nodiscard]] constexpr CBuiltInObject* ToBuiltInObject() noexcept override { return this; }
 
-	[[nodiscard]] IValue* Copy() override;
-	[[nodiscard]] IValue* Index(CRuntimeContext* const ctx, IValue* index) override;
-	[[nodiscard]] IValue* GetAggregate(CRuntimeContext* const ctx, std::size_t memberIdx) override;
+		[[nodiscard]] IValue* Copy() override;
+		[[nodiscard]] IValue* Index(CRuntimeContext* const ctx, IValue* index) override;
+		[[nodiscard]] IValue* GetAggregate(CRuntimeContext* const ctx, std::size_t memberIdx) override;
 
-private:
-	[[nodiscard]] VarjusString ValueAsString() const override;
-	[[nodiscard]] VarjusString ValueAsEscapedString() const override { return CBuiltInObject::ValueAsString(); }
+		[[nodiscard]] auto GetMethods() const noexcept { return m_oMethods.get(); }
+		[[nodiscard]] auto GetProperties() const noexcept { return m_oProperties.get(); }
 
-	std::shared_ptr<BuiltInMethod_t> m_oMethods;
-	std::shared_ptr<BuiltInProperty_t> m_oProperties;
+	private:
+		[[nodiscard]] VarjusString ValueAsString() const override;
+		[[nodiscard]] VarjusString ValueAsEscapedString() const override { return CBuiltInObject::ValueAsString(); }
 
-	friend VarjusString DumpBuiltInObject(VarjusUInt indent, VarjusChar indentChar, const CBuiltInObject* obj);
-};
+		std::shared_ptr<Varjus::BuiltInMethod_t> m_oMethods;
+		std::shared_ptr<Varjus::BuiltInProperty_t> m_oProperties;
+	};
 
-template<typename Type> requires std::is_same_v<void, std::remove_reference_t<Type>>
-using OptionalCtor = std::optional<std::function<Type(ObjectDeclaration_t&)>>;
+	template<typename Type> requires std::is_same_v<void, std::remove_reference_t<Type>>
+	using OptionalCtor = std::optional<std::function<Type(Varjus::ObjectDeclaration_t&)>>;
 
-struct CBuiltInObjectPairs
-{
-	~CBuiltInObjectPairs();
-	OptionalCtor<void> constructor;
-};
+	struct CBuiltInObjectPairs
+	{
+		~CBuiltInObjectPairs();
+		OptionalCtor<void> constructor;
+	};
 
-class CBuiltInObjects {
-public:
-	void AddNewStaticObject(const VarjusString& name, const OptionalCtor<void>& constructorFunc = std::nullopt);
-	void Reset() noexcept { m_arrData.clear(); }
-	[[nodiscard]] auto& Iterator() noexcept { return m_arrData; }
-private:
-	std::vector<std::pair<VarjusString, CBuiltInObjectPairs>> m_arrData;
+	class CBuiltInObjects {
+	public:
+		void AddNewStaticObject(const VarjusString& name, const OptionalCtor<void>& constructorFunc = std::nullopt);
+		void Reset() noexcept { m_arrData.clear(); }
+		[[nodiscard]] auto& Iterator() noexcept { return m_arrData; }
+	private:
+		std::vector<std::pair<VarjusString, CBuiltInObjectPairs>> m_arrData;
 
-};
+	};
+}

@@ -15,7 +15,9 @@
 
 #include <algorithm>
 #include <cassert>
-#include <iostream>
+
+using namespace Varjus;
+
 
 CLinterExpression::CLinterExpression(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const stack)
 	: CLinterSingle(pos, end), m_pScope(scope), m_pOwner(stack) {
@@ -49,15 +51,15 @@ ExpressionList CExpressionList::ToExpressionList()
 
 	return list;
 }
-Success CLinterExpression::Parse(std::optional<PairMatcher> m_oEndOfExpression, 
+Varjus::Success CLinterExpression::Parse(std::optional<PairMatcher> m_oEndOfExpression, 
 	CExpressionList* expression, EvaluationType evalType)
 {
 	return ParseInternal(m_oEndOfExpression, expression, evalType);
 }
-Success CLinterExpression::ParseInternal(std::optional<PairMatcher>& m_oEndOfExpression, 
+Varjus::Success CLinterExpression::ParseInternal(std::optional<PairMatcher>& m_oEndOfExpression, 
 	CExpressionList* expression, EvaluationType evalType)
 {
-	Success status = failure;
+	Varjus::Success status = failure;
 
 	if(EndOfExpression(m_oEndOfExpression))
 		m_pOwner->GetModule()->PushError(VSL("expected an expression"), GetIteratorSafe()->m_oSourcePosition);

@@ -15,16 +15,16 @@ struct CParameterData
 
 class CFunctionLinter final : public CLinterSingle<CToken>, protected IRuntimeBlock
 {
-	NONCOPYABLE(CFunctionLinter);
+	VARJUS_NONCOPYABLE(CFunctionLinter);
 	friend class CLinterOperand;
 	friend class CLambdaChecker;
 
 public:
 	explicit CFunctionLinter(LinterIterator& pos, LinterIterator& end, const WeakScope& scope, CMemory* const owner);
 	~CFunctionLinter();
-	[[nodiscard]] Success Parse();
-	[[nodiscard]] Success ParseFunctionParameters();
-	[[nodiscard]] Success ParseFunctionScope();
+	[[nodiscard]] Varjus::Success Parse();
+	[[nodiscard]] Varjus::Success ParseFunctionParameters();
+	[[nodiscard]] Varjus::Success ParseFunctionScope();
 
 	[[nodiscard]] std::unique_ptr<CFunctionBlock> ToFunction() const;
 
@@ -39,9 +39,9 @@ public:
 	[[nodiscard]] static bool IsIdentifier(const CToken* token) noexcept;
 
 private:
-	[[nodiscard]] Success ParseFunctionDeclaration();
+	[[nodiscard]] Varjus::Success ParseFunctionDeclaration();
 
-	[[nodiscard]] Success ParseFunctionParametersRecursively();
+	[[nodiscard]] Varjus::Success ParseFunctionParametersRecursively();
 
 
 	[[nodiscard]] bool IsFn(const CToken* token) const noexcept;
