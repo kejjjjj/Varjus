@@ -6,7 +6,7 @@
 
 #include "token.hpp"
 
-enum Varjus::Success : signed char;
+enum Success : signed char;
 
 using UniqueTokenVector = std::vector<std::unique_ptr<CToken>>;
 class CFmtStringToken;

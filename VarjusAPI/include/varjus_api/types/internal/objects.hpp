@@ -30,14 +30,15 @@ namespace Varjus {
 		[[nodiscard]] IValue* Index(CRuntimeContext* const ctx, IValue* index) override;
 		[[nodiscard]] IValue* GetAggregate(CRuntimeContext* const ctx, std::size_t memberIdx) override;
 
+		[[nodiscard]] auto GetMethods() const noexcept { return m_oMethods.get(); }
+		[[nodiscard]] auto GetProperties() const noexcept { return m_oProperties.get(); }
+
 	private:
 		[[nodiscard]] VarjusString ValueAsString() const override;
 		[[nodiscard]] VarjusString ValueAsEscapedString() const override { return CBuiltInObject::ValueAsString(); }
 
 		std::shared_ptr<Varjus::BuiltInMethod_t> m_oMethods;
 		std::shared_ptr<Varjus::BuiltInProperty_t> m_oProperties;
-
-		friend VarjusString DumpBuiltInObject(VarjusUInt indent, VarjusChar indentChar, const CBuiltInObject* obj);
 	};
 
 	template<typename Type> requires std::is_same_v<void, std::remove_reference_t<Type>>

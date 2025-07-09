@@ -64,7 +64,7 @@ Varjus::Success CFunctionLinter::Parse()
 	return success;
 }
 
-Success CFunctionLinter::ParseFunctionDeclaration()
+Varjus::Success CFunctionLinter::ParseFunctionDeclaration()
 {
 
 	if (IsEndOfBuffer() || !IsFn((*m_iterPos))) {

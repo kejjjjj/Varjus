@@ -18,6 +18,7 @@ template<typename T>
 using VectorOf = std::vector<T>;
 
 namespace Varjus {
+	class CProgramRuntime;
 	class CRuntimeModule
 	{
 		VARJUS_NONCOPYABLE(CRuntimeModule);
