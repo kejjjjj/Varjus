@@ -53,7 +53,8 @@ Varjus::Success CPostfixLinter::ParsePostfix()
 			m_oPostfixes.emplace_back(ParseDecrement());
 			break;
 		default:
-			assert(false);
+			m_pOwner->GetModule()->PushError(VSL("this operator does not have an implementation here"), asPunctuation.m_oSourcePosition);
+			return failure;
 		}
 
 		if (m_oPostfixes.size())

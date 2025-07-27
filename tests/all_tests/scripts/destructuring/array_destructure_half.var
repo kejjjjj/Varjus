@@ -1,0 +1,6 @@
+fn main()
+{
+	const [x, y] = [5, 2, 3, 4];
+
+	return [ x, y ];
+}

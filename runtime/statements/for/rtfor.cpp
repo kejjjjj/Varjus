@@ -3,15 +3,16 @@
 #include "varjus_api/internal/runtime.hpp"
 #include "varjus_api/internal/structure.hpp"
 #include "varjus_api/internal/variables.hpp"
+#include "linter/expressions/ast.hpp"
 
 using namespace Varjus;
 
 CRuntimeForStatement::CRuntimeForStatement(
-	ASTNode&& init,
+	std::unique_ptr<CInitializer>&& init,
 	ASTNode&& cond,
 	ASTNode&& endExpr, __InstructionSequence&& insns)
 	: IRuntimeStructureSequence(std::move(insns)), 
-	m_pInitializer(std::make_unique<CRuntimeExpression>(std::move(init))),
+	m_pInit(std::move(init)),
 	m_pCondition(std::make_unique<CRuntimeExpression>(std::move(cond))),
 	m_pOnEnd(std::make_unique<CRuntimeExpression>(std::move(endExpr)))
 {
@@ -23,10 +24,8 @@ CRuntimeForStatement::~CRuntimeForStatement() = default;
 IValue* CRuntimeForStatement::Execute(Varjus::CRuntimeContext* const ctx)
 {
 
-	if (m_pInitializer->HasAST()) {
-		auto v = m_pInitializer->Evaluate(ctx);
-		if (!v->HasOwner())
-			v->Release();
+	if (m_pInit) {
+		CRuntimeInitialization::EvaluateInitializer(ctx, *m_pInit, CRuntimeExpression::Evaluate(ctx, m_pInit->m_pInitializer));
 	}
 
 	bool firstIter = true;
@@ -34,7 +33,7 @@ IValue* CRuntimeForStatement::Execute(Varjus::CRuntimeContext* const ctx)
 	while (true) {
 
 		if (!firstIter && m_pOnEnd->HasAST()) {
-			auto v = m_pOnEnd->Evaluate(ctx);
+			auto v = m_pOnEnd->EvaluateExpression(ctx);
 			if (!v->HasOwner())
 				v->Release();
 		}
@@ -42,7 +41,7 @@ IValue* CRuntimeForStatement::Execute(Varjus::CRuntimeContext* const ctx)
 		firstIter = false;
 
 		if (m_pCondition->HasAST()) {
-			auto condition = m_pCondition->Evaluate(ctx);
+			auto condition = m_pCondition->EvaluateExpression(ctx);
 
 			if (!condition->IsBooleanConvertible())
 				throw CRuntimeError(ctx->m_pRuntime, VSL("the operand is not convertible to a boolean"));

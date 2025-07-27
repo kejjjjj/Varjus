@@ -20,7 +20,7 @@ CRuntimeExpression::~CRuntimeExpression() = default;
 
 IValue* CRuntimeExpression::Execute(Varjus::CRuntimeContext* const ctx)
 {
-	[[maybe_unused]] const auto result = Evaluate(ctx);
+	[[maybe_unused]] const auto result = EvaluateExpression(ctx);
 	
 	if (ctx->m_pRuntime->ExceptionThrown())
 		return result; //we don't want the exception to get destroyed
@@ -30,7 +30,7 @@ IValue* CRuntimeExpression::Execute(Varjus::CRuntimeContext* const ctx)
 
 	return nullptr;
 }
-IValue* CRuntimeExpression::Evaluate(Varjus::CRuntimeContext* const ctx) {
+IValue* CRuntimeExpression::EvaluateExpression(Varjus::CRuntimeContext* const ctx) {
 	return Evaluate(ctx, m_pAST);
 }
 
@@ -130,7 +130,7 @@ IValue* CRuntimeExpression::Evaluate(Varjus::CRuntimeContext* const ctx, Runtime
 }
 #pragma pack(pop)
 
-inline IValue* EvaluateVariable(Varjus::CRuntimeContext* const ctx, const VariableASTNode* const var)
+IValue* CRuntimeExpression::EvaluateVariable(Varjus::CRuntimeContext* const ctx, const VariableASTNode* const var)
 {
 	CVariable* variable{ nullptr };
 

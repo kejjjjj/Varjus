@@ -45,7 +45,7 @@ IValue* CRuntimeMatchStatement::Execute(Varjus::CRuntimeContext* const ctx) {
 std::size_t CRuntimeMatchStatement::GetCaseIndex(Varjus::CRuntimeContext* const ctx) const noexcept
 {
 	assert(m_pCondition);
-	const auto expression = m_pCondition->Evaluate(ctx);
+	const auto expression = m_pCondition->EvaluateExpression(ctx);
 	auto startIndex = std::size_t{ 0 };
 
 	for (const auto & v : m_oInstructions) {
@@ -59,7 +59,7 @@ std::size_t CRuntimeMatchStatement::GetCaseIndex(Varjus::CRuntimeContext* const 
 			continue;
 		}
 
-		const auto rhs = _statement->m_pCondition->Evaluate(ctx);
+		const auto rhs = _statement->m_pCondition->EvaluateExpression(ctx);
 		assert(expression && rhs);
 
 		auto result = OP_STRICT_EQUALITY(ctx->m_pRuntime, expression, rhs);

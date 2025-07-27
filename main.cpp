@@ -43,7 +43,7 @@ int main(int argc, char** argv)
         Varjus::fmt::print(std::cerr, VSL("state error: {}\n"), GetError(state.GetErrorMessage()));
         return 1;
     }
-
+    
 #if _UC
     if (!state.LoadScriptFromFile(reinterpret_cast<char16_t*>(argv[1]), e_utf8)) {
         Varjus::fmt::print(std::cerr, VSL("{}\n"), GetError(state.GetErrorMessage()));

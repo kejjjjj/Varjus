@@ -7,7 +7,7 @@
 
 #include <vector>
 #include <memory>
-
+#include <variant>
 #include <unordered_map>
 
 /***********************************************************************
@@ -19,6 +19,7 @@ enum EStructureType
 {
 	st_function,
 	st_expression,
+	st_initialization,
 	st_conditional,
 	st_for,
 	st_ranged_for,
@@ -101,7 +102,6 @@ public:
 protected:
 };
 
-using UniqueAST = std::unique_ptr<AbstractSyntaxTree>;
 using ASTNode = std::shared_ptr<AbstractSyntaxTree>;
 
 using __InstructionSequence = VectorOf<std::unique_ptr<IRuntimeStructure>>;
@@ -241,21 +241,21 @@ class CRuntimeExpression final : public IRuntimeStructure
 	VARJUS_NONCOPYABLE(CRuntimeExpression);
 	friend class CRuntimeReturnStatement;
 	friend class CRuntimeThrowStatement;
-
+	friend class CRuntimeInitialization;
 public:
 	CRuntimeExpression(ASTNode&& ast);
 	~CRuntimeExpression();
 
 	[[maybe_unused]] IValue* Execute(Varjus::CRuntimeContext* const ctx) override;
-	[[nodiscard]] IValue* Evaluate(Varjus::CRuntimeContext* const ctx);
+	[[nodiscard]] IValue* EvaluateExpression(Varjus::CRuntimeContext* const ctx);
 	[[nodiscard]] inline bool HasAST() { return !!m_pAST.get(); }
 	[[nodiscard]] inline ASTNode& GetAST() { return m_pAST; }
+	[[nodiscard]] static IValue* Evaluate(Varjus::CRuntimeContext* const ctx, RuntimeAST& node);
 
 protected:
 	[[nodiscard]] constexpr EStructureType Type() const noexcept override { return st_expression;};
 
 private:
-	[[nodiscard]] static IValue* Evaluate(Varjus::CRuntimeContext* const ctx, RuntimeAST& node);
 	[[nodiscard]] static IValue* EvaluateLeaf(Varjus::CRuntimeContext* const ctx, RuntimeAST& node);
 	[[nodiscard]] static IValue* EvaluatePostfix(Varjus::CRuntimeContext* const ctx, PostfixASTNode* node);
 	[[nodiscard]] static IValue* EvaluateUnary(Varjus::CRuntimeContext* const ctx, UnaryASTNode* node);
@@ -270,6 +270,9 @@ private:
 
 	[[nodiscard]] static VectorOf<IValue*> EvaluateList(Varjus::CRuntimeContext* const ctx, __ExpressionList& list);
 	[[nodiscard]] static __ObjectInitializer EvaluateObject(Varjus::CRuntimeContext* const ctx, __ObjectInitializerData& obj);
+	
+	[[nodiscard]] static IValue* EvaluateVariable(Varjus::CRuntimeContext* const ctx, const class VariableASTNode* const var);
+
 	ASTNode m_pAST;
 
 };
@@ -289,11 +292,47 @@ protected:
 
 private:
 
-	CRuntimeConditionalStatement* SeekLastBlock();
+	[[nodiscard]] CRuntimeConditionalStatement* SeekLastBlock();
 
 
 	std::unique_ptr<CRuntimeExpression> m_pCondition;
 	std::unique_ptr<CRuntimeConditionalStatement> m_pNext; //else (if)
+};
+
+
+using DestructuredVariableRef = std::shared_ptr<class VariableASTNode>;
+
+struct DestructuredArrayData
+{
+	VectorOf<DestructuredVariableRef> m_oProperties;
+	DestructuredVariableRef m_pRest;
+};
+
+using DestructuredObjectRef = __KeyValue<DestructuredVariableRef, std::size_t>;
+using DestructuredObjectData = VectorOf<DestructuredObjectRef>;
+using InitializationTarget = std::variant<DestructuredVariableRef, std::unique_ptr<struct CDestructuredData>>;
+
+enum class EDestructuredType : std::int8_t { dest_array, dest_object };
+enum class EInitializationTarget : std::int8_t { singular, destructured };
+
+struct CDestructuredData
+{
+	std::variant<DestructuredArrayData, DestructuredObjectData> m_oData;
+	EDestructuredType m_eType{};
+};
+
+struct CInitializer {
+
+	VARJUS_NONCOPYABLE(CInitializer);
+	CInitializer() = default;
+
+	[[nodiscard]] constexpr auto& GetVariable() { return std::get<0>(m_pTarget); }
+	[[nodiscard]] constexpr auto& GetDestructured() { return std::get<1>(m_pTarget); }
+
+	InitializationTarget m_pTarget{};
+	EInitializationTarget m_eTargetType{};
+	ASTNode m_pInitializer{};
+	bool m_bContainsDeclaration{ true }; //when false, m_pTarget should be discarded (and use m_pInitializer)
 };
 
 class CRuntimeForStatement final : public IRuntimeStructureSequence
@@ -301,7 +340,7 @@ class CRuntimeForStatement final : public IRuntimeStructureSequence
 	VARJUS_NONCOPYABLE(CRuntimeForStatement);
 public:
 	CRuntimeForStatement(
-		ASTNode&& init,
+		std::unique_ptr<CInitializer>&& init,
 		ASTNode&& cond,
 		ASTNode&& endExpr, __InstructionSequence&& insns);
 	~CRuntimeForStatement();
@@ -312,16 +351,15 @@ protected:
 	[[nodiscard]] constexpr EStructureType Type() const noexcept override { return st_for; };
 
 private:
-	std::unique_ptr<CRuntimeExpression> m_pInitializer;
+	std::unique_ptr<CInitializer> m_pInit;
 	std::unique_ptr<CRuntimeExpression> m_pCondition;
 	std::unique_ptr<CRuntimeExpression> m_pOnEnd;
 };
-class VariableASTNode;
 class CRuntimeRangedForStatement final : public IRuntimeStructureSequence
 {
 	VARJUS_NONCOPYABLE(CRuntimeRangedForStatement);
 public:
-	CRuntimeRangedForStatement(std::shared_ptr<VariableASTNode>&& iterator, ASTNode&& iterable, __InstructionSequence&& insns);
+	CRuntimeRangedForStatement(std::unique_ptr<CInitializer>&& iterator, __InstructionSequence&& insns);
 	~CRuntimeRangedForStatement();
 
 	[[maybe_unused]] IValue* Execute(Varjus::CRuntimeContext* const ctx) override;
@@ -330,8 +368,13 @@ protected:
 	[[nodiscard]] constexpr EStructureType Type() const noexcept override { return st_ranged_for; };
 
 private:
-	std::shared_ptr<VariableASTNode> m_pIterator;
-	std::unique_ptr<CRuntimeExpression> m_pIterable;
+	[[nodiscard]] IValue* GetIterable(Varjus::CRuntimeContext* const ctx);
+
+	[[nodiscard]] IValue* ExecuteSingular(Varjus::CRuntimeContext* const ctx, const DestructuredVariableRef& var);
+	[[nodiscard]] IValue* ExecuteDestructured(Varjus::CRuntimeContext* const ctx);
+
+	std::unique_ptr<CInitializer> m_pIterator;
+	//std::unique_ptr<CRuntimeExpression> m_pIterable; // this data is within m_pIterator
 };
 
 class CRuntimeWhileStatement final : public IRuntimeStructureSequence
@@ -464,6 +507,30 @@ protected:
 	[[nodiscard]] constexpr EStructureType Type() const noexcept override { return st_loop_control; };
 private:
 	EExecutionControl m_eCtrl{ lc_null };
+};
+
+
+class CRuntimeInitialization final : public IRuntimeStructure {
+	VARJUS_NONCOPYABLE(CRuntimeInitialization);
+	friend class CRuntimeForStatement;
+	friend class CRuntimeRangedForStatement;
+
+public:
+	CRuntimeInitialization(std::unique_ptr<CInitializer>&& init);
+	~CRuntimeInitialization();
+
+	[[maybe_unused]] IValue* Execute(Varjus::CRuntimeContext* const ctx) override;
+
+protected:
+	[[nodiscard]] constexpr EStructureType Type() const noexcept override { return st_initialization; };
+
+private:
+	static void EvaluateInitializer(Varjus::CRuntimeContext* const ctx, CInitializer& data, IValue* const getter);
+
+	static void EvaluateArray(Varjus::CRuntimeContext* const ctx, CInitializer& init, IValue* const getter);
+	static void EvaluateObject(Varjus::CRuntimeContext* const ctx, CInitializer& init, IValue* const getter);
+
+	std::unique_ptr<CInitializer> m_oData;
 };
 
 class IRuntimeBlock

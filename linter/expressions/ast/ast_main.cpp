@@ -118,7 +118,7 @@ void AbstractSyntaxTree::CreateRecursively(ASTNode& _this, CMemory* const owner,
 	}
 }
 void AbstractSyntaxTree::CreateTernary(ASTNode& self, CMemory* const owner, Operands& lhs_operands,
- Operators& lhs_operators, Operands& rhs_operands, Operators& rhs_operators)
+	Operators& lhs_operators, Operands& rhs_operands, Operators& rhs_operators)
 {
 	//everything to the left of the ? is the condition
 	ASTNode condition = AbstractSyntaxTree::CreateAST(owner, lhs_operands, lhs_operators);

@@ -12,7 +12,6 @@ struct CExpressionList;
 class CMemory;
 
 class AbstractSyntaxTree;
-using UniqueAST = std::unique_ptr<AbstractSyntaxTree>;
 
 class CLinterOperator final
 {

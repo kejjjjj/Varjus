@@ -56,7 +56,6 @@ namespace Varjus {
 		VARJUS_NONCOPYABLE(CProgramRuntime);
 
 		friend class CRuntimeFunction;
-		friend class CRuntimeExpression;
 		friend class CRuntimeModule;
 
 	public:

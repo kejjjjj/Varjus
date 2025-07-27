@@ -4,6 +4,8 @@
 
 #include "linter/expressions/ast/ast_unary.hpp"
 #include "linter/error.hpp"
+#include "linter/functions/function.hpp"
+#include "linter/modules/module.hpp"
 
 #include "varjus_api/internal/globalEnums.hpp"
 
@@ -56,7 +58,8 @@ Varjus::Success CUnaryLinter::ParseUnary()
 				m_oUnaryOperators.emplace_back(ParseBitwiseNot());
 				break;
 			default:
-				assert(false);
+				m_pOwner->GetModule()->PushError(VSL("this operator does not have an implementation here"), asPunctuation.m_oSourcePosition);
+				return failure;
 			}
 		}
 
