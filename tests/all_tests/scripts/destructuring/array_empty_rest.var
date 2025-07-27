@@ -1,0 +1,6 @@
+fn main()
+{
+	const [x, y, ...rest] = [1u, 2u];
+
+	return [ x, y, rest.length ];
+}

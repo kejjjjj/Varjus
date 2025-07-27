@@ -1,0 +1,11 @@
+fn main()
+{
+	const arr = [ {a: 5, b: 6}, {a: 7, b: 8} ];
+
+	const results = [];
+
+	for(const {a, b} : arr)
+		results.push(a + b);
+
+	return results;
+}

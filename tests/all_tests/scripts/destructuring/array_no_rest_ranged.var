@@ -1,0 +1,11 @@
+fn main()
+{
+	const arr = [ [1, 2], [2, 3] ];
+
+	const results = [];
+
+	for(const [x, y] : arr)
+		results.push(x + y);
+
+	return results;
+}

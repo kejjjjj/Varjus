@@ -1,0 +1,14 @@
+fn main()
+{
+    const results = [];
+    for(const [x, y] = [ [1, 2], [3, 4] ];results.length < 4u;){
+        const [a, b] = x;
+        const [c, d] = y;
+        results.push(a);
+        results.push(b);
+        results.push(c);
+        results.push(d);
+    }
+
+    return results;
+}

@@ -13,7 +13,6 @@
 class AbstractSyntaxTree;
 using ASTNode = std::shared_ptr<AbstractSyntaxTree>;
 using __ExpressionList = VectorOf<ASTNode>;
-using UniqueAST = std::unique_ptr<AbstractSyntaxTree>;
 template<typename A, typename B>
 using KeyValue = std::pair<A, B>;
 

@@ -55,8 +55,15 @@ Varjus::Success CExportLinter::ParseVariableDeclaration()
 	if (m_pOwner->IsHoisting()) // no action required
 		return success; 
 
-	const auto var = m_pVariableLinter->GetIdentifier();
-	m_pOwner->GetModule()->AddExport(var->m_sName, std::make_unique<CExportedVariable>(var->m_uIndex));
+	if(m_pVariableLinter->DeclarationType() == EInitializationTarget::singular) {
+		const auto var = std::get<0>(m_pVariableLinter->m_oDeclarationData);
+		m_pOwner->GetModule()->AddExport(var->m_sName, std::make_unique<CExportedVariable>(var->m_uIndex));
+	}
+	else {
+		m_pOwner->GetModule()->PushError(VSL("don't export destructured stuff yet!!"), GetIteratorSafe()->m_oSourcePosition);
+		return failure;
+	}
+
 	return success;
 }
 Varjus::Success CExportLinter::ParseFunctionDeclaration()

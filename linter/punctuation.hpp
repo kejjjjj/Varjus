@@ -92,6 +92,7 @@ enum Punctuation : char
 	p_question_mark,
 	p_exclamation,
 	p_tilde,
+	p_spread,
 };
 
 struct CPunctuation final
@@ -101,15 +102,16 @@ struct CPunctuation final
 	OperatorPriority m_ePriority{};
 };
 
-constexpr std::array<CPunctuation, 47u> punctuations
+constexpr std::array<CPunctuation, 48u> punctuations
 {
 	CPunctuation{VSL("==="), p_strict_equality, op_relational},
 	CPunctuation{VSL("!=="), p_strict_unequality, op_relational},
 
 	CPunctuation{VSL("<<="), p_assignment_left_shift, op_assignment},
 	CPunctuation{VSL(">>="), p_assignment_right_shift, op_assignment},
-
 	CPunctuation{VSL("<=>"), p_swap, op_assignment},
+
+	CPunctuation{VSL("..."), p_spread, op_unary},
 
 	CPunctuation{VSL("+="), p_assignment_addition, op_assignment},
 	CPunctuation{VSL("-="), p_assignment_subtraction, op_assignment},

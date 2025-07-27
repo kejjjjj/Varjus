@@ -65,45 +65,69 @@ Varjus::Success CForStatementLinter::ParseInitializer() {
 		return failure;
 	}
 
+	m_oInitializer = std::make_unique<CInitializer>();
 
 	if (CVariableDeclarationLinter::IsDeclaration((*m_iterPos))) {
 		CVariableDeclarationLinter linter(m_iterPos, m_iterEnd, m_pThisScope, m_pOwner);
+		auto& pos = (*m_iterPos)->m_oSourcePosition;
 
 		if (!linter.ParseIdentifier() || IsEndOfBuffer())
 			return failure;
 
+		m_bConst = false; 
+		m_oInitializer->m_eTargetType = linter.m_eType;
+
+		if (linter.m_eType == EInitializationTarget::singular) {
+			m_oInitializer->m_pTarget = std::make_shared<VariableASTNode>(pos, std::get<0>(linter.m_oDeclarationData));
+		} else {
+			m_oInitializer->m_pTarget = std::move(std::get<1>(linter.m_oDeclarationData));
+		}
+
 		if ((*m_iterPos)->IsOperator(p_colon)) {
+			std::advance(m_iterPos, 1); // skip :
 			return ParseRangedForLoop();
 		}
 
 		if (!linter.ParseInitializer())
 			return failure;
 
-		std::get<0>(m_oData).m_pInitializer = linter.MoveInitializer();
-		
+		m_oInitializer->m_pInitializer = linter.MoveInitializer();
 		std::advance(m_iterPos, 1);
-
 		return success;
 	}
 
-
+	// no initialization ( just ; )
 	if ((*m_iterPos)->IsOperator(p_semicolon)) {
+		m_oInitializer->m_bContainsDeclaration = false;
 		std::advance(m_iterPos, 1);
 		return success;
 	}
-
-
+	
 	if (std::distance(m_iterPos, m_iterEnd) > 2 && (*m_iterPos)->Type() == tt_name && (*std::next(m_iterPos))->IsOperator(p_colon)) {
-		std::advance(m_iterPos, 1);
+		
+		if(!m_pThisScope->VariableExists((*m_iterPos)->Source()))
+			m_pOwner->GetModule()->PushError(VSL("expected a variable"), GetIteratorSafe()->m_oSourcePosition);
+
+		const auto var = m_pOwner->m_VariableManager->GetVariable((*m_iterPos)->Source());
+		assert(var);
+
+		m_bConst = var->m_bConst;
+		m_iterIdentifier = m_iterPos;
+
+		m_oInitializer->m_eTargetType = EInitializationTarget::singular;
+		m_oInitializer->m_pTarget = std::make_shared<VariableASTNode>((*m_iterPos)->m_oSourcePosition, var);
+
+		std::advance(m_iterPos, 2); // skip the variable and the :
 		return ParseRangedForLoop();
 	}
 
-	
+	m_oInitializer->m_bContainsDeclaration = false;
+
 	CLinterExpression linter(m_iterPos, m_iterEnd, m_pThisScope, m_pOwner);
 	if (!linter.Parse())
 		return failure;
 
-	std::get<0>(m_oData).m_pInitializer = linter.ToMergedAST();
+	m_oInitializer->m_pInitializer = linter.ToMergedAST();
 	std::advance(m_iterPos, 1);
 	return success;
 }
@@ -146,24 +170,23 @@ Varjus::Success CForStatementLinter::ParseEndExpression() {
 }
 
 Varjus::Success CForStatementLinter::ParseRangedForLoop()
-{
-	std::advance(m_iterPos, -1); //go back to the initializer
-	
-	CLinterOperand operand(m_iterPos, m_iterEnd, m_pThisScope, m_pOwner);
+{	
+	LinterIterator oldPos = m_iterPos;
+	CLinterExpression operand(m_iterPos, m_iterEnd, m_pThisScope, m_pOwner);
 
-	const auto oper = operand.ParseIdentifier();
+	const auto oper = operand.Parse(PairMatcher(p_par_open));
 
 	if (!oper)
 		return failure;
 
-	auto ast = m_pOwner->IsHoisting() ? nullptr : oper->ToAST();
+	auto ast = m_pOwner->IsHoisting() ? nullptr : operand.ToMergedAST();
 
-	if (!m_pOwner->IsHoisting() && (!ast || !ast->IsVariable())) {
+	if (!m_pOwner->IsHoisting() && (!ast)) {
 		m_pOwner->GetModule()->PushError(VSL("expected an expression"), GetIteratorSafe()->m_oSourcePosition);
 		return failure;
 	}
 
-	std::advance(m_iterPos, 1); //skip : 
+	m_iterPos = oldPos;
 
 	//the iterable
 	CLinterExpression lintIterable(m_iterPos, m_iterEnd, m_pThisScope, m_pOwner);
@@ -176,14 +199,17 @@ Varjus::Success CForStatementLinter::ParseRangedForLoop()
 	if (m_pOwner->IsHoisting())
 		return success;
 
-	
-	m_oData = RangedForLoop{ 
-		.m_pIterator = std::dynamic_pointer_cast<VariableASTNode>(ast),
-		.m_pIterable = lintIterable.ToMergedAST()
-	};
+	m_oInitializer->m_bContainsDeclaration = true;
+	m_oInitializer->m_pInitializer = lintIterable.ToMergedAST();
 
-	if (std::get<1>(m_oData).m_pIterator && std::get<1>(m_oData).m_pIterator->m_bIsConst) {
-		m_pOwner->GetModule()->PushError(VSL("assignment to a constant"), std::get<1>(m_oData).m_pIterator->GetCodePosition());
+	m_oData = RangedForLoop{};
+
+	return CheckConstness();
+}
+Varjus::Success CForStatementLinter::CheckConstness()
+{
+	if (m_bConst) {
+		m_pOwner->GetModule()->PushError(VSL("assignment to a constant"), (*m_iterIdentifier)->m_oSourcePosition);
 		return failure;
 	}
 
@@ -194,16 +220,13 @@ __RuntimeBlock CForStatementLinter::ToRuntimeObject() const
 {
 	if (m_eType == for_ranged) {
 
-		decltype(auto) iterable = const_cast<ASTNode&&>(std::move(std::get<1>(m_oData).m_pIterable));
-		decltype(auto) iterator = const_cast<std::shared_ptr<VariableASTNode>&&>(std::move(std::get<1>(m_oData).m_pIterator));
-
-		return std::make_unique<CRuntimeRangedForStatement>(std::move(iterator), std::move(iterable), m_pThisScope->MoveInstructions());
+		decltype(auto) iterator = const_cast<std::unique_ptr<CInitializer>&>(m_oInitializer);
+		return std::make_unique<CRuntimeRangedForStatement>(std::move(iterator), m_pThisScope->MoveInstructions());
 	}
 
-
-	decltype(auto) init = const_cast<ASTNode&&>(std::move(std::get<0>(m_oData).m_pInitializer));
-	decltype(auto) cond = const_cast<ASTNode&&>(std::move(std::get<0>(m_oData).m_pCondition));
-	decltype(auto) endExpr = const_cast<ASTNode&&>(std::move(std::get<0>(m_oData).m_pOnEnd));
+	decltype(auto) init = const_cast<std::unique_ptr<CInitializer>&>(m_oInitializer);
+	decltype(auto) cond = const_cast<ASTNode&>(std::get<0>(m_oData).m_pCondition);
+	decltype(auto) endExpr = const_cast<ASTNode&>(std::get<0>(m_oData).m_pOnEnd);
 
 	return std::make_unique<CRuntimeForStatement>(
 		std::move(init),

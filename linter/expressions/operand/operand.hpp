@@ -15,7 +15,6 @@ class IPostfixBase;
 class CUnaryBase;
 struct CKeyValue;
 
-using UniqueAST = std::unique_ptr<AbstractSyntaxTree>;
 using ASTNode = std::shared_ptr<AbstractSyntaxTree>;
 
 enum EOperandBaseType : char {

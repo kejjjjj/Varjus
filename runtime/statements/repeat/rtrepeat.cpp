@@ -15,7 +15,7 @@ CRuntimeRepeatStatement::~CRuntimeRepeatStatement() = default;
 
 static bool EvaluateCondition(Varjus::CRuntimeContext* const ctx, std::unique_ptr<CRuntimeExpression>& m_pCondition)
 {
-	auto condition = m_pCondition->Evaluate(ctx);
+	auto condition = m_pCondition->EvaluateExpression(ctx);
 
 	if (!condition->IsBooleanConvertible())
 		throw CRuntimeError(ctx->m_pRuntime, VSL("the operand is not convertible to a boolean"));

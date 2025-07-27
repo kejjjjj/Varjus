@@ -1,20 +1,19 @@
+fn randomString(len) {
+    let str = "";
+    for(let i = 0; i < len; i++)
+        str += string.from_code(math.trunc(math.random(65, 123)));
 
-fn createActions()
-{
-    let actions = [];
-    for(let i = 0; i < 3; i++){
-        actions.push(() => console.log(`value: ${i}`));
-    }
-
-    return actions;
+    return str;
 }
-
+fn randomKeyGen() {
+    return {k: randomString(5), v: randomString(10)};
+}
 fn main()
 {
+    const arr = [].resize(10);
+    for(let i = 0; i < 10; i++)
+        arr[i] = randomKeyGen();
 
-    for(const action : createActions()){
-        action();
-    }
-
-    return 1;
+    for(const { k, v } : arr)
+        console.log(`${k} and ${v}`);
 }

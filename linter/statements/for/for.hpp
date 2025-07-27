@@ -11,14 +11,12 @@ struct CFunctionBlock;
 
 struct StandardForLoop
 {
-	ASTNode m_pInitializer;
 	ASTNode m_pCondition;
 	ASTNode m_pOnEnd;
 };
 
 struct RangedForLoop
 {
-	std::shared_ptr<class VariableASTNode> m_pIterator;
 	ASTNode m_pIterable;
 };
 
@@ -43,6 +41,12 @@ private:
 
 	[[nodiscard]] Varjus::Success ParseRangedForLoop();
 
+	[[nodiscard]] Varjus::Success CheckConstness();
+
+
+	std::unique_ptr<CInitializer> m_oInitializer;
 	std::variant<StandardForLoop, RangedForLoop> m_oData;
 	ForLoopType m_eType{};
+	bool m_bConst{}; 
+	LinterIterator m_iterIdentifier;
 };
