@@ -1,0 +1,5 @@
+﻿import variable from "src.var";
+
+export fn editMe(num){
+	variable = num;
+}

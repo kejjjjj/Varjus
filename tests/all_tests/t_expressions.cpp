@@ -4,6 +4,19 @@
 #define PATH_PREFIX VSL("expressions")
 #define JP(x) (VarjusString(PATH_PREFIX) + VARJUS_DIRECTORY_SEPARATOR + x)
 
+TEST_CASE(("integer _ literals"))
+{
+	auto retVal = TEST_ExecuteFile(JP(VSL("integer_literal.var")));
+
+	AssertArray(retVal, AssertArrayValue<ASSERT_INT>(t_int, {
+		1'000'000,
+		-500,
+		500
+	}));
+
+	REQUIRE(retVal->HasOwner() == false);
+	TEST_END(retVal);
+}
 
 TEST_CASE(("operator precedence tests in simple expressions"))
 {

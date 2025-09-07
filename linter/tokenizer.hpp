@@ -38,7 +38,7 @@ private:
 	[[nodiscard]] Varjus::Success ReadMultiLineComment();
 
 	[[nodiscard]] Varjus::Success ReadNumber(CToken& token);
-	[[nodiscard]] Varjus::Success ReadInteger(CToken& token) noexcept;
+	[[nodiscard]] Varjus::Success ReadInteger(CToken& token);
 	[[nodiscard]] Varjus::Success ReadHex(CToken& token);
 
 	[[nodiscard]] Varjus::Success ReadString(CToken& token, VarjusChar quote);

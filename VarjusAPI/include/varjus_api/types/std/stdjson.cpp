@@ -75,6 +75,7 @@ IValue* ParseJsonRecursively(Varjus::CRuntimeContext* const ctx, const json& js)
 CArrayValue* ParseArray(Varjus::CRuntimeContext* const ctx, const json& arr)
 {
 	IValues values;
+	values.reserve(arr.size());
 
 	for (const auto& v : arr) {
 		values.push_back(ParseJsonRecursively(ctx, v));
@@ -85,6 +86,7 @@ CArrayValue* ParseArray(Varjus::CRuntimeContext* const ctx, const json& arr)
 CObjectValue* ParseObject(Varjus::CRuntimeContext* const ctx, const json& obj)
 {
 	__ObjectValues properties;
+	properties.reserve(obj.size());
 
 	for (const auto& [k, v] : obj.items()) {
 #ifdef UNICODE
