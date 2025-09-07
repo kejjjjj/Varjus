@@ -309,25 +309,33 @@ Varjus::Success CBufferTokenizer::ReadNumber(CToken& token)
 	return success;
 
 }
-Varjus::Success CBufferTokenizer::ReadInteger(CToken& token) noexcept
+Varjus::Success CBufferTokenizer::ReadInteger(CToken& token)
 {
+	auto& [_, column] = m_oParserPosition;
+
 	if (EndOfBuffer())
 		return failure;
 
-	if (IsDigit(*m_oScriptPos)) {
+
+	while (IsDigit(*m_oScriptPos)) {
 		token.m_sSource.push_back(*m_oScriptPos++);
 
 		if (EndOfBuffer())
 			return success;
 
-		while (IsDigit(*m_oScriptPos)) {
-			token.m_sSource.push_back(*m_oScriptPos++);
+		if (*m_oScriptPos == VSL('_')) {
+			m_oScriptPos++;
+			column++;
 
-			if (EndOfBuffer())
-				return success;
+			if (EndOfBuffer() || !IsDigit(*m_oScriptPos)) {
+				column += token.m_sSource.length();
+				m_pProgram->PushError(VSL("digit separator cannot end here"), m_oParserPosition);
+				return failure;
+			}
 
 		}
 	}
+	
 
 	return success;
 }

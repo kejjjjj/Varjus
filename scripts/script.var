@@ -1,19 +1,11 @@
-fn randomString(len) {
-    let str = "";
-    for(let i = 0; i < len; i++)
-        str += string.from_code(math.trunc(math.random(65, 123)));
-
-    return str;
-}
-fn randomKeyGen() {
-    return {k: randomString(5), v: randomString(10)};
-}
+﻿import variable from "src.var";
+import editMe from "a.var";
+import editMe2 from "b.var";
 fn main()
 {
-    const arr = [].resize(10);
-    for(let i = 0; i < 10; i++)
-        arr[i] = randomKeyGen();
-
-    for(const { k, v } : arr)
-        console.log(`${k} and ${v}`);
+    console.log(variable);
+    editMe(10);
+    console.log(variable);
+    editMe2(20);
+    console.log(variable);
 }
