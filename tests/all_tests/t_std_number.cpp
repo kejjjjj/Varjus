@@ -22,6 +22,9 @@ TEST_CASE(("stou()")) {
 
 	auto retVal = TEST_ExecuteFile(JP(VSL("stou.var")));
 
+	for(const auto& v : retVal->ToArray()->Get().GetContent().GetVariables())
+		fmt::print(std::cout, VSL("{}\n"), v->GetValue()->ValueAsEscapedString());
+
 	AssertArray(retVal, AssertArrayValue<ASSERT_UINT>(t_uint, {
 		2u,
 		static_cast<VarjusUInt>(-1),
