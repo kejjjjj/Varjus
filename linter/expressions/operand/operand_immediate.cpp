@@ -6,6 +6,7 @@
 
 #include <charconv>
 #include <cassert>
+#include <cstring>
 
 using namespace Varjus;
 
