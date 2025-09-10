@@ -87,6 +87,7 @@ VarjusString CImmediateOperand::ToData() const noexcept
 #else
 	VarjusString string = m_pToken->Source();
 #endif
+	VarjusDouble dvalue{};
 
 
 	switch (GetImmediateType()) {
@@ -104,13 +105,13 @@ VarjusString CImmediateOperand::ToData() const noexcept
 		break;
 	case t_double:
 		result = VarjusString(sizeof(VarjusDouble), 0);
-		std::from_chars(string.c_str(), string.c_str() + string.size(), reinterpret_cast<VarjusDouble&>(*result.data()));
+		dvalue = std::strtod(string.c_str(), nullptr);
+		std::memcpy(result.data(), &dvalue, sizeof(VarjusDouble));
 		break;
 	case t_string:
 	default:
 		assert(false);
 	}
-
 	return result;
 
 }

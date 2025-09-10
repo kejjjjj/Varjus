@@ -72,7 +72,7 @@ RuntimeModules CProjectModules::ToRuntimeModules()
 {
 	RuntimeModules modules;
 	for (auto& tMod : m_oAllModules) {
-		modules.emplace_back(std::move(tMod->ToRuntimeModule()));
+		modules.emplace_back(tMod->ToRuntimeModule());
 	}
 
 	m_oAllModules.clear();

@@ -34,9 +34,12 @@ namespace Varjus {
 
     };
 
-    #ifdef _WIN32
+    #if defined(_WIN32)
     #define VARJUS_DIRECTORY_SEPARATOR VSL("\\")
     #define VARJUS_DIRECTORY_SEPARATOR_CHAR VarjusChar('\\')
+    #elif defined(__APPLE__) && defined(__MACH__)
+    #define VARJUS_DIRECTORY_SEPARATOR VSL("/")
+    #define VARJUS_DIRECTORY_SEPARATOR_CHAR VarjusChar('/')
     #else
     #define VARJUS_DIRECTORY_SEPARATOR VSL("/")
     #define VARJUS_DIRECTORY_SEPARATOR_CHAR VarjusChar('/')

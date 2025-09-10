@@ -65,7 +65,7 @@ private:
 	UniqueTokenVector m_oTokens;
 
 	const STD_STRING_VIEW& m_sSource;
-	Varjus::Success m_eSuccess;
+	//Varjus::Success m_eSuccess;
 
 	Varjus::CProgramInformation* const m_pProgram{};
 

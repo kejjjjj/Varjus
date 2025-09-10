@@ -289,8 +289,8 @@ public:
 
 	[[nodiscard]] constexpr bool IsOperator() const noexcept override { return true; }
 
-	[[nodiscard]] virtual constexpr bool IsPostfix() const noexcept { return false; }
-	[[nodiscard]] virtual constexpr bool IsUnary() const noexcept { return false; }
+	[[nodiscard]] virtual constexpr bool IsPostfix() const noexcept override { return false; }
+	[[nodiscard]] virtual constexpr bool IsUnary() const noexcept override { return false; }
 
 	[[nodiscard]] virtual constexpr const PostfixASTNode* GetPostfix() const noexcept { return nullptr; }
 	[[nodiscard]] virtual constexpr PostfixASTNode* GetPostfix() noexcept { return nullptr; }
@@ -298,7 +298,7 @@ public:
 	[[nodiscard]] virtual constexpr const UnaryASTNode* GetUnary() const noexcept { return nullptr; }
 	[[nodiscard]] virtual constexpr UnaryASTNode* GetUnary() noexcept { return nullptr; }
 
-	[[nodiscard]] virtual constexpr bool IsSequence() const noexcept { return m_ePunctuation == p_comma; }
+	[[nodiscard]] virtual constexpr bool IsSequence() const noexcept override { return m_ePunctuation == p_comma; }
 
 	[[nodiscard]] virtual bool IsMeaningful() const noexcept override { return IsAssignment(); }
 

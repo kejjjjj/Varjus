@@ -18,26 +18,37 @@
 #define VARJUS_WARNING_DISABLE(v)
 #endif 
 
-#ifdef _WIN32
-#ifdef _WIN64
-// 64-bit Windows
-using VarjusInt = long long;
-using VarjusUInt = unsigned long long;
+#if defined(_WIN32)
+        #if defined(_WIN64)
+                // 64-bit Windows
+                using VarjusInt = long long;
+                using VarjusUInt = unsigned long long;
+        #else
+                // 32-bit Windows
+                using VarjusInt = int;
+                using VarjusUInt = unsigned int;
+        #endif
+#elif defined(__APPLE__) && defined(__MACH__)
+        #include <TargetConditionals.h>
+        #if defined(__x86_64__) || defined(__aarch64__)
+                // 64-bit macOS
+                using VarjusInt = long long;
+                using VarjusUInt = unsigned long long;
+        #else
+                // 32-bit macOS
+                using VarjusInt = int;
+                using VarjusUInt = unsigned int;
+        #endif
 #else
-// 32-bit Windows
-using VarjusInt = int;
-using VarjusUInt = unsigned int;
-#endif
-#else
-#if __x86_64__ || __ppc64__
-// 64-bit non-Windows
-using VarjusInt = long long;
-using VarjusUInt = unsigned long long;
-#else
-// 32-bit non-Windows
-using VarjusInt = int;
-using VarjusUInt = unsigned int;
-#endif
+        #if defined(__x86_64__) || defined(__ppc64__)
+                // 64-bit non-Windows, non-macOS
+                using VarjusInt = long long;
+                using VarjusUInt = unsigned long long;
+        #else
+                // 32-bit non-Windows, non-macOS
+                using VarjusInt = int;
+                using VarjusUInt = unsigned int;
+        #endif
 #endif
 
 using VarjusDouble = double;

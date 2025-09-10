@@ -62,7 +62,7 @@ public:
 
 	[[nodiscard]] constexpr CVariable* Copy() noexcept override { m_uRefCount++; return this; }
 
-	[[nodiscard]] constexpr virtual bool IsChild() const noexcept { return true; }
+	[[nodiscard]] constexpr virtual bool IsChild() const noexcept override { return true; }
 	[[nodiscard]] ArrayOwner GetParent() const noexcept override { return m_pParent; }
 
 	void SetParent(ArrayOwner parent) { m_pParent = parent; }

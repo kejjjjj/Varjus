@@ -27,14 +27,21 @@ void CStdNumberValue::Construct(ObjectDeclaration_t& receiver)
 
 }
 
-#ifdef _WIN32
-	#ifdef _WIN64
+#if defined(_WIN32)
+	#if defined(_WIN64)
+		#define X64 1
+	#else
+		#define X64 0
+	#endif
+#elif defined(__APPLE__) && defined(__MACH__)
+        #include <TargetConditionals.h>
+    #if defined(__x86_64__) || defined(__aarch64__)		
 		#define X64 1
 	#else
 		#define X64 0
 	#endif
 #else
-	#if __x86_64__ || __ppc64__
+	#if defined(__x86_64__) || defined(__ppc64__)
 		#define X64 1
 	#else
 		#define X64 0
@@ -93,8 +100,8 @@ DEFINE_METHOD(Stou, args)
 #if X64
 		return CUIntValue::Construct(ctx->m_pRuntime, std::stoull(str, nullptr, static_cast<std::int32_t>(_base->ToInt())));
 #else
-		auto r = std::stoul(str, nullptr, _base->ToInt());
 
+		auto r = std::stoul(str, nullptr, _base->ToInt());
 		if (r > std::numeric_limits<unsigned int>::max()) {
 			throw CRuntimeError(ctx->m_pRuntime, VSL("number.stou Value exceeds unsigned int range"));
 		}
