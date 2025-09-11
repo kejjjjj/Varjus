@@ -21,7 +21,7 @@ TEST_CASE(("stoi()")) {
 TEST_CASE(("stou()")) {
 
 	auto retVal = TEST_ExecuteFile(JP(VSL("stou.var")));
-
+	
 	AssertArray(retVal, AssertArrayValue<ASSERT_UINT>(t_uint, {
 		2u,
 		static_cast<VarjusUInt>(-1),

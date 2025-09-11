@@ -32,7 +32,7 @@ constexpr auto IsHex(VarjusChar c) -> bool
 		(c >= 'A' && c <= 'F');
 }
 CBufferTokenizer::CBufferTokenizer(CProgramInformation* const program, const STD_STRING_VIEW& buffer) 
-	: m_sSource(buffer), m_eSuccess(success), m_pProgram(program) {
+	: m_sSource(buffer), m_pProgram(program) {
 
 	assert(buffer.data() && buffer.size());
 

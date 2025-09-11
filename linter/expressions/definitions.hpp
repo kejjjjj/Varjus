@@ -31,7 +31,7 @@ template<class ContainerType>
 class CLinter
 {
 	static_assert(std::is_same_v<ContainerType, CToken> || std::is_same_v<ContainerType, CPunctuationToken>, 
-		VSL("ContainerType must have CToken as the base"));
+		"ContainerType must have CToken as the base");
 public:
 	CLinter() = delete;
 

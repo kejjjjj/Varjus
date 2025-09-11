@@ -13,11 +13,17 @@
 
 #include <vector>
 
-#ifdef __linux__
-#define VARJUS_DIRECTORY_SEPARATOR VSL("/")
+#if defined(_WIN32)
+    #define VARJUS_DIRECTORY_SEPARATOR VSL("\\")
+    #define VARJUS_DIRECTORY_SEPARATOR_CHAR VarjusChar('\\')
+#elif defined(__APPLE__) && defined(__MACH__)
+    #define VARJUS_DIRECTORY_SEPARATOR VSL("/")
+    #define VARJUS_DIRECTORY_SEPARATOR_CHAR VarjusChar('/')
 #else
-#define VARJUS_DIRECTORY_SEPARATOR VSL("\\")
+    #define VARJUS_DIRECTORY_SEPARATOR VSL("/")
+    #define VARJUS_DIRECTORY_SEPARATOR_CHAR VarjusChar('/')
 #endif
+
 
 using ASSERT_BOOL = bool;
 using ASSERT_INT = VarjusInt;
@@ -57,7 +63,7 @@ constexpr auto GetTemplatedValue(IValue* t)
 	else if constexpr (std::is_same_v<ASSERT_STRING, T>)
 		return t->ToString();
 	else
-		static_assert(always_false<T>::value, VSL("bad type"));
+		static_assert(always_false<T>::value, "bad type");
 }
 
 template<typename T>

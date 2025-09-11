@@ -153,7 +153,7 @@ protected:
 
 template <typename Value>
 class CValue : public IValue {
-	static_assert(std::is_default_constructible_v<Value>, VSL("T must be default constructible"));
+	static_assert(std::is_default_constructible_v<Value>, "T must be default constructible");
 public:
 	// no reason to have other constructors as these objects are created before their actually needed use!
 	CValue() = default;
