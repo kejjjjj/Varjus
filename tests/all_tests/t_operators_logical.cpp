@@ -9,7 +9,7 @@ TEST_CASE(("logical and operations")) {
 
 	auto retVal = TEST_ExecuteFile(JP(VSL("logical_and.var")));
 
-	#if defined(__GNUC__) || defined(__clang__)
+	#if defined(__clang__)
 		#pragma GCC diagnostic push
 		#pragma GCC diagnostic ignored "-Wconstant-logical-operand"
 	#endif
@@ -28,7 +28,7 @@ TEST_CASE(("logical and operations")) {
 		0.0 && 0.0,
 		1.0 && 0.0
 	}));
-	#if defined(__GNUC__) || defined(__clang__)
+	#if defined(__clang__)
 		#pragma GCC diagnostic pop
 	#endif
 
@@ -40,7 +40,7 @@ TEST_CASE(("logical or operations")) {
 
 	auto retVal = TEST_ExecuteFile(JP(VSL("logical_or.var")));
 
-	#if defined(__GNUC__) || defined(__clang__)
+	#if defined(__clang__)
 		#pragma GCC diagnostic push
 		#pragma GCC diagnostic ignored "-Wconstant-logical-operand"
 	#endif
@@ -59,7 +59,7 @@ TEST_CASE(("logical or operations")) {
 			static_cast<bool>(0.0 || 0.0),
 			static_cast<bool>(1.0 || 0.0)
 		}));
-	#if defined(__GNUC__) || defined(__clang__)
+	#if defined(__clang__)
 		#pragma GCC diagnostic pop
 	#endif
 
