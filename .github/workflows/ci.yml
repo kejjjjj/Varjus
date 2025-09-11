@@ -32,6 +32,26 @@ jobs:
       - name: Run tests
         run: cd tests/all_tests && ./Varjus
 
+  macos_tests:
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        build_type: [Debug, Release]
+        unicode: [ON, OFF]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure CMake
+        run: cmake -S tests/all_tests -B tests/all_tests/build -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DUSE_UNICODE=${{ matrix.unicode }}
+
+      - name: Build project
+        run: cmake --build tests/all_tests/build
+
+      - name: Run tests
+        run: cd tests/all_tests && ./Varjus
+
   windows_tests:
     runs-on: windows-latest
     strategy:
