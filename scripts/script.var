@@ -1,11 +1,5 @@
-﻿import variable from "src.var";
-import editMe from "a.var";
-import editMe2 from "b.var";
-fn main()
-{
-    console.log(variable);
-    editMe(10);
-    console.log(variable);
-    editMe2(20);
-    console.log(variable);
+﻿import main_caller from "script2.var";
+
+fn main() {
+    return main_caller();
 }

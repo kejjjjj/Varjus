@@ -77,10 +77,10 @@ IValues CStringValue::ToIterable() const
 {
 	auto& str = Internal()->GetString();
 
-	IValues results(str.size());
-
-	for (std::size_t i = {}; auto var : str) {
-		results[i++] = CStringValue::Construct(m_pAllocator, VarjusString(size_t(1), var));
+	IValues results;
+	results.reserve(str.size());
+	for (auto var : str) {
+		results.push_back(CStringValue::Construct(m_pAllocator, VarjusString(std::size_t(1), var)));
 	}
 
 	return results;

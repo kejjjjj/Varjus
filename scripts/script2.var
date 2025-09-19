@@ -1,0 +1,7 @@
+﻿export fn main_caller() {
+    return main();
+}
+
+fn main() {
+    return "hello from main!";
+}
