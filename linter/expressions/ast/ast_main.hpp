@@ -44,7 +44,7 @@ using __ElementIndex = std::size_t;
 using Operands = VectorOf<CLinterOperand*>;
 using Operators = VectorOf<CLinterOperator*>;
 
-class AbstractSyntaxTree : public std::enable_shared_from_this<AbstractSyntaxTree>
+class AbstractSyntaxTree/* : public std::enable_shared_from_this<AbstractSyntaxTree>*/
 {
 public:
 	AbstractSyntaxTree() = default;

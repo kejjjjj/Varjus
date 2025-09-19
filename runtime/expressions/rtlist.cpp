@@ -5,6 +5,7 @@ VectorOf<IValue*> CRuntimeExpression::EvaluateList(Varjus::CRuntimeContext* cons
 {
 
 	VectorOf<IValue*> args;
+	args.reserve(list.size());
 
 	for (auto& l : list) {
 

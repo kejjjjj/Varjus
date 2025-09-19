@@ -54,14 +54,15 @@ DEFINE_METHOD(Object_Keys, args)
 	auto __this = GetThisObject(_this);
 	auto& vars = __this->GetShared()->GetAggregateValue().Iterator();
 
-	IValues results(vars.size());
+	IValues results;
+	results.reserve(vars.size());
 
 	auto members = __this->Internal()->GetAllRuntimeMembers();
 	assert(members);
 
 	//result array
-	for (auto i = std::size_t(0); const auto& [index, var] : vars) {
-		results[i++] = CStringValue::Construct(ctx->m_pRuntime, members->At(index));
+	for (const auto& [index, var] : vars) {
+		results.push_back(CStringValue::Construct(ctx->m_pRuntime, members->At(index)));
 	}
 
 	return CArrayValue::Construct(ctx->m_pRuntime, std::move(results));
@@ -71,11 +72,12 @@ DEFINE_METHOD(Object_Values, args)
 	auto __this = GetThisObject(_this);
 	auto& vars = __this->GetShared()->GetAggregateValue().Iterator();
 
-	IValues results(vars.size());
+	IValues results;
+	results.reserve(vars.size());
 
 	//result array
-	for (auto i = std::size_t(0); const auto & [index, var] : vars) {
-		results[i++] = var->GetValue()->Copy();
+	for (const auto & [index, var] : vars) {
+		results.push_back(var->GetValue()->Copy());
 	}
 
 	return CArrayValue::Construct(ctx->m_pRuntime, std::move(results));
@@ -141,6 +143,7 @@ DEFINE_METHOD(Object_ToArray, args)
 	assert(members);
 
 	IValues values;
+	values.reserve(aggregate.size());
 
 	for (const auto& [i, var] : aggregate) {
 

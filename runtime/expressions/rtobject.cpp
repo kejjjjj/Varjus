@@ -4,6 +4,8 @@
 __ObjectInitializer CRuntimeExpression::EvaluateObject(Varjus::CRuntimeContext* const ctx, __ObjectInitializerData& obj)
 {
 	__ObjectInitializer init;
+	init.reserve(obj.size());
+
 	for (auto& [key, value] : obj) {
 		auto v = Evaluate(ctx, value);
 		init.emplace_back(std::make_pair(key, v->HasOwner() ? v->Copy() : v));

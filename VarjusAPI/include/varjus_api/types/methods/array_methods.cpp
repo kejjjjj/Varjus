@@ -146,13 +146,15 @@ DEFINE_METHOD(Transform, args)
 	auto __this = GetThisArray(_this);
 	auto& vars = __this->Get().GetContent().GetVariables();
 
-	IValues results(vars.size());
+	IValues results;
+	results.reserve(vars.size());
+
 	IValues call_args(1);
 
 	//result array
 	for (auto i = std::size_t(0); const auto& var : vars) {
 		call_args[0] = var->GetValue()->Copy();
-		results[i++] = mapFunc->Call(ctx, call_args);
+		results.push_back(mapFunc->Call(ctx, call_args));
 
 		//because of course someone will throw an exception :x
 		if (ctx->m_pRuntime->ExceptionThrown()) {
@@ -395,10 +397,12 @@ DEFINE_METHOD(Reverse, args) {
 	
 	auto __this = GetThisArray(_this);
 	auto& vars = __this->Get().GetContent().GetVariables();
-	IValues valuesAsCopy(vars.size());
 
-	for (auto i = size_t(0); auto& var : vars)
-		valuesAsCopy[i++] = var->GetValue()->Copy();
+	IValues valuesAsCopy;
+	valuesAsCopy.reserve(vars.size());
+
+	for (auto& var : vars)
+		valuesAsCopy.push_back(var->GetValue()->Copy());
 	
 	std::reverse(valuesAsCopy.begin(), valuesAsCopy.end());
 
@@ -408,7 +412,8 @@ DEFINE_METHOD(Reverse, args) {
 
 VarjusString JoinStrings(const VectorOf<VarjusString>& strings, const VarjusString& delimiter) {
 	VarjusString result;
-	for (auto i = std::size_t(0); i < strings.size(); ++i) {
+	const auto size = strings.size();
+	for (auto i = std::size_t(0); i < size; ++i) {
 		result += strings[i];
 		if (i != strings.size() - std::size_t(1)) {
 			result += delimiter;
@@ -561,6 +566,7 @@ DEFINE_METHOD(Slice, args) {
 	CheckRange(end);
 
 	IValues valuesAsCopy;
+	valuesAsCopy.reserve(end - start);
 
 	end += 1;
 	for (auto i : std::views::iota(start, end))
@@ -637,10 +643,11 @@ DEFINE_METHOD(Sort, args)
 	auto __this = GetThisArray(_this);
 	auto& vars = __this->Get().GetContent().GetVariables();
 
-	IValues valuesAsCopy(vars.size());
+	IValues valuesAsCopy;
+	valuesAsCopy.reserve(vars.size());
 
-	for (auto i = size_t(0); auto & var : vars)
-		valuesAsCopy[i++] = var->GetValue()->Copy();
+	for (auto & var : vars)
+		valuesAsCopy.push_back(var->GetValue()->Copy());
 
 	IterativeQuickSort(ctx, valuesAsCopy, mapFunc);
 

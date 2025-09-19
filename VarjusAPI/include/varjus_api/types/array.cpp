@@ -95,11 +95,11 @@ IValues CArrayValue::ToIterable() const
 {
 	auto& vars = GetShared()->GetContent().GetVariables();
 
-	IValues results(vars.size());
+	IValues results;
+	results.reserve(vars.size());
 
-	for (std::size_t i = {}; auto& var : vars) {
-		results[i] = var->GetValue()->Copy();
-		i++;
+	for (auto& var : vars) {
+		results.push_back(var->GetValue()->Copy());
 	}
 
 	return results;
