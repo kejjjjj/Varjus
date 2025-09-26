@@ -1,5 +1,28 @@
-﻿import main_caller from "script2.var";
+﻿fn emptyFunc(something)
+{
+    return something;
+}
+fn loggerFunc(logger)
+{
+    for(let i = 0; i < 1000000; i++)
+        logger()((fn() { return (v) => v*2; })()(i));
+}
 
 fn main() {
-    return main_caller();
+
+    const then = date.now();
+    const logger = () => emptyFunc;
+
+    const func = () => {
+        loggerFunc(logger);
+    };
+
+    func();
+
+    const now = date.now();
+
+    const elapsed = (now - then) / 1000.0;
+
+    return `${elapsed}s`;
+        
 }

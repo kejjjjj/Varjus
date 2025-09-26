@@ -3,7 +3,6 @@
 
 #include "runtime/functions/rtfunction.hpp"
 #include "runtime/modules/rtmodule.hpp"
-#include "varjus_api/types/operators/default_operators.hpp"
 #include "varjus_api/internal/structure.hpp"
 #include "varjus_api/internal/exceptions/exception.hpp"
 #include "varjus_api/internal/runtime.hpp"
@@ -12,6 +11,7 @@
 #include "linter/expressions/ast.hpp"
 
 #include <cassert>
+#include <ranges>
 
 using namespace Varjus;
 
