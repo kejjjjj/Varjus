@@ -1,4 +1,45 @@
 ﻿
-export fn main() {
-    return "heallo from main!";
+fn makeMaze(width, height)
+{
+
+    const maze = {
+        width: width,
+        height: height,
+        grid: []
+    };
+
+    for(let y = 0; y < height; y++) {
+        const row = [];
+        for(let x = 0; x < width; x++) {
+            row.push({
+                x:x,
+                y:y,
+                visited:false,
+                walls:{
+                    top:true,
+                    right:true,
+                    bottom:true,
+                    left:true
+                }
+            });
+        }
+
+        maze.grid.push(row);
+    }
+
+    maze.set("getCell", (x_, y_) => {
+        console.log(x_, y_);
+        if(x_ < 0 || y_ < 0 || x_ >= maze.width || y_ >= maze.height)
+            return undefined;
+
+        return maze.grid[x_][y_];
+    });
+
+    return maze;
+
+}
+
+fn main() {
+
+    return makeMaze(5, 5).getCell(1,1);
 }

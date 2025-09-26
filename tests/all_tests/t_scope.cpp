@@ -43,3 +43,15 @@ TEST_CASE("unnamed scope assignment") {
 	REQUIRE(retVal->HasOwner() == false);
 	TEST_END(retVal);
 }
+
+TEST_CASE(("lambda references 'deleted' variables"))
+{
+	auto retVal = TEST_ExecuteFile(JP(VSL("lambda.var")));
+
+	AssertArray(retVal, AssertArrayValue<ASSERT_INT>(t_int, {
+		1, 1
+	}));
+
+	REQUIRE(retVal->HasOwner() == false);
+	TEST_END(retVal);
+}

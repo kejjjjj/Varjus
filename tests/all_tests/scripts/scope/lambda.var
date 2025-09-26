@@ -1,0 +1,11 @@
+fn main() {
+
+    {
+        let x;
+        let y;
+    }
+
+    //in a bug scenario this returns [undefined, undefined]
+    return ((x, y) => [x, y])(1, 1);
+
+}

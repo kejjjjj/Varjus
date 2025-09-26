@@ -84,7 +84,11 @@ CLinterVariable* CIdentifierLinter::GetVariableByIdentifier(const VarjusString& 
 	if (var)
 		return var;
 
-	//find the variable from a local function if it exists
+	//find from the current stack
+	if (var = GetVariableManager<T>(m_pOwner)->GetVariable(str), var)
+		return var;
+
+	//find the variable from a lambda function's outer scope if it exists
 	if (m_pOwner->IsLocalFunction()) {
 		const auto globalFunc = m_pOwner->ToStack()->GetGlobalFunction();
 
@@ -97,7 +101,8 @@ CLinterVariable* CIdentifierLinter::GetVariableByIdentifier(const VarjusString& 
 		}
 	}
 
-	return GetVariableManager<T>(m_pOwner)->GetVariable(str);
+	assert(false);
+	return nullptr;
 }
 
 bool CIdentifierLinter::ContainsFunction(const VarjusString& str) const noexcept
