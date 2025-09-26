@@ -152,6 +152,19 @@ namespace Varjus {
 			return v;
 		}
 
+		template <IValueChild T>
+		[[nodiscard]] constexpr auto AcquireNewValues(std::size_t count) {
+			auto vals = GetPool<T>().Acquire(count);
+
+			for (auto& v : vals) {
+				v->SetOwner(nullptr);
+				v->ConstructInternal(this);
+
+				assert(!v->HasOwner());
+			}
+			return vals;
+		}
+
 		template <IValueChild T, typename Ctor>
 		[[nodiscard]] constexpr T* AcquireNewValue(const Ctor& ctor) {
 

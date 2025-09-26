@@ -142,12 +142,12 @@ IValue* CBuiltInRuntimeFunction::ExecuteFunction(Varjus::CRuntimeContext* const 
 CFunction::CFunction(Varjus::CProgramRuntime* const runtime, VectorOf<IValue*>& args,
 	const __VariableCaptures& captures, const CRuntimeFunction& func)
 {
+
 	//setup parameters
 	for (auto i = std::size_t(0); auto& arg : func.m_oArgumentIndices) {
 		m_oStack[arg] = CVariable::Construct(runtime, args[i++]);
 	}
 
-	//setup stack
 	for (const auto& v : func.m_oVariableIndices) {
 		m_oStack[v] = CVariable::Construct(runtime, IValue::Construct(runtime));
 		assert(m_oStack[v]->GetValue() != nullptr);
